@@ -1,0 +1,54 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<div>
+		<h3>Team</h3>
+		<a href="{{ url_for('GradeServer.make_team') }}"><button class="btn" type="button">Make Team</button></a>
+		<div class="btn-group">
+			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Invitee<span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				{% for i in range (0, teamInvitationRecords|length) %}
+				<li><a href="#teamName{{ i }}" role="button" class="btn btn-link" data-toggle="modal">{{ teamInvitationRecords[i].teamName }}</a></li>
+				{% endfor %}
+				{% if not teamInvitationRecords|length %}
+				<li class="disabled"><a tabindex="-1" href="#">None</a></li>
+				{% endif %}
+			</ul>
+			{% for i in range (0, teamInvitationRecords|length) %}
+			<div id="teamName{{ i }}" class="modal hide fade" style="text-align:center">
+				<div class="modal-header">
+					<h3>Team Invitation</h3>
+				</div>
+				<div class="modal-body">
+					<h4>Do you really want to join?</h4>
+				</div>
+				<div class="modal-footer">
+					<a href="{{ url_for ('GradeServer.team_invitation', teamName =teamInvitationRecords[i].teamName, accept ='reject') }}">
+					<button name ="reject">Reject</button></a>
+					<a href="{{ url_for ('GradeServer.team_invitation', teamName =teamInvitationRecords[i].teamName, accept ='accept') }}">
+					<button name ="accept">Accept</button></a>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<table class="table table-bordered" style="margin-top:10px">
+			<thead>
+				<tr><td>Team Name</td><td>Team Master</td><td>Team Member</td></tr>
+			</thead>
+			<tbody>
+			{% for raw in teamRecords %}
+				<tr>
+					<td><a href="{{ url_for('GradeServer.team_information', teamName =raw.teamName) }}">{{ raw.teamName }}</a></td>
+					<td>{{ raw.teamMasterId }}</td>
+					<td>{{ raw.teamMemberCount }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>	
+{% endblock -%}

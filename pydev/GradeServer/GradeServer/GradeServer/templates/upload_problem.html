@@ -1,0 +1,20 @@
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<h3>Add Problem</h3>
+	<div class="container">
+		<h4>Manual : "Manual"</h4>
+		<!-- showing an alert window of the contents in the box -->
+		<form method="post">
+			<h4>Problem Zip : 
+				<div class="input-append" style="margin-bottom:0px">
+						<input class="span4" id="appendedInputButton" type="text" placeholder="File Path"><button class="btn" type="button" name="filepath" onclick="alert(document.getElementById('appendedInputButton').value)">Find</button>
+				</div>
+			</h4>
+			<form method='post'>
+				<a href="{{ url_for('GradeServer.server_manage_problem') }}"><button class="btn" type="button">Upload</button></a>
+			</form>
+		</form>
+	</div>
+</div>
+{% endblock -%}

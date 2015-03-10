@@ -1,0 +1,94 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	{%- block title %}
+	<h5>Detail mode</h5>
+	{% endblock -%}
+	<div class="tabbable">
+		<ul class="nav nav-tabs">
+			{%- block allSubmit %}
+			<li class="active"><a href="#all" data-toggle="tab" id="link-all" onclick="visibleButton(this)">all</a></li>
+			{% endblock -%}
+			{% for ownCourse in ownCourses %}
+			<li><a href="#{{ ownCourse.courseId }}" data-toggle="tab" id="link-{{ ownCourse.courseId }}" onclick="visibleButton(this)">{{ ownCourse.courseName }}</a></li>
+			{% endfor %}
+			{%- block summaryButton %}
+			<div style="text-align:right"><a href="{{ url_for('GradeServer.user_submit_summary') }}"><button type="button" id="summary" style="display:none">Summary</button></a>
+			{% endblock -%}
+		</ul>
+
+		<div class="tab-content">
+			<div class="tab-pane active" id="all">
+				<table class="table">
+					<tr>
+						<td>Course Id</td><td>Course Name</td><td>Problem Name</td><td>Status</td><td>Submission Count</td><td>Submission Date</td>
+					</tr>
+					{% for submission in submissions %}
+					<tr>
+						<td>{{ submission.courseId }}</td>
+						<td>{{ submission.courseName }}</td>
+						<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ submission.problemName }}</a></td>
+						<td>{{ submission.status }}</td>
+						<td>{{ submission.submissionCount }}</td>
+						<td>{{ submission.codeSubmittedDate }}</td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+			{% for ownCourse in ownCourses %}
+			<div class="tab-pane" id="{{ ownCourse.courseId}}">
+				<table class="table">
+					<tr>
+						<td>Course Id</td><td>Course Name</td><td>Problem Name</td><td>Status</td><td>Submission Count</td><td>Submission Date</td>
+					</tr>
+					{% for submission in submissions %}
+					{% if submission.courseId==ownCourse.courseId %}
+					<tr>
+						<td>{{ submission.courseId }}</td>
+						<td>{{ submission.courseName }}</td>
+						<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ submission.problemName }}</a></td>
+						<td>{{ submission.status }}</td>
+						<td>{{ submission.submissionCount }}</td>
+						<td>{{ submission.codeSubmittedDate }}</td>
+					</tr>
+					{% endif %}
+					{% endfor %}
+				</table>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+
+	<div class="pagination pagination-centered">
+		<ul>
+			<li><a href="#">Prev</a></li>
+			<li><a href="#">1</a></li>
+			<li><a href="#">2</a></li>
+			<li><a href="#">3</a></li>
+			<li><a href="#">4</a></li>
+			<li><a href="#">5</a></li>
+			<li><a href="#">Next</a></li>
+		</ul>
+	</div>
+
+	<div id="test" class="container" style="text-align:center">
+		<div class="btn-group">
+			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">All <span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li><a href="#">All</a></li>
+				{%- block search %}
+				<li><a href="#">Class Number</a></li>
+				<li><a href="#">Class Name</a></li>
+				<li><a href="#">Department</a></li>
+				<li><a href="#">Problem Name</a></li>
+				{% endblock -%}
+			</ul>
+		</div>
+		<div class="input-append" style="margin-bottom:0px"><input class="span3" name="keyword" id="appendedInputButton" type="text" placeholder="Type Keyword"><button class="btn" type="submit">Find</button></div>
+	</div>
+</div>
+{% endblock -%}

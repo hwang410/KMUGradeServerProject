@@ -1,0 +1,18 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{%- extends "main.html" -%}
+{%- block li %}
+<li class="dropdown">
+	<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">{{request.form.memberId}} </abbr><b class="caret"></b></a>
+	<ul class="dropdown-menu">
+		<li><a href="{{ url_for('GradeServer.user_history') }}">Record</a></li>
+		<li><a href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>
+		<li><a href="{{ url_for('GradeServer.board') }}">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
+		<li><a href="#">Manual</a></li>
+		<li><a href="{{ url_for('GradeServer.sign_out') }}">Sign out</a></li>
+	</ul>
+</li>
+<li><a href="#"><i class="icon-bell icon-white"></i></a></li>
+{% endblock -%}

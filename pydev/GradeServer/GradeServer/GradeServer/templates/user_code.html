@@ -1,0 +1,39 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<div style="text-align:center">
+		<h3>"Title"</h3>
+		<h4>
+			<!-- code information -->
+			<div class="container">
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="row-fluid">
+							<div class="span3">"User Id"</div>
+							<div class="span2">"Run Time"</div>
+							<div class="span2">"Used Memory"</div>
+							<div class="span2">"Code Length"</div>
+							<div class="span3" style="text-align:right"><button type="button" id="code-down">Download source code</button></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- end code information -->
+		</h4>
+		<!-- code section -->
+		<div class="container" style="border:1px solid">
+			<!-- put the code here -->
+
+		</div>
+		<br>
+		<!-- comment section -->
+		<div class="container" style="border:1px solid">
+			<!-- put the comment here -->
+		</div>
+	</div>
+</div>	
+{% endblock -%}

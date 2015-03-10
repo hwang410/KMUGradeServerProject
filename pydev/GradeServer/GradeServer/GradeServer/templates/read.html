@@ -1,0 +1,101 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{% extends "main.html" %}
+{% block body %}
+<div class="container">
+	<h4>
+		<div style="row-fluid">
+			<div class="span12">
+				<div class="row-fluid" style="text-align:center">
+					<div class="span3">{{ article.title }}</div>
+					<div class="span3">{{ article.courseId }} {{ article.courseName }}</div>
+					<div class="span3">{{ article.writtenDate }}</div>
+					<div class="span3">{{ article.writerId }}</div>
+				</div>
+			</div>
+		</div>
+	</h4>
+</div>
+
+<!-- content block -->
+<div class="container">
+	<!-- put contents here -->
+	{{ article.content }}
+	<div style="text-align:center">
+		<form method="post">
+			<button class="btn btn-default btn-lg" type="submit" name="postLike">
+			{% if isPostLiked == 'Non-Cancelled' %} UnLike {% else %} Like {% endif %}<i class="icon-thumbs-up"></i>
+			</button>
+			{% if article.writerId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
+			<button href="#deletePost" class="delete btn" data-toggle="modal">Delete</button>
+			<div id="deletePost" class="modal hide fade">
+				<div class="modal-header">
+					<h3>Delete Post</h3>
+				</div>
+				<div class="modal-body">
+					<p>Do you really want to delete it?</p>
+				</div>
+				<div class="modal-footer">
+					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+					<button href="#" class="delete btn btn-primary" name ="deletePost" type="submit">Confirm</button>
+				</div>
+			</div>
+			<a href="{{ url_for('GradeServer.write', articleIndex =article.articleIndex) }}"><button type="button" class ="btn modify">Modify</button></a>
+			{% endif %}
+			<br>
+		</form>
+	</div>
+</div>
+<!-- end content block -->
+<hr style="margin-left:5%;margin-right:5%">
+<!-- comment block -->
+<div class="container">
+	<!-- put the comments here -->
+
+	<div style="text-align:center">
+		<form method="post">
+			<input type="textarea" name="comment" style="width:92%" placeholder="Comment">
+			<button class="submit">Write</button>
+		</form>
+	</div>
+	<div>
+		{% for i in range (0, comments|length) %}
+		<form method="post" id="myform">
+			{{ comments[i].boardReplierId }} : {{ comments[i].boardReplyContent }} | {{ comments[i].boardRepliedDate }} |
+			<!-- like button -->
+			<button class="like btn btn-link" href="#" name="replyLike{{ comments[i].boardReplyIndex }}" type="submit">
+			{% if isLikeds[i]['isLiked'] == 'Liked' %} 
+				UnLike 
+			{% else %} 
+				Like 
+			{% endif %}
+			</button>
+			
+			{{ comments[i].sumOfLikeCount }}
+			<!-- delete button -->
+			<!-- replier and masters are available to delete the comments -->
+			{% if comments[i].boardReplierId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
+			<a href="#deleteComment{{ comments[i].boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
+			<div id="deleteComment{{ comments[i].boardReplyIndex }}" class="modal hide fade" style="text-align:center">
+				<div class="modal-header">
+					<h3>Delete Comment</h3>
+				</div>
+				<div class="modal-body">
+					<p>Do you really want to delete it?</p>
+				</div>
+				<div class="modal-footer">
+					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+					<button href="#" class="delete btn btn-primary" name="deleteComment{{ comments[i].boardReplyIndex }}" type="submit">Confirm</button>
+				</div>
+			</div>
+			{% endif %}
+			<br>
+		</form>
+		{% endfor %}
+	</div>
+	
+</div>
+<!-- end comment block -->
+{% endblock %}

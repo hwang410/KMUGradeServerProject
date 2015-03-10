@@ -1,0 +1,278 @@
+		/*
+		fill every "here" sign using jinja2 template
+
+		when you click 'Title', link to its information
+		*/
+
+body {
+	min-width: 300px;
+	min-height: 400px;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration:none;
+}
+.nav>ul {
+	position: relative;
+	top: 50%;
+	trasform: translateY(-50%);
+}
+
+div.error {
+	margin: 10px 0;
+	background: #FAE4E4;
+	border: 1px solid #DD6F6F;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	padding: 4px;
+	font-size: 13px;
+}
+
+.fluid-footer {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	text-align: center;
+	padding: 10px;
+}
+
+ul.flashes {
+	list-style: none;
+	margin: 10px 10px 0 10px;
+	padding: 0;
+}
+
+ul.flashes li {
+	background: #B9F3ED;
+	border: 1px solid #81CEC6;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	padding: 4px;
+	font-size: 13px;
+}
+
+.comment, .page_num {
+	width: 100%;
+	text-align: center;
+}
+
+.result_examples {
+	text-align: center;
+}
+
+.label>h3 {
+	font-size: 20px;
+}
+
+.result.container {
+	width: 50%;
+}
+
+@media (min-width:767px){
+	#time-limit, #memory-limit {
+		width: 45%;
+	}
+	#time-limit {
+		text-align:right;
+	}
+	#memory-limit {
+		text-align:left;
+	}
+}
+
+#submitChart {
+	width:50%;
+}
+
+#user-code-info {
+	height:100%;
+}
+
+.body>.container {
+	margin-top:15px;
+}
+
+@media (min-width:965px){
+	ul.nav {
+		padding-top:10px;
+	}
+}
+
+#id, #pw {
+	width:135px;
+}
+
+.content {
+	overflow-y: hidden;
+}
+
+@media(min-width:768px){
+	.content{
+		margin-left:42px;
+	}
+	#writePlace {
+		width:530px;
+	}
+	#writeDone {
+		margin-left:42px;
+	}
+}
+
+td.span {
+	vertical-align: middle;
+}
+
+.pagination ul > li > a {
+	color: #444444;
+}
+
+/* CUSTOMIZE THE CAROUSEL
+-------------------------------------------------- */
+
+
+
+/* CUSTOMIZE THE CAROUSEL
+-------------------------------------------------- */
+
+/* Carousel base class */
+.carousel-control {
+  height: 80px;
+  margin-top: 0;
+  font-size: 120px;
+  color: #000000;
+  text-shadow: 0 1px 1px rgba(0,0,0,.4);
+  background-color: transparent;
+  border:0px;
+}
+.carousel.container {
+	position: relative;
+}
+.carousel {
+	margin-right: 20px;
+  height: 300px;
+}
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+	background-color: transparent;
+  position: static;
+  max-width: 550px;
+  z-index: 10;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel .item {
+  height: 300px;
+  background-color: #ffffff;
+  margin: 0px 50px 0px 50px;
+}
+
+.carousel-caption h1,
+.carousel-caption .lead {
+  margin: 0;
+  line-height: 1.25;
+  /*color: #fff;*/
+  text-shadow: 0 1px 1px rgba(0,0,0,.4);
+}
+.carousel-caption .btn {
+  margin-top: 10px;
+}
+
+.carousel-inner > .item > img {
+	position:absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  height: 300px;
+}
+
+.carousel-indicators {
+	position:absolute;
+	margin-top:260px;
+}
+
+.carousel-caption p {
+	color: black;
+}
+.disable {
+	background-color: gray;
+}
+
+#editor {
+	width: 100%;
+}
+
+thead{
+	font-weight:bold;
+}
+
+/* search bar -- problems */
+#search-problems { 
+	display: block; 
+}
+ 
+#search-problems form {
+  display: inline-block;
+  background: #eeefed;
+  padding: 0;
+  margin: 0;
+  padding: 5px;
+  border-radius: 3px;
+  margin: 5px 0 0 0;
+}
+#search-problems form .biginput {
+  width: 600px;
+  height: 40px;
+  padding: 0 10px 0 10px;
+  background-color: #fff;
+  border: 1px solid #c8c8c8;
+  border-radius: 3px;
+  color: #aeaeae;
+  font-weight:normal;
+  font-size: 1.5em;
+  -webkit-transition: all 0.2s linear;
+  -moz-transition: all 0.2s linear;
+  transition: all 0.2s linear;
+}
+#search-problems form .biginput:focus {
+  color: #858585;
+}
+
+/*****************************/
+
+/* autocomplete search */
+.autocomplete-suggestions { 
+	border: 1px solid #999; 
+	background: #fff; 
+	cursor: default; 
+	overflow: auto; 
+}
+.autocomplete-suggestion { 
+	padding: 10px 5px;
+	white-space: nowrap;
+	overflow: hidden; 
+}
+.autocomplete-selected { 
+	background: #f0f0f0; 
+}
+.autocomplete-suggestions strong { 
+	font-weight: normal; 
+	color: #3399ff; 
+}
+/******************************/
+
+.input-ularge {
+	width: 190px;
+}
+
+.input-usmall {
+	width: 80px;
+}
+
+#myTab {
+	margin-bottom:0px;
+}

@@ -1,0 +1,120 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+<script>
+// set donut chart graph
+$.getScript('../../static/bootstrap/js/Chart.js',function(){
+	var data = [];
+	var options = {
+		animation: false
+	};
+
+  //Get the context of the canvas element we want to select
+  var c = $('#submitChart');
+  var ct = c.get(0).getContext('2d');
+  var ctx = document.getElementById("submitChart").getContext("2d");
+  var colors = new Array("#0c274c", "#18709c", "#19bdc4", "#fff6ee", "#ef4089");
+  /*************************************************************************/
+
+  myNewChart = new Chart(ct).Doughnut(data, options);
+  // input values and colors into the chart
+  // need to change 'value:#' 
+  {% if submittedRecords %}
+  myNewChart.addData({
+		value:{{ submittedRecords.sumOfSolvedCount }},
+		color: colors[0]
+	})
+	myNewChart.addData({
+		value:{{ submittedRecords.sumOfWrongCount }},
+		color: colors[1]
+	})
+	myNewChart.addData({
+		value:{{ submittedRecords.sumOfTimeOverCount }},
+		color: colors[2]
+	})
+	myNewChart.addData({
+		value:{{ submittedRecords.sumOfCompileErrorCount }},
+		color: colors[3]
+	})
+	myNewChart.addData({
+		value:{{ submittedRecords.sumOfRunTimeErrorCount }},
+		color: colors[4]
+	})
+  {% else %}
+  // when the value is 0, it doesn't show up
+  for(var i=0;i<5;i++){
+  	myNewChart.addData({
+  		value: 0,
+  		color: colors[i]
+  	})
+  }
+	{% endif %}
+})
+</script>
+<div class="container">
+	<div style="text-align:center">
+		<h3>{{ problemInformation.problemName }}</h3>
+		<h4>
+			<div style="row-fluid">
+				<div class="span6" id="time-limit">Time Limit : {{ problemInformation.limitedTime }} &nbsp&nbsp&nbsp|</div>
+				<div class="span6" id="memory-limit">Memory Limit : {{ problemInformation.limitedMemory }}</div>
+			</div>
+		</h4>
+	</div>
+	<div class="container">
+		<div class="row-fluid">
+			<div class="span12" style="padding-top:50px">
+				<div class="row-fluid">
+					<!-- chart section -->
+					<div class="chart span5" style="text-align:center">
+						<div class="row-fluid">
+							<div class="span7" style="float:left">
+								<canvas id="submitChart" width="200%"></canvas>
+							</div>
+							<div class="span5" id="legend-box" style="float:right">
+							<br>
+							</div>
+						</div>
+						<div style="text-align:right;width:60%">
+							<h4>
+								people :  <br>
+								solved people :   <br>
+								{% if submittedRecords %}
+								total submit count : {{ submittedRecords.sumOfSubmissionCount }} <br>
+								solved : {{ submittedRecords.sumOfSolvedCount }}  <br>
+								wrong answer : {{ submittedRecords.sumOfWrongCount }}  <br>
+								time over : {{ submittedRecords.sumOfTimeOverCount }}  <br>
+								compile error : {{ submittedRecords.sumOfCompileErrorCount }}  <br>
+								runtime error : {{ submittedRecords.sumOfRunTimeErrorCount }}  <br>
+								{% else %}
+								total submit count : 0 <br>
+								solved : 0  <br>
+								wrong answer : 0  <br>
+								time over : 0  <br>
+								compile error : 0  <br>
+								runtime error : 0  <br>
+								{% endif %}
+							</h4>
+						</div>
+					</div>
+					<!-- user list section -->
+					<div class="user_list span7" style="text-align:center">
+						<table class="problem_list table table-bordered">
+							<tr>
+								<td>Rank</td><td>User Id</td><td>Run Time</td><td>Code Length</td><td>Sumission Date</td>
+							</tr>
+							<tr>
+								<td></td><td><a href="{{ url_for('GradeServer.user_record') }}">"User Id"</a></td><td>"Run Time"</td><td>"Code Length"</td><td>"Due Date"</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock -%}
+

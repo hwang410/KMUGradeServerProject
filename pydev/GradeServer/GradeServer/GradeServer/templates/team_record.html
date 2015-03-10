@@ -1,0 +1,56 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<div style="text-align:center">
+		<h3>"Team Name" Submit Record</h3>
+	</div>
+	<div class="container">
+		<div class="row-fluid">
+			<div class="span12" style="padding-top:50px">
+				<div class="row-fluid">
+					<!-- chart section -->
+					<div class="chart span5" style="text-align:center">
+						<div class="row-fluid">
+							<div class="span7" style="float:left">
+								<canvas id="submitChart" width="200%"></canvas>
+							</div>
+							<div class="span5" id="legend-box" style="float:right">
+							<br>
+							</div>
+						</div>
+						<div style="text-align:right;width:50%">
+							<h4>
+								solved problem count : <br>
+								total submit count :  <br>
+								solved :   <br>
+								wrong answer :   <br>
+								time over :   <br>
+								compile error :   <br>
+								runtime error :   <br>
+							</h4>
+						</div>
+					</div>
+					<!-- end chart section -->
+					<div class="span7" style="text-align:center">
+						<!-- submit list section -->
+						<table class="problem_list table table-bordered">
+							<tr>
+								<td>Problem Title</td><td>Status</td><td>Score</td><td>Runtime</td><td>Code Length</td><td>Language</td><td>Submit Date</td>
+							</tr>
+							<tr>
+								<td>"Problem Title"</td><td>"Status"</td><td>"Score"</td><td>"Runtime"</td><td>"Code Length"</td><td>"Language"</td><td>"Submit Date"</td>
+							</tr>
+						</table>
+						<!-- end submit list section -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock -%}
+

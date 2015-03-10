@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="">
+	<title>Kookmin University Grade Server </title>
+
+	<link href="../../static/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link href="../../static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+	<link href="../../static/bootstrap/css/userdefine.css" rel="stylesheet">
+	<link href="../../static/bootstrap/css/dropzone.css" rel="stylesheet">
+	<link href="../../static/bootstrap/css/jquery-ui.css" rel="stylesheet">
+	<link href="../../static/bootstrap/css/jquery-ui.structure.css" rel="stylesheet">
+	<link href="../../static/bootstrap/themes/smoothness/jquery-ui.css" rel="stylesheet">
+	<script src="../../static/bootstrap/js/modernizr-2.6.2.min.js"></script>
+	<script src="../../static/bootstrap/js/jquery.js"></script>
+	<script src="../../static/bootstrap/js/jquery-ui-1.10.1.min.js"></script>
+	<script src="../../static/bootstrap/js/jquery.autocomplete.js"></script>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- responsible design -->
+	<link rel="shortcut icon" href="../../static/bootstrap/img/kookmin_logo_white.jpg"> 
+</head>
+<body>
+	<!-- /////////////////////////////////////
+		navigation bar section
+		//////////////////////////////////// -->
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>	
+					<span class="icon-bar"></span>
+				</button>
+				<abbr title="Moving to main page"><a class="link-main" href="{{ url_for('GradeServer.sign_in') }}" width="10px"><img src="../../static/bootstrap/img/kookmin_logo_dark.jpg" style="height:40px;width:40px">  KMU Grade Server </a></abbr>
+				<div class="nav-collapse collapse" >
+					<ul class="nav">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Showing your subjects list">Problem<b class="caret"></b></abbr></a>
+							{%- if session['memberId'] != NULL %}
+							<ul class="dropdown-menu">
+								<li class="nav-header">Current Class</li>
+								{%- if session['ownCourses'] %}
+									{%- for course in session['ownCourses'] %}
+									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId)}}" class="currentClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
+									{% endfor -%}
+								{%- else %}
+									<li class="disabled"><a tabindex="-1" href="#">None</a></li>
+								{% endif -%}
+								<li class="divider"></li> <!-- seperation line -->
+								<li class="nav-header">Post Class</li>
+								<li class="disabled"><a tabindex="-1" href="#">None</a></li>
+							</ul>
+							{% endif -%}
+						</li>
+						<li>
+							<a href="{{ url_for('GradeServer.rank', pageNum =1) }}"><abbr title="Showing the submit record of each person and each problem">Rank</abbr></a>
+						</li>
+						<li>
+							<a href="{{ url_for('GradeServer.board', pageNum =1) }}"><abbr title="QA board">Board</abbr></a>
+						</li>
+						<li>
+							<a href="{{ url_for('GradeServer.team') }}"><abbr title="Showing your team information">Team</abbr></a>
+						</li>
+						
+						<!-- changing section after signing in -->
+						{%- if session['memberId'] != NULL %}
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">{{ session['memberId'] }}</abbr><b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								{%- if "ServerAdministrator" not in session['authority'] and "CourseAdministrator" not in session['authority'] %}
+								<li><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], pageNum =1) }}">Record</a></li>
+								{% endif %}
+								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>
+								<li><a href="{{ url_for('GradeServer.board', pageNum =1) }}">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
+								<li><a href="#">Manual</a></li>
+								{%- if "ServerAdministrator" in session['authority'] %}
+								<li class="dropdown-submenu">
+									<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="server-management">Server Management</a>
+									<ul class="dropdown-menu" id="menu-box">
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_problem') }}" id='manage-problem'>Problem</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_class') }}" id='manage-class'>Class</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_user') }}" id='manage-user'>User</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_service') }}" id='manage-service'>Service</a></li>
+									</ul>
+								</li>
+								{%- elif "CourseAdministrator" in session['authority'] %}
+								<li class="dropdown-submenu">
+									<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="class-server-management">Class Management</a>
+									<ul class="dropdown-menu" id="menu-box">
+										<li><a href="{{ url_for('GradeServer.id_check', select='user_submit') }}" id='manage-problem'>User Submit</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_problem') }}" id='manage-class'>Problem</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_user') }}" id='manage-user'>User</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_service') }}" id='manage-service'>Service</a></li>
+									</ul>
+								</li>
+								{% endif -%}
+								<li><a href="{{ url_for('GradeServer.sign_out') }}">Sign out</a></li>
+							</ul>
+						</li>
+						<li><a href="#"><i class="icon-bell icon-white"></i></a></li>
+						{%- else %}
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">Sign in </abbr><b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<form class="sign-in" method="post">
+									<div><input class="span2" id="id" name="memberId" type="text" placeholder="ID" autocomplete="off" autofocus ="autofocus"></div>
+									<div><input class="span2" id="pw" name="password" type="password" placeholder="Password"></div>
+									<button type="submit" class="btn">Sign in</button>
+								</form>
+							</ul>
+						</li>
+						{% endif -%}
+					</ul>
+					{%- if session['memberId'] == NULL %}
+					<abbr title="Be our new member today!"><button type="button" class="btn pull-right" style="margin:15px 5px 10px 0px" onclick="alert('It might be no need')">Sign up</button></abbr>
+					{% endif -%}
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ///////////////////////////////////
+		flash pop section
+		//////////////////////////////////// -->
+		{%- with flashes = get_flashed_messages() %}
+		{%- if flashes %}
+		<ul class="flashes">
+			{%- for message in flashes %}
+			<li>{{ message }}</li>
+			{% endfor -%}
+		</ul>
+		{% endif -%}
+		{% endwith -%}
+		{%- if error %}<div class="error"> {{ error }}</div>{% endif -%}
+
+	<!-- ///////////////////////////////////
+		container section
+		//////////////////////////////////// -->
+		<!-- ///// body section ///// -->
+		<div class="body">
+			{%- block body %}
+			<div class="container">
+				<h2>Kookmin University Online Judge System</h2>
+			</div>
+			<div class="container" style="border:1px solid;height:300px">
+		    <!-- ///// carousel section ///// -->
+		    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+		      <!-- Indicators -->
+		      <ol class="carousel-indicators" style="width:51.5%">
+		      {%- for notice in notices %}
+	      		{% if loop.index == 1 %} 
+	      			<li data-target='#myCarousel' data-slide-to='{{ loop.index-1 }}' class='active'></li>
+	      		{% else %}
+	      			<li data-target='#myCarousel' data-slide-to='{{ loop.index-1 }}'></li>
+	      		{% endif %}
+		      {% endfor -%}
+		      </ol>
+		      <div class="carousel-inner" role="listbox">
+		      	{%- for notice in notices %}
+		      		{% if loop.index == 1 %}
+		      		<div class='item active'>
+		      		{% else %}
+		      		<div class='item'>
+		      		{% endif %}
+			          <div class="container">
+			            <div class="carousel-caption">
+			            	<h3>{{ notice.courseId }} {{ notice.courseName }}</h3>
+			              <h3 style="display:inline">{{ notice.title }}</h3>[{{ notice.replyCount }}]
+			              <p>{{ notice.content }}</p>
+			            </div>
+			          </div>
+		        	</div>
+		      	{% endfor -%}
+		      </div>
+		      <a class="left carousel-control" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+		      <a class="right carousel-control" href="#myCarousel" data-slide="next">&rsaquo;</a>
+		    </div>
+		    <!-- ///// end carousel section ///// -->
+			</div>
+			<div class="container">
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="row-fluid">
+							<div class="span4 topcoder" style="border:1px solid; text-align:center">
+							<h4>Top Coder of this week</h4>
+							{% if topCoderId %}
+							<a href ="{{ url_for ('GradeServer.user_history', memberId =topCoderId, pageNum =1) }}">{{ topCoderId }}</a>
+							{% else %}
+							None
+							{% endif %}
+							</div>
+							<div class="span4 manual" style="border:1px solid; text-align:center">
+							<h4>How to use</h4>
+							"Manual Link"
+							</div>
+							<div class="span4">
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endblock -%}
+		</div>
+		<!-- ///// end body section ///// -->
+
+		<!-- footer -->
+		<div class="fluid-footer" style="background-color: #ffffff"> Algorithmic Engineering Lab </div>
+
+		<!--<script src="../../static/bootstrap/js/modernizr-2.6.2.min.js"></script>-->
+		<!--<script src="../../static/bootstrap/js/jquery.js"></script>-->
+		<!--<script src="../../static/bootstrap/js/jquery-ui-1.10.1.min.js"></script>-->
+		<script src="../../static/bootstrap/js/bootstrap.js"></script>
+		<script src="../../static/bootstrap/js/dropzone.js"></script>
+		<script src="../../static/bootstrap/js/src/ace.js"></script>
+		<script src="../../static/bootstrap/js/userdefine.js"></script>
+		<script src="../../static/bootstrap/js/Chart.js"></script>
+
+	</body>
+	</html>

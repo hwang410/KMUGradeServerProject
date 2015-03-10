@@ -1,0 +1,30 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<h3>{{ teamInformation.teamName }}</h3>
+	<h4>{% if teamInformation.teamDescription %}{{ teamInformation.teamDescription }}{% endif %}</h4>
+	<a href="{{ url_for('GradeServer.team_record', teamName =teamInformation.teamName) }}"><button class="btn" type="button">Team Records</button></a>
+	<!--  teamMemberRecords[0] is Master -->
+	{% if session['memberId'] == teamMemberRecords[0].teamMemberId %}
+	<a href="{{ url_for('GradeServer.team_manage', teamName =teamInformation.teamName) }}"><button class="btn" type="button">Team Manage</button></a>
+	{% endif %}
+	
+	<div> </div>
+	<table class="table table-bordered" style="max-width:300px;margin-top:10px">
+		<thead>
+			<tr><td>Team Master</td></tr>
+		</thead>
+		<tr><td><a href ="{{ url_for ('GradeServer.user_history', memberId =teamMemberRecords[0].teamMemberId, pageNum =1) }}">{{ teamMemberRecords[0].teamMemberId }}</td></tr>
+		<thead>
+			<tr><td>Team Members</td></tr>
+		</thead>
+		{% for i in range (1, teamMemberRecords|length) %}
+		<tr><td><a href ="{{ url_for ('GradeServer.user_history', memberId =teamMemberRecords[i].teamMemberId, pageNum =1) }}">{{ teamMemberRecords[i].teamMemberId }}</td></tr>
+		{% endfor %}
+	</table>	
+</div>
+{% endblock -%}

@@ -1,0 +1,15 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<h3>Identification Check</h3>
+	<h4>User Id : {{ session['memberId'] }}</h4>
+	<form method="post">
+		<h4>Password : <input type="password" class="input-small" name="password", autofocus ="autofocus"></h4>
+		<button class="btn" type="submit">Confirm</button>
+	</form>
+</div>
+{% endblock -%}

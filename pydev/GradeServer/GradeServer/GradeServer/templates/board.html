@@ -1,0 +1,224 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{% extends "main.html" %}
+{%- block body %}
+<div class="container">
+	<div class="tabbable">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#all" data-toggle="tab">all</a></li>
+			{%- for course in myCourses %}
+				<li><a href="#{{ course.courseId }}" data-toggle="tab">{{ course.courseId }} {{ course.courseName }}</a></li>
+			{% endfor -%}
+			
+			<div style="text-align:right"><a href="{{ url_for('GradeServer.write', articleIndex =0) }}"><button type="button" class="write">Write</button></a></div>
+		</ul>
+		<!-- posts -->
+		<div class="tab-content">
+			<!-- all posts -->
+			<div id="all" class="tab-pane active">
+				<table class="table">
+					<thead>
+						<tr><td>Num</td><td>Course Name</td><td>Title</td><td>User Id</td><td>Date</td><td>View</td><td>Like</td></tr>
+					</thead>
+					<tbody>
+					<!-- All Notice -->
+					{%- for raw in articleNotices %}
+					<tr>
+						<td>Notice</td>
+						<td>{{ raw.courseId }} {{ raw.courseName }}</td>
+						<td><a href="/board/{{ raw.articleIndex }}">{{ raw.title }}</a>
+							{%- if raw.replyCount > 0 %}
+								[{{ raw.replyCount }}]
+							{% endif -%}
+						</td>
+						<td>{{ raw.writerId }}</td>
+						<td>{{ raw.writtenDate }}</td>
+						<td>{{ raw.viewCount }}</td>
+						<td>{{ raw.sumOfLikeCount }}</td>
+					</tr>
+					{% endfor -%}
+
+					<!-- All Board -->
+					{%- for i in range (allPages['startList'], allPages['endList']) %}
+				 	<tr>
+				 		<td>{{ i +1 }}</td>
+						<td>{{ articles[i].courseId }} {{ articles[i].courseName }}</td>
+						<td><a href="/board/{{ articles[i].articleIndex }}">{{ articles[i].title }}</a>
+							{%- if articles[i].replyCount > 0 %}
+								[{{ articles[i].replyCount }}]
+							{% endif -%}
+						</td>
+						<td>{{ articles[i].writerId }}</td>
+						<td>{{ articles[i].writtenDate }}</td>
+						<td>{{ articles[i].viewCount }}</td>
+						<td>{{ articles[i].sumOfLikeCount }}</td>
+				 	</tr>
+					{% endfor -%}
+					</tbody>
+				</table>
+				<!-- Paging -->
+				<div class="pagination pagination-centered">
+					<ul>
+						{%- if allPages['pageNum'] > allPages['BLOCK'] %}
+						<li><a href="{{ url_for ('GradeServer.board', pageNum =allPages['startPage'] -1) }}">Prev</a></li>
+						{% endif -%}
+						
+						{%- for i in range (allPages['startPage'], allPages['endPage'] +1) %}
+						<li><a href="{{ url_for ('GradeServer.board', pageNum =i) }}">{{ i }}</a></li>
+						{% endfor -%}
+						
+						{%- if allPages['endPage'] < allPages['allPage'] %}
+						<li><a href="{{ url_for ('GradeServer.board', pageNum =allPages['endPage'] +1) }}">Next</a></li>
+						{% endif -%}
+					</ul>
+				</div>
+				<!-- End Paging -->
+			</div>
+			
+			<!-- tab content of each Course -->
+			{%- for i in range (0, myCourses|length) %}
+			<div id="{{ myCourses[i].courseId }}" class="tab-pane">
+				<table class="table">
+					<thead>
+					<tr><td>Num</td><td>Class Name</td><td>Title</td><td>User Id</td><td>Date</td><td>View</td><td>Like</td></tr>
+					</thead>
+					<tbody>
+					<!-- Course Notice -->
+					{% for raw in courseNotices[i] %}
+					<tr>
+						<td>Notice</td>
+						<td>{{ raw.courseId }} {{ raw.courseName }}</td>
+						<td><a href="/board/{{raw.articleIndex }}">{{ raw.title }}</a>
+							{%- if raw.replyCount > 0 %}
+								[{{ raw.replyCount }}]
+							{% endif -%}
+						</td>
+						<td>{{ raw.writerId }}</td>
+						<td>{{ raw.writtenDate }}</td>
+						<td>{{ raw.viewCount }}</td>
+						<td>{{ raw.sumOfLikeCount }}</td>
+					</tr>
+					{% endfor %}
+					
+					<!-- Course Board -->
+					{% for j in range (pages[i]['startList'], pages[i]['endList']) %}
+					<tr>
+						<td>{{ j +1 }}</td>
+						<td>{{ course[i][j].courseId}} {{ courses[i][j].courseName }}</td>
+						<td><a href="/board/{{ courses[i][j].articleIndex }}">{{ courses[i][j].title }}</a>
+							{% if courses[i][j].replyCount > 0 %}
+								[{{ courses[i][j].replyCount }}]
+							{% endif %}
+						</td>
+						<td>{{ courses[i][j].writerId }}</td>
+						<td>{{ courses[i][j].writtenDate }}</td>
+						<td>{{ courses[i][j].viewCount }}</td>
+						<td>{{ courses[i][j].sumOfLikeCount }}</td>
+					</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+				
+				<!-- Paging -->
+				<div class="pagination pagination-centered">
+					<ul>
+						{%- if pages[i]['pageNum'] > pages[i]['BLOCK'] %}
+						<li><a href="{{ url_for ('GradeServer.board', pageNum =pages[i]['startPage'] -1) }}">Prev</a></li>
+						{% endif -%}
+						
+						{%- for i in range (pages[i]['startPage'], pages[i]['endPage'] +1) %}
+						<li><a href="{{ url_for ('GradeServer.board', pageNum =i) }}">{{ i }}</a></li>
+						{% endfor -%}
+						
+						{%- if pages[i]['endPage'] < pages[i]['allPage'] %}
+						<li><a href="{{ url_for ('GradeServer.board', pageNum =pages[i]['endPage'] +1) }}">Next</a></li>
+						{% endif -%}
+					</ul>
+				</div>
+				<!-- End Paging -->
+			</div>
+			{% endfor -%}
+		</div>
+		<!-- end posts -->
+		
+		<!-- search bar -->
+		<form method ="post">
+				<!-- SearchBar // all -->
+				<div id="all" class="tab-pane active" style="text-align:center">
+					<select class="span3" type="text" id="language" name="courseId">
+						<option class ="None" selected ="selected"></option>
+						{%- for course in myCourses %}
+						<option class ={{ course.courseId }}>{{course.courseId }} {{ course.courseName }}</option>
+						{% endfor -%}
+					</select>
+					
+					<div class="btn-group">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Class <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<!--  Class Search Bar -->
+						{% for course in myCourses %}
+						<li style ="padding :10px">{{course.courseId }} {{ course.courseName }}</li>
+						{% endfor %}
+						{% if not myCourses|length %}
+						<li class="disabled"><a tabindex="-1" href="#">None</a></li>
+						{% endif %}
+					</ul>
+					</div>
+					
+					<div class="btn-group">
+						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">All<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							{% for filter in Filters %}
+							<li><a href="#">{{ filter }}</a></li>
+							{% endfor %}
+						</ul>
+					</div>
+					
+					<div id="content">
+				<ul id="myTab" class="nav nav-tabs" role="tablist">
+	      	<li class="dropdown"><a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown" aria-controls="myTabDrop1-contents">Language - default C<span class="caret"></span></a>
+        		<ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1" id="myTabDrop1-contents">
+          			<li><a href="#dropdown1" tabindex="-1" role="tab" id="dropdown1-tab" data-toggle="tab" aria-controls="dropdown1">C &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a></li>
+          			<li><a href="#dropdown2" tabindex="-1" role="tab" id="dropdown2-tab" data-toggle="tab" aria-controls="dropdown2">CPP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a></li>
+          			<li><a href="#dropdown3" tabindex="-1" role="tab" id="dropdown3-tab" data-toggle="tab" aria-controls="dropdown3">JAVA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a></li>
+          			<li><a href="#dropdown4" tabindex="-1" role="tab" id="dropdown4-tab" data-toggle="tab" aria-controls="dropdown4">PYTHON</a></li>
+        		</ul>
+      		</li>
+    		</ul>
+    		</div>
+					
+			
+	
+	
+					<div class="btn-group">
+						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">All<span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="filterCondition" id="filterCondition-contents">
+							{% for filter in Filters %}
+							<li><a href="#{{ filter }}" tabindex="-1" role="tab" id="{{ filter }}" data-toggle="tab" aria-controls="{{ filter }}">{{ filter }}</a></li>
+							{% endfor %}
+						</ul>
+						
+						<div id="myTabContent" class="tab-content">
+					    	<div role="tabpanel" class="tab-pane active in" id="{{ filter }}" aria-labelledby="{{ filter }}">
+								
+				        	</div>
+			        	</div>
+					</div>	
+					
+					<select class="span2" type="text" id="language" name="filterCondition">
+						{% for filter in Filters %}
+						<option class ="{{ filter }}">{{ filter }}</option>
+						{% endfor %}
+					</select>
+					<div class="input-append" style="margin-bottom:0px">
+						<input class="span3" name="keyword" type="text" placeholder="Type Keyword">
+						<button name ="findArticles" class="btn" type="submit">Find</button>
+					</div>
+				</div>
+		</form>
+		<!-- end search bar -->
+	</div>
+</div>
+{% endblock -%}

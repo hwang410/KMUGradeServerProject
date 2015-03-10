@@ -1,0 +1,33 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+
+		when you click 'Submit' button, move to its result
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="result_examples row-fluid">
+	<h4>
+		<span class="label label-success ">Solved</span>
+		<span class="label label-important">Wrong Answer</span>
+		<span class="label label-info">Time Over</span>
+		<span class="label label-warning">Compile Error</span>
+	</h4>
+</div>
+<div class="container result">
+	<h3 style="text-align:center">Submit Result</h3><br>
+	<table class="table">
+		<thead><tr><td>"Result Type"</td></tr></thead>
+		<tbody><tr><td>"Result details"</td></tr></tbody>
+	</table>
+	<!-- put parameter(score) in 'moveAfterSubmit()' function 
+			if the score is 100 then, showing up 'one more?' 
+			else showing up 'try again' -->
+	<div style="text-align:center">
+		<!-- example) 
+				<button type="button" class="move_after" onclick="letItMove(this)" value="moveAfterSubmit('{{ score }}')" ></button> 
+		-->
+		<button type="button" id="move_after"></button>
+	</div>
+</div>
+{% endblock -%}

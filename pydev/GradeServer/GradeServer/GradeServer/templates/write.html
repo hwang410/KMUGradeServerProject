@@ -1,0 +1,32 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<h3>Writing</h3>
+	<form method="post">
+		<h4>Class
+			<select class="span3" type="text" id="language" name="courseId">
+				{%- for course in myCourses %}
+					{% if article.courseId == course.courseId %}<option class ="{{ course.courseId }}" selected ="selected">
+					{% else %}<option class="{{ course.courseId }}">
+					{% endif %}
+					{{ course.courseId }} {{ course.courseName }}</option>
+				<!--  if modify then default Course -->
+				
+				{% endfor -%}
+			</select>
+		</h4>
+		<h4>Title 
+			<input class="input-xxlarge" name="title" type="text" autocomplete="off" placeholder="less than 50 letters"
+			value ="{% if title %}{{ title }}{% elif article.title %}{{ article.title }}{% endif %}" autofocus ="autofocus">
+		</h4>
+		<textarea class="content input-xxlarge" id="writePlace" name="content" row="1" placeholder="write here" onkeyup="autoSize(this)" autocomplete="off">{% if content %}{{ content }}{% elif article.content %}{{ article.content }}{% endif %}</textarea>
+		<br>
+		<input type="submit" id="writeDone" value="Done">
+		<!--<button class="btn" type="submit">Done</button>-->
+	</form>
+</div>
+{% endblock -%}

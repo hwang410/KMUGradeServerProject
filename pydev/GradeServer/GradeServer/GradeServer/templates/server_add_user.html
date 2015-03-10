@@ -1,0 +1,117 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<div>
+		<h3>Add User</h3>
+		<!-- if any button is checked, then showing modal pop -->
+		<div style="text-align:right"><a href="#addUserModal" role="button" class="btn" data-toggle="modal">Indivisual</a> <a href="#addGroupModal" rolw="button" class="btn" data-toggle="modal">Group</a> <a onclick="showingDeleteModal()" role="button" class="btn" data-toggle="modal">Delete</a></div>
+
+		<!-- hidden modal pop -->
+		<!-- ///// Add indivisual ///// -->
+		<div id="addUserModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true" style="width:700px;margin-left:-350px">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="addUserModalLabel">Add User</h3>
+			</div>
+			<div class="modal-body">
+				<div style="text-align:right"><button type="button" class="btn" onclick="addIndivisualUserForm()">Add line</button></div>
+				<!--  leeyoungchan  add table id(indivisual') -->
+				<table class="table table-bordered" id='indivisual' style="margin-top:10px">
+					<thead>
+					<tr><td>User Id</td><td>College Index</td><td>Department Index</td><td>User Name</td><td>Authority</td></tr>
+					</thead>
+					<script> index = 1; </script>
+					<tbody id="indivisualUserForm">
+						<tr class="formLine">
+							<td><input type="text" class="input-small formLine1" id="userId1" name="userId1" placeholder="User ID" value=""></td>
+							<td><input type="text" class="input-small formLine1" id="username1" name="username1" placeholder="User Name" value=""></td>
+							<td><input type="text" class="input-small formLine1" id="authority1" name="authority1" placeholder="Authority" value=""></td>
+							<td><input type="text" class="input-small formLine1" id="college1" name="college1" placeholder="College" value=""></td>
+							<td><input type="text" class="input-small formLine1" id="department1" name="department1" placeholder="Department" value=""></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button class="btn">Done</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="resetIndivisualUserForm()">Close</button>
+			</div>
+		</div>
+
+		<!-- ///// add group ///// -->
+		<div id="addGroupModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+			<form method="post" enctype="multipart/form-data">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+					<h3 id="addGroupModalLabel">Add User</h3>
+				</div>
+				<div class="modal-body">
+					<p>default authority is "User(student)"</p>
+					Manual : userId="userid", username="username", college="college Index", department="department Index"<br>
+					File(*.txt) : <input type="file" name="files" multiple>
+				</div>
+				<div class="modal-footer">
+					<button class="btn" name="addUserGroup" type="submit">Done</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				</div>
+			</form>
+		</div>
+
+		<!-- ///// Delete case /////
+				if any item choiced -->
+		<div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="deleteModalLabel">Delete User</h3>
+			</div>
+			<div class="modal-body">
+				<p>Do you really want to delete it?</p>
+			</div>
+			<div class="modal-footer">
+				<form method="post" id="delete">
+					<button class="btn" type="submit">Confirm</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				</form>
+			</div>
+		</div>
+		<!-- no items choiced -->
+		<div id="deleteNoItem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="deleteModalLabel">Delete User</h3>
+			</div>
+			<div class="modal-body">
+				<p>No items choiced</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			</div>
+		</div>
+		<!-- ///// end hidden modal pop ///// -->
+		<form method="post">
+			<table class="table table-bordered" style="margin-top:10px">
+				<thead><tr><td>Index</td><td>User Id</td><td>User Name</td><td>Authority</td><td>College</td><td>Department</td><td>Check</td></tr></thead>
+				<tbody>
+					<script> index = 0; </script>
+					{%- for newUser in newUsers %}
+					<tr>
+						<td><script> document.write(++index); </script></td>
+						<td>{{ newUser[0] }}</td>
+						<td>{{ newUser[1] }}</td>
+						<td>{% if newUser[2]=="User" %}Student{% else %}{{ newUser[2] }}{% endif %}</td>
+						<td>{{ newUser[4] }}</td>
+						<td>{{ newUser[6] }}</td>
+						<td><label class="checkbox-center"><input type="checkbox" value="{{ newUser[0] }}" name="{{ newUser[0] }}" class="box-check" form="delete"></label></td>
+					</tr>
+					{% endfor -%}
+				</tbody>
+			</table>
+			<a href="{{ url_for('GradeServer.server_add_user') }}"><button type="submit" name="addUser" class="btn">Done</button></a>
+		</form>
+	</div>
+</div>
+{% endblock -%}

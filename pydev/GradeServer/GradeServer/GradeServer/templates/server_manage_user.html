@@ -1,0 +1,76 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<div>
+		<h3>Manage User</h3>
+		<!-- if any button is checked, then showing modal pop -->
+		<div style="text-align:right"><a href="{{ url_for('GradeServer.server_add_user') }}"><button class="btn" type="button">Add</button></a> <a onclick="showingDeleteModal()" role="button" class="btn" data-toggle="modal">Delete</a></div>
+
+		<!-- hidden modal pop -->
+		<!-- if any item choiced -->
+		<div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="deleteModalLabel">Delete User</h3>
+			</div>
+			<div class="modal-body">
+				<p>Do you really want to delete it?</p>
+			</div>
+			<div class="modal-footer">
+				<form method="post" id="deleteConfirm">
+					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+					<button class="btn btn-primary" type="submit">Confirm</button>
+				</form>
+			</div>
+		</div>
+		<!-- no items choiced -->
+		<div id="deleteNoItem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="deleteModalLabel">Delete User</h3>
+			</div>
+			<div class="modal-body">
+				<p>No items choiced</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			</div>
+		</div>
+		<!-- end hidden modal pop -->
+
+		<table class="table table-bordered" style="margin-top:10px">
+			<thead>
+				<tr><td>Index</td><td>User Id</td><td>Department</td><td>User Name</td><td>Phone</td><td>E-mail</td><td>Authority</td><td>Last Signin</td><td>Delete</td></tr>
+			</thead>
+			<tbody>
+				<script> index = {{ index }}; </script>
+				{%- for user in users %}
+				<tr>
+					<td><script> document.write(index--); </script></td>
+					<td>{{ user.memberId }}</td>
+					<td>{{ user.departmentName }}</td>
+					<td>{{ user.memberName }}</td>
+					<td>{{ user.contactNumber }}</td>
+					<td>{{ user.emailAddress }}</td>
+					<td>{%- for authority in user.authority %}
+								{%- if authority=="User" %}
+									Student
+								{% elif authority=="ServerAdministrator" %}
+									Server Administrator
+								{% elif authority=="CourseAdministrator" %}
+									Course Administrator
+								{% endif -%}
+							{% endfor -%}</td>
+					<td>{{ user.lastAccessDate }}</td>
+					<td><label class="checkbox-center"><input type="checkbox" class="box-check" name="{{ user.memberId }}" form="deleteConfirm"></label></td>
+				</tr>
+				{% endfor -%}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock -%}

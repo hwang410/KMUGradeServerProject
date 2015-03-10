@@ -1,0 +1,109 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+<script>
+$(function() {
+
+	var members = [
+		{% for member in memberRecords %}
+			{ value: "{{ member.memberId }} {{ member.memberName }}" },
+		{% endfor %}
+		{ value: ""}
+	];
+	$("#search-members").autocomplete({
+		lookup: members,
+		onSelect: function(suggestion){
+    }
+	});
+});
+</script>
+
+<div class="container">
+	<form method ="post">
+		<h3>Team Manage</h3>
+		<a href="{{ url_for('GradeServer.team_record', teamName =teamInformation.teamName) }}"><button class="btn" type="button">Team Records</button></a>
+		<!--  teamMemberRecords[0] is Master -->
+		{% if session['memberId'] == gTeamMembersId[0].teamMemberId %}
+		<a href="{{ url_for('GradeServer.team_manage', teamName =teamInformation.teamName) }}"><button class="btn" type="button">Team Manage</button></a>
+		{% endif %}
+		
+		<div class="row-fluid" style="margin-top:-20px">
+			<div class="span12">
+				<div class="row-fluid">
+					<div class="span8">
+						<div><h4>&nbsp</h4></div>
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<td>Team Name</td>
+									<td><input name ="teamName" type="text" style="width:96%;" 
+									value ="{% if gTeamName %}{{ gTeamName }}{% else %}{{ teamInformation.teamName }}{% endif %}" autofocus ="autofocus"></td>
+								</tr>
+								<tr>
+									<td>Team Description</td>
+									<td><input name ="teamDescription" type="text" style="width:96%;" 
+									value= "{% if gTeamDescription %}{{ gTeamDescription }}{% else %}{{ teamInformation.teamDescription }}{% endif %}"></td>
+								</tr>
+								<tr><td>Team Master</td><td><span class="uneditable-input" style="width:96%">{{ gTeamMembersId[0].teamMemberId }}</span></td></tr>
+								<tr>
+									<td>Team Member</td><td><input id ="search-members" name ="inviteeId" type="text" style="width:84%" placeholder="Invitee Id">
+									<button name ="inviteeMember" class="btn btn-small" type="submit">Invitee</button></td>
+								</tr>
+							</thead>
+						</table>
+					</div>
+					<div class="span4">
+						<div style="text-align:center"><h4>Team Members</h4></div>
+						<table class="table table-bordered">
+							<thead>
+								<tr><td>Member Id</td><td>Delete</td></tr>
+							</thead>
+							<tr><td>{{ gTeamMembersId[0].teamMemberId }}</td><td>Team Master</td></tr>
+							<!--  Original Members -->
+							{% for i in range (1, gTeamMembersId|length) %}
+							<tr>
+								<td>{{ gTeamMembersId[i].teamMemberId }}</td>
+								<td>
+									<button href="#deleteTeamMember" class="delete btn" data-toggle="modal">Delete</button>
+									<div id="deleteTeamMember" class="modal hide fade">
+										<div class="modal-header">
+											<h3>Delete Team Member</h3>
+										</div>
+										<div class="modal-body">
+											<p>Do you really want to delete it?</p>
+										</div>
+										<div class="modal-footer">
+											<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+											<button href="#" class="delete btn btn-primary" name ="deleteMember{{ i }}" type="submit">Confirm</button>
+										</div>
+									</div>
+									
+								</td>
+							</tr>
+							{% endfor %}
+						</table>
+						<div style="text-align:right">
+						<button href="#deleteTeam" class="delete btn" data-toggle="modal">Delete Team</button>
+						<div id="deleteTeam" class="modal hide fade" style="text-align:center">
+							<div class="modal-header">
+								<h3>Delete Team</h3>
+							</div>
+							<div class="modal-body">
+								<p>Do you really want to delete it?</p>
+							</div>
+							<div class="modal-footer">
+								<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+								<button href="#" class="delete btn btn-primary" name ="deleteTeam" type="submit">Confirm</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<a><button name ="saveTeam" class="btn btn-large" type="submit">Save</button></a>
+	</form>
+</div>
+{% endblock -%}

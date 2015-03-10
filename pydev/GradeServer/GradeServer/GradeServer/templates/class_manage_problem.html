@@ -1,0 +1,261 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{%- extends "main.html" -%}
+{%- block body %}
+<script>
+$(function() {
+    if (!Modernizr.inputtypes['date']) {
+        $('input[type=date]').datepicker({
+            dateFormat: 'yy-mm-dd'
+        });
+    }
+});
+$(function() {
+	var problems = [
+		{% for problem in allProblems %}
+			{ value: "{{ problem.problemId }}{{ problem.problemName }}" },
+		{% endfor %}
+		{ value: ""}
+	];
+	var courses = [
+		{% for course in ownCourses %}
+			{ value: "{{ course.courseId }}{{ course.courseName }}" },
+		{% endfor %}
+		{ value: ""}
+	];
+	$("#search-courses").autocomplete({
+		lookup: courses,
+		onSelect: function(suggestion){
+			
+    }
+	});
+	$("#search-problems").autocomplete({
+		lookup: problems,
+		onSelect: function(suggestion){
+			
+    }
+	});
+});
+</script>
+<div class="container">
+	<div class="tabbable">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#all" data-toggle="tab" id="link-all">all</a></li>
+			{% for course in ownCourses %}
+			<li><a href="#{{ course.courseId }}" data-toggle="tab" onclick="visibleButton(this)">{{ course.courseId }}{{ course.courseName }}</a></li>
+			{% endfor %}
+			<div style="text-align:right">
+				<a href="#addProblemModal" rol="button" class="btn" data-toggle="modal">Add</a>
+			</div>
+		</ul>
+		<!-- hidden modal pop -->
+		<!-- ///// Add case ///// -->
+		<div id="addProblemModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addProblemModalLabel" aria-hidden="true" style="width:1000px;margin-left:-500px">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="addProblemModalLabel">Add Problem</h3>
+			</div>
+			<div class="modal-body">
+				<p>If you don't choose open/close date, then the dates will be same with start/end date<br>
+				MF : Each test case is in each file</p>
+				<div style="text-align:right"><button type="button" class="btn">Add line</button></div>
+				<table class="table table-bordered" style="margin-top:10px">
+					<thead><tr><td>Course Id</td><td>Problem Name</td><td><abbr title="Multiple Input/Output Files">MF</abbr></td><td>Start Date</td><td>End Date</td><td>Open Date</td><td>Close Date</td></tr></thead>
+					<tbody>
+					<tr>
+						<td><div id="searchfield"><input type="text" class="input-ularge" id="search-courses" name="courseId" placeholder="course name" form="addProblem"></div></td>
+						<td><div id="searchfield"><input type="text" class="input-ularge" id="search-problems" name="problemId" placeholder="problem name" form="addProblem"></div></td>
+						<td><label class="checkbox-center"><input type="checkbox" name="multipleFiles" class="box-check"></label></td>
+						<td><input class="datepicker input-usmall" type="date" id="startDate" name="startDate" data-date-format="yyyy-mm-dd" placeholder="click" autocomplete="off" form="addProblem"></td>
+						<td><input class="datepicker input-usmall" type="date" id="endDate" name="endDate" data-date-format="yyyy-mm-dd" placeholder="click" autocomplete="off" form="addProblem"></td>
+						<td><input class="datepicker input-usmall" type="date" id="openDate" name="openDate" data-date-format="yyyy-mm-dd" placeholder="click" autocomplete="off" form="addProblem"></td>
+						<td><input class="datepicker input-usmall" type="date" id="closeDate" name="closeDate" data-date-format="yyyy-mm-dd" placeholder="click" autocomplete="off" form="addProblem"></td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<form method="post" id="addProblem">
+					<button class="btn" name="add" type="submit">Done</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="resetAddProblemForm()">Close</button>
+				</form>
+			</div>
+		</div>
+
+		<!-- ///// Edit case ///// -->
+		<div id="editModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editProblemModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="editProblemModalLabel">Edit Problem</h3>
+			</div>
+			<div class="modal-body">
+				<table class="table table-bordered" style="margin-top:10px">
+					<thead><tr><td>Course Id</td><td>Problem Name</td><td>Start Date</td><td>End Date</td></tr></thead>
+					<tbody>
+					<!-- change "value" part -->
+					<tr><td>"Course Id"</td><td>"Problem Name"</td><td><input class="datepicker input-small" type="date" id="beginDate" name="beginDate" data-date-format="yyyy-mm-dd" placeholder="click and choose" autocomplete="off"></td><td><input class="datepicker input-small" type="date" id="beginDate" name="beginDate" data-date-format="yyyy-mm-dd" placeholder="click and choose" autocomplete="off"></td></tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button class="btn">Save changes</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			</div>
+		</div>
+		<!-- no items choiced -->
+		<div id="editNoItem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="deleteModalLabel">Edit Problem</h3>
+			</div>
+			<div class="modal-body">
+				<p>No items choiced</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			</div>
+		</div>
+
+		<!-- ///// Delete case ///// -->
+		<div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteProblemModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="deleteProblemModalLabel">Delete Problem</h3>
+			</div>
+			<div class="modal-body">
+				<p>Do you really want to delete it?</p>
+			</div>
+			<div class="modal-footer">
+				<form method="post" id="deleteProblem">
+					<button class="btn" type="submit">Save changes</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				</form>
+			</div>
+		</div>
+		<!-- no items choiced -->
+		<div id="deleteNoItem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="deleteModalLabel">Delete Problem</h3>
+			</div>
+			<div class="modal-body">
+				<p>No items choiced</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			</div>
+		</div>
+		<!-- ///// end hidden modal pop ///// -->
+
+		<div class="tab-content">
+			<div class="tab-pane active" id="all">
+				<table class="table">
+					<tr>
+						<td>Course Id</td><td>Class Name</td><td>Problem Name</td><td><abbr title="Number Of each input/output Files">NOF</abbr></td><td>Start Date</td><td>End Date</td><td>Open Date</td><td>Close Date</td><td>Check</td>
+					</tr>
+					{% for ownProblem in ownProblems %}
+					<tr>
+						<td>{{ ownProblem.courseId }}</td>
+						<td>{{ ownProblem.courseName }}</td>
+						<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ ownProblem.problemName }}</a></td>
+						<td ondblclick="modifySelector(this.id)" id="isAllInputCaseInOneFile_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}_{{ ownProblem.isAllInputCaseInOneFile }}">{{ ownProblem.isAllInputCaseInOneFile }}</td>
+						<td ondblclick="modifySelector(this.id)" id="startDateOfSubmission_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}_{{ ownProblem.startDateOfSubmission }}">{{ ownProblem.startDateOfSubmission }}</td>
+						<td ondblclick="modifySelector(this.id)" id="endDateOfSubmission_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}_{{ ownProblem.endDateOfSubmission }}">{{ ownProblem.endDateOfSubmission }}</td>
+						<td ondblclick="modifySelector(this.id)" id="openDate_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}_{{ ownProblem.openDate }}">{{ ownProblem.openDate }}</td>
+						<td ondblclick="modifySelector(this.id)" id="closeDate_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}_{{ ownProblem.closeDate }}">{{ ownProblem.closeDate }}</td>
+						<td><label class="checkbox-center"><input type="checkbox" name="delete_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}" class="box-check" form="deleteProblem"></label></td>
+					</tr>
+					<div id="isAllInputCaseInOneFile_{{ownProblem.courseId}}_{{ownProblem.problemId}}"></div>
+					{% endfor %}
+				</table>
+			</div>
+			{% for course in ownCourses %}
+			<div class="tab-pane" id="{{ course.courseId }}">
+				<table class="table">
+					<tr>
+						<td>Course Id</td><td>Class Name</td><td>Problem Name</td><td><abbr title="Number Of each input/output Files">NOF</abbr></td><td>Start Date</td><td>End Date</td><td>Open Date</td><td>Close Date</td><td>Check</td>
+					</tr>
+					{% for ownProblem in ownProblems %}
+						{% if course.courseId == ownProblem.courseId %}
+						<tr>
+							<td>{{ ownProblem.courseId }}</td>
+							<td>{{ ownProblem.courseName }}</td>
+							<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ ownProblem.problemName }}</a></td>
+							<td ondblclick="modifySelector(this.id)" id="isAllInputCaseInOneFileTab_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}_{{ ownProblem.isAllInputCaseInOneFile }}">{{ ownProblem.isAllInputCaseInOneFile }}</td>
+							<td ondblclick="modifySelector(this.id)" id="startDateOfSubmissionTab_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}_{{ ownProblem.startDateOfSubmission }}">{{ ownProblem.startDateOfSubmission }}</td>
+							<td ondblclick="modifySelector(this.id)" id="endDateOfSubmissionTab_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}_{{ ownProblem.endDateOfSubmission }}">{{ ownProblem.endDateOfSubmission }}</td>
+							<td ondblclick="modifySelector(this.id)" id="openDateTab_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}_{{ ownProblem.openDate }}">{{ ownProblem.openDate }}</td>
+							<td ondblclick="modifySelector(this.id)" id="closeDateTab_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}_{{ ownProblem.closeDate }}">{{ ownProblem.closeDate }}</td>
+							<td><label class="checkbox-center"><input type="checkbox" name="delete_{{ ownProblem.courseId }}_{{ ownProblem.problemId }}" class="box-check" form="deleteProblem"></label></td>
+						</tr>
+						<div id="isAllInputCaseInOneFileTab_{{ownProblem.courseId}}_{{ownProblem.problemId}}"></div>
+						{% endif %}
+					{% endfor %}
+				</table>
+			</div>
+			{% endfor %}
+			<script>
+			function modifySelector(target){ // target == isAllInputCaseInOneFile_ or startDateOfSubmission_ or endDateOfSubmission_ or openDate_ or closeDate_ or delete_
+				document.getElementById("editButton").innerHTML = "EditConfirm";
+				var $targetValue = document.getElementById(target).innerHTML;
+				if(target.split("_")[0]=="isAllInputCaseInOneFile" || target.split("_")[0]=="isAllInputCaseInOneFileTab"){
+					if($targetValue == "OneFile"){
+						$targetValue = document.getElementById(target).innerHTML = "MultipleFiles";
+					}
+					else{
+						$targetValue = document.getElementById(target).innerHTML = "OneFile";
+					}
+					document.getElementById(target.split("_")[0]+'_'+target.split("_")[1]+'_'+target.split("_")[2]).innerHTML = '<input id="'+target+'" type="hidden" name="edit_'+target+'" form="editProblem" value="'+$targetValue+'">';
+				}
+				// about dates
+				else{
+					document.getElementById(target).innerHTML = '<input class="datepicker input-usmall" type="date" id="'+target+'" name="edit_'+target+'" data-date-format="yyyy-mm-dd" placeholder="click" autocomplete="off" onmousedown="datepicker();" value="'+$targetValue+'" form="editProblem">';
+				}
+			}
+			function datepicker() {
+			  if (!Modernizr.inputtypes['date']) {
+		      $('input[type=date]').datepicker({
+	          dateFormat: 'yy-mm-dd'
+		      });
+			  }
+			}
+			</script>
+		</div>
+	</div>
+	<div style="text-align:right">
+		<form method="post" id="editProblem">
+			<button class="btn" type="submit" id="editButton">Edit</button> 
+			<a onclick="showingDeleteModal()" role="button" class="btn" data-toggle="modal">Delete</a>
+		</form>
+	</div>
+	<div class="pagination pagination-centered">
+		<ul>
+			<li><a href="#">Prev</a></li>
+			<li><a href="#">1</a></li>
+			<li><a href="#">2</a></li>
+			<li><a href="#">3</a></li>
+			<li><a href="#">4</a></li>
+			<li><a href="#">5</a></li>
+			<li><a href="#">Next</a></li>
+		</ul>
+	</div>
+
+	<div id="test" class="container" style="text-align:center">
+		<div class="input-prepend input-append" style="margin-bottom:0px">
+			<div class="btn-group">
+				<button class="btn dropdown-toggle" data-toggle="dropdown">All <span class="caret"></span></button>
+				<ul class="dropdown-menu">
+					<li><a href="#">All</a></li>
+					<li><a href="#">Course Id</a></li>
+					<li><a href="#">Class Name</a></li>
+					<li><a href="#">Department</a></li>
+					<li><a href="#">Problem Name</a></li>
+				</ul>
+			</div>
+			<input class="span3" id="prependedDropdownButton" type="text" name="keyword" placeholder="Type keyword">><button class="btn" type="submit">Find</button>
+		</div>
+	</div>
+</div>
+{% endblock -%}

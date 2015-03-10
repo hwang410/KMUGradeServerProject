@@ -1,0 +1,75 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+<script>
+$(function() {
+
+	var members = [
+		{% for member in memberRecords %}
+			{ value: "{{ member.memberId }} {{ member.memberName }}" },
+		{% endfor %}
+		{ value: ""}
+	];
+	$("#search-members").autocomplete({
+		lookup: members,
+		onSelect: function(suggestion){
+    }
+	});
+});
+</script>
+
+<div class="container">
+	<form method ="post">
+		<h3>Make Team</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="row-fluid">
+					<div class="span8">
+						<div><h4>&nbsp</h4></div>
+						<table class="table table-bordered">
+							<tr>
+								<td>Team Name</td>
+								<td>
+									<input name ="teamName" type="text" style="width:96%;" placeholder="Team Name"
+									value ="{% if gTeamName %}{{ gTeamName }}{% endif %}" autofocus ="autofocus">
+								</td>
+							</tr>
+							<tr>
+								<td>Team Description</td>
+								<td>
+									<input name ="teamDescription" type="text" style="width:96%;" placeholder="Team Description" 
+									value= "{% if gTeamDescription %}{{ gTeamDescription }}{% endif %}">
+								</td>
+							</tr>
+							<tr><td>Team Master</td><td><span class="uneditable-input" style="width:96%">{{ session['memberId'] }}</span></td></tr>
+							<tr><td>Team Member</td><td>
+								<div id="searchfield">
+									<input id ="search-members" name ="teamMemberId" "type="text" style="width:84%" placeholder="Member Id">
+									<button name ="addMember" class="btn btn-small" type="submit">Add</button></td>
+								</div>
+							</tr>
+						</table>
+					</div>
+					<div class="span4">
+						<div style="text-align:center"><h4>Team Members</h4></div>
+						<table class="table table-bordered">
+							<thead>
+								<tr><td>Member Id</td><td>Delete</td></tr>
+							</thead>
+							{% for i in range (0, gTeamMembersId|length) %}
+							<tr><td>{{ gTeamMembersId[i] }}</td><td>
+								<button name ="deleteMember{{ i }}" class="btn btn-small" type="submit">Delete</button></td>
+							</tr>
+							{% endfor %}
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<a href="#"><button name ="makeTeam" class="btn btn-large" type="submit">Make</button></a>
+	</form>
+</div>
+{% endblock -%}

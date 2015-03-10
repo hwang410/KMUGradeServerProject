@@ -1,0 +1,79 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<div>
+		<h3>Manage Problem</h3>
+		<!-- if any button is checked, then showing modal pop -->
+		<div style="text-align:right"><a href="#addModal" role="button" class="btn" data-toggle="modal">Add</a> <a onclick="showingDeleteModal()" role="button" class="btn" data-toggle="modal">Delete</a></div>
+
+		<!-- hidden modal pop -->
+		<!-- ///// Add case ///// -->
+		<div id="addModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+			<form method="post" enctype="multipart/form-data">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+					<h3 id="addModalLabel">Add Problem</h3>
+				</div>
+				<div class="modal-body">
+					<p>Manual : "Manual"</p>
+					Problem(*.txt):	<input type="file" name="files" multiple>
+				</div>
+				<div class="modal-footer">
+					<button class="btn" name="upload" type="submit">Upload</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				</div>
+			</form>
+		</div>
+
+		<!-- ///// Delete case /////
+				if any item choosed -->
+		<div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+					<h3 id="deleteModalLabel">Delete Problem</h3>
+				</div>
+				<div class="modal-body">
+					<p>Do you really want to delete it?</p>
+				</div>
+				<div class="modal-footer">
+					<form method="post" id="delete">
+						<button class="btn" type="submit">Confirm</button>
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+					</form>
+				</div>
+		</div>
+		<!-- no items choosed -->
+		<div id="deleteNoItem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="deleteModalLabel">Delete Problem</h3>
+			</div>
+			<div class="modal-body">
+				<p>No items choiced</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			</div>
+		</div>
+		<!-- ///// end hidden modal pop ///// -->
+
+		<table class="table table-bordered" style="margin-top:10px">
+			<thead><tr><td>Problem Id</td><td>Problem Name</td><td>Solution Check Type</td><td>Delete</td></tr></thead>
+			<tbody>
+			{%- for uploadedProblem in uploadedProblems %}
+			<tr>
+				<td>{{ uploadedProblem.problemId }}</td>
+				<td>{{ uploadedProblem.problemName }}</td>
+				<td>{{ uploadedProblem.solutionCheckType }}</td>
+				<td><label class="checkbox-center"><input type="checkbox" value="{{ uploadedProblem.problemId }}" name="{{ uploadedProblem.problemId }}" class="box-check" form="delete"></label></td>
+			</tr>
+			{% endfor -%}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock -%}

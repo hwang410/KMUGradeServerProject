@@ -1,0 +1,104 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+
+<script>
+// set donut chart graph
+$.getScript('../../static/bootstrap/js/Chart.js',function(){
+	var data = [];
+	var options = {
+		animation: false
+	};
+
+  //Get the context of the canvas element we want to select
+  var c = $('#submitChart');
+  var ct = c.get(0).getContext('2d');
+  var ctx = document.getElementById("submitChart").getContext("2d");
+  var colors = new Array("#0c274c", "#18709c", "#19bdc4", "#fff6ee", "#ef4089");
+  /*************************************************************************/
+
+  myNewChart = new Chart(ct).Doughnut(data, options);
+  // input values and colors into the chart
+  // need to change 'value:#' 
+  {% for raw in chartSubmissionRecords[0] %}
+  	myNewChart.addData ({
+  		value :{{ raw }},
+  		color :colors[0]
+  	})
+  {% endfor %}
+})
+</script>
+
+<div class="container">
+	<div style="text-align:center">
+		<h3>{{ memberId }} Submit History</h3>
+	</div>
+	<div class="container">
+		<div class="row-fluid">
+			<div class="span12" style="padding-top:50px">
+				<div class="row-fluid">
+					<!-- Chart -->
+					<div class="chart span5" style="text-align:center">
+						<div class="row-fluid">
+							<div class="span7" style="float:left">
+								<canvas id="submitChart" width="200%"></canvas>
+							</div>
+							<div class="span5" id="legend-box" style="float:right">
+							<br>
+							</div>
+						</div>
+						<div style="text-align:right;width:50%">
+							{% for i in range (0, chartSubmissionDescriptions|length) %}
+							<h4 style ="padding-bottom:5px">
+								<!--  chartSubmissionRecords[0] is Description, chartSubmissionRecords[1] is value -->
+								{{ chartSubmissionDescriptions[i] }}  :  {% if chartSubmissionRecords[i] %}{{ chartSubmissionRecords[i] }}{% else %}{{ 0 }}{% endif %}
+								<br>
+							</h4>
+							{% endfor %}
+						</div>
+					</div>
+					<!-- end Chart -->
+					<!--  startList -->
+					<div class="span7" style="text-align:center">
+						<table class="problem_list table table-bordered">
+							<tr>
+								<td>Problem Title</td><td>Status</td><td>Score</td><td>Runtime</td><td>Code Length</td><td>Language</td><td>Submit Date</td>
+							</tr>
+							{%- for i in range (pages['startList'], pages['endList']) %}
+							<tr>
+								<td>{{ submissionRecords[i].problemName }}</td>
+								<td>{{ submissionRecords[i].status }}</td>
+								<td>{{ submissionRecords[i].score }}</td>
+								<td>{{ submissionRecords[i].runTime }}</td>
+								<td>{{ submissionRecords[i].sumOfSubmittedFileSize }}</td>
+								<td>{{ submissionRecords[i].usedLanguage }}</td>
+								<td>{{ submissionRecords[i].codeSubmissionDate }}</td>
+							</tr>
+							{% endfor -%}
+						</table>
+					</div>
+					<!-- end List -->
+					<!-- page number section -->
+					<div class="pagination pagination-centered">
+						<ul>
+							{%- if pages['pageNum'] > pages['BLOCK'] %}
+							<li><a href="{{ url_for ('GradeServer.user_history', pageNum =pages['startPage'] -1) }}">Prev</a></li> {% endif -%} 
+							{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
+							<li><a href="{{ url_for ('GradeServer.user_history', pageNum =i) }}">{{ i }}</a></li>
+							{% endfor -%}
+							{%- if pages['endPage'] < pages ['allPage'] %}
+							<li><a href="{{ url_for ('GradeServer.user_history', pageNum =pages['endPage'] +1) }}">Next</a></li>
+							{% endif -%}
+						</ul>
+					</div>
+					<!-- end page number section -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock -%}
+

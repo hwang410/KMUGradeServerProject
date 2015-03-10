@@ -1,0 +1,34 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<h3>Edit Personal Information</h3>
+	<h4>User Id : {{ session['memberId'] }}</h4>
+	
+	<form method="post">
+		<h4>Password : <input type="password" name="password" class="input-small" autofocus ="autofocus"></h4>
+		<h4>Password(confirm) : <input type="password" name="passwordConfirm" class="input-small"></h4>
+		<h4>Department :
+			{% for information in memberInformation %}
+				{% if loop.index > 4 %}
+					<script>
+					{% if loop.index > 6 and loop.index%2!=0 %}
+					document.write(", ");
+					{% endif %}
+					document.write("{{ information }}");
+					</script>
+				{% endif %}
+			{% endfor %}
+		</h4>
+		<h4>Name : {{ memberInformation[0] }}</h4>
+		<h4>contactNumber : <input type="text" class="input-large" name="contactNumber" value="{{ memberInformation[1] }}"></h4>
+		<h4>E-mail : <input type="text" class="input-large" name="emailAddress" value="{{ memberInformation[2] }}"></h4>
+		<h4>Comment : <input type="text" class="input-xxlarge" name="comment" value="{{ memberInformation[3] }}"></h4>
+		<br>
+		<button type="submit" class="btn">Confirm</button>
+	</form>
+</div>
+{% endblock -%}

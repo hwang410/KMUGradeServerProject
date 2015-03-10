@@ -1,0 +1,29 @@
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<div>
+		<h3>Manage Service</h3>
+		<table class="table">
+			<tr>
+				<td>Server</td>
+				<td><label class="radio inline"><input type="radio" name="serveron" id="serveron" value="serveron" checked>On</label>
+						<label class="radio inline"><input type="radio" name="serveroff" id="serveroff" value="serveroff">Off</label>
+				</td>
+			</tr>
+			<tr>
+				<td>Judge</td>
+				<td><label class="radio inline"><input type="radio" name="judgeon" id="judgeon" value="judgeon" checked>On</label>
+						<label class="radio inline"><input type="radio" name="judgeoff" id="judgeoff" value="judgeoff">Off</label>
+				</td>
+			</tr>
+			<tr>
+				<td>Board</td>
+				<td><label class="radio inline"><input type="radio" name="boardon" id="boardon" value="boardon" checked>On</label>
+						<label class="radio inline"><input type="radio" name="boardoff" id="boardoff" value="boardoff">Off</label>
+				</td>
+			</tr>
+		</table>
+		<a href="#"><button type="button" class="btn">Done</button></a>
+	</div>
+</div>
+{% endblock -%}

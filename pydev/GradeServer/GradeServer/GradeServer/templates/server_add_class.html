@@ -1,0 +1,51 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<div>
+		<form method="post">
+			<h3>Manage Class</h3>
+			<h4>Class Name : 
+				<select class="input-large span2" type="text" id="courseId" name="courseId">
+				{%- for course in courses %}
+					<option class="{{ course.courseIndex }}">{{ course.courseIndex }} {{ course.courseName }}</option>
+				{% endfor -%}
+				</select>
+			</h4>
+			<h4>Class Manager : <input name="courseAdministratorId" type="text" class="input-large"></h4>
+			<h4>Semester : 
+				<label class="radio inline"><input type="radio" name="semester" id="1st" value="1" checked>1st</label>
+				<label class="radio inline"><input type="radio" name="semester" id="summer" value="2">Summer</label>
+				<label class="radio inline"><input type="radio" name="semester" id="2nd" value="3">2nd</label>
+				<label class="radio inline"><input type="radio" name="semester" id="winter" value="4">Winter</label>
+			</h4>
+			<h4>Language : 
+			{%- for language in languages %}
+				<label style="display:inline" class="checkbox-center"><input type="checkbox" class="box-check" name="languageIndex_{{ language.languageIndex }}" value="{{ language.languageIndex }}_{{ language.languageVersion }}">{{ language.languageName }}{%- if language.languageVersion!='0' %}{{ language.languageVersion }}{% endif -%}</label>
+			{% endfor -%}
+			</h4>
+			<h4>Class Description : <input name="courseDescription" type="text" class="input-xlarge" autocomplete="off"></h4> 
+			<script>
+			$(function() {
+		    if (!Modernizr.inputtypes['date']) {
+	        $('input[type=date]').datepicker({
+	            dateFormat: 'yy-mm-dd'
+	        });
+		    }
+			});
+			</script>
+			<h4>Start Date : 
+				<input class="datepicker input-large" type="date" id="startDateOfCourse" name="startDateOfCourse" data-date-format="yyyy-mm-dd" placeholder="click and choose" autocomplete="off">
+			</h4>
+			<h4>End Date : 
+				<input class="datepicker input-large" type="date" id="endDateOfCourse" name="endDateOfCourse" data-date-format="yyyy-mm-dd" placeholder="click and choose" autocomplete="off">
+			</h4>
+			
+			<button class="btn" type="submit">Done</button>
+		</form>
+	</div>
+</div>
+{% endblock -%}
