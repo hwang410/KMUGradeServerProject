@@ -22,8 +22,8 @@ class Submissions (Base) :
     __tablename__ ="Submissions"
     
     memberId =Column (VARCHAR (20), ForeignKey (SubmittedFiles.memberId, onupdate ="CASCADE", ondelete ="CACADE"),primary_key =True, nullable =False)
-    problemId =Column (INTEGER (unsigned =True), ForeignKey (SubmittedFiles.problemId, onupdate ="CASCADE", ondelete ="RESTRICT"), primary_key =True, autoincrement =False, nullable = False)
-    courseId =Column (VARCHAR (10), ForeignKey (SubmittedFiles.courseId, onupdate ="CASCADE", ondelete ="RESTRICT"), primary_key =True, nullable = False)
+    problemId =Column (INTEGER (unsigned =True), ForeignKey (SubmittedFiles.problemId, onupdate ="CASCADE", ondelete ="NO ACTION"), primary_key =True, autoincrement =False, nullable = False)
+    courseId =Column (VARCHAR (10), ForeignKey (SubmittedFiles.courseId, onupdate ="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable = False)
     submissionCount =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, default =1, nullable =False)
     solutionCheckCount =Column (INTEGER (unsigned =True), nullable =False)
     status =Column (ENUM ('NeverSubmitted', 'Solved', 'TimeOver', 'WrongAnswer', 'CompileError', 'RunTimeError', 'ServerError'), default ='NeverSubmitted', nullable =False)
@@ -33,6 +33,6 @@ class Submissions (Base) :
     sumOfSubmittedFileSize =Column (INTEGER (unsigned =True), nullable =False) # Byte
     runTime =Column (INTEGER (unsigned =True), default =0, nullable =False)
     usedMemory =Column (INTEGER (unsigned =True), default =0, nullable =False)
-    usedLanguage =Column (INTEGER (unsigned =True), ForeignKey (Languages.languageIndex, onupdate="CASCADE"), nullable =False)
-    usedLanguageVersion =Column (VARCHAR (128), ForeignKey (Languages.languageVersion, onupdate ="CASCADE"), nullable =False)
+    usedLanguage =Column (INTEGER (unsigned =True), ForeignKey (Languages.languageIndex, onupdate="CASCADE", ondelete ="NO ACTION"), nullable =False)
+    usedLanguageVersion =Column (VARCHAR (128), ForeignKey (Languages.languageVersion, onupdate ="CASCADE", ondelete ="NO ACTION"), nullable =False)
     

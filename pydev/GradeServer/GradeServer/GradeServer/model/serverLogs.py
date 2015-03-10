@@ -23,5 +23,5 @@ class ServerLogs (Base) :
     logIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =True)
     loggedDate =Column (DATETIME, nullable =False)
     serverStatus =Column (INTEGER (unsigned =True), nullaable =False)
-    memberId =Column (VARCHAR (20), ForeignKey (Members.memberId, onupdate ="CASCADE"), nullable =False)
+    memberId =Column (VARCHAR (20), ForeignKey (Members.memberId, onupdate ="CASCADE", ondelete ="NO ACTION"), nullable =False)
     
