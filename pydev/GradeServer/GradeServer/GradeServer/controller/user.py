@@ -30,9 +30,9 @@ def users_submit_record():
 """
 로그인한 유저가 제출 했던 모든기록
 """
-@GradeServer.route('/user_history/<memberId>/page<pageNum>')
+@GradeServer.route('/user_history/<memberId><sortCondition>/page<pageNum>')
 @login_required
-def user_history(memberId, pageNum):
+def user_history(memberId, sortCondition, pageNum):
     
     try :       
         # 총 제출 횟수 
@@ -44,9 +44,21 @@ def user_history(memberId, pageNum):
         submissions =dao.query (Submissions.problemId, Submissions.courseId, Submissions.status, Submissions.score, Submissions.sumOfSubmittedFileSize,
                                 Submissions.runTime, Submissions.usedLanguage, Submissions.codeSubmissionDate).\
                                     filter_by (memberId =memberId).subquery ()
-        submissions =dao.query (Problems.problemName, submissions).\
-                                        join (submissions, Problems.problemId == submissions.c.problemId).\
-                                        order_by (submissions.c.codeSubmissionDate.desc ()).subquery ()
+        # 제출날짜순 정렬
+        if sortCondition == "submittedDate" :
+            submissions =dao.query (Problems.problemName, submissions).\
+                                            join (submissions, Problems.problemId == submissions.c.problemId).\
+                                            order_by (submissions.c.codeSubmissionDate.desc ()).subquery ()
+        # 실행 시간 순 정렬
+        elif sortCondition == "runTime" :
+            submissions =dao.query (Problems.problemName, submissions).\
+                                            join (submissions, Problems.problemId == submissions.c.problemId).\
+                                            order_by (submissions.c.runTime.asc ()).subquery ()
+        # 코드 길이별 정렬
+        else : # sortCondition == "codeLength" 
+            submissions =dao.query (Problems.problemName, submissions).\
+                                            join (submissions, Problems.problemId == submissions.c.problemId).\
+                                            order_by (submissions.c.sumOfSubmittedFileSize.asc ()).subquery ()
         # 중복 제거푼 문제숫
         sumOfSolvedProblemCount =dao.query (func.count (submissions.c.problemId).label ("sumOfSolvedProblemCount")).\
             filter (submissions.c.status == 'Solved').\

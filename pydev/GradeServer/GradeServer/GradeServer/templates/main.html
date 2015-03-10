@@ -53,7 +53,7 @@
 							{% endif -%}
 						</li>
 						<li>
-							<a href="{{ url_for('GradeServer.rank', pageNum =1) }}"><abbr title="Showing the submit record of each person and each problem">Rank</abbr></a>
+							<a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum =1) }}"><abbr title="Showing the submit record of each person and each problem">Rank</abbr></a>
 						</li>
 						<li>
 							<a href="{{ url_for('GradeServer.board', pageNum =1) }}"><abbr title="QA board">Board</abbr></a>
@@ -68,7 +68,9 @@
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">{{ session['memberId'] }}</abbr><b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								{%- if "ServerAdministrator" not in session['authority'] and "CourseAdministrator" not in session['authority'] %}
-								<li><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], pageNum =1) }}">Record</a></li>
+								<li>
+									<a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submittedDate', pageNum =1) }}">Record</a>
+								</li>
 								{% endif %}
 								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>
 								<li><a href="{{ url_for('GradeServer.board', pageNum =1) }}">Notice</a></li> <!-- same with board, the difference is db-query for contents -->

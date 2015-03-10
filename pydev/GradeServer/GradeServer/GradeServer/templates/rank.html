@@ -9,7 +9,12 @@
 	<table class="table">
 		<thead>
 			<tr>
-				<td>Ranking</td><td>User Id</td><td>Comment</td><td>Solved Problem</td><td>Count</td><td>Rate</td>
+				<td>Ranking</td>
+				<td>User Id</td>
+				<td>Comment</td>
+				<td><a href="{{ url_for('GradeServer.rank', sortCondition ='problem', pageNum =1) }}">Solved Problem</a></td>
+				<td>Count</td>
+				<td><a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum =1) }}">Rate</a></td>
 			</tr>
 		</thead>
 		{%- for i in range (pages['startList'], pages['endList']) %}
