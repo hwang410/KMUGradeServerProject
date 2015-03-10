@@ -75,7 +75,7 @@ def get_page_pointed (pageNum, count, BLOCK =6, LIST =15) :
 """
 기본 랭크 
 """
-def get_rank (submissions) :
+def get_rank (submissions, sortCondition ="rate") :
     #Get SubmitCount
     submissionCount =dao.query (submissions.c.memberId, func.sum (submissions.c.solutionCheckCount).label ("submissionCount")).\
         group_by (submissions.c.memberId).subquery ()
@@ -89,9 +89,15 @@ def get_rank (submissions) :
     
     try :
         #Get Comment
-        rankMemberRecords =dao.query (Members.memberId, Members.comment, submissions.c.submissionCount, submissions.c.solvedCount, submissions.c.solvedRate).\
-            join (submissions, Members.memberId == submissions.c.memberId).\
-            order_by (submissions.c.solvedRate.desc ()).all ()
+        # rate 정렬
+        if sortCondition == "rate" :
+            rankMemberRecords =dao.query (Members.memberId, Members.comment, submissions.c.submissionCount, submissions.c.solvedCount, submissions.c.solvedRate).\
+                join (submissions, Members.memberId == submissions.c.memberId).\
+                order_by (submissions.c.solvedRate.desc ()).all ()
+        else : #if sortCondition == "problem"
+            rankMemberRecords =dao.query (Members.memberId, Members.comment, submissions.c.submissionCount, submissions.c.solvedCount, submissions.c.solvedRate).\
+                join (submissions, Members.memberId == submissions.c.memberId).\
+                order_by (submissions.c.solvedCount.desc ()).all ()
     except Exception :
         # None Type Exception
         rankMemberRecords =[]
