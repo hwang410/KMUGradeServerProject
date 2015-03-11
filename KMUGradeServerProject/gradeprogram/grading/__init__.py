@@ -1,1 +1,0 @@
-__all__ = ['member', 'language', 'course', 'problem', 'submit', 'problemType', 'department']
