@@ -18,12 +18,12 @@
 		<thead>
 			<tr><td>Team Master</td></tr>
 		</thead>
-		<tr><td><a href ="{{ url_for ('GradeServer.user_history', memberId =teamMemberRecords[0].teamMemberId, pageNum =1) }}">{{ teamMemberRecords[0].teamMemberId }}</td></tr>
+		<tr><td><a href ="{{ url_for ('GradeServer.user_history', memberId =teamMemberRecords[0].teamMemberId, sortCondition ='submittedDate', pageNum =1) }}">{{ teamMemberRecords[0].teamMemberId }}</td></tr>
 		<thead>
 			<tr><td>Team Members</td></tr>
 		</thead>
 		{% for i in range (1, teamMemberRecords|length) %}
-		<tr><td><a href ="{{ url_for ('GradeServer.user_history', memberId =teamMemberRecords[i].teamMemberId, pageNum =1) }}">{{ teamMemberRecords[i].teamMemberId }}</td></tr>
+		<tr><td><a href ="{{ url_for ('GradeServer.user_history', memberId =teamMemberRecords[i].teamMemberId, sortCondition ='submittedDate', pageNum =1) }}">{{ teamMemberRecords[i].teamMemberId }}</td></tr>
 		{% endfor %}
 	</table>	
 </div>

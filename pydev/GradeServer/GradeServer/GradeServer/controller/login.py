@@ -28,7 +28,7 @@ from GradeServer.model.submissions import Submissions
 from GradeServer.database import dao
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
-from GradeServer.utils import login_required, get_rank
+from GradeServer.utils import login_required, get_rank, get_message
 
 from GradeServer.model.submittedFiles import SubmittedFiles
 
@@ -44,15 +44,14 @@ def close_db_session(exception=None):
 메인 페이지 및 로그인 관리 
 """
 @GradeServer.route('/', methods=['GET', 'POST'])
-def sign_in():
+def sign_in(error =None):
     """ main page before sign in"""
-    error =None
 
     if request.method == 'POST':
         if not request.form['memberId']:
-            error = "You have to enter an id"
+            error =get_message ('fillMemberId')
         elif not request.form['password']:
-            error = "You have to enter a password"
+            error =get_message ('fillPassword')
         else:
             try :
                 """ DB Password check """
@@ -80,14 +79,19 @@ def sign_in():
                                     
                             
                     dao.query(Members).filter_by(memberId=session['memberId']).update(dict(lastAccessDate=session['lastAccessDate']))
-                    dao.commit()
+                    # Commit Exception
+                    try :
+                        dao.commit()
+                    except Exception :
+                        dao.rollback ()
+                        error =get_message ('updateFailed')
                 else :
-                    error ="Please Try again"
+                    error =get_message ('tryAgain')
 
             except Exception as e :
                 Log.error (str(e))
     
-    return render_template('/main.html', error=error, notices=get_notices(), topCoderId =get_top_coder ())
+    return render_template('/main.html', notices=get_notices(), topCoderId =get_top_coder (), error=error)
 
 """
 로그아웃
@@ -95,11 +99,7 @@ def sign_in():
 @GradeServer.route ('/signout')
 @login_required
 def sign_out () :
-    """ Log Out """
-    # set last access date before sign out
-    dao.query(Members).filter_by(memberId=session['memberId']).update(dict(lastAccessDate=datetime.now()))
-    dao.commit()
-    
+    """ Log Out """ 
     # 세션 클리어
     session.clear ()
     # 메인 페이지로 옮기기
@@ -187,7 +187,7 @@ def get_top_coder () :
             topCoderId =None
     except Exception :
         # None Type Error
-        topCoderId ="빨리 고치도록 할게요."
+        topCoderId =get_message ('unknown')
         
     return topCoderId
 

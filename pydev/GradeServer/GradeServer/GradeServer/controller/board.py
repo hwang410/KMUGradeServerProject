@@ -170,7 +170,11 @@ def read(articleIndex):
     if request.method == 'GET' :
         # 읽은 횟수 카운팅
         dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=article.viewCount + 1))
-        dao.commit()
+        # Commit Exception
+        try :
+            dao.commit()
+        except Exception :
+            dao.rollback ()
     elif request.method == "POST":
         for form in request.form:
             

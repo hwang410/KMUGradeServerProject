@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 """
     GradeSever.controller.login
     ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -18,7 +18,7 @@ if path is a/b/c/d, it can't recognize any .css and .js file.
 
 import math
 
-from flask import request, redirect, session, url_for, current_app
+from flask import request, redirect, session, url_for, current_app, render_template
 from functools import wraps
 from sqlalchemy import func
 
@@ -50,6 +50,40 @@ def login_required(f):
             raise e
 
     return decorated_function
+
+"""
+나쁜 말 & 좋은 말 메세지 모음
+"""
+def get_message (key ="unknown") :
+    messageDict ={"unknown" :"죄송 합니다. 알수 없는 에러 입니다.",
+                  "tryAgain" :"다시 시도해 주시기 바랍니다.",
+                  "accessFailed" :"접근 할 수 있는 권한이 없습니다.",
+                  "updateFailed" :"정보 갱신에 실패하였습니다.",
+                  "updateSuccessed" :"정보 갱신에 성공 하였습니다!!!",
+                  "notExists" :"해당 아이디가 없습니다.",
+                  "alreadyExists" :"이미 있는 아이디 입니다.",
+                  "fillMemberId" :"아이디를 입력해 주시기 바랍니다.",
+                  "fillPassword" :"암호를 입력해 주시기 바랍니다.",
+                  "fillConfirmPassword" :"확인 암호를 입력해 주시기 바랍니다.",
+                  "wrongPassword" :"암호가 일치하지 않습니다.",
+                  "acceptInvitee" :"팀에 합류 되었습니다!!!",
+                  "rejectInvitee" :"팀 초대를 거절 하셨습니다!!!",
+                  "notSelf" :"자기 자신을 설정 할 수 없습니다.",
+                  "notTeamMemberInvitee" :"팀 원을 초대 할 수 없습니다.",
+                  "inviteeSuccessed" :"님을 초대 하였습니다!!!",
+                  "fillTeamName" :"팀 명을 입력해 주세요.",
+                  "existTeamName" :"같은 팀 명이 존재 합니다.",
+                  "makeTeamSuccessed" :"팀이 만들어졌습니다!!!",
+                  "removeTeamSuccessed" :"팀이 삭제 되었습니다!!!"}
+
+    return messageDict[key]
+
+
+"""
+오류로 인한  메인  페이지 이동
+"""
+def unknown_error (error =get_message ()) :
+    return redirect (url_for ('.sign_in', error =error))# render_template('/main.html', error =error)
 
 """
 페이징에 필요한 정보들을 구하는 모듈

@@ -11,11 +11,11 @@ from GradeServer.model.teamInvitations import TeamInvitations
 from GradeServer.model.teams import Teams
 from GradeServer.model.members import Members
 from GradeServer.GradeServer_blueprint import GradeServer
-from GradeServer.utils import login_required, get_page_pointed
+from GradeServer.utils import login_required, get_page_pointed, unknown_error, get_message
 
 @GradeServer.route('/team')
 @login_required
-def team():
+def team(error =None):
     """ team main page """
     try :
         try :
@@ -48,15 +48,15 @@ def team():
             # None Type Error
             teamRecords =[]
             
-        return render_template('/team.html', teamInvitationRecords =teamInvitationRecords, teamRecords =teamRecords)
+        return render_template('/team.html', teamInvitationRecords =teamInvitationRecords, teamRecords =teamRecords, error =error)
     except Exception :
         # Unknown Error
-        return render_template('/main.html', error ='Sorry Unknown Error!!!')
+        return unknown_error ()
     
     
 @GradeServer.route('/team_invitation/<teamName>/<accept>')
 @login_required
-def team_invitation (teamName, accept) :
+def team_invitation (teamName, accept, error =None) :
     """
     팀 초대 수락 거절
     """
@@ -66,18 +66,28 @@ def team_invitation (teamName, accept) :
             newTeamMember =RegisteredTeamMembers (teamName =teamName, teamMemberId =session['memberId'])
             dao.add (newTeamMember)
             dao.query (TeamInvitations).filter_by (teamName =teamName, inviteeId =session['memberId']).update (dict (isDeleted ="Deleted"))
-            dao.commit ()
-            flash (teamName +"팀에 합류 되셨습니다.")
+            # Commit Exception
+            try :
+                dao.commit ()
+                flash (teamName +get_message ('acceptInvitee'))
+            except Exception :
+                dao.rollback ()
+                error =get_message ('updateFailed')
         # 초대 걱절    
-        else :
+        else : # reject
             dao.query (TeamInvitations).filter_by (teamName =teamName, inviteeId =session['memberId']).update (dict (isDeleted ="Deleted"))
-            dao.commit ()
-            flash (teamName +"팀 초대를 거절 하셨습니다.")
+            # Commit Exception
+            try :
+                dao.commit ()
+                flash (teamName +get_message ('rejectInvitee'))
+            except Exception :
+                dao.rollback ()
+                error =get_message ('updateFailed')
             
-        return redirect (url_for('.team'))   
+        return redirect (url_for('.team', error =error))   
     except Exception :
         # Unknown Error
-        return render_template('/main.html', error ='Sorry Unknown Error!!!')
+        return unknown_error ()
     
     
 # 팀에 넣을 팀원의 아이디를 저장할 전역 변수
@@ -86,7 +96,7 @@ gTeamMembersId  =[]
 gTeamName, gTeamDescription =None, None
 @GradeServer.route('/team/make', methods=['GET', 'POST'])
 @login_required
-def make_team():
+def make_team(error =None):
     """ 
     doesn't have any application of button. 
     you need to make the button app. 
@@ -99,6 +109,7 @@ def make_team():
         if request.method == "GET" :
             del gTeamMembersId[:]
             gTeamName, gTeamDescription =None, None
+            
             return render_template('/make_team.html', memberRecords =memberRecords)
               
         elif request.method == "POST" :
@@ -107,81 +118,87 @@ def make_team():
             gTeamDescription =request.form['teamDescription'] if request.form['teamDescription'] else None
             
             for form in request.form :
-                
                 # Making Team
                 if form == "makeTeam" :
                     
                     # 인풋 확인
                     if not gTeamName :
                         return render_template ('/make_team.html', memberRecords =memberRecords,
-                                                gTeamMembersId =gTeamMembersId, gTeamDescription =gTeamDescription, error ="팀 명을 입력해 주세요.")
+                                                gTeamMembersId =gTeamMembersId, gTeamDescription =gTeamDescription, error =get_message ('fillTeamName'))
                     # 중복 팀명 확인
                     if dao.query (Teams.teamName).filter_by (teamName =gTeamName).first () :
                         return render_template ('/make_team.html', memberRecords =memberRecords,
-                                                gTeamMembersId =gTeamMembersId, gTeamDescription =gTeamDescription, error ="같은 팀 명이 존재 합니다.")
+                                                gTeamMembersId =gTeamMembersId, gTeamDescription =gTeamDescription, error =get_message ('existTeamName'))
                     
                     # Insert
                     newTeam =Teams (teamName =gTeamName, teamDescription =gTeamDescription)
                     dao.add (newTeam)
-                    dao.commit ()
-                    # 마스터 정보
-                    newTeamMembers =RegisteredTeamMembers (teamName =gTeamName, teamMemberId =session['memberId'], isTeamMaster ='Master')
-                    dao.add (newTeamMembers)
-                    dao.commit ()
-                    for teamMemberId in gTeamMembersId :
-                        newTeamMembers =RegisteredTeamMembers (teamName =gTeamName, teamMemberId =teamMemberId)
+                    # Commit Exception
+                    try :
+                        dao.commit ()
+                        # 마스터 정보
+                        newTeamMembers =RegisteredTeamMembers (teamName =gTeamName, teamMemberId =session['memberId'], isTeamMaster ='Master')
                         dao.add (newTeamMembers)
                         dao.commit ()
-                    #init
-                    del gTeamMembersId[:]
-                    gTeamName, gTeamDescription =None, None
-                    flash ("팀 만들기 성공!!")
+                        for teamMemberId in gTeamMembersId :
+                            newTeamMembers =RegisteredTeamMembers (teamName =gTeamName, teamMemberId =teamMemberId)
+                            dao.add (newTeamMembers)
+                            dao.commit ()
+                        #init
+                        del gTeamMembersId[:]
+                        gTeamName, gTeamDescription =None, None
+                        flash (get_message ('makeTeamSuccessed'))
+                        
+                        return redirect (url_for('.team'))
+                    except Exception :
+                        dao.rollback ()
+                        error =get_message ('updateFailed')
                     
-                    return redirect (url_for('.team'))
                 # Add Members
                 elif form == "addMember" :
-
-                    teamMemberId =request.form['teamMemberId'].split ()[0]
+                    try :
+                        teamMemberId =request.form['teamMemberId'].split ()[0]
+                    except Exception :
+                        teamMemberId =None
+                        
                     # 인풋 폼안에 아이디가 있을 때
                     if teamMemberId :
                         # 존재 하는 사용자 인지 확인
                         if not dao.query (Members.memberId).filter_by (memberId =teamMemberId).first () :
-                            return render_template ('/make_team.html', memberRecords =memberRecords,
-                                                    gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription,
-                                                    error ="해당 사용자가 없습니다.")
-                        # 초대 한 애를 또ㅗ 초대 하는거를 방지
-                        if teamMemberId in gTeamMembersId :
-                            return render_template ('/make_team.html', memberRecords =memberRecords,
-                                                    gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription,
-                                                    error ="이미 추가된 사용자 압니다.")
-                            
-                        gTeamMembersId.append (teamMemberId)
-                        
-                        return render_template ('/make_team.html', memberRecords =memberRecords,
-                                                gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription)
+                            error =get_message ('notExists')
+                        # 자가 자신 초대 방지
+                        elif teamMemberId == session['memberId'] :
+                            error =get_message ('notSelf')
+                        # 초대 한 애를 또 초대 하는거를 방지
+                        elif teamMemberId in gTeamMembersId :
+                            error =get_message ('alreadyExists')
+                        else :
+                            gTeamMembersId.append (teamMemberId)
+   
                     # None 값 일 때
                     else :
-                        return render_template ('/make_team.html', memberRecords =memberRecords,
-                                                gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription,
-                                                error ="합류 할 아이디를 입력 해 주세요.")
+                        error =get_message ('fillMemberId')
+                        
+                    break
                 # Delete Members
                 elif "deleteMember" in form :
                     # form의 name이 deleteMemberi -> i=Index이므로 해당 인덱스 값 제거
                     gTeamMembersId.pop (int (form[-1]))
                     
-                    return render_template ('/make_team.html', memberRecords =memberRecords,
-                                            gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription)
-                    
+                    break
+                
+            return render_template ('/make_team.html', memberRecords =memberRecords,
+                                    gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription, error =error)
     except Exception :
         # Unknown Error
         del gTeamMembersId[:]
         gTeamName, gTeamDescription =None, None
         
-        return render_template('/main.html', error ='Sorry Unknown Error!!!')
+        return unknown_error ()
 
 @GradeServer.route('/team_information/<teamName>')
 @login_required
-def team_information(teamName):
+def team_information(teamName, error =None):
     """
     when you push a team name of team page 
     """
@@ -204,33 +221,36 @@ def team_information(teamName):
         return render_template('/team_information.html', teamInformation =teamInformation, teamMemberRecords =teamMemberRecords)
     except Exception :
         # Unknown Error
-        return render_template('/main.html', error ='Sorry Unknown Error!!!')
+       return unknown_error ()
 
 @GradeServer.route('/team/record/<teamName>')
 @login_required
-def team_record(teamName):
+def team_record(teamName, error =None):
     """
     팀 제출 히스토리
     """
     try :
         # user.py ->user_history이용       
-        return redirect(url_for('.user_history', memberId =teamName, pageNum =1))
+        return redirect(url_for('.user_history', memberId =teamName, sortCondition ='submittedDate', pageNum =1))
     except Exception :
         # Unknow Error
-        return render_template('/main.html', error ='Sorry Unknown Error!!!')
+        return unknown_error ()
 
 
 @GradeServer.route('/team/manage/<teamName>', methods=['GET', 'POST'])
 @login_required
-def team_manage(teamName):
+def team_manage(teamName, error =None):
     
     """
     팀 관리 페이지
     """
     try :
         global gTeamMembersId, gTeamName, gTeamDescription
-        # 자동 완성을 위한 모든 유저기록
-        memberRecords =dao.query (Members.memberId, Members.memberName).filter_by (authority ='User').all ()
+        try :
+            # 자동 완성을 위한 모든 유저기록
+            memberRecords =dao.query (Members.memberId, Members.memberName).filter_by (authority ='User').all ()
+        except Exception :
+            memberRecords =[]
         # 팀 정보
         try :
             teamInformation =dao.query (Teams).filter_by (teamName =teamName, isDeleted ='Not-Deleted').first ()
@@ -248,7 +268,7 @@ def team_manage(teamName):
         
         # 팀장이 아닌 애가 왔을 때
         if session['memberId'] != teamMemberRecords[0].teamMemberId :
-            return render_template('/main.html', error ='팀장이 아니어서 접근 할 수 없습니다.')
+            return unknown_error (error =get_message ('accessFailed'))
             
         if request.method == "GET" :
             # init
@@ -278,53 +298,60 @@ def team_manage(teamName):
                         else :
                             dao.query (RegisteredTeamMembers).\
                                 filter_by (teamName =teamName, teamMemberId =raw.teamMemberId).update (dict (isDeleted ='Deleted'))
-                    dao.commit ()
+                    # Commit Exception
+                    try :
+                        dao.commit ()
                     
-                    #init
-                    del gTeamMembersId[:]
-                    gTeamName, gTeamDescription =None, None
-                    flash ("팀 수정 성공!!")
-                    
-                    return redirect (url_for('.team'))
+                        #init
+                        del gTeamMembersId[:]
+                        gTeamName, gTeamDescription =None, None
+                        flash (get_message ('updateSuccessed'))
+                    except Exception :
+                        dao.rollback ()
+                        error =get_message ('udpateFailed')
+                        
+                    return redirect (url_for('.team', error =error))
+                        
                 # Invitee Members
                 elif form == "inviteeMember" :
-                    
-                    inviteeId =request.form['inviteeId'].split ()[0]
-                    
+                    try :
+                        inviteeId =request.form['inviteeId'].split ()[0]
+                    except Exception :
+                        inviteeId =None
                     # 인풋 폼안에 아이디가 있을 때
                     if inviteeId :
                         # 존재 하는 사용자 인지 확인
                         if not dao.query (Members.memberId).filter_by (memberId =inviteeId).first () :
-                            return render_template ('/team_manage.html',  memberRecords =memberRecords, teamInformation =teamInformation, 
-                                   gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription, error ="해당 사용자가 없습니다.")
+                            error =get_message ('notExists')
                         # 자가 자신 초대 방지
-                        if inviteeId == session['memberId'] :
-                                return render_template ('/team_manage.html',  memberRecords =memberRecords, teamInformation =teamInformation, 
-                                   gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription, error ="자신을 초대 할 수 없습니다.")
+                        elif inviteeId == session['memberId'] :
+                            error =get_message ('notSelf')
                         # 초대 중복 방지
-                        if dao.query (TeamInvitations).\
+                        elif dao.query (TeamInvitations).\
                             filter_by (teamName =teamName, inviteeId =inviteeId, isDeleted ="Not-Deleted").first () :
-                            
-                            return render_template ('/team_manage.html',  memberRecords =memberRecords, teamInformation =teamInformation, 
-                                   gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription, error ="이미 최대된 사용자 입니다.")
+                            error =get_message ('alreadyExists')
                         # 팀원 초대 방지
-                        if dao.query (RegisteredTeamMembers.teamMemberId).\
+                        elif dao.query (RegisteredTeamMembers.teamMemberId).\
                             filter_by (teamName =teamName, teamMemberId =inviteeId, isDeleted ="Not-Deleted").first () :
+                            error =get_message ('notTeamMemberInvitee')
                             
-                            return render_template ('/team_manage.html',  memberRecords =memberRecords, teamInformation =teamInformation, 
-                                    gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription, error ="팀원은 초대 할 수 없습니다.")
-                            
-                        newInvitee =TeamInvitations (teamName =teamName, inviteeId =inviteeId)
-                        dao.add (newInvitee)
-                        dao.commit ()
-                        flash (inviteeId +"님을 초대 하였습니다.")
-                        
-                        return render_template('/team_manage.html',  memberRecords =memberRecords, teamInformation =teamInformation, 
-                                   gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription)
+                        # 조건에 충족 될 때
+                        else :    
+                            newInvitee =TeamInvitations (teamName =teamName, inviteeId =inviteeId)
+                            dao.add (newInvitee)
+                            # Commit Exception
+                            try :
+                                dao.commit ()
+                                flash (inviteeId +get_message ('inviteeSuccessed'))
+                            except Exception :
+                                dao.rollback ()
+                                error =get_message ('updateFailed')
                     # None 값 일 때
                     else :
-                        return render_template('/team_manage.html',  memberRecords =memberRecords, teamInformation =teamInformation, 
-                                   gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription, error ="초대 할 아이디를 입력 해 주세요.")
+                        error =get_message ('fillMemberId')
+                        
+                    return render_template ('/team_manage.html',  memberRecords =memberRecords, teamInformation =teamInformation, 
+                                    gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription, error =error)
                 # Delete Members
                 elif "deleteMember" in form :
                     # form의 name이 deleteMemberi -> i=Index이므로 해당 인덱스 값 제거
@@ -337,17 +364,21 @@ def team_manage(teamName):
                     dao.query (Teams).filter_by (teamName =teamName).update (dict (isDeleted ='Deleted'))
                     dao.query (RegisteredTeamMembers).filter_by (teamName =teamName).update (dict (isDeleted ='Deleted'))
                     dao.query (TeamInvitations).filter_by (teamName =teamName).update (dict (isDeleted ='Deleted'))
-                    dao.commit ()
-                    
-                    #init
-                    del gTeamMembersId[:]
-                    gTeamName, gTeamDescription =None, None
-                    flash ("팀 삭제 성공!!")
-                    
-                    return redirect (url_for('.team'))
+                    # Commit Exception
+                    try :
+                        dao.commit ()
+                        #init
+                        del gTeamMembersId[:]
+                        gTeamName, gTeamDescription =None, None
+                        flash (get_message ('removeTeamSuccessed'))
+                    except Exception :
+                        dao.rollback ()
+                        error =get_message ('updateFailed')
+                        
+                    return redirect (url_for('.team', error =error))
     except Exception :
         # Unknown Error
         del gTeamMembersId[:]
         gTeamName, gTeamDescription =None, None
         
-        return render_template('/main.html', error ='Sorry Unknown Error!!!')
+        return unknown_error ()

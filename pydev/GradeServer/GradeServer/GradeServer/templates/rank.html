@@ -4,6 +4,23 @@
 
 {%- extends "main.html" -%}
 {%- block body %}
+<script>
+$(function() {
+
+	var members = [
+		{% for member in memberRecords %}
+			{ value: "{{ member.memberId }}" },
+		{% endfor %}
+		{ value: ""}
+	];
+	$("#search-members").autocomplete({
+		lookup: members,
+		onSelect: function(suggestion){
+    }
+	});
+});
+</script>
+
 <div class="container">
 	<h2>Rank</h2>
 	<table class="table">
@@ -18,14 +35,14 @@
 			</tr>
 		</thead>
 		{%- for i in range (pages['startList'], pages['endList']) %}
-			<tr>
-				<td>{{ i +1 }}</td>
-				<td><a href ="{{ url_for ('GradeServer.user_history', memberId =rankMemberRecords[i].memberId, pageNum =1) }}">{{ rankMemberRecords[i].memberId }}</a></td>
-				<td>{{ rankMemberRecords[i].comment }}</td>
-				<td>{{ rankMemberRecords[i].solvedCount }}</td>
-				<td>{{ rankMemberRecords[i].submissionCount }}</td>
-				<td>{{ rankMemberRecords[i].solvedRate }}%</td>
-			</tr>
+		<tr>
+			<td>{{ i +1 }}</td>
+			<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submittedDate', pageNum =1) }}">{{ rankMemberRecords[i].memberId }}</a></td>
+			<td>{{ rankMemberRecords[i].comment }}</td>
+			<td>{{ rankMemberRecords[i].solvedCount }}</td>
+			<td>{{ rankMemberRecords[i].submissionCount }}</td>
+			<td>{{ rankMemberRecords[i].solvedRate }}%</td>
+		</tr>
 		{% endfor -%}
 	</table>
 	<!-- page number section -->
@@ -45,5 +62,16 @@
 		</ul>
 	</div>
 	<!-- end page number section -->
+	
+	<!-- Find Member Id -->
+	<form method="post">
+		<!-- SearchBar // all -->
+		<div id="all" class="tab-pane active" style="text-align: center">
+			<div class="input-append" style="margin-bottom: 0px">
+				<input class ="span3" id ="search-members" name ="memberId" type="text" placeholder="Member Id">
+				<button name="findMemberId" class="btn" type="submit">Find</button>
+			</div>
+		</div>
+	</form>
 </div>
 {% endblock -%}
