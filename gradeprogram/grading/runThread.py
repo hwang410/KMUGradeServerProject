@@ -2,14 +2,14 @@ import os
 import threading
 
 class runThread(threading.Thread):
-    def __init__(self, runCommand, stdNum):
+    def __init__(self, runCommand, runFileName):
         threading.Thread.__init__(self)
         self.runCommand = runCommand
-        self.stdNum = stdNum
+        self.runFileName = runFileName
         
     def run(self):
         os.system(self.runCommand)
         
-    def shutdown(self, stdNum):
-        cmd = 'killall -9 ' + stdNum
+    def shutdown(self):
+        cmd = 'killall -9 ' + self.runFileName
         os.system(cmd)

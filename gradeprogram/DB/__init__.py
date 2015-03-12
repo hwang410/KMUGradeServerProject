@@ -12,4 +12,5 @@
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
-__all__ = ['member', 'language', 'course', 'problem', 'submit', 'problemType', 'department']
+__all__ = ['colleges', 'courses', 'departments', 'members', 'languages', 'problems', 'problemSets',\
+           'registeredCourses', 'registeredProblems', 'submissions', 'submittedFiles']

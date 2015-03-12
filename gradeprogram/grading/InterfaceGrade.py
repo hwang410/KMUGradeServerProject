@@ -8,26 +8,21 @@ class InterfaceGrade(object):
         self.path = MakePath.MakePath(args)
         
     def Compile(self):
-        if self.path.usingLang != 0:    # if not python
-            _compile = CompileTools.CompileTools(self.path.baseRoute, self.path.stdNum, self.path.usingLang,\
-                                                 self.path.version, self.path.runFileName)
-            success = _compile.CodeCompile()
+        _compile = CompileTools.CompileTools(self.path.filePath, self.path.stdNum, self.path.usingLang, self.path.version, self.path.runFileName)
+        success = _compile.CodeCompile()
         
-        else:   # if python
-            success = True
-        
-        return success, self.path.stdNum, self.path.problemNum, self.path.courseNum, self.path.submitCount, self.path.gradeCount
+        return success, self.path.stdNum, self.path.problemNum, self.path.courseNum, self.path.submitCount
         
     def Evaluation(self):
         if self.path.caseCount == 1:    # if one testcase
-            evaluation = EvaluateTools.EvaluateTools(self.path.stdNum, self.path.usingLang, self.path.limitTime, self.path.answerRoute,\
-                                                     self.path.version, self.path.gradeMethod, self.path.runFileName, self.path.problemDirectoryName)
+            evaluation = EvaluateTools.EvaluateTools(self.path.usingLang, self.path.limitTime, self.path.answerPath, self.path.version,\
+                                                     self.path.gradeMethod, self.path.runFileName, self.path.problemName)
             success, runTime = evaluation.Execution()
         
         else:   # if many testcases 
-            evaluation = EvaluateTools_Multicase.EvaluateTools_multicase(self.path.stdNum, self.path.usingLang, self.path.limitTime,\
-                                                                         self.path.answerRoute, self.path.version, self.path.gradeMethod,\
-                                                                         self.path.caseCount, self.path.runFileName, self.path.problemDirectoryName)
+            evaluation = EvaluateTools_Multicase.EvaluateTools_multicase(self.path.usingLang, self.path.limitTime, self.path.answerPath,\
+                                                                         self.path.version, self.path.gradeMethod, self.path.caseCount,\
+                                                                         self.path.runFileName, self.path.problemName, self.path.filePath)
             success, runTime = evaluation.Execution()
             
         return success, runTime

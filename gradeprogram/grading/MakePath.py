@@ -1,62 +1,49 @@
-import os
 import glob
-from route import AnswerRoute, FileRoute, AnswerDefaultRoute
 
 class MakePath(object):
     def __init__(self, args):
         # save system args for var -> data type is string
-        self.courseName = args[1]
-        self.stdNum = args[2]
-        self.problemNum = int(args[3])
-        self.gradeMethod = int(args[4])
-        self.limitTime = int(args[5])
+        self.filePath = args[1]
+        self.problemPath = args[2]
+        self.stdNum = args[3]
+        self.problemNum = int(args[4])
+        self.gradeMethod = args[5]
         self.caseCount = int(args[6])
-        self.usingLang = int(args[7])
-        self.version = args[8]
-        self.courseNum = int(args[9])
-        self.submitCount = int(args[10])
-        self.gradeCount = int(args[11])
-        self.classNum = args[9][8:]
-
-        self.runFileName = '*'
-        self.defaultRoute = AnswerDefaultRoute()
+        self.limitTime = int(args[7])
+        self.limitMemory = int(args[8])
+        self.usingLang = args[9]
+        self.version = args[10]
+        self.courseNum = int(args[11])
+        self.submitCount = int(args[12])
         
-        # basic file route set -> source code, input data
-        self.problemDirectoryName = self.DirectoryName()
-        self.answerRoute = self.AnswerPath()
-        self.problemDirectoryName = self.DirectoryName()
-        self.baseRoute = self.BasePath()
-    
-        # copy input data
-        os.system('cp ' + self.answerRoute + self.problemDirectoryName + '_total.in input.txt')
+        self.filePath = self.filePath + '/'
+        self.answerPath = self.AnswerPath()
         
+        # catch problemName
+        self.problemName = self.ProblemName()
+        
+        # make execution file name
         self.runFileName = self.RunFileName()
-        
-    def BasePath(self):
-        return FileRoute(self.courseName, self.classNum, self.stdNum, self.problemDirectoryName)
     
     def AnswerPath(self):
-        path = AnswerRoute(self.problemDirectoryName)
-        
-        if self.gradeMethod == 0:
-            return path + 'solution/'
+        if self.gradeMethod == 'Solution':
+            return self.problemPath + '/solution/'
         else:
-            return path + 'check/'
+            return self.problemPath + '/check/'
     
     def RunFileName(self):
-        if self.courseNum == 0:
-            count = glob.glob(self.answerRoute + '*.py')
-        elif self.courseNum == 3:
-            count = glob.glob(self.answerRoute + '*.java')
+        if self.usingLang == 'PYTHON':
+            fileList = glob.glob(self.filePath + '*.py')
+        elif self.usingLang == 'JAVA':
+            fileList = glob.glob(self.filePath + '*.java')
         else:
-            return '*'
+            return 'main'
             
-        if len(count) > 1:
+        if len(fileList) > 1:
             return 'main'
         else:
-            return '*'
+            name = fileList[0]
+            return name.split('.')[0]
         
-    def DirectoryName(self):
-        dirName = glob.glob(self.defaultRoute + str(self.problemNum) + '_*')
-        name = dirName[0].split('/')
-        return name[-1]
+    def ProblemName(self):
+        return self.problemPath.split('/')[-1]

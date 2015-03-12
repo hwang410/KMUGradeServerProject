@@ -2,39 +2,58 @@ import os
 import glob
 
 class CompileTools(object):
-    def __init__(self, baseRoute, stdNum, usingLang, version, runFileName):
-        self.baseRoute = baseRoute
+    def __init__(self, filePath, stdNum, usingLang, version, runFileName):
+        self.filePath = filePath
         self.stdNum = stdNum
         self.usingLang = usingLang
         self.version = version
         self.runFileName = runFileName
         
     def CodeCompile(self):
+        if self.usingLang == 'PYTHON':
+            try:
+                os.system('cp ' + self.filePath + '*.py')
+            except Exception as e:
+                print e
+                return 'error' 
+            
+            return True
+            
+        # make compile command
         command = self.MakeCommand()
+        
+        # code compile
         os.system(command)
+        
+        # check compile error
         result = self.CompileErrorCheck()
         
-        if result == False: # if compile error
+        if result == False: # if compile error -> make error list
             self.MakeErrorList()
         
-        elif len(glob.glob('./'+self.stdNum)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
+        # if not make execution file
+        elif len(glob.glob('./'+self.runFileName)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
             return 'error'
         
         return result
         
     def CompileErrorCheck(self):
+        # if exist error message in file, compile error
         fp = open('error.err', 'r')
         errMess = fp.read()
+        
+        fp.close()
     
         if errMess.find('error:') > 0:  # if there is an 'error'
             return False
-    
+        
         return True
         
         
     def MakeErrorList(self):
+        # if collect error message
         count = 0
-        wf = open('errorlist.txt', 'w')
+        wf = open(self.filePath + 'errorlist.txt', 'w')
         rf = open('error.err', 'r')
         
         lines = rf.readlines()
@@ -56,11 +75,12 @@ class CompileTools(object):
         rf.close()
         
     def MakeCommand(self):
-        if self.usingLang == 1:
-            return 'gcc ' + self.baseRoute + '*.c -o ' + self.stdNum + ' -O2 -lm -Wall 2>error.err'
+        # make compile command 
+        if self.usingLang == 'C':
+            return 'gcc ' + self.filePath + '*.c -o main -O2 -lm -Wall 2>error.err'
             
-        elif self.usingLang == 2:
-            return 'g++ ' + self.baseRoute + '*.c -o ' + self.stdNum + ' -O2 -lm -Wall 2>error.err'
+        elif self.usingLang == 'C++':
+            return 'g++ ' + self.filePath + '*.c -o main -O2 -lm -Wall 2>error.err'
         
-        elif self.usingLang == 3:
-            return 'javac *.java 2>error.err'
+        elif self.usingLang == 'JAVA':
+            return 'javac ' + self.filePath + '*.java 2>error.err'
