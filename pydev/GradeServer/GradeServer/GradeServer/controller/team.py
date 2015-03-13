@@ -124,7 +124,7 @@ def make_team(error =None):
                     # 인풋 확인
                     if not gTeamName :
                         return render_template ('/make_team.html', memberRecords =memberRecords,
-                                                gTeamMembersId =gTeamMembersId, gTeamDescription =gTeamDescription, error =get_message ('fillTeamName'))
+                                                gTeamMembersId =gTeamMembersId, gTeamDescription =gTeamDescription, error ='팀 명' +get_message ('fillData'))
                     # 중복 팀명 확인
                     if dao.query (Teams.teamName).filter_by (teamName =gTeamName).first () :
                         return render_template ('/make_team.html', memberRecords =memberRecords,
@@ -177,7 +177,7 @@ def make_team(error =None):
    
                     # None 값 일 때
                     else :
-                        error =get_message ('fillMemberId')
+                        error ='아이디' +get_message ('fillData')
                         
                     break
                 # Delete Members
@@ -348,7 +348,7 @@ def team_manage(teamName, error =None):
                                 error =get_message ('updateFailed')
                     # None 값 일 때
                     else :
-                        error =get_message ('fillMemberId')
+                        error ='아이디' +get_message ('fillData')
                         
                     return render_template ('/team_manage.html',  memberRecords =memberRecords, teamInformation =teamInformation, 
                                     gTeamMembersId =gTeamMembersId, gTeamName =gTeamName, gTeamDescription =gTeamDescription, error =error)
