@@ -1,0 +1,1 @@
+Name=Print, Difficulty=1, SolutionCheckType=Checker, LimitedTime=3000, LimitedMemory=128

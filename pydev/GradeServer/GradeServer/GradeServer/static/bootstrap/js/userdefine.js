@@ -351,14 +351,12 @@ function visibleButton(parent){
 
 /* when server administrator add new users */
 function addIndivisualUserForm(){
-  
-
   var val_id;
   var val_name;
   var val_auth;
   var val_coll;
   var val_depa;
-  var usertb=document.getElementById('indivisual');
+  var usertb = document.getElementById('indivisual');
   
   reset_val = function(){
     val_id = $("#userId1").val("");
@@ -366,13 +364,11 @@ function addIndivisualUserForm(){
     val_auth = $("#authority1").val("");
     val_coll = $("#college1").val("");
     val_depa = $("#department1").val("");
-    
-    
   }
+
   var newRow = usertb.insertRow(usertb.rows.length);
   
-  for(var i = 0; i <usertb.rows[0].cells.length; i++){
-    
+  for(var i = 0; i <usertb.rows[0].cells.length; i++){  
     val_id = $("#userId1").val();
     val_name = $("#username1").val();
     val_auth = $("#authority1").val();
@@ -397,8 +393,7 @@ function addIndivisualUserForm(){
         var uploadObj = "<td>" + val_depa + "</td></tr>";
         break;
     }
-    c.innerHTML=uploadObj;
-    
+    c.innerHTML = uploadObj;
   }
   
   reset_val();
@@ -466,4 +461,8 @@ function manageUserForm(){
     c.innerHTML=uploadObj;   
   } 
   reset_val(); 
+}
+
+function resetIndivisualUserForm(){
+  document.getElementById("indivisualUserForm").innerHTML = '<tr class="formLine"><td><input type="text" class="input-small formLine1" id="userId1" name="userId1" placeholder="User ID" value=""></td><td><input type="text" class="input-small formLine1" id="college1" name="college1" placeholder="College" value=""></td><td><input type="text" class="input-small formLine1" id="department1" name="department1" placeholder="Department" value=""></td><td><input type="text" class="input-small formLine1" id="username1" name="username1" placeholder="User Name" value=""></td><td><input type="text" class="input-small formLine1" id="authority1" name="authority1" placeholder="Authority" value=""></td></tr>';
 }

@@ -72,16 +72,16 @@ def server_manage_problem():
                     tmpPath = "/mnt/shared/tmp"
                     with zipfile.ZipFile(fileData, "r") as z:
                         z.extractall(tmpPath)
-                    
                     problemName = os.listdir(tmpPath)[0]
                     problemInformation = open(tmpPath+"/"+problemName+"/"+problemName+".txt", "r").read()
-                    
                     nextIndex = nextIndex+1
                     # slice and make information from 'key=value, key=value, ...'
                     problemInformation = problemInformation.split(', ') 
                     difficulty = solutionCheckType = limitedTime = limitedMemory = 0
                     
                     problemPath = "/mnt/shared/Problems/"
+                    if not os.path.exists(problemPath):
+                        os.makedirs(problemPath)
                     
                     # reslice and make information from 'key=value'
                     for eachInformation in problemInformation:
@@ -291,15 +291,12 @@ def server_add_user():
     error = None
     targetUserIdToDelete = []
     if request.method == 'POST':
-        for form in request.form:
-            if form == 'addIndivisualUser':
-                print "indivisual"
-                
-            elif form == 'addUserGroup':
-                files = request.files.getlist("files")
-                # if no file choosed
-                if not list(files)[0].filename:
-                    break
+        if "addIndivisualUser" in request.form:
+            print "indivisual"
+        elif "addUserGroup" in request.form:
+            files = request.files.getlist("files")
+            # if no file choosed
+            if list(files)[0].filename:
                 # read each file
                 for fileData in files:
                     # read each line    
@@ -338,31 +335,30 @@ def server_add_user():
                                 return render_template('/server_add_user.html', error=error, newUsers=newUsers)
                             
                         newUsers.append(newUser)
-            # after all, pushed 'Done' button
-            elif form == 'addUser':
-                for newUser in newUsers:
-                    freshman = Members(memberId=newUser[0], password=newUser[0], memberName=newUser[1], authority=newUser[2], \
-                                       signedInDate=datetime.now())
-                    dao.add(freshman)
-                    dao.commit()
-                    
-                    departmentInformation = DepartmentsDetailsOfMembers(memberId=newUser[0], collegeIndex=newUser[3], departmentIndex=newUser[5])
-                    dao.add(departmentInformation)
-                    dao.commit()
+        elif "addUser" in request.form:
+            for newUser in newUsers:
+                freshman = Members(memberId=newUser[0], password=newUser[0], memberName=newUser[1], authority=newUser[2], \
+                                   signedInDate=datetime.now())
+                dao.add(freshman)
+                dao.commit()
+                
+                departmentInformation = DepartmentsDetailsOfMembers(memberId=newUser[0], collegeIndex=newUser[3], departmentIndex=newUser[5])
+                dao.add(departmentInformation)
+                dao.commit()
                     
                 newUsers = [] # initialize add user list
                 return redirect(url_for('.server_manage_user'))
-            
-            # pushed delete
-            else:
-                targetUserIdToDelete.append(form)
+        elif "deleteUser" in request.form:
+            for form in request.form:
+                if not form is "deleteUser":
+                    targetUserIdToDelete.append(form)
                 
         # if id list is not empty
         if len(targetUserIdToDelete) != 0:
             # each target user id
             for targetUser in targetUserIdToDelete:
                 index = 0
-                print targetUser
+                #print targetUser
                 # each new user id
                 for newUser in newUsers:
                     # if target id and new user id are same

@@ -27,18 +27,21 @@
 					<script> index = 1; </script>
 					<tbody id="indivisualUserForm">
 						<tr class="formLine">
-							<td><input type="text" class="input-small formLine1" id="userId1" name="userId1" placeholder="User ID" value=""></td>
-							<td><input type="text" class="input-small formLine1" id="username1" name="username1" placeholder="User Name" value=""></td>
-							<td><input type="text" class="input-small formLine1" id="authority1" name="authority1" placeholder="Authority" value=""></td>
-							<td><input type="text" class="input-small formLine1" id="college1" name="college1" placeholder="College" value=""></td>
-							<td><input type="text" class="input-small formLine1" id="department1" name="department1" placeholder="Department" value=""></td>
+							<td><input type="text" class="input-small formLine1" id="userId1" name="userId1" placeholder="User ID" value="" form="addIndivisualUser"></td>
+							<td><input type="text" class="input-small formLine1" id="college1" name="college1" placeholder="College" value="" form="addIndivisualUser"></td>
+							<td><input type="text" class="input-small formLine1" id="department1" name="department1" placeholder="Department" value="" form="addIndivisualUser"></td>
+							<td><input type="text" class="input-small formLine1" id="username1" name="username1" placeholder="User Name" value="" form="addIndivisualUser"></td>
+							<td><input type="text" class="input-small formLine1" id="authority1" name="authority1" placeholder="Authority" value="" form="addIndivisualUser"></td>
 						</tr>
+						<script> document.getElementById("userId1").id = "userId"+index+1; </script>
 					</tbody>
 				</table>
 			</div>
 			<div class="modal-footer">
-				<button class="btn">Done</button>
-				<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="resetIndivisualUserForm()">Close</button>
+				<form method="post" id="addIndivisualUser">
+					<button class="btn" name="addIndivisualUser" type="submit">Done</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="resetIndivisualUserForm()">Close</button>
+				</form>
 			</div>
 		</div>
 
@@ -73,7 +76,7 @@
 			</div>
 			<div class="modal-footer">
 				<form method="post" id="delete">
-					<button class="btn" type="submit">Confirm</button>
+					<button class="btn" name="deleteUser" type="submit">Confirm</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 				</form>
 			</div>

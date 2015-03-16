@@ -1,0 +1,1 @@
+Name=HelloWorld, Difficulty=1, SolutionCheckType=Solution, LimitedTime=3000, LimitedMemory=128
