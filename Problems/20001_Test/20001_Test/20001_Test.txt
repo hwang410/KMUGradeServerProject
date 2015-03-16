@@ -1,1 +1,0 @@
-Name=Test, Difficulty=2, SolutionCheckType=Checker, LimitedTime=3000, LimitedMemory=128
