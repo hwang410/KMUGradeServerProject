@@ -18,7 +18,7 @@ from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
 from GradeServer.controller.serverMaster import *
 from GradeServer.controller.classMaster import *
-from GradeServer.utils import login_required, get_page_pointed
+from GradeServer.utils import login_required, get_page_pointed, unknown_error, get_message
 
 
 """===== Basic user space ====="""
@@ -30,7 +30,7 @@ def users_submit_record():
 """
 로그인한 유저가 제출 했던 모든기록
 """
-@GradeServer.route('/user_history/<memberId><sortCondition>/page<pageNum>')
+@GradeServer.route('/user_history/<memberId>/<sortCondition>?page<pageNum>')
 @login_required
 def user_history(memberId, sortCondition, pageNum):
     
@@ -101,7 +101,7 @@ def user_history(memberId, sortCondition, pageNum):
                                pages =get_page_pointed (int(pageNum), count))
     except Exception :
         # Unknow Error
-        return render_template('/main.html', error ='Sorry Unknown Error!!!')
+        return unknown_error ()
 
 """
 로그인한 유저가 권한이 필요한 페이지에 접급하기전
@@ -111,10 +111,11 @@ def user_history(memberId, sortCondition, pageNum):
 @login_required
 def id_check(select, error =None):
 
+    
     if request.method == "POST":
         # 암호를 입력 안했을 때
         if not request.form['password']:
-            error = "You have to enter a password"
+            error =get_message ('fillPassword')
         else:
             try:
                 memberId = session['memberId']
@@ -147,11 +148,10 @@ def id_check(select, error =None):
                         return redirect(url_for('.class_manage_service'))
                     
                     else:
-                        error = "Unknown Request"
-                        return redirect(url_for('.sign_in'))
+                        return unknown_error ()
                 # 암호가 일치 하지 않을 때
                 else:
-                    error = "Wrong password. try again"
+                    error =get_message ('wrongPassword')
             except Exception as e :
                 Log.error (str(e))
                 raise e
@@ -166,7 +166,6 @@ def id_check(select, error =None):
 @login_required
 def edit_personal(error =None):
     try :
-        
         #Get User Information
         try :
             memberInformation =dao.query (DepartmentsDetailsOfMembers, Members.memberName, Members.contactNumber, Members.emailAddress, Members.comment,\
@@ -213,19 +212,25 @@ def edit_personal(error =None):
                 #Update DB
                 dao.query (Members).filter_by (memberId =session['memberId']).\
                     update (dict (password =password, contactNumber =contactNumber, emailAddress =emailAddress, comment =comment))
-                dao.commit ()
-                flash ("Information Update Success!!!")
+                # Commit Exception
+                try :
+                    dao.commit ()
+                    flash (get_message ('updateSuccessed'))
+                    
+                    return redirect(url_for('.sign_in'))
+                except Exception :
+                    dao.rollback ()
+                    error =get_message ('upateFailed')
                 
-                return redirect(url_for('.sign_in'))
             #Password Different
             elif not password or not passwordConfirm:
-                error = "Please fill 'Password' and 'Password(confirm)' box"
+                error =get_message ('fillConfirmPassword')
             else:
-                error ="Different Password and PasswordConfirm, Please try again"
+                error =get_message ('wrongPassword')
         
         return render_template('/edit_personal.html', memberInformation =memberData, error =error)
     except Exception :
-        return render_template('/main.html', error ='Sorry Unknown Error!!!')
+        return unknown_error ()
     
 """ ===== end Basic user space ===== """
 
