@@ -4,7 +4,7 @@ import math
 import runThread
 
 class EvaluateTools():
-    def __init__(self, usingLang, limitTime, answerPath, version, gradeMethod, runFileName, problemName):
+    def __init__(self, usingLang, limitTime, answerPath, version, gradeMethod, runFileName, problemName, caseCount):
         self.usingLang = usingLang
         self.limitTime = limitTime
         self.answerPath = answerPath
@@ -12,11 +12,13 @@ class EvaluateTools():
         self.gradeMethod = gradeMethod
         self.runFileName = runFileName
         self.problemName = problemName
+        self.caseCount = caseCount
         
     def Execution(self):
         # copy input data
         try:
-            os.system('cp ' + self.answerPath + self.problemName + '_total.in input.txt')
+            if self.caseCount == 1:
+                os.system('cp ' + self.answerPath + self.problemName + '_total.in input.txt')
         except Exception as e:
             print e
             return 'error', 0
@@ -50,7 +52,7 @@ class EvaluateTools():
             return 'time over', int(self.limitTime * 1.5)
         
         coreSize = 0
-        coreList = glob.glob('core.*')
+        coreList = glob.glob('core.[0-9]*')
         
         if len(coreList) > 0:
             os.path.getsize(coreList[0])
@@ -75,15 +77,15 @@ class EvaluateTools():
         # make execution command
         if self.usingLang == 'PYTHON':
             if self.version == '2.7':
-                return 'time (python ' + self.runFileName + '.py 1>output.txt 2>core.txt) 2>time.txt'
+                return 'time (python ' + self.runFileName + '.py 1>output.txt 2>core.1) 2>time.txt'
             elif self.version == '3.4':
-                return 'time (python3 ' + self.runFileName + '.py 1>output.txt 2>core.txt) 2>time.txt'
+                return 'time (python3 ' + self.runFileName + '.py 1>output.txt 2>core.1) 2>time.txt'
         
         elif self.usingLang == 'C' or self.usingLang == 'C++':
             return 'ulimit -c unlimited; time (./main 1>output.txt 2>err.err) 2>time.txt'
         
         elif self.usingLang == 'JAVA':
-            return 'time (java ' + self.runFileName + ' 1>output.txt 2>core.txt) 2>time.txt'
+            return 'time (java ' + self.runFileName + ' 1>output.txt 2>core.1) 2>time.txt'
         
     def Solution(self):
         # user output file each line compare with answer file each line.
@@ -120,7 +122,12 @@ class EvaluateTools():
         if count == 0:
             return 100
         else:
-            return int( ((len(answerLines) - count) * 100) / len(answerLines) )
+            score = int( ((len(answerLines) - count) * 100) / len(answerLines) )
+            
+            if score < 0:
+                return 0
+            
+            return score
         
     def Checker(self):
         try:

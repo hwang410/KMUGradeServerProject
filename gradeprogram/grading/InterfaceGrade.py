@@ -14,9 +14,9 @@ class InterfaceGrade(object):
         return success, self.path.stdNum, self.path.problemNum, self.path.courseNum, self.path.submitCount
         
     def Evaluation(self):
-        if self.path.caseCount == 1:    # if one testcase
+        if self.path.caseCount < 2:    # if one testcase
             evaluation = EvaluateTools.EvaluateTools(self.path.usingLang, self.path.limitTime, self.path.answerPath, self.path.version,\
-                                                     self.path.gradeMethod, self.path.runFileName, self.path.problemName)
+                                                     self.path.gradeMethod, self.path.runFileName, self.path.problemName, self.path.caseCount)
             success, runTime = evaluation.Execution()
         
         else:   # if many testcases 

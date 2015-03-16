@@ -3,8 +3,7 @@ from EvaluateTools import EvaluateTools
 
 class EvaluateTools_multicase(EvaluateTools):
     def __init__(self, usingLang, limitTime, answerPath, version, gradeMethod, caseCount, runFileName, problemName, filePath):
-        EvaluateTools.__init__(self, usingLang, limitTime, answerPath, version, gradeMethod, runFileName, problemName)
-        self.caseCount = caseCount
+        EvaluateTools.__init__(self, usingLang, limitTime, answerPath, version, gradeMethod, runFileName, problemName, caseCount)
         self.filePath  = filePath
         
     def Solution(self):
