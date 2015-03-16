@@ -18,7 +18,7 @@ if path is a/b/c/d, it can't recognize any .css and .js file.
 
 import math
 
-from flask import request, redirect, session, current_app, render_template
+from flask import request, redirect, session, current_app, render_template, url_for
 from functools import wraps
 from datetime import datetime, timedelta
 from sqlalchemy import func
@@ -46,7 +46,7 @@ def login_required(f):
 
             if not (session.sid == session_key and session.__contains__('memberId')) :
                 session.clear()
-                
+             
                 return redirect(url_for('.sign_in'))
             
             return f(*args, **kwargs)
@@ -171,17 +171,23 @@ def get_notices () :
             if login_required :
                 # 서버 관리자는 모든 공지
                 if "ServerAdministrator" in session['authority'] :
-                    notices =dao.query (ArticlesOnBoard).filter_by (isNotice ='Notice').all ()
+                    notices =dao.query (ArticlesOnBoard, RegisteredCourses.courseName).\
+                        join (RegisteredCourses, ArticlesOnBoard.courseId == RegisteredCourses.courseId).\
+                        filter_by (isNotice ='Notice').all ()
                 # 과목 관리자 및 유저는 담당 과목 공지
                 else :
                     if "CourseAdministrator" in session['authority'] :
                         registeredCourseId =dao.query (RegisteredCourses.courseId).\
                             filter_by (courseAdministratorId =session['memberId']).subquery ()
+                    # 학생인 경우
                     else :
                         registeredCourseId =dao.query (Registrations.courseId).filter_by (memberId =session['memberId']).subquery ()
+                    
+                    # 해당 과목 추려내기
                     notices =dao.query (ArticlesOnBoard).\
                             join (registeredCourseId, ArticlesOnBoard.courseId == registeredCourseId.c. courseId).\
                             filter (ArticlesOnBoard.isNotice == 'Notice').subquery ()
+                    # 과목이름 넣기
                     notices =dao.query (notices, RegisteredCourses.courseName).\
                         join (RegisteredCourses, notices.c.courseId == RegisteredCourses.courseId).all ()
                     notices.extend(serverAdministratorNotices)
