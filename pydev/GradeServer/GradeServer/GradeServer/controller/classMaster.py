@@ -125,7 +125,8 @@ def class_manage_problem():
             courseName = request.form['courseId'][10:]
             problemName = request.form['problemId'][5:]
             problemPath = "/mnt/shared/CurrentCourses/%s_%s/%s_%s" % (courseId, courseName, problemId, problemName)
-            os.makedirs(problemPath)
+            if not os.path.exists(problemPath):
+                os.makedirs(problemPath)
                 
         return redirect(url_for('.class_manage_problem'))
         
@@ -213,7 +214,6 @@ def class_manage_user():
                 for registeredProblem in registeredProblems:
                     userFolderPath = "/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s" % \
                                     (registeredProblem.courseId, registeredProblem.courseName, registeredProblem.problemId, registeredProblem.problemName, newMemberId)
-                    print userFolderPath  
                     if not os.path.exists(userFolderPath):                 
                         os.makedirs(userFolderPath)
             

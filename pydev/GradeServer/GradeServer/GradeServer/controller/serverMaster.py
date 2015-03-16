@@ -269,7 +269,6 @@ def server_add_class():
             
             # create course folder in 'CurrentCourses' folder
             problemPath = "/mnt/shared/CurrentCourses/%s_%s" %(newCourseNum, courseName)
-            print problemPath
             if not os.path.exists(problemPath):
                 os.makedirs(problemPath)
             
@@ -292,7 +291,29 @@ def server_add_user():
     targetUserIdToDelete = []
     if request.method == 'POST':
         if "addIndivisualUser" in request.form:
-            print "indivisual"
+            # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
+            numberOfUsers = (len(request.form)-1)/5
+            newUser = [['','','','','','','','']]*(numberOfUsers+1)
+            for form in request.form:
+                if form != "addIndivisualUser":
+                    value, index = re.findall('\d+|\D+', form)
+                    index = int(index)
+                    data = request.form[form]
+                    if value == "userId":
+                        newUser[index-1][0] = data
+                    elif value == "username":
+                        newUser[index-1][1] = data
+                    elif value == "authority":
+                        newUser[index-1][2] = data
+                    elif value == "college":
+                        newUser[index-1][3] = data
+                        newUser[index-1][4] = dao.query(Colleges).filter_by(collegeIndex=data).first().collegeName
+                    elif value == "department":
+                        newUser[index-1][5] = data
+                        newUser[index-1][6] = dao.query(Colleges).filter_by(collegeIndex=data).first().collegeName
+            for index in range(numberOfUsers):
+                newUsers.append(newUser[index])
+                
         elif "addUserGroup" in request.form:
             files = request.files.getlist("files")
             # if no file choosed
@@ -317,7 +338,6 @@ def server_add_user():
                                         if user[0] == value:
                                             #error = "There is a duplicated user id. Check the file and added user list"
                                             return redirect(url_for('.server_add_user'))
-                                            
                                     newUser[0] = value 
                                 elif key == "username":
                                     newUser[1] = value
@@ -333,9 +353,10 @@ def server_add_user():
                             else:
                                 error = "Try again after check the manual"
                                 return render_template('/server_add_user.html', error=error, newUsers=newUsers)
-                            
                         newUsers.append(newUser)
+                        
         elif "addUser" in request.form:
+            print newUsers
             for newUser in newUsers:
                 freshman = Members(memberId=newUser[0], password=newUser[0], memberName=newUser[1], authority=newUser[2], \
                                    signedInDate=datetime.now())
@@ -346,8 +367,9 @@ def server_add_user():
                 dao.add(departmentInformation)
                 dao.commit()
                     
-                newUsers = [] # initialize add user list
-                return redirect(url_for('.server_manage_user'))
+            newUsers = [] # initialize add user list
+            return redirect(url_for('.server_manage_user'))
+            
         elif "deleteUser" in request.form:
             for form in request.form:
                 if not form is "deleteUser":
@@ -366,8 +388,6 @@ def server_add_user():
                         del newUsers[index]
                         break
                     index+=1
-                    
-        return render_template('/server_add_user.html', error=error, newUsers=newUsers)
-    else:
+                               
         
-        return render_template('/server_add_user.html', error=error, newUsers=newUsers)
+    return render_template('/server_add_user.html', error=error, newUsers=newUsers)

@@ -23,7 +23,7 @@ class RegisteredProblems (Base) :
     
     problemId =Column (INTEGER, ForeignKey (Problems.problemIndex, onupdate ="CASCADE", ondelete ="CASCADE"), autoincrement =False, primary_key =True, nullable =False)
     courseId =Column (VARCHAR (10), ForeignKey (RegisteredCourses.courseId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
-    solutionCheckType =Column (ENUM ('Solution', 'Check'), default ='Solution', nullable =False)
+    solutionCheckType =Column (ENUM ('Solution', 'Checker'), default ='Solution', nullable =False)
     isAllInputCaseInOneFile =Column (ENUM ('OneFile', 'MultipleFiles'), default ='OneFile', nullable =False)
     limittedFileSize =Column (INTEGER (unsigned =True), default =1024, nullable =False) #MB
     openDate =Column (DATETIME, nullable =False)
