@@ -351,79 +351,41 @@ function visibleButton(parent){
 
 /* when server administrator add new users */
 function addIndivisualUserForm(){
-  var val_id;
-  var val_name;
-  var val_auth;
-  var val_coll;
-  var val_depa;
   var usertb = document.getElementById('indivisual');
-  
+  var numOfRow = usertb.rows.length;
+
   reset_val = function(){
-    val_id = $("#userId1").val("");
-    val_name = $("#username1").val("");
-    val_auth = $("#authority1").val("");
-    val_coll = $("#college1").val("");
-    val_depa = $("#department1").val("");
+    $("#userId1").val("");
+    $("#username1").val("");
+    $("#authority1").val("");
+    $("#college1").val("");
+    $("#department1").val("");
   }
 
-  var newRow = usertb.insertRow(usertb.rows.length);
+  var newRow = usertb.insertRow(2);
   
   for(var i = 0; i <usertb.rows[0].cells.length; i++){  
-    val_id = $("#userId1").val();
-    val_name = $("#username1").val();
-    val_auth = $("#authority1").val();
-    val_coll = $("#college1").val();
-    val_depa = $("#department1").val();
-
     var c= newRow.insertCell(i);
     switch (i){
       case 0:
-        var uploadObj = "<tr><td>" + val_id + "</td>";
+        var uploadObj = "<tr><td><input type='text' class='input-small formLine1' id='userId"+numOfRow+"' name = 'userId"+numOfRow+"' placeholder='User Id' value='"+$("#userId1").val()+"' form='addIndivisualUser'></td>";
         break;
       case 1:
-        var uploadObj = "<td>" + val_name + "</td>";
+        var uploadObj = "<td><input type='text' class='input-small formLine1' id='college"+numOfRow+"' name = 'college"+numOfRow+"' placeholder='College' value='"+$("#college1").val()+"' form='addIndivisualUser'></td>";
         break;
       case 2:
-        var uploadObj = "<td>" + val_auth + "</td>";
+        var uploadObj = "<td><input type='text' class='input-small formLine1' id='department"+numOfRow+"' name = 'department"+numOfRow+"' placeholder='Department' value='"+$("#department1").val()+"' form='addIndivisualUser'></td></tr>";
         break;
       case 3:
-        var uploadObj = "<td>" + val_coll + "</td>";
+        var uploadObj = "<td><input type='text' class='input-small formLine1' id='username"+numOfRow+"' name = 'username"+numOfRow+"' placeholder='Username' value='"+$("#username1").val()+"' form='addIndivisualUser'></td>";
         break;
       case 4:
-        var uploadObj = "<td>" + val_depa + "</td></tr>";
+        var uploadObj = "<td><input type='text' class='input-small formLine1' id='authority"+numOfRow+"' name = 'authority"+numOfRow+"' placeholder='Authority' value='"+$("#authority1").val()+"' form='addIndivisualUser'></td>";
         break;
     }
     c.innerHTML = uploadObj;
   }
-  
   reset_val();
-  
-  /* when you push 'add line', written form data is reset */
-  
-  /*
-    formLineNumber = document.getElementsByClassName("formLine").length+1;
-    for(var $i=0;$i<formLineNumber;$i++){
-        uID=document.getElementById("userId1"+$i+1);
-        uName=document.getElementById("username1"+$i+1);
-        auth=document.getElementById("authority1"+$i+1);
-        coll=document.getElementById("college1"+$i+1);
-        depa=document.getElementById("department1"+$i+1);
-    }
-    
-    if(formLineNumber==1)document.getElementById("indivisualUserForm").innerHTML = '<tr><td>' + uID +'</td><td>' + uName +'</td><td>' + auth + '</td><td>' + coll + '</td><td>' + depa +'</td></tr>';
-    
-    else{
-      document.getElementById
-    }
-    
-    document.getElementById("indivisualUserForm").innerHTML += '<td><input type="text" class="input-small formLine1" id="userId1" name="userId1" placeholder="User ID" value=""></td>'+
-              '<td><input type="text" class="input-small formLine1" id="username1" name="username1" placeholder="User Name" value=""></td>'+
-              '<td><input type="text" class="input-small formLine1" id="authority1" name="authority1" placeholder="Authority" value=""></td>'+
-              '<td><input type="text" class="input-small formLine1" id="college1" name="college1" placeholder="College" value=""></td>'+
-              '<td><input type="text" class="input-small formLine1" id="department1" name="department1" placeholder="Department" value=""></td>';
-    document.getElementById("indivisualUserForm").innerHTML += '<tr class="formLine"><td><input type="text" class="input-small formLine'+formLineNumber+'" name="userId'+formLineNumber+'" placeholder="User ID" value=""></td><td><input type="text" class="input-small formLine'+formLineNumber+'" name="username'+formLineNumber+'" placeholder="User Name" value=""></td><td><input type="text" class="input-small formLine'+formLineNumber+'" name="authority'+formLineNumber+'" placeholder="Authority" value=""></td><td><input type="text" class="input-small formLine1" name="college'+formLineNumber+'" placeholder="College" value=""></td><td><input type="text" class="input-small formLine'+formLineNumber+'" name="department'+formLineNumber+'" placeholder="Department"></td></tr>';
-*/
-
 }
 
 function manageUserForm(){
@@ -464,5 +426,5 @@ function manageUserForm(){
 }
 
 function resetIndivisualUserForm(){
-  document.getElementById("indivisualUserForm").innerHTML = '<tr class="formLine"><td><input type="text" class="input-small formLine1" id="userId1" name="userId1" placeholder="User ID" value=""></td><td><input type="text" class="input-small formLine1" id="college1" name="college1" placeholder="College" value=""></td><td><input type="text" class="input-small formLine1" id="department1" name="department1" placeholder="Department" value=""></td><td><input type="text" class="input-small formLine1" id="username1" name="username1" placeholder="User Name" value=""></td><td><input type="text" class="input-small formLine1" id="authority1" name="authority1" placeholder="Authority" value=""></td></tr>';
+  document.getElementById("indivisualUserForm").innerHTML = '<tr class="formLine"><td><input type="text" class="input-small formLine1" id="userId1" name="userId1" placeholder="User ID" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="college1" name="college1" placeholder="College" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="department1" name="department1" placeholder="Department" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="username1" name="username1" placeholder="User Name" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="authority1" name="authority1" placeholder="Authority" value="" form="addIndivisualUser"></td></tr>';
 }
