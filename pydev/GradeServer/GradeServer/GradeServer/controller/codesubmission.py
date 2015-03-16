@@ -2,6 +2,7 @@
 
 import os
 import sys
+import shutil
 
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, send_file, make_response, \
 current_app, session, flash
@@ -50,13 +51,19 @@ def upload(courseId, problemId):
         dao.rollback()
         print "DB error : " + str(e)
         raise e
+    
+    tempPath = '/mnt/shared/Temp/%s/%s_%s/%s_%s' %(memberId, courseId, courseName, problemId, problemName)
     filePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s' %(courseId, courseName, problemId, problemName, memberId)
-    #storePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s' %(courseId, courseName[0], problemId, problemName[0])
+    
     upload_files = request.files.getlist('file[]')
     filenames = []
     sumOfSubmittedFileSize = 0
     uLang = 1
     uVersion = 0
+    
+    print tempPath
+    if not os.path.exists(tempPath):
+        os.makedirs(tempPath)
     
     try:
         dao.query(SubmittedFiles).filter(and_(SubmittedFiles.memberId == memberId, SubmittedFiles.problemId == problemId,
@@ -67,14 +74,13 @@ def upload(courseId, problemId):
         print "DB error : " + str(e)
         raise e 
     
-
     for file in upload_files:
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(filePath, filename))
-            fileSize = os.stat(filePath + '/' + filename).st_size
+            file.save(os.path.join(tempPath, filename))
+            fileSize = os.stat(tempPath + '/' + filename).st_size
             filenames.append(filename)
-            
+            shutil.copy(os.path.join(tempPath, filename), filePath )
             
             if filename.rsplit('.', 1)[1] == 'c':
                 try:
@@ -125,18 +131,20 @@ def upload(courseId, problemId):
         dao.rollback()
         print "DB error : " + str(e)
         raise e
-       
+
+
     try:
-        subCount = dao.query(func.max (Submissions.submissionCount).label ("submissionCount")).filter(Submissions.memberId == memberId, Submissions.courseId == courseId,
+        subCount = dao.query(func.max (Submissions.submissionCount).label ("submissionCount")).\
+            filter(Submissions.memberId == memberId, Submissions.courseId == courseId,
                    Submissions.problemId == int (problemId)).first()
         subCountNum = subCount.submissionCount + 1
     except:
         subCountNum = 1
-        
+
     try:
-        solCount = dao.query(func.max (Submissions.solutionCheckCount).label ("solutionCheckCount")).filter(Submissions.memberId == memberId, Submissions.courseId == courseId,
-                   Submissions.problemId == int (problemId)).first()
-        solCountNum = solCount.solutionCheckCount + 1
+        solCount = dao.query(Submissions.solutionCheckCount).filter(Submissions.memberId == memberId, Submissions.courseId == courseId,
+                   Submissions.problemId == int (problemId), Submissions.submissionCount == subCount.submissionCount).first()
+        solCountNum = solCount.solutionCheckCount
     except:
         solCountNum = 0
     
@@ -152,8 +160,6 @@ def upload(courseId, problemId):
     flash("submission success!")
     
     return courseId
-    #return redirect("./problemList/" + courseId)
-    #return redirect(url_for('.problemList', courseId=courseId))
         
 @GradeServer.route('/problem/<courseId>/<problemId>/codesubmission', methods = ['POST'])
 @login_required
@@ -176,7 +182,6 @@ def code(courseId, problemId):
         print "DB error : " + str(e)
         raise e
     filePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s' %(courseId, courseName, problemId, problemName, memberId)
-    #storePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s' %(courseId, courseName[0], problemId, problemName[0])
     
     try:
          dao.query(SubmittedFiles).filter(and_(SubmittedFiles.memberId == memberId, SubmittedFiles.problemId == problemId,
