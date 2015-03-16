@@ -282,5 +282,6 @@ def code(courseId, problemId):
     except Exception as e:
         print "DB error : " + str(e)
         raise e
+    
     flash("submission success!")
     return redirect (url_for('.problemList', courseId = courseId ))
