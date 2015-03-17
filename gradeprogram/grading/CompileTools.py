@@ -1,5 +1,5 @@
-import os
 import glob
+from subprocess import call
 
 class CompileTools(object):
     def __init__(self, filePath, stdNum, usingLang, version, runFileName):
@@ -12,10 +12,10 @@ class CompileTools(object):
     def CodeCompile(self):
         if self.usingLang == 'PYTHON':
             try:
-                os.system('cp ' + self.filePath + '*.py')
+                call('cp ' + self.filePath + '*.py ./', shell = True)
             except Exception as e:
                 print e
-                return 'error' 
+                return 'error'
             
             return True
             
@@ -23,7 +23,7 @@ class CompileTools(object):
         command = self.MakeCommand()
         
         # code compile
-        os.system(command)
+        call(command, shell = True)
         
         # check compile error
         result = self.CompileErrorCheck()
@@ -80,7 +80,7 @@ class CompileTools(object):
             return 'gcc ' + self.filePath + '*.c -o main -O2 -lm -Wall 2>error.err'
             
         elif self.usingLang == 'C++':
-            return 'g++ ' + self.filePath + '*.c -o main -O2 -lm -Wall 2>error.err'
+            return 'g++ ' + self.filePath + '*.cpp -o main -O2 -lm -Wall 2>error.err'
         
         elif self.usingLang == 'JAVA':
             return 'javac ' + self.filePath + '*.java 2>error.err'
