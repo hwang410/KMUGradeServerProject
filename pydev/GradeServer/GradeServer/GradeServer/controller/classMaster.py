@@ -225,7 +225,21 @@ def class_manage_user():
 @GradeServer.route('/classmaster/user_submit/summary')
 @login_required
 def user_submit_summary():
-    return render_template('/user_submit_summary.html')
+    error = None
+    ownCourses = dao.query(RegisteredCourses).filter_by(courseAdministratorId=session['memberId']).all()
+    ownProblems = dao.query(RegisteredProblems).all()
+    ownMembers = dao.query(Registrations).all()
+        
+    try:
+        submissions = dao.query(Submissions.courseId, Problems.problemId, Submissions.status, Submissions.memberId)\
+                        .order_by(Submissions.codeSubmissionDate.desc()).group_by(Submissions.memberId, Submissions.courseId, Submissions.problemId)\
+                        .join(RegisteredCourses, RegisteredCourses.courseId==Submissions.courseId)\
+                        .join(Problems, Problems.problemId==Submissions.problemId).all()
+    except:
+        print "Submissions table is empty"
+        submissions = []
+    
+    return render_template('/class_user_submit_summary.html', error=error, ownCourses=ownCourses, ownProblems=ownProblems, ownMembers=ownMembers, submissions=submissions)
 
 @GradeServer.route('/classmaster/manage_service')
 @login_required
