@@ -42,7 +42,7 @@ class MakePath(object):
         if len(fileList) > 1:
             return 'main'
         else:
-            name = fileList[0]
+            name = fileList[0].split('/')[-1]
             return name.split('.')[0]
         
     def ProblemName(self):
