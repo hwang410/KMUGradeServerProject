@@ -22,7 +22,7 @@ class Problems (Base) :
     problemIndex = Column (INTEGER (unsigned =True), nullable =False)
     problemId =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, nullable =False)
     problemName =Column (VARCHAR (1024), nullable =False)
-    solutionCheckType =Column (ENUM ('Solution', 'Check'), default ='Solution', nullable =False)
+    solutionCheckType =Column (ENUM ('Solution', 'Checker'), default ='Solution', nullable =False)
     limitedTime =Column (INTEGER (unsigned =True), default =3000, nullable =False) #ms
     limitedMemory =Column (INTEGER (unsigned =True), default =1024, nullable =False) #MB
     problemPath =Column (TEXT, nullable =True)
