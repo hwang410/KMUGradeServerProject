@@ -1,0 +1,71 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+
+{%- extends "main.html" -%}
+{%- block body %}
+<div class="container">
+	<h5>Summary mode</h5>
+	<div class="tabbable">
+		<ul class="nav nav-tabs">
+			<li class="disabled"><a href="" data-toggle="" id="link-all" onclick="visibleButton(this)">all</a></li>
+			{%- for ownCourse in ownCourses %}
+				{%- if loop.index == 1 %} <li class="active"> {% else %} <li> {% endif -%}
+				<a href="#{{ ownCourse.courseId }}" data-toggle="tab" id="link-{{ ownCourse.courseId }}" onclick="visibleButton(this)">{{ ownCourse.courseName }}</a></li>
+			{% endfor -%}
+			<div style="text-align:right"><a href="{{ url_for('GradeServer.class_user_submit') }}"><button type="button" id="detail" style="display">Detail</button></a></div>
+		</ul>
+		<div style="text-align:center"><span class="label label-info">Solved</span> <span class="label label-warning">Never Submitted</span> <span class="label label-important">Wrong Answer</span></div>
+		<div class="tab-content">
+			{%- for ownCourse in ownCourses %}
+				{%- if loop.index == 1 %} <div class="tab-pane active" id="{{ ownCourse.courseId }}"> {%- else %} <div class="tab-pane" id="{{ ownCourse.courseId}}"> {% endif -%}
+				<table class="table">
+				<!-- registered problems of the course -->
+				<thead><tr><td></td>
+					{%- for ownProblem in ownProblems %}
+						{%- if ownCourse.courseId == ownProblem.courseId %}
+							<td>{{ ownProblem.problemId }}</td>
+						{% endif -%}
+					{% endfor -%}
+				</tr></thead>
+				<tbody>
+				<!-- registered members of the course -->
+				{%- for ownMember in ownMembers %}
+					{%- if ownMember.courseId == ownCourse.courseId %}
+					<tr><td>{{ ownMember.memberId }}</td>
+					{% endif -%}
+					<script> var checker = 0; </script>
+					<!-- submission status of each member per each problem  -->
+					{%- for ownProblem in ownProblems %}
+						{%- for submission in submissions %}
+							{%- if submission.problemId == ownProblem.problemId and submission.memberId==ownMember.memberId %}
+							<script> 
+								if(checker == 0){ 
+									checker = 1; 
+									var status = "{{ submission.status }}";
+									if(status == "Solved"){
+										status = "<span class='label label-info'>&nbsp;</span>";
+									}
+									else{
+										status = "<span class='label label-important'>&nbsp;</span>";
+									}
+									document.write("<td>"+status+"</td>");	
+								} 
+							</script>
+							{% endif -%}
+						{% endfor -%}
+						<script> 
+						if(checker==0){ 
+							document.write("<td><span class='label label-warning'>&nbsp;</span></td>"); 
+						} 
+						</script>
+					{% endfor -%}
+				{% endfor -%}				
+				</tbody>
+				</table>
+			</div>
+			{% endfor -%}
+		</div>
+	</div>
+</div>
+{% endblock -%}
