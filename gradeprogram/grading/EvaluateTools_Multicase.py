@@ -38,8 +38,8 @@ class EvaluateTools_multicase(EvaluateTools):
             answerFile.close()
             stdOutput.close()
             
-            answer = answer.replace('\r\n', '\n')
-            student = student.replace('\r\n', '\n')
+            answer = answer.strip('\r\n')
+            student = student.strip('\r\n')
             
             if answer != student:
                 count += 1

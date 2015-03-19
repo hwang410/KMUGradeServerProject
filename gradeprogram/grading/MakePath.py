@@ -16,20 +16,20 @@ class MakePath(object):
         self.courseNum = int(args[11])
         self.submitCount = int(args[12])
         
-        self.filePath = self.filePath + '/'
-        self.answerPath = self.AnswerPath()
-        
         # catch problemName
         self.problemName = self.ProblemName()
         
         # make execution file name
         self.runFileName = self.RunFileName()
+        
+        self.filePath = self.filePath + '/'
+        self.answerPath = self.AnswerPath()
     
     def AnswerPath(self):
         if self.gradeMethod == 'Solution':
-            return self.problemPath + '/solution/'
+            return self.problemPath + '/' + self.problemName + '_Solution/'
         else:
-            return self.problemPath + '/check/'
+            return self.problemPath + '/' + self.problemName + 'Checker/'
     
     def RunFileName(self):
         if self.usingLang == 'PYTHON':
