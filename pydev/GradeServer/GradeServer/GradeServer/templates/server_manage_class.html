@@ -52,7 +52,7 @@
 					<td>{{ course.courseAdministratorId }}</td>
 					<td>{%- for language in languagesOfCourse %}
 								{%- if course.courseId==language.courseId %}
-									{{ language.languageName}}
+									{{ language.languageName }}
 									{%- if language.languageVersion!='0' %}{{ language.languageVersion }}{% endif -%}
 									<br>
 								{% endif -%}
