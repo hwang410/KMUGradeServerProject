@@ -27,6 +27,7 @@ from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMe
 from GradeServer.model.departments import Departments
 from GradeServer.model.courses import Courses
 from GradeServer.model.problems import Problems
+from sqlalchemy import and_
 
 import re
 import zipfile
@@ -35,14 +36,11 @@ import shutil
 
 newUsers = []
 
-@GradeServer.route('/master/<memberId>')
-@login_required
-def server_master_signin(memberId):
-    return render_template('/server_master_signin.html')
-
-@GradeServer.route('/master/manage_problem', methods=['GET', 'POST'])
+@GradeServer.route('/master/manage_problem', 
+                   methods=['GET', 'POST'])
 @login_required
 def server_manage_problem():
+    error = None
     if request.method == 'POST':
         for form in request.form:
             if form == 'upload':
@@ -52,34 +50,38 @@ def server_manage_problem():
                 
                 nextIndex = 0
                 try:
-                    nextIndex = dao.query(Problems).count()
+                    nextIndex = dao.query(Problems).\
+                                    count()
                 except:
                     nextIndex = 0
                     
                 # if there's additional difficulty then change the value 'numberOfDifficulty'
                 numberOfDifficulty = 5
                 
-                numberOfProblemsOfDifficulty = [0]*numberOfDifficulty
+                numberOfProblemsOfDifficulty = [0] * numberOfDifficulty
                 for difficulty in range(0, numberOfDifficulty):
-                    difficultyOfProblem = str(difficulty+1)
-                    numberOfProblemsOfDifficulty[difficulty] = dao.query(Problems.problemId)\
-                                                                .filter(Problems.problemId.like(difficultyOfProblem+"%"))\
-                                                                .count()
+                    difficultyOfProblem = str(difficulty + 1)
+                    numberOfProblemsOfDifficulty[difficulty] = dao.query(Problems.problemId).\
+                                                                   filter(Problems.problemId.like(difficultyOfProblem + '%')).\
+                                                                   count()
                 
                 # read each uploaded file(zip)
                 for fileData in files:
                     # unzip each file
-                    tmpPath = "/mnt/shared/tmp"
+                    tmpPath = '/mnt/shared/tmp'
                     with zipfile.ZipFile(fileData, "r") as z:
                         z.extractall(tmpPath)
                     problemName = os.listdir(tmpPath)[0]
-                    problemInformation = open(tmpPath+"/"+problemName+"/"+problemName+".txt", "r").read()
+                    problemInformation = open(tmpPath + '/' + problemName + '/' + problemName + '.txt', 'r').read()
                     nextIndex = nextIndex+1
                     # slice and make information from 'key=value, key=value, ...'
                     problemInformation = problemInformation.split(', ') 
-                    difficulty = solutionCheckType = limitedTime = limitedMemory = 0
+                    difficulty = 0
+                    solutionCheckType = 0
+                    limitedTime = 0
+                    limitedMemory = 0
                     
-                    problemPath = "/mnt/shared/Problems/"
+                    problemPath = '/mnt/shared/Problems/'
                     if not os.path.exists(problemPath):
                         os.makedirs(problemPath)
                     
@@ -98,17 +100,27 @@ def server_manage_problem():
                         elif key == 'LimitedMemory':
                             limitedMemory = int(value)
                             
-                    numberOfProblemsOfDifficulty[difficulty-1]+=1
+                    numberOfProblemsOfDifficulty[difficulty - 1] += 1
                     # place the difficulty at the left most
                     
-                    problemId = difficulty*10000+numberOfProblemsOfDifficulty[difficulty-1]
-                    problemPath += str(problemId)+"_"+problemName
-                    newProblem = Problems(problemIndex=nextIndex, problemId=problemId, problemName=problemName, solutionCheckType=solutionCheckType, limitedTime=limitedTime,\
-                                          limitedMemory=limitedMemory, problemPath=problemPath)
+                    problemId = difficulty * 10000 + numberOfProblemsOfDifficulty[difficulty - 1]
+                    problemPath += str(problemId) + '_' + problemName
                     
-                    dao.add(newProblem)
-                    dao.commit()
-                    
+                    try:
+                        newProblem = Problems(problemIndex = nextIndex, 
+                                              problemId = problemId, 
+                                              problemName = problemName, 
+                                              solutionCheckType = solutionCheckType, 
+                                              limitedTime = limitedTime,
+                                              limitedMemory = limitedMemory, 
+                                              problemPath = problemPath)
+                        
+                        dao.add(newProblem)
+                        dao.commit()
+                    except:
+                        dao.rollback()
+                        error = 'Creation Problem Error'
+                        
                     # rename new problem folder
                     os.chdir("%s/%s/%s_%s" % (tmpPath, problemName, problemName, solutionCheckType))
                     os.system("rename 's/\.*/%s_/' *" % (problemId))
@@ -123,199 +135,259 @@ def server_manage_problem():
                     shutil.move(tmpPath, problemPath)
                     
             else:
-                dao.query(Problems).filter_by(problemId=int(form)).update(dict(isDeleted='Deleted'))
-                dao.commit()
+                try:
+                    dao.query(Problems).\
+                        filter_by(problemId = int(form)).\
+                        update(dict(isDeleted = 'Deleted'))
+                    dao.commit()
+                except:
+                    dao.rollback()
 
         return redirect(url_for('.server_manage_problem'))
         
     else:
         uploadedProblems = []
         try:
-            uploadedProblems = dao.query(Problems).filter(Problems.isDeleted=='Not-Deleted').all()
+            uploadedProblems = dao.query(Problems).\
+                                   filter(Problems.isDeleted == 'Not-Deleted').\
+                                   all()
         except:
             uploadedProblems = []
-        return render_template('/server_manage_problem.html', uploadedProblems=uploadedProblems)
+            
+        return render_template('/server_manage_problem.html', 
+                               error = error,
+                               uploadedProblems = uploadedProblems)
 
-@GradeServer.route('/master/manage_class', methods=['GET', 'POST'])
+@GradeServer.route('/master/manage_class', 
+                   methods = ['GET', 'POST'])
 @login_required
 def server_manage_class():
     error = None
     try:
-        courses = dao.query(RegisteredCourses).order_by(RegisteredCourses.endDateOfCourse.desc()).all()
-        languagesOfCourse = dao.query(LanguagesOfCourses.courseId, LanguagesOfCourses.languageIndex, LanguagesOfCourses.languageVersion, \
-                                    Languages.languageName.label("languageName")).\
-                                    join(Languages, LanguagesOfCourses.languageIndex==Languages.languageIndex).all()
+        courses = dao.query(RegisteredCourses).\
+                      order_by(RegisteredCourses.endDateOfCourse.desc()).\
+                      all()
     except:
-        print "Empty 'RegisteredCoruses' table"
-            
+        print 'Empty \'RegisteredCourses\' table'
+        
+    try:
+        languagesOfCourse = dao.query(LanguagesOfCourses.courseId, 
+                                      LanguagesOfCourses.languageIndex, 
+                                      LanguagesOfCourses.languageVersion, 
+                                      Languages.languageName).\
+                                join(Languages, 
+                                     and_(LanguagesOfCourses.languageIndex == Languages.languageIndex, 
+                                          LanguagesOfCourses.languageVersion == Languages.languageVersion)).\
+                                all()
+    except:
+        print 'Empty \'LanguagesOfCourse\' table'
+
     if request.method == 'POST':
         for form in request.form:
             try:
-                deleteTarget = dao.query(RegisteredCourses).filter_by(courseId=form).first()
+                deleteTarget = dao.query(RegisteredCourses).\
+                                   filter_by(courseId = form).\
+                                   first()
                 dao.delete(deleteTarget)
-                try:
-                    dao.commit()
-                except:
-                    error = "Cannot delete"
+                dao.commit()
             except:
-                print "Deletion Error"
+                dao.rollback()
+                print 'Deletion Error'
                 
         return redirect(url_for('.server_manage_class'))
     
     session['ownCourses'] = dao.query(RegisteredCourses).all()
     
-    return render_template('/server_manage_class.html', error=error, courses=courses, languagesOfCourse=languagesOfCourse)
+    return render_template('/server_manage_class.html', 
+                           error = error, 
+                           courses = courses, 
+                           languagesOfCourse = languagesOfCourse)
 
-@GradeServer.route('/master/manage_users', methods=['GET', 'POST'])
+@GradeServer.route('/master/manage_users', 
+                   methods = ['GET', 'POST'])
 @login_required
 def server_manage_user():
     try:
-        users = dao.query(Members.memberId, Members.memberName, Members.contactNumber, Members.emailAddress, Members.authority, Members.lastAccessDate, Departments.departmentName).\
-                    join(DepartmentsDetailsOfMembers, Members.memberId==DepartmentsDetailsOfMembers.memberId).\
-                    join(Departments, Departments.departmentIndex==DepartmentsDetailsOfMembers.departmentIndex).\
-                    order_by(Members.signedInDate.desc()).all()
+        users = dao.query(Members.memberId, 
+                          Members.memberName, 
+                          Members.contactNumber, 
+                          Members.emailAddress, 
+                          Members.authority, 
+                          Members.lastAccessDate, 
+                          Departments.departmentName).\
+                    join(DepartmentsDetailsOfMembers, 
+                         Members.memberId == DepartmentsDetailsOfMembers.memberId).\
+                    join(Departments, 
+                         Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
+                    order_by(Members.signedInDate.desc()).\
+                    all()
                           
     except Exception as e:
         Log.error(e)
         raise e
               
-    if request.method=='POST':
+    if request.method == 'POST':
         for form in request.form:
             try:
-                deleteTarget = dao.query(Members).filter_by(memberId=form).first()
+                deleteTarget = dao.query(Members).\
+                                   filter_by(memberId = form).\
+                                   first()
                 dao.delete(deleteTarget)
                 dao.commit()
                 
             except Exception as e:
-                Log.error(e)
-                raise e
+                dao.rollback()
+                
         return redirect(url_for('.server_manage_user'))
     
     index = len(users)
-    return render_template('/server_manage_user.html', users=users, index=index)
+    return render_template('/server_manage_user.html', 
+                           users = users, 
+                           index = index)
 
 @GradeServer.route('/master/manage_service')
 @login_required
 def server_manage_service():
     return render_template('/server_manage_service.html')
 
-@GradeServer.route('/master/add_class', methods=['GET', 'POST'])
+@GradeServer.route('/master/add_class', 
+                   methods = ['GET', 'POST'])
 @login_required
 def server_add_class():
     error = None
     
     allCourses = dao.query(Courses).all()
     allLanguages = dao.query(Languages).all()
-    if request.method=='POST':
+    if request.method == 'POST':
         courseAdministratorId = request.form['courseAdministratorId']
         semester = request.form['semester']
         courseDescription = request.form['courseDescription']
         startDateOfCourse = request.form['startDateOfCourse']
         endDateOfCourse = request.form['endDateOfCourse']
         courseIndex = request.form['courseId'].split(' ')[0]
-        courseName = request.form['courseId'][len(courseIndex)+1:]
+        courseName = request.form['courseId'][len(courseIndex) + 1:]
         languages = []
         for form in request.form:
             if "languageIndex" in form:
                 languages.append(request.form[form].split('_'))
                 
         if not courseIndex:
-            error = "You have to choose a class name"
+            error = 'You have to choose a class name'
         elif not courseAdministratorId:
-            error = "You have to enter a manager Id"
+            error = 'You have to enter a manager Id'
         elif not semester:
-            error = "You have to enter a manager Id"
+            error = 'You have to enter a manager Id'
         elif not languages:
-            error = "You have to choose at least one language"
+            error = 'You have to choose at least one language'
         elif not courseDescription:
-            error = "You have to enter a class description"
+            error = 'You have to enter a class description'
         elif not startDateOfCourse:
-            error = "You have to choose a start date"
+            error = 'You have to choose a start date'
         elif not endDateOfCourse:
-            error = "You have to choose a end date"
+            error = 'You have to choose a end date'
         else:
-            existCoursesNum = dao.query(RegisteredCourses.courseId).all()
-            print "exist", existCoursesNum
-            print startDateOfCourse[:4], semester, int(courseIndex)
-            newCourseNum = "%s%s%03d"%(startDateOfCourse[:4], semester, int(courseIndex)) # yyyys
-            print "new", newCourseNum
+            existCoursesNum = dao.query(RegisteredCourses.courseId).\
+                                  all()
+            newCourseNum = "%s%s%03d" % (startDateOfCourse[:4], semester, int(courseIndex)) # yyyys
             checker = 1
             for existCourse in existCoursesNum:
-                print "33"
                 # if the course is already registered, then make another subclass
-                if existCourse[0][:8]==newCourseNum:
+                if existCourse[0][:8] == newCourseNum:
                     print existCourse[0][:8]
-                    print "in"
                     
-                    currentSubCourseNum = dao.query(func.count(RegisteredCourses.courseId).label("num")).filter(RegisteredCourses.courseId.like(newCourseNum+"__")).first().num
-                    print "count:",currentSubCourseNum
+                    currentSubCourseNum = dao.query(func.count(RegisteredCourses.courseId).label("num")).\
+                                                    filter(RegisteredCourses.courseId.like(newCourseNum+"__")).\
+                                              first().\
+                                              num
                     """
                     수정할것!!count 사용해서
                     func.count().label
                     """
-                    newCourseNum = "%s%02d"%(existCourse[0][:8], currentSubCourseNum+1) # yyyysccc
-                    print newCourseNum
+                    newCourseNum = "%s%02d" % (existCourse[0][:8], 
+                                               currentSubCourseNum + 1) # yyyysccc
                     checker = 0
                     break
                 
             # new class case
             if checker:
-                newCourseNum = "%s01"%(newCourseNum)
-            
-            newCourse = RegisteredCourses(courseId=newCourseNum, courseName=courseName, courseDescription=courseDescription, \
-                               startDateOfCourse=startDateOfCourse, endDateOfCourse=endDateOfCourse, courseAdministratorId=courseAdministratorId)    
-            dao.add(newCourse)
-            dao.commit()
-            
+                newCourseNum = "%s01" % (newCourseNum)
+            try:
+                newCourse = RegisteredCourses(courseId = newCourseNum, 
+                                              courseName = courseName, 
+                                              courseDescription = courseDescription,
+                                              startDateOfCourse = startDateOfCourse, 
+                                              endDateOfCourse = endDateOfCourse, 
+                                              courseAdministratorId = courseAdministratorId)    
+                dao.add(newCourse)
+                dao.commit()
+            except:
+                dao.rollback()
+                
             # create course folder in 'CurrentCourses' folder
-            problemPath = "/mnt/shared/CurrentCourses/%s_%s" %(newCourseNum, courseName)
+            problemPath = "/mnt/shared/CurrentCourses/%s_%s" % (newCourseNum, 
+                                                                courseName)
             if not os.path.exists(problemPath):
                 os.makedirs(problemPath)
             
             for language in languages:
                 languageIndex, languageVersion = language
                 print languageIndex, languageVersion
-                newCourseLanguage = LanguagesOfCourses(courseId=newCourseNum, languageIndex=int(languageIndex), languageVersion=languageVersion)
-                dao.add(newCourseLanguage)
-                dao.commit()
-            
+                try:
+                    newCourseLanguage = LanguagesOfCourses(courseId = newCourseNum, 
+                                                           languageIndex = int(languageIndex), 
+                                                           languageVersion = languageVersion)
+                    dao.add(newCourseLanguage)
+                    dao.commit()
+                except:
+                    dao.rollback()
+                    
             return redirect(url_for('.server_manage_class'))
     
-    return render_template('/server_add_class.html', error=error, courses=allCourses, languages=allLanguages)
+    return render_template('/server_add_class.html', 
+                           error = error,
+                           courses = allCourses, 
+                           languages = allLanguages)
 
-@GradeServer.route('/master/addUser', methods=['GET', 'POST'])
+@GradeServer.route('/master/addUser', 
+                   methods = ['GET', 'POST'])
 @login_required
 def server_add_user():
     global newUsers
     error = None
     targetUserIdToDelete = []
     if request.method == 'POST':
-        if "addIndivisualUser" in request.form:
+        if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
-            numberOfUsers = (len(request.form)-1)/5
-            newUser = [['','','','','','','','']]*(numberOfUsers+1)
+            numberOfUsers = (len(request.form) - 1) / 5
+            newUser = [['','','','','','','','']] * (numberOfUsers + 1)
             for form in request.form:
-                if form != "addIndivisualUser":
+                if form != 'addIndivisualUser':
                     value, index = re.findall('\d+|\D+', form)
                     index = int(index)
                     data = request.form[form]
-                    if value == "userId":
-                        newUser[index-1][0] = data
-                    elif value == "username":
-                        newUser[index-1][1] = data
-                    elif value == "authority":
-                        newUser[index-1][2] = data
-                    elif value == "college":
-                        newUser[index-1][3] = data
-                        newUser[index-1][4] = dao.query(Colleges).filter_by(collegeIndex=data).first().collegeName
-                    elif value == "department":
-                        newUser[index-1][5] = data
-                        newUser[index-1][6] = dao.query(Colleges).filter_by(collegeIndex=data).first().collegeName
+                    if value == 'userId':
+                        newUser[index - 1][0] = data
+                    elif value == 'username':
+                        newUser[index - 1][1] = data
+                    elif value == 'authority':
+                        newUser[index - 1][2] = data
+                    elif value == 'college':
+                        newUser[index - 1][3] = data
+                        newUser[index - 1][4] = dao.query(Colleges).\
+                                                    filter_by(collegeIndex = data).\
+                                                    first().\
+                                                    collegeName
+                    elif value == 'department':
+                        newUser[index - 1][5] = data
+                        newUser[index - 1][6] = dao.query(Departments).\
+                                                    filter_by(departmentIndex = data).\
+                                                    first().\
+                                                    departmentName
             for index in range(numberOfUsers):
                 newUsers.append(newUser[index])
                 
-        elif "addUserGroup" in request.form:
-            files = request.files.getlist("files")
+        elif 'addUserGroup' in request.form:
+            files = request.files.getlist('files')
             # if no file choosed
             if list(files)[0].filename:
                 # read each file
@@ -330,49 +402,70 @@ def server_add_user():
                         for eachData in userInformation:
                             if '=' in eachData:
                                 # all authority is user in adding user from text file
-                                newUser[2] = "User"
+                                newUser[2] = 'User'
                                 key = eachData.split('=')[0]
                                 value = eachData.split('=')[1]
-                                if key == "userId":
+                                if key == 'userId':
                                     for user in newUsers:
                                         if user[0] == value:
-                                            #error = "There is a duplicated user id. Check the file and added user list"
+                                            #error = 'There is a duplicated user id. Check the file and added user list'
                                             return redirect(url_for('.server_add_user'))
                                     newUser[0] = value 
-                                elif key == "username":
+                                elif key == 'username':
                                     newUser[1] = value
-                                elif key == "college":
+                                elif key == 'college':
                                     newUser[3] = value
-                                    newUser[4] = dao.query(Colleges).filter_by(collegeIndex=value).first().collegeName
-                                elif key == "department":
+                                    newUser[4] = dao.query(Colleges).\
+                                                     filter_by(collegeIndex = value).\
+                                                     first().\
+                                                     collegeName
+                                elif key == 'department':
                                     newUser[5] = value
-                                    newUser[6] = dao.query(Departments).filter_by(departmentIndex=value).first().departmentName
+                                    newUser[6] = dao.query(Departments).\
+                                                     filter_by(departmentIndex = value).\
+                                                     first().\
+                                                     departmentName
                                 else:
-                                    error = "Try again after check the manual"
-                                    return render_template('/server_add_user.html', error=error, newUsers=newUsers)
+                                    error = 'Try again after check the manual'
+                                    return render_template('/server_add_user.html', 
+                                                           error = error, 
+                                                           newUsers = newUsers)
                             else:
-                                error = "Try again after check the manual"
-                                return render_template('/server_add_user.html', error=error, newUsers=newUsers)
+                                error = 'Try again after check the manual'
+                                return render_template('/server_add_user.html', 
+                                                       error = error, 
+                                                       newUsers = newUsers)
                         newUsers.append(newUser)
                         
-        elif "addUser" in request.form:
+        elif 'addUser' in request.form:
             print newUsers
             for newUser in newUsers:
-                freshman = Members(memberId=newUser[0], password=newUser[0], memberName=newUser[1], authority=newUser[2], \
-                                   signedInDate=datetime.now())
-                dao.add(freshman)
-                dao.commit()
+                try:
+                    freshman = Members(memberId = newUser[0], 
+                                       password = newUser[0], 
+                                       memberName = newUser[1], 
+                                       authority = newUser[2],
+                                       signedInDate = datetime.now())
+                    dao.add(freshman)
+                    dao.commit()
+                except:
+                    dao.rollback()
                 
-                departmentInformation = DepartmentsDetailsOfMembers(memberId=newUser[0], collegeIndex=newUser[3], departmentIndex=newUser[5])
-                dao.add(departmentInformation)
-                dao.commit()
+                try:
+                    departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[0], 
+                                                                        collegeIndex = newUser[3], 
+                                                                        departmentIndex = newUser[5])
+                    dao.add(departmentInformation)
+                    dao.commit()
+                except:
+                    dao.rollback()
                     
             newUsers = [] # initialize add user list
             return redirect(url_for('.server_manage_user'))
             
-        elif "deleteUser" in request.form:
+        elif 'deleteUser' in request.form:
             for form in request.form:
-                if not form is "deleteUser":
+                if not form is 'deleteUser':
                     targetUserIdToDelete.append(form)
                 
         # if id list is not empty
@@ -387,7 +480,9 @@ def server_add_user():
                     if targetUser == newUser[0]:
                         del newUsers[index]
                         break
-                    index+=1
+                    index += 1
                                
         
-    return render_template('/server_add_user.html', error=error, newUsers=newUsers)
+    return render_template('/server_add_user.html', 
+                           error = error, 
+                           newUsers = newUsers)
