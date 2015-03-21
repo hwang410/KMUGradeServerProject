@@ -32,14 +32,19 @@ import re
 import zipfile
 import os
 import shutil
+import subprocess
+
 
 projectPath = '/mnt/shared'
+# if there's additional difficulty then change the value 'numberOfDifficulty'
+numberOfDifficulty = 5
 newUsers = []
 
 @GradeServer.route('/master/manage_problem', methods=['GET', 'POST'])
 @login_required
 def server_manage_problem():
     global projectPath
+    global numberOfDifficulty
     error = None
     
     if request.method == 'POST':
@@ -55,17 +60,20 @@ def server_manage_problem():
                                     count()
                 except:
                     nextIndex = 0
-                    
-                # if there's additional difficulty then change the value 'numberOfDifficulty'
-                numberOfDifficulty = 5
                 
                 numberOfProblemsOfDifficulty = [0] * numberOfDifficulty
                 for difficulty in range(numberOfDifficulty):
                     difficultyOfProblem = str(difficulty + 1)
-                    numberOfProblemsOfDifficulty[difficulty] = dao.query(Problems.problemId).\
-                                                                   filter(Problems.problemId.like(difficultyOfProblem + '%')).\
-                                                                   count()
-                
+                    try:
+                        numberOfProblemsOfDifficulty[difficulty] = dao.query(Problems.problemId).\
+                                                                       filter(Problems.problemId.like(difficultyOfProblem + '%')).\
+                                                                       count()
+                    except:
+                        error = 'Error has occurred while searching problems'
+                        return render_template('/server_manage_problem.html', 
+                                               error = error,
+                                               uploadedProblems = [])
+                        
                 # read each uploaded file(zip)
                 for fileData in files:
                     tmpPath = '%s/tmp' % projectPath
@@ -73,30 +81,22 @@ def server_manage_problem():
                     # unzip file
                     with zipfile.ZipFile(fileData, 'r') as z:
                         z.extractall(tmpPath)
-                    
-                    print os.listdir(tmpPath)
-                    problemName = os.listdir(tmpPath)[0]
-                    problemInformationPath = '%s/%s/%s.txt' % (tmpPath, problemName, problemName)
+                        
+                    # splitting by .(dot) or _(under bar)
+                    problemName = re.split('_|\.', os.listdir(tmpPath)[0])[0]
+                    problemInformationPath = '%s/%s.txt' % (tmpPath, problemName)
                     problemInformation = open(problemInformationPath, 'r').read()
                     nextIndex += 1
-                    
                     # slice and make information from 'key=value, key=value, ...'
-                    problemInformation = problemInformation.split(', ') 
-                    
+                    problemInformation = problemInformation.split(', ')
                     difficulty = 0
                     solutionCheckType = 0
                     limitedTime = 0
                     limitedMemory = 0
                     
-                    problemPath = '%s/Problems/' % projectPath
-                    
-                    if not os.path.exists(problemPath):
-                        os.makedirs(problemPath)
-                    
                     # reslice and make information from 'key=value'
                     for eachInformation in problemInformation:
                         key, value = eachInformation.split('=')
-                        
                         if key == 'Name':
                             problemName = value
                         elif key == 'Difficulty':
@@ -109,12 +109,12 @@ def server_manage_problem():
                             limitedMemory = int(value)
                             
                     numberOfProblemsOfDifficulty[difficulty - 1] += 1
-                    
+                                                                          
                     # place the difficulty at the left most
                     problemId = difficulty * 10000 + numberOfProblemsOfDifficulty[difficulty - 1]
-                    problemPath += str(problemId) + '_' + problemName
-                    
+                    problemPath = '%s/Problems/%s' % (projectPath, str(problemId) + '_' + problemName)
                     try:
+                        
                         newProblem = Problems(problemIndex = nextIndex, 
                                               problemId = problemId, 
                                               problemName = problemName, 
@@ -128,19 +128,32 @@ def server_manage_problem():
                     except:
                         dao.rollback()
                         error = 'Creation Problem Error'
-                        
+                        return render_template('/server_manage_problem.html', 
+                                               error = error,
+                                               uploadedProblems = [])
                     # rename new problem folder
-                    os.chdir('%s/%s/%s_%s' % (tmpPath, problemName, problemName, solutionCheckType))
-                    os.system('rename "s/\.*/%s_/" *' % (problemId))
+                    os.chdir('%s/%s_%s' % (tmpPath, problemName, solutionCheckType))
+                    try:
+                        subprocess.call(['rename "s/\.*/%s_/" *' % (problemId)])
+                    except OSError:
+                        error = 'Error has occurred while renaming a folder'
+                    #os.system('rename "s/\.*/%s_/" *' % (problemId))
                     # change problems information files name
-                    os.chdir('%s/%s' % (tmpPath, problemName))
-                    os.system('rename "s/\.*/%s_/" *' % (problemId))
-                    # change problem folder name
-                    os.chdir('%s' % tmpPath)
-                    os.system('rename "s/\.*/%s_/" *' % (problemId))
+                    os.chdir('%s/' % (tmpPath))
+                    try:
+                        os.system('rename "s/\.*/%s_/" *' % (problemId))
+                    except:
+                        error = 'Error has occured while renaming a filder'
                     
+                    # create final goal path
+                    if not os.path.exists(problemPath):
+                        os.makedirs(problemPath)
+                        
                     # after all, move the problem into 'Problems' folder
-                    shutil.move(tmpPath, problemPath)
+                    try:
+                        os.system('mv %s/* %s/' % (tmpPath, problemPath))
+                    except:
+                        error = 'Error has occurred while moving new problem'
                     
             else:
                 try:
@@ -150,6 +163,10 @@ def server_manage_problem():
                     dao.commit()
                 except:
                     dao.rollback()
+                    error = 'Problem deletion error'
+                    return render_template('/server_manage_problem.html', 
+                                       error = error,
+                                       uploadedProblems = [])
 
         return redirect(url_for('.server_manage_problem'))
         
