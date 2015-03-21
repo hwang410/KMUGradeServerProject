@@ -31,7 +31,6 @@ from GradeServer.model.problems import Problems
 import re
 import zipfile
 import os
-import shutil
 import subprocess
 
 
@@ -113,8 +112,8 @@ def server_manage_problem():
                     # place the difficulty at the left most
                     problemId = difficulty * 10000 + numberOfProblemsOfDifficulty[difficulty - 1]
                     problemPath = '%s/Problems/%s' % (projectPath, str(problemId) + '_' + problemName)
+                    
                     try:
-                        
                         newProblem = Problems(problemIndex = nextIndex, 
                                               problemId = problemId, 
                                               problemName = problemName, 
@@ -131,19 +130,26 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error,
                                                uploadedProblems = [])
+                        
                     # rename new problem folder
                     os.chdir('%s/%s_%s' % (tmpPath, problemName, solutionCheckType))
                     try:
-                        subprocess.call(['rename "s/\.*/%s_/" *' % (problemId)])
+                        subprocess.call('rename "s/\.*/%s_/" *' % (problemId), shell=True)
                     except OSError:
                         error = 'Error has occurred while renaming a folder'
-                    #os.system('rename "s/\.*/%s_/" *' % (problemId))
+                        return render_template('/server_manage_problem.html', 
+                                       error = error,
+                                       uploadedProblems = [])
+                        
                     # change problems information files name
                     os.chdir('%s/' % (tmpPath))
                     try:
-                        os.system('rename "s/\.*/%s_/" *' % (problemId))
-                    except:
-                        error = 'Error has occured while renaming a filder'
+                        subprocess.call('rename "s/\.*/%s_/" *' % (problemId), shell=True)
+                    except OSError:
+                        error = 'Error has occured while renaming a folder'
+                        return render_template('/server_manage_problem.html', 
+                                       error = error,
+                                       uploadedProblems = [])
                     
                     # create final goal path
                     if not os.path.exists(problemPath):
@@ -151,9 +157,12 @@ def server_manage_problem():
                         
                     # after all, move the problem into 'Problems' folder
                     try:
-                        os.system('mv %s/* %s/' % (tmpPath, problemPath))
-                    except:
+                        subprocess.call('mv %s/* %s/' % (tmpPath, problemPath), shell=True)
+                    except OSError :
                         error = 'Error has occurred while moving new problem'
+                        return render_template('/server_manage_problem.html', 
+                                       error = error,
+                                       uploadedProblems = [])
                     
             else:
                 try:
