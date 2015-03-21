@@ -4,29 +4,65 @@
 
 {%- extends "main.html" -%}
 {%- block body %}
+<script>
+$(function() {
+	var administrators = [
+		{%- for courseAdministrator in allCourseAdministrators %}
+			{ value: "{{ courseAdministrator.memberId }} {{ courseAdministrator.memberName }}", data: ""},
+		{% endfor -%}
+		{ value: "", data: "" }
+	];
+	$("#search-administrator").autocomplete({
+		lookup: administrators,
+		onSelect: function(suggestion){
+		}	
+	});	
+});
+</script>
 <div class="container">
 	<div>
 		<h3>Manage Class</h3>
 		<h4>Class Name : 
 			<select class="input-large span2" type="text" id="courseId" name="courseId" form="addCourse">
 			{%- for course in courses %}
-				<option class="{{ course.courseIndex }}">{{ course.courseIndex }} {{ course.courseName }}</option>
+				{%- if course.courseIndex|int == courseIndex|int %}
+					<option class="{{ course.courseIndex }}" selected="selected">
+				{%- else %}
+					<option class="{{ course.courseIndex }}">
+				{% endif -%}
+				{{ course.courseIndex }} {{ course.courseName }}</option>
 			{% endfor -%}
 			</select>
 		</h4>
-		<h4>Class Manager : <input name="courseAdministratorId" type="text" class="input-large" form="addCourse"></h4>
+		<h4 style="display:inline">Class Manager : <div id="searchfield" style="display:inline"><input id="search-administrator" name="courseAdministrator" type="text" class="input-large" form="addCourse" value="{%- if courseAdministrator %}{{ courseAdministrator }}{% endif -%}"></div></h4>
 		<h4>Semester : 
-			<label class="radio inline"><input type="radio" name="semester" id="1st" value="1"  form="addCourse" checked>1st</label>
-			<label class="radio inline"><input type="radio" name="semester" id="summer" value="2" form="addCourse">Summer</label>
-			<label class="radio inline"><input type="radio" name="semester" id="2nd" value="3" form="addCourse">2nd</label>
-			<label class="radio inline"><input type="radio" name="semester" id="winter" value="4" form="addCourse">Winter</label>
+			<script>
+			var keys = ["1st", "Summer", "2nd", "Winter"];
+			for(var i=1;i<=4;i++){
+				document.write('<label class="radio inline"><input type="radio" name="semester" id="' + keys[i-1] + '" value="' + i + '"  form="addCourse"');
+				if(i == {{ semester|int }}){
+					document.write(' checked')
+				}
+				document.write('>' + keys[i-1] + '</label>')
+			}
+			</script>
 		</h4>
 		<h4>Language : 
 		{%- for language in languages %}
-			<label style="display:inline" class="checkbox-center"><input type="checkbox" class="box-check" name="languageIndex_{{ language.languageIndex }}_{{ language.languageVersion }}" value="{{ language.languageIndex }}_{{ language.languageVersion }}" form="addCourse">{{ language.languageName }}{%- if language.languageVersion != '0' %}{{ language.languageVersion }}{% endif -%}</label>
+			<label style="display:inline" class="checkbox-center">
+				<script>
+				document.write('<input type="checkbox" class="box-check" name="languageIndex_{{ language.languageIndex }}_{{ language.languageVersion }}" value="{{ language.languageIndex }}_{{ language.languageVersion }}" form="addCourse"');
+				{%- for choosedLanguage in choosedLanguages %}
+					{%- if language.languageIndex|string == choosedLanguage[0]|string and language.languageVersion|string == choosedLanguage[1]|string %}
+						document.write(' checked');
+					{% endif -%}
+				{% endfor -%}
+				document.write('>{{ language.languageName }}{%- if language.languageVersion != '0' %}{{ language.languageVersion }}{% endif -%}');
+				</script>
+			</label>
 		{% endfor -%}
 		</h4>
-		<h4>Class Description : <input name="courseDescription" type="text" class="input-xlarge" autocomplete="off" form="addCourse"></h4> 
+		<h4>Class Description : <input name="courseDescription" type="text" class="input-xlarge" autocomplete="off" form="addCourse" value="{%- if courseDescription %}{{ courseDescription }}{% endif -%}"></h4> 
 		<script>
 		$(function() {
 	    if (!Modernizr.inputtypes['date']) {
@@ -37,10 +73,10 @@
 		});
 		</script>
 		<h4>Start Date : 
-			<input class="datepicker input-large" type="date" id="startDateOfCourse" name="startDateOfCourse" data-date-format="yyyy-mm-dd" placeholder="click and choose" autocomplete="off" form="addCourse">
+			<input class="datepicker input-large" type="date" id="startDateOfCourse" name="startDateOfCourse" data-date-format="yyyy-mm-dd" placeholder="click and choose" autocomplete="off" form="addCourse" value="{%- if startDateOfCourse %}{{ startDateOfCourse }}{% endif -%}">
 		</h4>
 		<h4>End Date : 
-			<input class="datepicker input-large" type="date" id="endDateOfCourse" name="endDateOfCourse" data-date-format="yyyy-mm-dd" placeholder="click and choose" autocomplete="off" form="addCourse">
+			<input class="datepicker input-large" type="date" id="endDateOfCourse" name="endDateOfCourse" data-date-format="yyyy-mm-dd" placeholder="click and choose" autocomplete="off" form="addCourse" value="{%- if endDateOfCourse %}{{ endDateOfCourse }}{% endif -%}">
 		</h4>
 		<form method="post" id="addCourse">
 			<button class="btn" type="submit">Done</button>
