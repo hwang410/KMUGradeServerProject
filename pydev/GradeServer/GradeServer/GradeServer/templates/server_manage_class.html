@@ -49,7 +49,7 @@
 				<tr>
 					<td>{{ course.courseId }}</td>
 					<td>{{ course.courseName }}</td>
-					<td>{{ course.courseAdministratorId }}</td>
+					<td>{{ course.courseAdministratorId }} {{ course.memberName }}</td>
 					<td>{%- for language in languagesOfCourse %}
 								{%- if course.courseId==language.courseId %}
 									{{ language.languageName }}
