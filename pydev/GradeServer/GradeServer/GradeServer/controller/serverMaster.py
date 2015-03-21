@@ -148,9 +148,8 @@ def server_manage_problem():
                     # create final goal path
                     if not os.path.exists(problemPath):
                         os.makedirs(problemPath)
+                        
                     # after all, move the problem into 'Problems' folder
-                    
-                    #shutil.move('%s/*' % tmpPath, '%s/' % problemPath)
                     try:
                         os.system('mv %s/* %s/' % (tmpPath, problemPath))
                     except:
