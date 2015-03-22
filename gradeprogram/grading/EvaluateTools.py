@@ -2,6 +2,9 @@ import os
 import glob
 import math
 import runThread
+from subprocess import call
+
+LIMIT_TIME_MULTIPLE = 0.0011
 
 class EvaluateTools():
     def __init__(self, usingLang, limitTime, answerPath, version, gradeMethod, runFileName, problemName, caseCount):
@@ -18,7 +21,7 @@ class EvaluateTools():
         # copy input data
         try:
             if self.caseCount == 1:
-                os.system('cp ' + self.answerPath + self.problemName + '_total.in input.txt')
+                call('cp ' + self.answerPath + self.problemName + '_total_inputs.in input.txt', shell = True)
         except Exception as e:
             print e
             return 'error', 0
@@ -30,11 +33,11 @@ class EvaluateTools():
         
         runTh.start()   # thread run -> program run
         
-        runTh.join(float(self.limitTime) * 0.0015)
+        runTh.join(float(self.limitTime) * LIMIT_TIME_MULTIPLE)
         
         if runTh.isAlive() == True: # if thread is alive
             runTh.shutdown()
-            os.system('kill -9 ' + str(runTh.pid))
+            call('kill -9 ' + str(runTh.pid), shell = True)
         
         tsize = os.path.getsize('time.txt')
         
@@ -49,7 +52,7 @@ class EvaluateTools():
                     runTime = int( math.ceil(float(words[1][0] * 60) + float(words[1][2:-1]) * 1000) )
                     
         else:       # if program is abnormally terminated.
-            return 'time over', int(self.limitTime * 1.5)
+            return 'time over', int(self.limitTime * LIMIT_TIME_MULTIPLE)
         
         coreSize = 0
         coreList = glob.glob('core.[0-9]*')
@@ -90,7 +93,7 @@ class EvaluateTools():
     def Solution(self):
         # user output file each line compare with answer file each line.
         try:
-            answerFile = open(self.answerPath + self.problemName + '_total.out', 'r')
+            answerFile = open(self.answerPath + self.problemName + '_total_outputs.out', 'r')
         except Exception as e:
             print e
             return 'error'
@@ -113,8 +116,8 @@ class EvaluateTools():
             count = count
         
         for i in range(_min):
-            stdLine = stdLines[i].replace('\r\n', '\n')
-            answerLine = answerLines[i].replace('\r\n', '\n')
+            stdLine = stdLines[i].strip('\r\n')
+            answerLine = answerLines[i].strip('\r\n')
             
             if stdLine != answerLine:   # if not same each line
                 count += 1
@@ -131,12 +134,12 @@ class EvaluateTools():
         
     def Checker(self):
         try:
-            os.system('cp ' + self.answerPath + self.problemName + '.out checker.out')
+            call('cp ' + self.answerPath + self.problemName + '.out checker.out', shell = True)
         except Exception as e:
             print e
             return 'error'
         
-        os.system('./checker.out 1>result.txt')
+        call('./checker.out 1>result.txt', shell = True)
         
         rf = open('reuslt.txt', 'r')
         

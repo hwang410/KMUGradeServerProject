@@ -1,4 +1,4 @@
-import os
+from subprocess import call
 from EvaluateTools import EvaluateTools
 
 class EvaluateTools_multicase(EvaluateTools):
@@ -15,8 +15,8 @@ class EvaluateTools_multicase(EvaluateTools):
         for i in range(1, self.caseCount+1):
             # input.txt file copy
             try:
-                os.remove('input.txt') # ...ing....
-                os.system('cp ' + self.answerPath + self.problemName + '_case' + str(i) + '.in input.txt') # ...ing...
+                call('input.txt', shell = True) # ...ing....
+                call('cp ' + self.answerPath + self.problemName + '_case' + str(i) + '.in input.txt', shell = True) # ...ing...
             except Exception as e:
                 errorCount += 1
                 if errorCount > 4:
@@ -27,7 +27,7 @@ class EvaluateTools_multicase(EvaluateTools):
                 
          
             # program run
-            os.system(command)
+            call(command, shell = True)
             
             answerFile = open(self.answerPath + self.problemName + '_case' + str(i) + '.out', 'r') # answer output open
             stdOutput = open('output.txt', 'r') # student output open
@@ -38,8 +38,8 @@ class EvaluateTools_multicase(EvaluateTools):
             answerFile.close()
             stdOutput.close()
             
-            answer = answer.replace('\r\n', '\n')
-            student = student.replace('\r\n', '\n')
+            answer = answer.strip('\r\n')
+            student = student.strip('\r\n')
             
             if answer != student:
                 count += 1
@@ -55,13 +55,13 @@ class EvaluateTools_multicase(EvaluateTools):
         errorCount = 0
         _list = []
         command = self.MakeCommand()
-        os.system('cp ' + self.answerPath + self.problemName + '.out checker.out')
+        call('cp ' + self.answerPath + self.problemName + '.out checker.out', shell = True)
         
         for i in range(1, self.caseCount+1):
             # input.txt file copy
             try:
-                os.remove('input.txt') # ...ing....
-                os.rename(self.answerPath + self.problemName + '_case' + str(i) + '.in input.txt') # ...ing...
+                call('input.txt', shell = True) # ...ing....
+                call(self.answerPath + self.problemName + '_case' + str(i) + '.in input.txt', shell = True) # ...ing...
             except Exception as e:
                 errorCount += 1
                 if errorCount > 4:
@@ -72,9 +72,9 @@ class EvaluateTools_multicase(EvaluateTools):
                 
          
             # program run
-            os.system(command)
+            call(command, shell = True)
             
-            os.system('./checker.out 1>result.txt')
+            call('./checker.out 1>result.txt', shell = True)
             rf = open('reuslt.txt', 'r')
             
             score = rf.readline()

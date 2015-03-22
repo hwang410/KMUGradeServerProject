@@ -38,8 +38,8 @@ if __name__ == '__main__':
                 dao.commit()
             except Exception as e :
                 raise e 
-            finally:
-                dao.remove()
+                dao.rollback()
+            
             print '...compile error...'
         
         elif result == 'error':
@@ -50,8 +50,8 @@ if __name__ == '__main__':
                 dao.commit()
             except Exception as e :
                 raise e 
-            finally:
-                dao.remove()
+                dao.rollback()
+            
             print '...compile server error...'
         
         else:
@@ -71,9 +71,9 @@ if __name__ == '__main__':
                     
                     dao.commit()
                 except Exception as e:
-                    raise e 
-                finally:
-                    dao.remove()
+                    raise e
+                    dao.rollback() 
+                    
                 print '...solved...'
             
             elif result == 'time over':
@@ -90,8 +90,8 @@ if __name__ == '__main__':
                     dao.commit()
                 except Exception as e:
                     raise e 
-                finally:
-                    dao.remove()
+                    dao.rollback()
+                    
                 print '...time over...'
             
             elif result == 'runtime':
@@ -107,9 +107,9 @@ if __name__ == '__main__':
                     
                     dao.commit()
                 except Exception as e:
-                    raise e 
-                finally:
-                    dao.remove()
+                    raise e
+                    dao.rollback()
+                
                 print '...rumtime error...'
                 
             elif result == 'error':
@@ -120,8 +120,8 @@ if __name__ == '__main__':
                     dao.commit()
                 except Exception as e:
                     raise e 
-                finally:
-                    dao.remove()
+                    dao.rollback()
+                
                 print '...execution server error...'
             
             else:
@@ -138,6 +138,6 @@ if __name__ == '__main__':
                     dao.commit()
                 except Exception as e:
                     raise e 
-                finally:
-                    dao.remove()
+                    dao.rollback()
+                
                 print '...wrong answer...'

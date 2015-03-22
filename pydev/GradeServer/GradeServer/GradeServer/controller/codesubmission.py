@@ -3,6 +3,7 @@
 import os
 import sys
 import shutil
+import glob
 
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, send_file, make_response, \
 current_app, session, flash
@@ -23,6 +24,7 @@ from GradeServer.model.submittedFiles import SubmittedFiles
 from GradeServer.model.submissions import Submissions
 from GradeServer.model.languages import Languages
 from GradeServer.model.languagesOfCourses import LanguagesOfCourses
+from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.GradeServer_config import GradeServerConfig
 from sqlalchemy import and_, func
 from datetime import datetime
@@ -61,7 +63,6 @@ def upload(courseId, problemId):
     uLang = 1
     uVersion = 0
     
-    print tempPath
     if not os.path.exists(tempPath):
         os.makedirs(tempPath)
     
@@ -158,6 +159,28 @@ def upload(courseId, problemId):
         raise e
           
     flash("submission success!")
+    
+    try:
+        problemsParam = dao.query(Problems.problemPath, Problems.limitedTime, Problems.limitedMemory, Problems.solutionCheckType).filter_by(problemId = problemId).first()
+    except Exception as e:
+        print "DB error : " + str(e)
+        raise e
+    try:
+        departmentIndex = dao.query(DepartmentsDetailsOfMembers.departmentIndex).filter_by(memberId = memberId).first().departmentIndex
+    except Exception as e:
+        print "DB error : " + str(e)
+        raise e
+    
+    caseCount = len( glob.glob(problemsParam[0]) )/2
+    
+    if caseCount > 1:
+        if departmentIndex == 1:
+           caseCount -= 1
+        else:
+            caseCount = 1
+
+    print problemsParam[0], problemsParam[1], problemsParam[2], problemsParam[3]
+    print departmentIndex 
     
     return courseId
         

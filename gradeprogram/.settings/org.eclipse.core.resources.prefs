@@ -1,0 +1,16 @@
+eclipse.preferences.version=1
+encoding//DB/__init__.py=utf-8
+encoding//DB/colleges.py=utf-8
+encoding//DB/courses.py=utf-8
+encoding//DB/departments.py=utf-8
+encoding//DB/languages.py=utf-8
+encoding//DB/members.py=utf-8
+encoding//DB/problemSets.py=utf-8
+encoding//DB/problems.py=utf-8
+encoding//DB/registeredCourses.py=utf-8
+encoding//DB/registeredProblems.py=utf-8
+encoding//DB/submissions.py=utf-8
+encoding//DB/submittedFiles.py=utf-8
+encoding//DB/submittedRecordsOfProblems.py=utf-8
+encoding/database.py=utf-8
+encoding/dbinit.py=utf-8
