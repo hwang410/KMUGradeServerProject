@@ -276,3 +276,13 @@ thead{
 #myTab {
 	margin-bottom:0px;
 }
+
+#addProblemModal{
+	width:1000px;
+	margin-left:-500px
+}
+
+#addUserModal{
+	width:700px;
+	margin-left:-350px
+}

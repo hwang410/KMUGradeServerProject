@@ -27,15 +27,15 @@ $(function() {
 			memberId = memberDatas[0];
 			memberName = memberDatas[1];
 			memberDepartments = ""
-			for(var $i=2;$i<memberDatas.length-1;$i+=2){
-				if($i>3) memberDepartments += "<br>"; /* if more colleges and departments,then change the line */
+			for(var $i = 2;$i < memberDatas.length - 1;$i += 2){
+				if($i > 3) memberDepartments += "<br>"; /* if more colleges and departments,then change the line */
 				{% for college in colleges %}
 					if(memberDatas[$i] == {{ college.collegeIndex }}){
 						memberDepartments += "{{ college.collegeName }} ";
 					}
 				{% endfor %}
 				{% for department in departments %}
-					if(memberDatas[$i+1] == {{ department.departmentIndex }}){
+					if(memberDatas[$i + 1] == {{ department.departmentIndex }}){
 						memberDepartments += "{{ department.departmentName }} ";
 					}
 				{% endfor %}
@@ -51,55 +51,61 @@ $(function() {
 	<div>
 		<h3>Add User</h3>
 		<!-- if any button is checked, then showing modal pop -->
-		<div style="text-align:right"><a href="#addUserModal" rol="button" class="btn" data-toggle="modal">Add</a> <a onclick="showingDeleteModal()" role="button" class="btn" data-toggle="modal">Delete</a></div>
+		<div style="text-align:right">
+			<a class="btn" data-toggle="modal" href="#addUserModal" rol="button">Add</a>
+			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">Delete</a>
+		</div>
 
 		<!-- hidden modal pop -->
-		<div id="addUserModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true" style="width:700px;margin-left:-350px">
+		<div class="modal hide fade" id="addUserModal" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true" tabindex="-1">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 				<h3 id="addUserModalLabel">Add User</h3>
 			</div>
 			<div class="modal-body">
-				<div style="text-align:right"><button type="button" class="btn">Add line</button></div>
+				<div style="text-align:right"><button class="btn" type="button">Add line</button></div>
 				<table class="table table-bordered" style="margin-top:10px">
-					<thead><tr><td>Course Id</td><td>User Id</td><td>User Name</td><td>Department</td></tr></thead>
+					<thead>
+						<tr>
+							<td>Course Id
+							<td>User Id
+							<td>User Name
+							<td>Department
 					<tbody>
 						<tr>
-							<td><div id="searchfield"><input type="text" class="input-ularge" id="search-courses" name="courseId" value="" form="addUser"></div></td>
-							<td><div id="searchfield"><input type="text" class="input-ularge" id="search-members" name="memberId" value="" form="addUser"></div></td>
-							<td id="member-name"></td>
-							<td id="department-name"></td>
-						</tr>
-					</tbody>
+							<td><div id="searchfield"><input class="input-ularge" id="search-courses" name="courseId" type="text" value="" form="addUser"></div>
+							<td><div id="searchfield"><input class="input-ularge" id="search-members" name="memberId" type="text" value="" form="addUser"></div>
+							<td id="member-name">
+							<td id="department-name">
 				</table>
 			</div>
 			<div class="modal-footer">
-				<form method="post" id="addUser">
+				<form id="addUser" method="post">
 					<button class="btn" type="submit">Done</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 				</form>
 			</div>
 		</div>
 		<!-- if any item choiced -->
-		<div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal hide fade" id="deleteModal" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete User</h3>
 			</div>
 			<div class="modal-body">
 				<p>Do you really want to delete it?</p>
 			</div>
 			<div class="modal-footer">
-				<form method="post" id="deleteUser">
+				<form id="deleteUser" method="post">
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 					<button class="btn" type="submit">Done</button>
 				</form>
 			</div>
 		</div>
 		<!-- no items choiced -->
-		<div id="deleteNoItem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal hide fade" id="deleteNoItem" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete User</h3>
 			</div>
 			<div class="modal-body">
@@ -112,14 +118,21 @@ $(function() {
 		<!-- end hidden modal pop -->
 
 		<table class="table table-bordered" style="margin-top:10px">
-			<thead><tr><td>Index</td><td>Course</td><td>User Id</td><td>User Name</td><td>Department</td><td>Delete</td></tr></thead>
+			<thead>
+				<tr>
+					<td>Index
+					<td>Course
+					<td>User Id
+					<td>User Name
+					<td>Department
+					<td>Delete
 			<tbody>
 				{% for eachUser in ownUsers %}
 				<tr>
-					<td>{{ loop.index }}</td>
-					<td>{{ eachUser[0] }}</td> <!-- courseId -->
-					<td>{{ eachUser[1] }}</td> <!-- userId -->
-					<td>{{ eachUser[2] }}</td> <!-- userName -->
+					<td>{{ loop.index }}
+					<td>{{ eachUser[0] }} <!-- courseId -->
+					<td>{{ eachUser[1] }} <!-- userId -->
+					<td>{{ eachUser[2] }} <!-- userName -->
 					<td> <!-- college departments list -->
 						{% for index in range(3, eachUser|length) %}
 							{{ eachUser[index] }}
@@ -127,11 +140,8 @@ $(function() {
 							<br>
 							{% endif %}
 						{% endfor %}
-					</td>
-					<td><label class="checkbox-center"><input type="checkbox" name="delete_{{ eachUser[0] }}_{{ eachUser[1] }}" class="box-check" form="deleteUser"></label></td>
-				</tr>
+					<td><label class="checkbox-center"><input class="box-check" name="delete_{{ eachUser[0] }}_{{ eachUser[1] }}" type="checkbox" form="deleteUser"></label>
 				{% endfor %}
-			</tbody>
 		</table>
 	</div>
 </div>

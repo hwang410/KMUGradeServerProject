@@ -33,7 +33,6 @@ import zipfile
 import os
 import subprocess
 
-
 projectPath = '/mnt/shared'
 # if there's additional difficulty then change the value 'numberOfDifficulty'
 numberOfDifficulty = 5
@@ -256,21 +255,23 @@ def server_manage_user():
                           Members.contactNumber, 
                           Members.emailAddress, 
                           Members.authority, 
-                          Members.lastAccessDate, 
+                          Members.lastAccessDate,
+                          Colleges.collegeName,
                           Departments.departmentName).\
                     join(DepartmentsDetailsOfMembers, 
                          Members.memberId == DepartmentsDetailsOfMembers.memberId).\
+                    join(Colleges,
+                         Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
                     join(Departments, 
                          Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
                     order_by(Members.signedInDate.desc()).\
                     all()
                           
     except:
-        users = ''
         error = 'Error has occurred while getting member information'
         return render_template('/server_manage_user.html', 
                                error = error,
-                               users = users, 
+                               users = [], 
                                index = len(users))
               
     if request.method == 'POST':
@@ -416,9 +417,7 @@ def server_add_class():
                                            languages = allLanguages)
                     
             return redirect(url_for('.server_manage_class'))
-    
-    for k in allCourseAdministrators:
-        print k.memberId
+
     return render_template('/server_add_class.html', 
                            error = error,
                            courseAdministrator = courseAdministrator,
@@ -503,15 +502,11 @@ def server_add_user():
                                 key = eachData.split('=')[0]
                                 value = eachData.split('=')[1]
                                 if key == 'userId':
-                                    for user in newUsers:
-                                        if user[0] == value:
-                                            error = 'There is a duplicated user id. Check the file and added user list'
-                                            return render_template('/server_add_user.html', 
-                                                                   error = error, 
-                                                                   newUsers = newUsers)
                                     newUser[0] = value 
+                                    
                                 elif key == 'username':
                                     newUser[1] = value
+                                    
                                 elif key == 'college':
                                     newUser[3] = value
                                     try:
@@ -524,6 +519,7 @@ def server_add_user():
                                         return render_template('/server_add_user.html', 
                                                                error = error, 
                                                                newUsers = newUsers)
+                                        
                                 elif key == 'department':
                                     newUser[5] = value
                                     try:
@@ -531,21 +527,32 @@ def server_add_user():
                                                          filter(Departments.departmentIndex == value).\
                                                          first().\
                                                          departmentName
+                                                         
                                     except:
                                         error = 'Wrong department index has inserted'
                                         return render_template('/server_add_user.html', 
                                                                error = error, 
                                                                newUsers = newUsers)
+                                        
                                 else:
                                     error = 'Try again after check the manual'
                                     return render_template('/server_add_user.html', 
                                                            error = error, 
                                                            newUsers = newUsers)
+                                    
                             else:
                                 error = 'Try again after check the manual'
                                 return render_template('/server_add_user.html', 
                                                        error = error, 
                                                        newUsers = newUsers)
+                        
+                        for user in newUsers:
+                            if user[0] == newUser[0] and user[3] == newUser[3] and user[5] == newUser[5]:
+                                error = 'There is a duplicated user id. Check the file and added user list'
+                                return render_template('/server_add_user.html', 
+                                                       error = error, 
+                                                       newUsers = newUsers)
+                                
                         newUsers.append(newUser)
                         
         elif 'addUser' in request.form:
