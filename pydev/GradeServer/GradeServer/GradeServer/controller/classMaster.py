@@ -24,13 +24,11 @@ from GradeServer.model.problems import Problems
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.model.submissions import Submissions
-
 from sqlalchemy import and_, exc
 
 import os
 
-TRUE = 1
-FALSE = 0
+projectPath = '/mnt/shared'
 
 @GradeServer.route('/classmaster/<memberId>')
 @login_required
@@ -41,9 +39,18 @@ def class_master_signin(memberId):
 @login_required
 def class_user_submit():
     error = None
-    ownCourses = dao.query(RegisteredCourses).\
-                     filter_by(courseAdministratorId = session['memberId']).\
-                     all()
+    
+    try:
+        ownCourses = dao.query(RegisteredCourses).\
+                         filter_by(courseAdministratorId = session['memberId']).\
+                         all()
+    except:
+        error = 'Error occurred while searching registered courses.'
+        return render_template('/class_user_submit.html', 
+                               error = error, 
+                               ownCourses = [], 
+                               submissions = [])
+        
     try:
         submissions = dao.query(Submissions.courseId, 
                                 Submissions.status, 
@@ -61,40 +68,74 @@ def class_user_submit():
                                      Problems.problemId == Submissions.problemId).\
                                 all()
     except:
-        print "Submissions table is empty"
-        submissions = []
+        error = 'Error occurred while searching submission records.'
+        return render_template('/class_user_submit.html', 
+                               error = error, 
+                               ownCourses = ownCourses, 
+                               submissions = [])
     
     return render_template('/class_user_submit.html', 
                            error = error, 
                            ownCourses = ownCourses, 
                            submissions = submissions)
 
-@GradeServer.route('/classmaster/cm_manage_problem', 
-                   methods=['GET', 'POST'])
+@GradeServer.route('/classmaster/cm_manage_problem', methods=['GET', 'POST'])
 @login_required
 def class_manage_problem():
+    global projectPath
     error = None
-    allProblems = dao.query(Problems).\
-                      all()
-    ownCourses = dao.query(RegisteredCourses).\
-                     filter_by(courseAdministratorId = session['memberId']).\
-                     all()
-    ownProblems = dao.query(RegisteredProblems.courseId, 
-                            RegisteredProblems.isAllInputCaseInOneFile, 
-                            RegisteredProblems.startDateOfSubmission,
-                            RegisteredProblems.endDateOfSubmission, 
-                            RegisteredProblems.openDate, 
-                            RegisteredProblems.closeDate, 
-                            RegisteredProblems.problemId,
-                            RegisteredCourses.courseName, 
-                            Problems.problemName).\
-                      join(RegisteredCourses, 
-                           RegisteredCourses.courseId == RegisteredProblems.courseId).\
-                      join(Problems, 
-                           Problems.problemId == RegisteredProblems.problemId).\
-                      filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
-                      all()
+    modalError = None
+    try:
+        allProblems = dao.query(Problems).\
+                          all()
+    except:
+        error = 'Error occurred while searching problems'
+        return render_template('/class_manage_problem.html', 
+                               error = error, 
+                               modalError = error,
+                               allProblems = [], 
+                               ownCourses = [], 
+                               ownProblems = [])
     
+    try:
+        ownCourses = dao.query(RegisteredCourses).\
+                         filter_by(courseAdministratorId = session['memberId']).\
+                         all()
+    except:
+        error = 'Error occurred while searching registered courses'
+        return render_template('/class_manage_problem.html', 
+                               error = error,
+                               modalError = modalError, 
+                               allProblems = allProblems, 
+                               ownCourses = [], 
+                               ownProblems = [])
+    
+    try:
+        ownProblems = dao.query(RegisteredProblems.courseId, 
+                                RegisteredProblems.isAllInputCaseInOneFile, 
+                                RegisteredProblems.startDateOfSubmission,
+                                RegisteredProblems.endDateOfSubmission, 
+                                RegisteredProblems.openDate, 
+                                RegisteredProblems.closeDate, 
+                                RegisteredProblems.problemId,
+                                RegisteredCourses.courseName, 
+                                Problems.problemName).\
+                          join(RegisteredCourses, 
+                               RegisteredCourses.courseId == RegisteredProblems.courseId).\
+                          join(Problems, 
+                               Problems.problemId == RegisteredProblems.problemId).\
+                          filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                          all()
+    except:
+        error = 'Error occurred while searching own problems'
+        return render_template('/class_manage_problem.html', 
+                               error = error,
+                               modalError = modalError, 
+                               allProblems = allProblems, 
+                               ownCourses = ownCourses, 
+                               ownProblems = [])
+        
+        
     if request.method == 'POST':
         courseId = problemId = 0
         isAllInputCaseInOneFile = 'OneFile'
@@ -102,20 +143,31 @@ def class_manage_problem():
         endDate = ''
         openDate = ''
         closeDate = ''
-        isNewProblem = TRUE
+        isNewProblem = True
         
         for form in request.form:
             if 'delete' in form:
-                isNewProblem = FALSE
+                isNewProblem = False
                 courseId, problemId = form[7:].split('_')
-                targetProblem = dao.query(RegisteredProblems).\
-                                    filter(and_(RegisteredProblems.courseId == courseId, 
-                                                RegisteredProblems.problemId == problemId)).\
-                                    first()
-                dao.delete(targetProblem)
-                dao.commit()
+                try:
+                    targetProblem = dao.query(RegisteredProblems).\
+                                        filter(and_(RegisteredProblems.courseId == courseId, 
+                                                    RegisteredProblems.problemId == problemId)).\
+                                        first()
+                    dao.delete(targetProblem)
+                    dao.commit()
+                except:
+                    dao.rollback()
+                    error = 'Error has occurred while searching the problem to delete'
+                    return render_template('/class_manage_problem.html', 
+                                           error = error, 
+                                           modalError = modalError,
+                                           allProblems = allProblems, 
+                                           ownCourses = ownCourses, 
+                                           ownProblems = ownProblems)
+                    
             elif 'edit' in form:
-                isNewProblem = FALSE
+                isNewProblem = False
                 editTarget, courseId, problemId, targetData = form[5:].split('_')
                 targetData = request.form[form]
                 # actually editTarget is 'id' value of tag. 
@@ -126,11 +178,21 @@ def class_manage_problem():
                 for ownProblem in ownProblems:
                     if ownProblem.courseId == courseId and ownProblem.problemId == int(problemId):
                         kwargs = { editTarget : targetData }
-                        dao.query(RegisteredProblems).\
-                            filter(and_(RegisteredProblems.courseId == courseId, 
-                                        RegisteredProblems.problemId == problemId)).\
-                            update(dict(**kwargs))
-                        dao.commit()
+                        try:
+                            dao.query(RegisteredProblems).\
+                                filter(and_(RegisteredProblems.courseId == courseId, 
+                                            RegisteredProblems.problemId == problemId)).\
+                                update(dict(**kwargs))
+                            dao.commit()
+                        except:
+                            dao.rollback()
+                            error = 'Error has occurred while searching the problem to edit'
+                            return render_template('/class_manage_problem.html', 
+                                                   error = error, 
+                                                   modalError = modalError,
+                                                   allProblems = allProblems, 
+                                                   ownCourses = ownCourses, 
+                                                   ownProblems = ownProblems)
                         
             # addition problem
             else:
@@ -150,29 +212,47 @@ def class_manage_problem():
                 openDate = startDate
             if not closeDate:
                 closeDate = endDate
-        
-            solutionCheckType = dao.query(Problems).\
-                                    filter_by(problemId = problemId).\
-                                    first().\
-                                    solutionCheckType
-            newProblem = RegisteredProblems(problemId = problemId,
-                                            courseId = courseId, 
-                                            solutionCheckType = solutionCheckType, 
-                                            isAllInputCaseInOneFile = isAllInputCaseInOneFile,
-                                            startDateOfSubmission = startDate, 
-                                            endDateOfSubmission = endDate, 
-                                            openDate = openDate, 
-                                            closeDate = closeDate)
             
-            dao.add(newProblem)
             try:
+                solutionCheckType = dao.query(Problems).\
+                                        filter_by(problemId = problemId).\
+                                        first().\
+                                        solutionCheckType
+            except:
+                error = 'Error has occurred while searching solution check type of the problem'
+                return render_template('/class_manage_problem.html', 
+                                       error = error, 
+                                       modalError = modalError,
+                                       allProblems = allProblems, 
+                                       ownCourses = ownCourses, 
+                                       ownProblems = ownProblems)
+            
+            try:
+                newProblem = RegisteredProblems(problemId = problemId,
+                                                courseId = courseId, 
+                                                solutionCheckType = solutionCheckType, 
+                                                isAllInputCaseInOneFile = isAllInputCaseInOneFile,
+                                                startDateOfSubmission = startDate, 
+                                                endDateOfSubmission = endDate, 
+                                                openDate = openDate, 
+                                                closeDate = closeDate)
+                
+                dao.add(newProblem)
                 dao.commit()
             except:
-                print 'addition error'
-            
+                dao.rollback()
+                error = 'Error has occurred while making a new problem'
+                return render_template('/class_manage_problem.html', 
+                                       error = error, 
+                                       modalError = modalError,
+                                       allProblems = allProblems, 
+                                       ownCourses = ownCourses, 
+                                       ownProblems = ownProblems)
+                
             courseName = request.form['courseId'][10:]
             problemName = request.form['problemId'][5:]
-            problemPath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s' % (courseId, courseName, problemId, problemName)
+            problemPath = '%s/CurrentCourses/%s_%s/%s_%s' % (projectPath, courseId, courseName, problemId, problemName)
+            
             if not os.path.exists(problemPath):
                 os.makedirs(problemPath)
                 
@@ -180,18 +260,29 @@ def class_manage_problem():
         
     return render_template('/class_manage_problem.html', 
                            error = error, 
+                           modalError = modalError,
                            allProblems = allProblems, 
                            ownCourses = ownCourses, 
                            ownProblems = ownProblems)
 
-@GradeServer.route('/classmaster/cm_manage_user', 
-                   methods=['GET', 'POST'])
+@GradeServer.route('/classmaster/cm_manage_user', methods=['GET', 'POST'])
 @login_required
 def class_manage_user():
     error = None
-    ownCourses = dao.query(RegisteredCourses).\
-                     filter_by(courseAdministratorId = session['memberId']).\
-                     all()
+    
+    try:
+        ownCourses = dao.query(RegisteredCourses).\
+                         filter_by(courseAdministratorId = session['memberId']).\
+                         all()
+    except:
+        error = 'Error has occurred while searching own courses'
+        return render_template('/class_manage_user.html', 
+                               error=error, 
+                               ownCourses=[], 
+                               ownUsers=[], 
+                               allUsers=[], 
+                               colleges=[],
+                               departments=[])
     
     # all registered users
     allUsers = dao.query(DepartmentsDetailsOfMembers.memberId, 
@@ -245,11 +336,19 @@ def class_manage_user():
                                         Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
                                    filter(Registrations.courseId == ownCourse.courseId).\
                                    all()
-            for ownUser in ownUsersOfCourse:
-                ownUsers.append(ownUser)
         except:
-            print 'Registrations table is empty'
-    
+            error = 'Error has occurred while searching own users'
+            return render_template('/class_manage_user.html', 
+                                   error=error, 
+                                   ownCourses=ownCourses, 
+                                   ownUsers=[], 
+                                   allUsers=[], 
+                                   colleges=[],
+                                   departments=[])
+            
+        for ownUser in ownUsersOfCourse:
+                ownUsers.append(ownUser)
+                
     ownUsersToData = []
     userIndex = 0
     for index, eachUser in enumerate(ownUsers):

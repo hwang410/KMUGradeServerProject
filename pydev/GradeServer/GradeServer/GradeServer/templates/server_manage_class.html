@@ -8,13 +8,16 @@
 	<div>
 		<h3>Manage Class</h3>
 		<!-- if any button is checked, then showing modal pop -->
-		<div style="text-align:right"><a href="{{ url_for('GradeServer.server_add_class') }}"><button class="btn" type="button">Add</button></a> <a onclick="showingDeleteModal()" role="button" class="btn" data-toggle="modal">Delete</a></div>
+		<div style="text-align:right">
+			<a href="{{ url_for('GradeServer.server_add_class') }}"><button class="btn" type="button">Add</button></a>
+			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">Delete</a>
+		</div>
 
 		<!-- hidden modal pop -->
 		<!-- if any item choiced -->
-		<div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal hide fade" id="deleteModal" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete Class</h3>
 			</div>
 			<div class="modal-body">
@@ -28,9 +31,9 @@
 			</div>
 		</div>
 		<!-- no items choiced -->
-		<div id="deleteNoItem" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal hide fade" id="deleteNoItem" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete Class</h3>
 			</div>
 			<div class="modal-body">
@@ -43,26 +46,34 @@
 		<!-- end hidden modal pop -->
 
 		<table class="table table-bordered" style="margin-top:10px">
-			<thead><tr><td>Class Number</td><td>Class Name</td><td>Manager Name</td><td>Language</td><td>Start Date</td><td>Finish Date</td><td>Delete</td></tr></thead>
+			<thead>
+				<tr>
+					<td>Class Number
+					<td>Class Name
+					<td>Manager Name
+					<td>Language
+					<td>Start Date
+					<td>Finish Date
+					<td>Delete
 			<tbody>
 				{%- for course in courses %}
 				<tr>
-					<td>{{ course.courseId }}</td>
-					<td>{{ course.courseName }}</td>
-					<td>{{ course.courseAdministratorId }} {{ course.memberName }}</td>
+					<td>{{ course.courseId }}
+					<td>{{ course.courseName }}
+					<td>{{ course.courseAdministratorId }} {{ course.memberName }}
 					<td>{%- for language in languagesOfCourse %}
 								{%- if course.courseId==language.courseId %}
 									{{ language.languageName }}
-									{%- if language.languageVersion!='0' %}{{ language.languageVersion }}{% endif -%}
+									{%- if language.languageVersion!='0' %}
+										{{ language.languageVersion }}
+									{% endif -%}
 									<br>
 								{% endif -%}
-							{% endfor -%}</td>
-					<td>{{ course.startDateOfCourse }}</td>
-					<td>{{ course.endDateOfCourse }}</td>
-					<td><label class="checkbox-center"><input type="checkbox" class="box-check" name="{{ course.courseId }}" value="{{ course.courseId }}" form="deleteConfirm"></label></td>
-				</tr>
+							{% endfor -%}
+					<td>{{ course.startDateOfCourse }}
+					<td>{{ course.endDateOfCourse }}
+					<td><label class="checkbox-center"><input class="box-check" name="{{ course.courseId }}" type="checkbox" form="deleteConfirm" value="{{ course.courseId }}"></label>
 				{% endfor -%}
-			</tbody>
 		</table>
 	</div>
 </div>
