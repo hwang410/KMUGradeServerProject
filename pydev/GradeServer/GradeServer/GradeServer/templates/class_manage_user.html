@@ -127,21 +127,21 @@ $(function() {
 					<td>Department
 					<td>Delete
 			<tbody>
-				{% for eachUser in ownUsers %}
+				{%- for eachUser in ownUsers %}
 				<tr>
 					<td>{{ loop.index }}
 					<td>{{ eachUser[0] }} <!-- courseId -->
 					<td>{{ eachUser[1] }} <!-- userId -->
 					<td>{{ eachUser[2] }} <!-- userName -->
 					<td> <!-- college departments list -->
-						{% for index in range(3, eachUser|length) %}
+						{%- for index in range(3, eachUser|length) %}
 							{{ eachUser[index] }}
-							{% if index%2==0 %}
+							{%- if index % 2 == 0 %}
 							<br>
-							{% endif %}
-						{% endfor %}
+							{% endif -%}
+						{% endfor -%}
 					<td><label class="checkbox-center"><input class="box-check" name="delete_{{ eachUser[0] }}_{{ eachUser[1] }}" type="checkbox" form="deleteUser"></label>
-				{% endfor %}
+				{% endfor -%}
 		</table>
 	</div>
 </div>

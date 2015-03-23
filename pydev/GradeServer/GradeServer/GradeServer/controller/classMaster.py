@@ -45,7 +45,7 @@ def class_user_submit():
                          filter_by(courseAdministratorId = session['memberId']).\
                          all()
     except:
-        error = 'Error occurred while searching registered courses.'
+        error = 'Error has been occurred while searching registered courses.'
         return render_template('/class_user_submit.html', 
                                error = error, 
                                ownCourses = [], 
@@ -68,7 +68,7 @@ def class_user_submit():
                                      Problems.problemId == Submissions.problemId).\
                                 all()
     except:
-        error = 'Error occurred while searching submission records.'
+        error = 'Error has been occurred while searching submission records.'
         return render_template('/class_user_submit.html', 
                                error = error, 
                                ownCourses = ownCourses, 
@@ -85,11 +85,12 @@ def class_manage_problem():
     global projectPath
     error = None
     modalError = None
+    
     try:
         allProblems = dao.query(Problems).\
                           all()
     except:
-        error = 'Error occurred while searching problems'
+        error = 'Error has been occurred while searching problems'
         return render_template('/class_manage_problem.html', 
                                error = error, 
                                modalError = error,
@@ -102,7 +103,7 @@ def class_manage_problem():
                          filter_by(courseAdministratorId = session['memberId']).\
                          all()
     except:
-        error = 'Error occurred while searching registered courses'
+        error = 'Error has been occurred while searching registered courses'
         return render_template('/class_manage_problem.html', 
                                error = error,
                                modalError = modalError, 
@@ -127,7 +128,7 @@ def class_manage_problem():
                           filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
                           all()
     except:
-        error = 'Error occurred while searching own problems'
+        error = 'Error has been occurred while searching own problems'
         return render_template('/class_manage_problem.html', 
                                error = error,
                                modalError = modalError, 
@@ -158,7 +159,7 @@ def class_manage_problem():
                     dao.commit()
                 except:
                     dao.rollback()
-                    error = 'Error has occurred while searching the problem to delete'
+                    error = 'Error has been occurred while searching the problem to delete'
                     return render_template('/class_manage_problem.html', 
                                            error = error, 
                                            modalError = modalError,
@@ -186,7 +187,7 @@ def class_manage_problem():
                             dao.commit()
                         except:
                             dao.rollback()
-                            error = 'Error has occurred while searching the problem to edit'
+                            error = 'Error has been occurred while searching the problem to edit'
                             return render_template('/class_manage_problem.html', 
                                                    error = error, 
                                                    modalError = modalError,
@@ -219,7 +220,7 @@ def class_manage_problem():
                                         first().\
                                         solutionCheckType
             except:
-                error = 'Error has occurred while searching solution check type of the problem'
+                error = 'Error has been occurred while searching solution check type of the problem'
                 return render_template('/class_manage_problem.html', 
                                        error = error, 
                                        modalError = modalError,
@@ -241,7 +242,7 @@ def class_manage_problem():
                 dao.commit()
             except:
                 dao.rollback()
-                error = 'Error has occurred while making a new problem'
+                error = 'Error has been occurred while making a new problem'
                 return render_template('/class_manage_problem.html', 
                                        error = error, 
                                        modalError = modalError,
@@ -275,7 +276,7 @@ def class_manage_user():
                          filter_by(courseAdministratorId = session['memberId']).\
                          all()
     except:
-        error = 'Error has occurred while searching own courses'
+        error = 'Error has been occurred while searching own courses'
         return render_template('/class_manage_user.html', 
                                error=error, 
                                ownCourses=[], 
@@ -337,7 +338,7 @@ def class_manage_user():
                                    filter(Registrations.courseId == ownCourse.courseId).\
                                    all()
         except:
-            error = 'Error has occurred while searching own users'
+            error = 'Error has been occurred while searching own users'
             return render_template('/class_manage_user.html', 
                                    error=error, 
                                    ownCourses=ownCourses, 
@@ -350,9 +351,9 @@ def class_manage_user():
                 ownUsers.append(ownUser)
                 
     ownUsersToData = []
-    userIndex = 0
-    for index, eachUser in enumerate(ownUsers):
-        if index == 0:
+    userIndex = 1
+    for loopIndex, eachUser in enumerate(ownUsers):
+        if loopIndex == 0:
             ownUsersToData.append([eachUser.courseId, 
                                    eachUser.memberId, 
                                    eachUser.memberName, 
@@ -416,6 +417,8 @@ def class_manage_user():
             
         return redirect(url_for('.class_manage_user'))
     
+    for k in ownUsersToData:
+        print k
     return render_template('/class_manage_user.html', 
                            error=error, 
                            ownCourses=ownCourses, 
@@ -423,7 +426,6 @@ def class_manage_user():
                            allUsers=allUsersToData, 
                            colleges=colleges,
                            departments=departments)
-""" ===== end class master space ===== """    
 
 @GradeServer.route('/classmaster/user_submit/summary')
 @login_required
@@ -463,4 +465,6 @@ def user_submit_summary():
 @GradeServer.route('/classmaster/manage_service')
 @login_required
 def class_manage_service():
+    # To do
+    
     return render_template('/class_manage_service.html')
