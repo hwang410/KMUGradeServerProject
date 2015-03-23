@@ -132,39 +132,39 @@ function selectLanguage(selectObj) {
 	var theme;
 	if(selectObj.value == 1 || selectObj.value == 2){ mode = "c_cpp"; }
 	if(selectObj.value == 3){ mode = "java"; }
-	if(selectObj.value == 4){ mode = "python"; }
-	if(selectObj.value == 5){ theme = "ambiance"; }
-	if(selectObj.value == 6){ theme = "chaos"; }
-	if(selectObj.value == 7){ theme = "chrome"; }
-	if(selectObj.value == 8){ theme = "clouds_midnight"; }
-	if(selectObj.value == 9){ theme = "clouds"; }
-	if(selectObj.value == 10){ theme = "cobalt"; }
-	if(selectObj.value == 11){ theme = "crimson_editor"; }
-	if(selectObj.value == 12){ theme = "dawn"; }
-	if(selectObj.value == 13){ theme = "dreamweaver"; }
-	if(selectObj.value == 14){ theme = "eclipse"; }
-	if(selectObj.value == 15){ theme = "github"; }
-	if(selectObj.value == 16){ theme = "idle_fingers"; }
-	if(selectObj.value == 17){ theme = "katzenmilch"; }
-	if(selectObj.value == 18){ theme = "kr_theme"; }
-	if(selectObj.value == 19){ theme = "kuroir"; }
-	if(selectObj.value == 20){ theme = "merbivore_soft"; }
-	if(selectObj.value == 21){ theme = "merbivore"; }
-	if(selectObj.value == 22){ theme = "mono_industrial"; }
-	if(selectObj.value == 23){ theme = "monokai"; }
-	if(selectObj.value == 24){ theme = "pastel_on_dark"; }
-	if(selectObj.value == 25){ theme = "solarized_dark"; }
-	if(selectObj.value == 26){ theme = "solarized_light"; }
-	if(selectObj.value == 27){ theme = "terminal"; }
-	if(selectObj.value == 28){ theme = "textmate"; }
-	if(selectObj.value == 29){ theme = "tomorrow_night_blue"; }
-	if(selectObj.value == 30){ theme = "tomorrow_night_bright"; }
-	if(selectObj.value == 31){ theme = "tomorrow_night_eighties"; }
-	if(selectObj.value == 32){ theme = "tomorrow_night"; }
-	if(selectObj.value == 33){ theme = "tomorrow"; }
-	if(selectObj.value == 34){ theme = "twilight"; }
-	if(selectObj.value == 35){ theme = "vibrant_ink"; }
-	if(selectObj.value == 36){ theme = "xcode"; }
+	if(selectObj.value == 4 || selectObj.value == 5){ mode = "python"; }
+	if(selectObj.value == 6){ theme = "ambiance"; }
+	if(selectObj.value == 7){ theme = "chaos"; }
+	if(selectObj.value == 8){ theme = "chrome"; }
+	if(selectObj.value == 9){ theme = "clouds_midnight"; }
+	if(selectObj.value == 10){ theme = "clouds"; }
+	if(selectObj.value == 11){ theme = "cobalt"; }
+	if(selectObj.value == 12){ theme = "crimson_editor"; }
+	if(selectObj.value == 13){ theme = "dawn"; }
+	if(selectObj.value == 14){ theme = "dreamweaver"; }
+	if(selectObj.value == 15){ theme = "eclipse"; }
+	if(selectObj.value == 16){ theme = "github"; }
+	if(selectObj.value == 17){ theme = "idle_fingers"; }
+	if(selectObj.value == 18){ theme = "katzenmilch"; }
+	if(selectObj.value == 19){ theme = "kr_theme"; }
+	if(selectObj.value == 20){ theme = "kuroir"; }
+	if(selectObj.value == 21){ theme = "merbivore_soft"; }
+	if(selectObj.value == 22){ theme = "merbivore"; }
+	if(selectObj.value == 23){ theme = "mono_industrial"; }
+	if(selectObj.value == 24){ theme = "monokai"; }
+	if(selectObj.value == 25){ theme = "pastel_on_dark"; }
+	if(selectObj.value == 26){ theme = "solarized_dark"; }
+	if(selectObj.value == 27){ theme = "solarized_light"; }
+	if(selectObj.value == 28){ theme = "terminal"; }
+	if(selectObj.value == 29){ theme = "textmate"; }
+	if(selectObj.value == 30){ theme = "tomorrow_night_blue"; }
+	if(selectObj.value == 31){ theme = "tomorrow_night_bright"; }
+	if(selectObj.value == 32){ theme = "tomorrow_night_eighties"; }
+	if(selectObj.value == 33){ theme = "tomorrow_night"; }
+	if(selectObj.value == 34){ theme = "tomorrow"; }
+	if(selectObj.value == 35){ theme = "twilight"; }
+	if(selectObj.value == 36){ theme = "vibrant_ink"; }
+	if(selectObj.value == 37){ theme = "xcode"; }
 
 		var textarea = $('#copycode');
 		
@@ -183,7 +183,7 @@ function selectLanguage(selectObj) {
 }
 
 //dropzone
-Dropzone.options.myDropzone = { // The camelized version of the ID of the form element
+Dropzone.options.myDropzoneC = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
     autoProcessQueue: false, // auto false
@@ -211,7 +211,7 @@ Dropzone.options.myDropzone = { // The camelized version of the ID of the form e
     }
 }
 
-Dropzone.options.myDropzone2 = { // The camelized version of the ID of the form element
+Dropzone.options.myDropzoneCpp = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
     autoProcessQueue: false, // auto false
@@ -235,7 +235,7 @@ Dropzone.options.myDropzone2 = { // The camelized version of the ID of the form 
       }
 }
 
-Dropzone.options.myDropzone3 = { // The camelized version of the ID of the form element
+Dropzone.options.myDropzoneJAVA = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
     autoProcessQueue: false, // auto false
@@ -260,7 +260,7 @@ Dropzone.options.myDropzone3 = { // The camelized version of the ID of the form 
 	}
 }
 
-Dropzone.options.myDropzone4 = { // The camelized version of the ID of the form element
+Dropzone.options.myDropzonePYTHON = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
     autoProcessQueue: false, // auto false
