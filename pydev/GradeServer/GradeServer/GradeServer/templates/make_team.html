@@ -47,21 +47,21 @@ $(function() {
 							<tr><td>Team Master</td><td><span class="uneditable-input" style="width:96%">{{ session['memberId'] }}</span></td></tr>
 							<tr><td>Team Member</td><td>
 								<div id="searchfield">
-									<input id ="search-members" name ="teamMemberId" "type="text" style="width:84%" placeholder="Member Id">
-									<button name ="addMember" class="btn btn-small" type="submit">Add</button></td>
+									<input id ="search-members" name ="inviteeId" type="text" style="width:84%" placeholder="Invitee Id">
+									<button name ="inviteeMember" class="btn btn-small" type="submit">Invitee</button></td>
 								</div>
 							</tr>
 						</table>
 					</div>
 					<div class="span4">
-						<div style="text-align:center"><h4>Team Members</h4></div>
+						<div style="text-align:center"><h4>Invitee Members</h4></div>
 						<table class="table table-bordered">
 							<thead>
 								<tr><td>Member Id</td><td>Delete</td></tr>
 							</thead>
 							{% for i in range (0, gTeamMembersId|length) %}
 							<tr><td>{{ gTeamMembersId[i] }}</td><td>
-								<button name ="deleteMember{{ i }}" class="btn btn-small" type="submit">Delete</button></td>
+								<button name ="deleteInviteeMember{{ i }}" class="btn btn-small" type="submit">Delete</button></td>
 							</tr>
 							{% endfor %}
 						</table>

@@ -40,15 +40,32 @@
 				<tr><td>Team Name</td><td>Team Master</td><td>Team Member</td></tr>
 			</thead>
 			<tbody>
-			{% for raw in teamRecords %}
+			{%- for i in range (pages['startList'], pages['endList']) %}
 				<tr>
-					<td><a href="{{ url_for('GradeServer.team_information', teamName =raw.teamName) }}">{{ raw.teamName }}</a></td>
-					<td>{{ raw.teamMasterId }}</td>
-					<td>{{ raw.teamMemberCount }}</td>
-				</tr>
-			{% endfor %}
+					<td><a href="{{ url_for('GradeServer.team_information', teamName =teamRecords[i].teamName) }}">{{ teamRecords[i].teamName }}</a></td>
+					<td>{{ teamRecords[i].teamMasterId }}</td>
+					<td>{{ teamRecords[i].teamMemberCount }}</td>
+			 	</tr>
+			{% endfor -%}
 			</tbody>
 		</table>
+		<!-- Paging -->
+		<div class="pagination pagination-centered">
+			<ul>
+				{%- if pages['pageNum'] > pages['BLOCK'] %}
+				<li><a href="{{ url_for ('GradeServer.team', pageNum =pages['startPage'] -1) }}">Prev</a></li>
+				{% endif -%}
+				
+				{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
+				<li><a href="{{ url_for ('GradeServer.team', pageNum =i) }}">{{ i }}</a></li>
+				{% endfor -%}
+				
+				{%- if pages['endPage'] < pages['allPage'] %}
+				<li><a href="{{ url_for ('GradeServer.team', pageNum =pages['endPage'] +1) }}">Next</a></li>
+				{% endif -%}
+			</ul>
+		</div>
+		<!-- End Paging -->
 	</div>
 </div>	
 {% endblock -%}

@@ -106,7 +106,7 @@
 					{% for j in range (pages[i]['startList'], pages[i]['endList']) %}
 					<tr>
 						<td>{{ j +1 }}</td>
-						<td>{{ course[i][j].courseId}} {{ courses[i][j].courseName }}</td>
+						<td>{{ courses[i][j].courseId}} {{ courses[i][j].courseName }}</td>
 						<td><a href="/board/{{ courses[i][j].articleIndex }}">{{ courses[i][j].title }}</a>
 							{% if courses[i][j].replyCount > 0 %}
 								[{{ courses[i][j].replyCount }}]
