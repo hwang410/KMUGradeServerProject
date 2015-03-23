@@ -45,10 +45,10 @@ $(function() {
 			<li class="active"><a id="link-all" data-toggle="tab" href="#all">all</a>
 			{% for course in ownCourses %}
 			<li><a data-toggle="tab" href="#{{ course.courseId }}" onclick="visibleButton(this)">{{ course.courseId }}{{ course.courseName }}</a>
-			{% endfor %}
+			{% endfor %}</li> <!-- without li closing tag, div tag is recognized as a part of the second tag -->
 			<div style="text-align:right">
 				<a class="btn" data-toggle="modal" href="#addProblemModal" rol="button">Add</a>
-			</div>
+			</div>	
 		</ul>
 		<!-- hidden modal pop -->
 		<!-- ///// Add case ///// -->
