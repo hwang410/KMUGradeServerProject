@@ -46,5 +46,4 @@ class MakePath(object):
             return name.split('.')[0]
         
     def ProblemName(self):
-        name = self.problemPath.split('/')[-1]
-        return name.split('_')[-1]
+        return self.problemPath.split('/')[-1]
