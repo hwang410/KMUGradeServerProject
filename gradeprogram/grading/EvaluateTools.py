@@ -1,6 +1,7 @@
 import os
 import glob
 import math
+import time
 import runThread
 from subprocess import call
 
@@ -37,10 +38,10 @@ class EvaluateTools():
         
         if runTh.isAlive() == True: # if thread is alive
             runTh.shutdown()
-            call('kill -9 ' + str(runTh.pid), shell = True)
+            time.sleep(0.07)
         
         tsize = os.path.getsize('time.txt')
-        
+
         if tsize > 0:   # if program is terminated normally -> get user time
             fp = open('time.txt', 'r')
             lines = fp.readlines()
@@ -50,9 +51,10 @@ class EvaluateTools():
                 if line.find('user') != -1:
                     words = line.split()
                     runTime = int( math.ceil(float(words[1][0] * 60) + float(words[1][2:-1]) * 1000) )
+                    break;
                     
         else:       # if program is abnormally terminated.
-            return 'time over', int(self.limitTime * LIMIT_TIME_MULTIPLE)
+            return 'time over', self.limitTime
         
         coreSize = 0
         coreList = glob.glob('core.[0-9]*')
@@ -60,18 +62,18 @@ class EvaluateTools():
         if len(coreList) > 0:
             os.path.getsize(coreList[0])
         
-        if coreSize == 0:  # if not exist core file -> evaluate output
+        if runTime > 0.001:    # time over -> need modify
+            return 'time over', runTime
+        
+        elif coreSize == 0:  # if not exist core file -> evaluate output
             if self.gradeMethod == 'Solution':   # solution
                 success = self.Solution()
             else:   # checker
                 success = self.Checker()
             return success, runTime
         
-        elif runTime > self.limitTime:    # time over
-            return 'time over', runTime
-        
         elif coreSize > 0: # runtime error.
-            return 'runtime', runTime
+            return 'runtime'
         
         else:   # server error
             return 'error', 0

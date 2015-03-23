@@ -10,7 +10,6 @@ class EvaluateTools_multicase(EvaluateTools):
         count = 0
         _list = []
         command = self.MakeCommand()
-        errorCount = 0
         
         for i in range(1, self.caseCount+1):
             # input.txt file copy
@@ -18,14 +17,9 @@ class EvaluateTools_multicase(EvaluateTools):
                 call('input.txt', shell = True) # ...ing....
                 call('cp ' + self.answerPath + self.problemName + '_case' + str(i) + '.in input.txt', shell = True) # ...ing...
             except Exception as e:
-                errorCount += 1
-                if errorCount > 4:
-                    return 'error'
                 print e
-                i -= 1
-                continue
+                return 'error'
                 
-         
             # program run
             call(command, shell = True)
             
@@ -52,7 +46,6 @@ class EvaluateTools_multicase(EvaluateTools):
         
     def Checker(self):
         count = 0
-        errorCount = 0
         _list = []
         command = self.MakeCommand()
         call('cp ' + self.answerPath + self.problemName + '.out checker.out', shell = True)
@@ -63,13 +56,8 @@ class EvaluateTools_multicase(EvaluateTools):
                 call('input.txt', shell = True) # ...ing....
                 call(self.answerPath + self.problemName + '_case' + str(i) + '.in input.txt', shell = True) # ...ing...
             except Exception as e:
-                errorCount += 1
-                if errorCount > 4:
-                    return 'error'
                 print e
-                i -= 1
-                continue
-                
+                return 'error'
          
             # program run
             call(command, shell = True)

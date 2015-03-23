@@ -1,4 +1,4 @@
-import os
+from subprocess import call
 import threading
 
 class runThread(threading.Thread):
@@ -8,8 +8,8 @@ class runThread(threading.Thread):
         self.runFileName = runFileName
         
     def run(self):
-        os.system(self.runCommand)
+        call(self.runCommand, shell=True)
         
     def shutdown(self):
         cmd = 'killall -9 ' + self.runFileName
-        os.system(cmd)
+        call(cmd, shell=True)
