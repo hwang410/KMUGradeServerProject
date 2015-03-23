@@ -5,12 +5,11 @@ import sys
 import shutil
 import glob
 
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, send_file, make_response, \
-current_app, session, flash
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, \
+send_file, make_response, current_app, session, flash
 from werkzeug import secure_filename
 from datetime import datetime
-import uuid
-from wtforms import Form, FileField, TextField, TextAreaField, HiddenField, validators
+#from wtforms import Form, FileField, TextField, TextAreaField, HiddenField, validators
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_logger import Log
@@ -42,16 +41,18 @@ def upload(courseId, problemId):
     memberId = session['memberId']
     fileIndex = 1
     try:
-        courseName = dao.query(RegisteredCourses.courseName).filter_by(courseId = courseId).first().courseName
+        courseName = dao.query(RegisteredCourses.courseName).\
+                         filter(RegisteredCourses.courseId == courseId).first().courseName
     except Exception as e:
         dao.rollback()
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e
     try:
-        problemName = dao.query(Problems.problemName).filter_by(problemId = problemId).first().problemName
+        problemName = dao.query(Problems.problemName).\
+                          filter(Problems.problemId == problemId).first().problemName
     except Exception as e:
         dao.rollback()
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e
     
     tempPath = '/mnt/shared/Temp/%s/%s_%s/%s_%s' %(memberId, courseId, courseName, problemId, problemName)
@@ -60,19 +61,21 @@ def upload(courseId, problemId):
     upload_files = request.files.getlist('file[]')
     filenames = []
     sumOfSubmittedFileSize = 0
-    uLang = 1
-    uVersion = 0
+    usedLanguage = 1
+    usedLanguageVersion = 0
     
     if not os.path.exists(tempPath):
         os.makedirs(tempPath)
     
     try:
-        dao.query(SubmittedFiles).filter(and_(SubmittedFiles.memberId == memberId, SubmittedFiles.problemId == problemId,
-                                              SubmittedFiles.courseId == courseId)).delete()
+        dao.query(SubmittedFiles).\
+            filter(and_(SubmittedFiles.memberId == memberId,
+                        SubmittedFiles.problemId == problemId,
+                        SubmittedFiles.courseId == courseId)).delete()
         dao.commit()
     except Exception as e:
         dao.rollback()
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e 
     
     for file in upload_files:
@@ -85,102 +88,125 @@ def upload(courseId, problemId):
             
             if filename.rsplit('.', 1)[1] == 'c':
                 try:
-                    uLang = dao.query(Languages.languageIndex).filter_by(languageName = 'C').first().languageIndex
+                    usedLanguage = dao.query(Languages.languageIndex).\
+                                       filter(Languages.languageName == 'C').first().languageIndex
                 except Exception as e:
                     dao.rollback()
-                    print "DB error : " + str(e)
+                    print 'DB error : ' + str(e)
                     raise e 
             elif filename.rsplit('.', 1)[1] == 'cpp':
                 try:
-                    uLang = dao.query(Languages.languageIndex).filter_by(languageName = 'C++').first().languageIndex
+                    usedLanguage = dao.query(Languages.languageIndex).\
+                                       filter(Languages.languageName == 'C++').first().languageIndex
                 except Exception as e:
                     dao.rollback()
-                    print "DB error : " + str(e)
+                    print 'DB error : ' + str(e)
                     raise e                                                                    
             elif filename.rsplit('.', 1)[1] == 'java':
                 try:
-                    uLang = dao.query(Languages.languageIndex).filter_by(languageName = 'JAVA').first().languageIndex
+                    usedLanguage = dao.query(Languages.languageIndex).\
+                                       filter(Languages.languageName == 'JAVA').first().languageIndex
                 except Exception as e:
                     dao.rollback()
-                    print "DB error : " + str(e)
+                    print 'DB error : ' + str(e)
                     raise e
             elif filename.rsplit('.', 1)[1] == 'py':
                 try:
-                    uLang = dao.query(Languages.languageIndex).filter_by(languageName = 'PYTHON').first().languageIndex
+                    usedLanguage = dao.query(Languages.languageIndex).\
+                                       filter(Languages.languageName == 'PYTHON').first().languageIndex
                 except Exception as e:
                     dao.rollback()
-                    print "DB error : " + str(e)
+                    print 'DB error : ' + str(e)
                     raise e
                                                                      
                               
             try:
-                ufile = SubmittedFiles(memberId = memberId, problemId = problemId, courseId = courseId , fileIndex = fileIndex, fileName = filename,
-                                        filePath = filePath, fileSize = fileSize)                
-                dao.add(ufile)
+                submittedFiles = SubmittedFiles(memberId = memberId,
+                                                problemId = problemId,
+                                                courseId = courseId,
+                                                fileIndex = fileIndex,
+                                                fileName = filename,
+                                                filePath = filePath,
+                                                fileSize = fileSize)                
+                dao.add(submittedFiles)
                 dao.commit()
-                                   
             except Exception as e:
                 dao.rollback()
-                print "DB error : " + str(e)
+                print 'DB error : ' + str(e)
                 raise e            
             fileIndex += 1
             sumOfSubmittedFileSize += fileSize
 
     try:
-        uVersion = dao.query(LanguagesOfCourses.languageVersion).filter(LanguagesOfCourses.courseId == courseId, LanguagesOfCourses.languageIndex == uLang).first().languageVersion
+        usedLanguageVersion = dao.query(LanguagesOfCourses.languageVersion).\
+                                  filter(LanguagesOfCourses.courseId == courseId,
+                                         LanguagesOfCourses.languageIndex == usedLanguage).first().languageVersion
     except Exception as e:
         dao.rollback()
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e
 
-
     try:
-        subCount = dao.query(func.max (Submissions.submissionCount).label ("submissionCount")).\
-            filter(Submissions.memberId == memberId, Submissions.courseId == courseId,
-                   Submissions.problemId == int (problemId)).first()
+        subCount = dao.query(func.max(Submissions.submissionCount).\
+                       label ('submissionCount')).\
+                       filter(Submissions.memberId == memberId,
+                              Submissions.courseId == courseId,
+                              Submissions.problemId == int (problemId)).first()
         subCountNum = subCount.submissionCount + 1
     except:
         subCountNum = 1
 
     try:
-        solCount = dao.query(Submissions.solutionCheckCount).filter(Submissions.memberId == memberId, Submissions.courseId == courseId,
-                   Submissions.problemId == int (problemId), Submissions.submissionCount == subCount.submissionCount).first()
+        solCount = dao.query(Submissions.solutionCheckCount).\
+                       filter(Submissions.memberId == memberId,
+                              Submissions.courseId == courseId,
+                              Submissions.problemId == int (problemId),
+                              Submissions.submissionCount == subCount.submissionCount).first()
         solCountNum = solCount.solutionCheckCount
     except:
         solCountNum = 0
     
     try:
-        sub = Submissions(memberId = memberId, problemId = int (problemId), courseId = courseId, submissionCount = subCountNum, solutionCheckCount = solCountNum, codeSubmissionDate = datetime.now(),
-                      sumOfSubmittedFileSize = sumOfSubmittedFileSize, usedLanguage = uLang, usedLanguageVersion = uVersion)
-        dao.add(sub)
+        submissions = Submissions(memberId = memberId,
+                                  problemId = int (problemId),
+                                  courseId = courseId,
+                                  submissionCount = subCountNum,
+                                  solutionCheckCount = solCountNum,
+                                  codeSubmissionDate = datetime.now(),
+                                  sumOfSubmittedFileSize = sumOfSubmittedFileSize,
+                                  usedLanguage = usedLanguage,
+                                  usedLanguageVersion = usedLanguageVersion)
+        dao.add(submissions)
         dao.commit()
     except Exception as e:
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e
           
-    flash("submission success!")
+    flash('submission success!')
     
     try:
-        problemsParam = dao.query(Problems.problemPath, Problems.limitedTime, Problems.limitedMemory, Problems.solutionCheckType).filter_by(problemId = problemId).first()
+        problemsParam = dao.query(Problems.problemPath,
+                                  Problems.limitedTime,
+                                  Problems.limitedMemory,
+                                  Problems.solutionCheckType).\
+                                  filter(Problems.problemId == problemId).first()
     except Exception as e:
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e
     try:
-        departmentIndex = dao.query(DepartmentsDetailsOfMembers.departmentIndex).filter_by(memberId = memberId).first().departmentIndex
+        departmentIndex = dao.query(DepartmentsDetailsOfMembers.departmentIndex).\
+                              filter(DepartmentsDetailsOfMembers.memberId == memberId).first().departmentIndex
     except Exception as e:
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e
     
-    caseCount = len( glob.glob(problemsParam[0]) )/2
+    caseCount = len(glob.glob(problemsParam[0]))/2
     
     if caseCount > 1:
         if departmentIndex == 1:
            caseCount -= 1
         else:
             caseCount = 1
-
-    print problemsParam[0], problemsParam[1], problemsParam[2], problemsParam[3]
-    print departmentIndex 
     
     return courseId
         
@@ -190,29 +216,33 @@ def code(courseId, problemId):
     
     memberId = session['memberId']
     fileIndex = 1
-    uLang = 1
-    uVersion = 0
+    usedLanguage = 1
+    usedLanguageVersion = 0
     try:
-        courseName = dao.query(RegisteredCourses.courseName).filter_by(courseId = courseId).first().courseName
+        courseName = dao.query(RegisteredCourses.courseName).\
+                         filter(RegisteredCourses.courseId == courseId).first().courseName
     except Exception as e:
         dao.rollback()
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e
     try:
-        problemName = dao.query(Problems.problemName).filter_by(problemId = problemId).first().problemName
+        problemName = dao.query(Problems.problemName).\
+                          filter(Problems.problemId == problemId).first().problemName
     except Exception as e:
         dao.rollback()
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e
     filePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s' %(courseId, courseName, problemId, problemName, memberId)
     
     try:
-         dao.query(SubmittedFiles).filter(and_(SubmittedFiles.memberId == memberId, SubmittedFiles.problemId == problemId,
-        SubmittedFiles.courseId == courseId)).delete()
-         dao.commit()
+        dao.query(SubmittedFiles).\
+            filter(and_(SubmittedFiles.memberId == memberId,
+                        SubmittedFiles.problemId == problemId,
+                        SubmittedFiles.courseId == courseId)).delete()
+        dao.commit()
     except Exception as e:
         dao.rollback()
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e 
     
     tests = request.form['copycode']
@@ -227,10 +257,11 @@ def code(courseId, problemId):
         fout.write(tests)
         fout.close()
         try:
-            uLang = dao.query(Languages.languageIndex).filter_by(languageName = 'C').first().languageIndex
+            usedLanguage = dao.query(Languages.languageIndex).\
+                               filter(Languages.languageName == 'C').first().languageIndex
         except Exception as e:
             dao.rollback()
-            print "DB error : " + str(e)
+            print 'DB error : ' + str(e)
             raise e 
     
     elif num == '2':
@@ -239,10 +270,11 @@ def code(courseId, problemId):
         fout.write(tests)
         fout.close()
         try:
-            uLang = dao.query(Languages.languageIndex).filter_by(languageName = 'C++').first().languageIndex
+            usedLanguage = dao.query(Languages.languageIndex).\
+                               filter(Languages.languageName == 'C++').first().languageIndex
         except Exception as e:
             dao.rollback()
-            print "DB error : " + str(e)
+            print 'DB error : ' + str(e)
             raise e 
     
     elif num == '3':
@@ -251,10 +283,11 @@ def code(courseId, problemId):
         fout.write(tests)
         fout.close()
         try:
-            uLang = dao.query(Languages.languageIndex).filter_by(languageName = 'JAVA').first().languageIndex
+            usedLanguage = dao.query(Languages.languageIndex).\
+                               filter(Languages.languageName == 'JAVA').first().languageIndex
         except Exception as e:
             dao.rollback()
-            print "DB error : " + str(e)
+            print 'DB error : ' + str(e)
             raise e 
         
     elif num == '4':
@@ -263,53 +296,75 @@ def code(courseId, problemId):
         fout.write(tests)
         fout.close()
         try:
-            uLang = dao.query(Languages.languageIndex).filter_by(languageName = 'PYTHON').first().languageIndex
+            usedLanguage = dao.query(Languages.languageIndex).\
+                               filter(Languages.languageName == 'PYTHON').first().languageIndex
         except Exception as e:
             dao.rollback()
-            print "DB error : " + str(e)
+            print 'DB error : ' + str(e)
             raise e 
         
     fileSize = os.stat(filePath + '/' + filename).st_size
     
     try:
-        ufile = SubmittedFiles(memberId = memberId, problemId = problemId, courseId = courseId , fileIndex = fileIndex, fileName = filename,
-                filePath = filePath, fileSize = fileSize)                
-        dao.add(ufile)
+        submittedFiles = SubmittedFiles(memberId = memberId,
+                                        problemId = problemId,
+                                        courseId = courseId,
+                                        fileIndex = fileIndex,
+                                        fileName = filename,
+                                        filePath = filePath,
+                                        fileSize = fileSize)                
+        dao.add(submittedFiles)
         dao.commit()                
     except Exception as e:            
         dao.rollback()
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e
     
     try:
-        uVersion = dao.query(LanguagesOfCourses.languageVersion).filter(LanguagesOfCourses.courseId == courseId, LanguagesOfCourses.languageIndex == uLang).first().languageVersion
+        usedLanguageVersion = dao.query(LanguagesOfCourses.languageVersion).\
+                                  filter(LanguagesOfCourses.courseId == courseId,
+                                         LanguagesOfCourses.languageIndex == usedLanguage).first().languageVersion
     except Exception as e:
         dao.rollback()
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e   
     
     try:
-        subCount = dao.query(func.max (Submissions.submissionCount).label ("submissionCount")).filter(Submissions.memberId == memberId, Submissions.courseId == courseId,
-                   Submissions.problemId == int (problemId)).first()
+        subCount = dao.query(func.max(Submissions.submissionCount).\
+                             label('submissionCount')).\
+                             filter(Submissions.memberId == memberId,
+                                    Submissions.courseId == courseId,
+                                    Submissions.problemId == int (problemId)).first()
         subCountNum = subCount.submissionCount + 1
     except:
         subCountNum = 1
         
     try:
-        solCount = dao.query(func.max (Submissions.solutionCheckCount).label ("solutionCheckCount")).filter(Submissions.memberId == memberId, Submissions.courseId == courseId,
-                   Submissions.problemId == int (problemId)).first()
+        solCount = dao.query(func.max(Submissions.solutionCheckCount).\
+                             label('solutionCheckCount')).\
+                             filter(Submissions.memberId == memberId,
+                                    Submissions.courseId == courseId,
+                                    Submissions.problemId == int (problemId)).first()
         solCountNum = solCount.solutionCheckCount + 1
     except:
         solCountNum = 0
     
     try:
-        sub = Submissions(memberId = memberId, problemId = int (problemId), courseId = courseId, submissionCount = subCountNum, solutionCheckCount = solCountNum, codeSubmissionDate = datetime.now(),
-                      sumOfSubmittedFileSize = fileSize, usedLanguage = uLang, usedLanguageVersion = uVersion)
-        dao.add(sub)
+        submissions = Submissions(memberId = memberId,
+                                  problemId = int (problemId),
+                                  courseId = courseId,
+                                  submissionCount = subCountNum,
+                                  solutionCheckCount = solCountNum,
+                                  codeSubmissionDate = datetime.now(),
+                                  sumOfSubmittedFileSize = fileSize,
+                                  usedLanguage = usedLanguage,
+                                  usedLanguageVersion = usedLanguageVersion)
+        dao.add(submissions)
         dao.commit()
     except Exception as e:
-        print "DB error : " + str(e)
+        print 'DB error : ' + str(e)
         raise e
     
-    flash("submission success!")
-    return redirect (url_for('.problemList', courseId = courseId ))
+    flash('submission success!')
+    return redirect(url_for('.problemList',
+                            courseId = courseId))

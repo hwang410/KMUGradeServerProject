@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import request, redirect, session, url_for, render_template, flash
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
@@ -11,6 +11,8 @@ from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.model.problems import Problems
 from GradeServer.model.submissions import Submissions
 from GradeServer.model.submittedRecordsOfProblems import SubmittedRecordsOfProblems
+from GradeServer.model.languages import Languages
+from GradeServer.model.languagesOfCourses import LanguagesOfCourses
 
 @GradeServer.route('/problemList/<courseId>')
 @login_required
@@ -19,44 +21,37 @@ def problemList(courseId):
     course = []
     problems = []
     try:
-        submissionRecords = dao.query(Submissions).filter_by(memberId=session['memberId'])\
-                                                .order_by(Submissions.problemId.desc(), Submissions.courseId.desc())\
-                                                .group_by(Submissions.problemId, Submissions.courseId).subquery()
+        submissionRecords = dao.query(Submissions).\
+                                filter(Submissions.memberId == session['memberId']).\
+                                order_by(Submissions.problemId.desc(),
+                                         Submissions.courseId.desc()).\
+                                group_by(Submissions.problemId,
+                                         Submissions.courseId).subquery()
     except:
-        print "failed submissionRecords"
+        print 'failed submissionRecords'
     try:
-        problems = dao.query(RegisteredProblems)\
-                        .outerjoin(submissionRecords, and_(submissionRecords.c.problemId==RegisteredProblems.problemId, \
-                                                           submissionRecords.c.courseId==RegisteredProblems.courseId)) \
-                        .filter(RegisteredProblems.courseId==courseId).subquery()
+        problems = dao.query(RegisteredProblems).\
+                       outerjoin(submissionRecords,
+                                 and_(submissionRecords.c.problemId == RegisteredProblems.problemId,
+                                      submissionRecords.c.courseId == RegisteredProblems.courseId)).\
+                                      filter(RegisteredProblems.courseId == courseId).subquery()
     except:
-        print "failed problems"
+        print 'failed problems'
     try:
-        problems = dao.query(problems, Problems.problemName)\
-                        .join(Problems, Problems.problemId==problems.c.problemId).all()
+        problems = dao.query(problems,
+                             Problems.problemName).\
+                       join(Problems,
+                            Problems.problemId == problems.c.problemId).all()
     except:
-        print "failed problems2"
+        print 'failed problems2'
     try:
         course = dao.query(RegisteredCourses).filter_by(courseId=courseId).first()
     except:
-        print "failed course"
+        print 'failed course'
     
-    print "test"
-    return render_template('/problem_list.html', course=course, problems=problems)
-#@app.route('/problem/<problemNum>') # it is final goal
-
-"""@GradeServer.route('/problem/<courseId>/<problemId>', methods=['GET', 'POST'])
-@login_required
-def upload_file(courseId, problemId):
-    problemInformation = dao.query(Problems).filter_by(problemId=problemId).first()
-    return render_template('/problem.html', problemInformation=problemInformation)
-    return  "upload_file"
-    
-@GradeServer.route('/problem/<courseId>/<problemId>', methods=['POST'])
-@login_required
-def write_code(courseId, problemId):
-    problemInformation = dao.query(Problems).filter_by(problemId=problemId).first()
-    return render_template('/write_code.html')"""
+    return render_template('/problem_list.html',
+                           course = course,
+                           problems = problems)
 
 @GradeServer.route('/problem/<courseId>/<problemId>')
 @login_required
@@ -65,8 +60,41 @@ def problem(courseId, problemId):
     use db to get its problem page
     now, it moves to just default problem page
     """
-    problemInformation = dao.query(Problems).filter_by(problemId=problemId).first()
-    return render_template('/problem.html', courseId=courseId, problemId=problemId, problemInformation=problemInformation)
+    try:
+        languageName = dao.query(Languages.languageName).\
+                           join(LanguagesOfCourses, 
+                                and_(Languages.languageIndex == LanguagesOfCourses.languageIndex,
+                                Languages.languageVersion == LanguagesOfCourses.languageVersion)).\
+                                filter(LanguagesOfCourses.courseId == courseId).all()
+    except Exception as e:
+        dao.rollback()
+        print 'DB error : ' + str(e)
+        raise 
+    try:
+        languageVersion = dao.query(LanguagesOfCourses.languageVersion).\
+                              filter(LanguagesOfCourses.courseId == courseId).all()
+    except Exception as e:
+        dao.rollback()
+        print 'DB error : ' + str(e)
+        raise 
+    try:
+        languageIndex = dao.query(LanguagesOfCourses.languageIndex).\
+                            filter(LanguagesOfCourses.courseId == courseId).all()
+    except Exception as e:
+        dao.rollback()
+        print 'DB error : ' + str(e)
+        raise 
+
+    problemInformation = dao.query(Problems).\
+                             filter(Problems.problemId == problemId).first()
+                             
+    return render_template('/problem.html',
+                           courseId = courseId,
+                           problemId = problemId,
+                           problemInformation = problemInformation,
+                           languageName = languageName,
+                           languageVersion = languageVersion,
+                           languageIndex = languageIndex)
 
 """
     in the main page, it uses methods so 
@@ -94,13 +122,18 @@ def record(courseId, problemId):
     navbar - class - Record of problem
     """
     try:
-        submittedRecords = dao.query(SubmittedRecordsOfProblems).filter_by(problemId=problemId).filter_by(courseId=courseId).all()
+        submittedRecords = dao.query(SubmittedRecordsOfProblems).\
+                               filter_by(problemId=problemId).\
+                               filter_by(courseId=courseId).all()
     except:
-        print "SubmittedRecordsOfProblems table is empty"
+        print 'SubmittedRecordsOfProblems table is empty'
         submittedRecords = []
     
-    problemInformation = dao.query(Problems).filter_by(problemId=problemId).first()
-    return render_template('/record.html', submittedRecords=submittedRecords, problemInformation=problemInformation)
+    problemInformation = dao.query(Problems).\
+                             filter(Problems.problemId == problemId).first()
+    return render_template('/record.html',
+                           submittedRecords = submittedRecords,
+                           problemInformation = problemInformation)
 
 @GradeServer.route('/problem/userid')
 @login_required
