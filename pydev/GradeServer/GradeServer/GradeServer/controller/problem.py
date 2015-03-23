@@ -5,7 +5,7 @@ from sqlalchemy import and_, func
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
-from GradeServer.utils import login_required
+from GradeServer.utils.loginRequired import login_required
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.model.problems import Problems

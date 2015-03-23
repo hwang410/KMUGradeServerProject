@@ -15,16 +15,20 @@ from flask import render_template, request, session, redirect, url_for, flash
 from datetime import datetime
 from sqlalchemy import func, or_
 
+from GradeServer.utils.utilPaging import get_page_pointed
+from GradeServer.utils.utilMessages import unknown_error, get_message
+from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.utilQuery import select_accept_courses
+from GradeServer.utils.utils import *
+
 from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 from GradeServer.model.likesOnBoard import LikesOnBoard
-from GradeServer.model.registrations import Registrations
 from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.model.repliesOnBoard import RepliesOnBoard
 from GradeServer.model.likesOnReplyOfBoard import LikesOnReplyOfBoard
 from GradeServer.database import dao
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer 
-from GradeServer.utils import login_required, get_page_pointed, unknown_error, get_message
 
 @GradeServer.teardown_request
 def close_db_session(exception=None):
@@ -52,7 +56,7 @@ def board(pageNum):
         articlesOnBoard =dao.query (ArticlesOnBoard).\
             filter_by (isDeleted ='Not-Deleted').subquery ()
         # 허용 과목 탐색
-        myCourses =get_accept_courses ()
+        myCourses =select_accept_courses ()
         
         # POST
         if request.method == "POST" :
@@ -288,7 +292,9 @@ def read(articleIndex, error =None):
         # Commit Exception
         try :
             dao.commit()
-            flash (flashMsg)
+            # if flash Message exist
+            if flashMsg:
+                flash (flashMsg)
         except Exception :
             dao.rollback ()
             error =get_message ('updateFailed')
@@ -309,7 +315,7 @@ def write(articleIndex, error =None):
     try :
         # 수강  과목 정보
         try :
-            myCourses =dao.query (get_accept_courses()).all ()
+            myCourses =dao.query (select_accept_courses()).all ()
         except Exception :
             myCourses =[]
             
@@ -383,26 +389,7 @@ def write(articleIndex, error =None):
         # Unknown Error
         return unknown_error ()
     
-"""
-허용된 과목 정보
-"""
-def get_accept_courses () :
-    # 서버 마스터는 모든 과목에 대해서, 그 외에는 지정된 과목에 대해서
-    # Server Master
-    if 'ServerAdministrator' in session['authority'] :
-        myCourses = dao.query(RegisteredCourses.courseId, RegisteredCourses.courseName)
-    # Class Master, User
-    elif 'CourseAdministrator' in session['authority'] :
-        myCourses = dao.query(RegisteredCourses.courseId, RegisteredCourses.courseName).\
-            filter_by(courseAdministratorId=session['memberId'])
-    else:
-        myCourses = dao.query(Registrations.courseId, RegisteredCourses.courseName).\
-            filter (Registrations.memberId == session['memberId']).\
-            join(RegisteredCourses, Registrations.courseId == RegisteredCourses.courseId)
-            
-    return myCourses.subquery ()
-
-
+    
 """
 게시판 검색
 """

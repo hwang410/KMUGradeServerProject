@@ -1,4 +1,6 @@
-<!DOCTYPE html><head>
+<!DOCTYPE html>
+<html>
+<head>
 	<meta charset="">
 	<title>Kookmin University Grade Server </title>
 
@@ -36,59 +38,68 @@
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Showing your subjects list">Problem<b class="caret"></b></abbr></a>
 							{%- if session['memberId'] != NULL %}
 							<ul class="dropdown-menu">
-								<li class="nav-header">Current Class
+								<li class="nav-header">Current Class</li>
 								{%- if session['ownCourses'] %}
 									{%- for course in session['ownCourses'] %}
-									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId)}}" class="currentClasses">{{ course.courseId }} {{ course.courseName }}</a>
+									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId)}}" class="currentClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
-									<li class="disabled"><a tabindex="-1" href="#">None</a>
+									<li class="disabled"><a tabindex="-1" href="#">None</a></li>
 								{% endif -%}
-								<li class="divider"> <!-- seperation line -->
-								<li class="nav-header">Post Class
-								<li class="disabled"><a tabindex="-1" href="#">None</a>
+								<li class="divider"></li> <!-- seperation line -->
+								<li class="nav-header">Post Class</li>
+								<li class="disabled"><a tabindex="-1" href="#">None</a></li>
 							</ul>
 							{% endif -%}
+						</li>
 						<li>
 							<a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum =1) }}"><abbr title="Showing the submit record of each person and each problem">Rank</abbr></a>
+						</li>
 						<li>
 							<a href="{{ url_for('GradeServer.board', pageNum =1) }}"><abbr title="QA board">Board</abbr></a>
+						</li>
 						<li>
-							<a href="{{ url_for('GradeServer.team') }}"><abbr title="Showing your team information">Team</abbr></a>
+							<a href="{{ url_for('GradeServer.team', pageNum =1) }}"><abbr title="Showing your team information">Team</abbr></a>
+						</li>
 						
 						<!-- changing section after signing in -->
 						{%- if session['memberId'] != NULL %}
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">{{ session['memberId'] }}</abbr><b class="caret"></b></a>
 							<ul class="dropdown-menu">
-								{%- if 'ServerAdministrator' not in session['authority'] and 'CourseAdministrator' not in session['authority'] %}
-									<a href="{{ url_for('GradeServer.user_history', memberId = session['memberId'], sortCondition = 'submittedDate', pageNum = 1) }}">Record</a>
+								{%- if "ServerAdministrator" not in session['authority'] and "CourseAdministrator" not in session['authority'] %}
+								<li>
+									<a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submittedDate', pageNum =1) }}">Record</a>
+								</li>
 								{% endif %}
-								<li><a href="{{ url_for('GradeServer.id_check', select = 'account') }}">Account</a>
-								<li><a href="{{ url_for('GradeServer.board', pageNum = 1) }}">Notice</a> <!-- same with board, the difference is db-query for contents -->
-								<li><a href="#">Manual</a>
-								{%- if 'ServerAdministrator' in session['authority'] %}
+								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>
+								<li><a href="{{ url_for('GradeServer.board', pageNum =1) }}">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
+								<li><a href="#">Manual</a></li>
+								{%- if "ServerAdministrator" in session['authority'] %}
 								<li class="dropdown-submenu">
 									<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="server-management">Server Management</a>
 									<ul class="dropdown-menu" id="menu-box">
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_problem') }}" id='manage-problem'>Problem</a>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_class') }}" id='manage-class'>Class</a>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_user') }}" id='manage-user'>User</a>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_service') }}" id='manage-service'>Service</a>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_problem') }}" id='manage-problem'>Problem</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_class') }}" id='manage-class'>Class</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_user') }}" id='manage-user'>User</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_service') }}" id='manage-service'>Service</a></li>
 									</ul>
-								{%- elif 'CourseAdministrator' in session['authority'] %}
+								</li>
+								{%- elif "CourseAdministrator" in session['authority'] %}
 								<li class="dropdown-submenu">
 									<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="class-server-management">Class Management</a>
 									<ul class="dropdown-menu" id="menu-box">
-										<li><a href="{{ url_for('GradeServer.id_check', select='user_submit') }}" id='manage-problem'>User Submit</a>
-										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_problem') }}" id='manage-class'>Problem</a>
-										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_user') }}" id='manage-user'>User</a>
-										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_service') }}" id='manage-service'>Service</a>
+										<li><a href="{{ url_for('GradeServer.id_check', select='user_submit') }}" id='manage-problem'>User Submit</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_problem') }}" id='manage-class'>Problem</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_user') }}" id='manage-user'>User</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_service') }}" id='manage-service'>Service</a></li>
 									</ul>
+								</li>
 								{% endif -%}
-								<li><a href="{{ url_for('GradeServer.sign_out') }}">Sign out</a>
+								<li><a href="{{ url_for('GradeServer.sign_out') }}">Sign out</a></li>
 							</ul>
-						<li><a href="#"><i class="icon-bell icon-white"></i></a>
+						</li>
+						<li><a href="#"><i class="icon-bell icon-white"></i></a></li>
 						{%- else %}
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">Sign in </abbr><b class="caret"></b></a>
@@ -99,6 +110,7 @@
 									<button type="submit" class="btn">Sign in</button>
 								</form>
 							</ul>
+						</li>
 						{% endif -%}
 					</ul>
 					{%- if session['memberId'] == NULL %}
@@ -112,16 +124,16 @@
 	<!-- ///////////////////////////////////
 		flash pop section
 		//////////////////////////////////// -->
-	{%- with flashes = get_flashed_messages() %}
-	{%- if flashes %}
-	<ul class="flashes">
-		{%- for message in flashes %}
-		<li>{{ message }}
-		{% endfor -%}
-	</ul>
-	{% endif -%}
-	{% endwith -%}
-	{%- if error %}<div class="error"> {{ error }}</div>{% endif -%}
+		{%- with flashes = get_flashed_messages() %}
+		{%- if flashes %}
+		<ul class="flashes">
+			{%- for message in flashes %}
+			<li>{{ message }}</li>
+			{% endfor -%}
+		</ul>
+		{% endif -%}
+		{% endwith -%}
+		{%- if error %}<div class="error"> {{ error }}</div>{% endif -%}
 
 	<!-- ///////////////////////////////////
 		container section
@@ -138,20 +150,20 @@
 		      <!-- Indicators -->
 		      <ol class="carousel-indicators" style="width:51.5%">
 		      {%- for notice in notices %}
-	      		{%- if loop.index == 1 %} 
-	      			<li data-target='#myCarousel' data-slide-to='{{ loop.index-1 }}' class='active'>
-	      		{%- else %}
-	      			<li data-target='#myCarousel' data-slide-to='{{ loop.index-1 }}'>
-	      		{% endif -%}
+	      		{% if loop.index == 1 %} 
+	      			<li data-target='#myCarousel' data-slide-to='{{ loop.index-1 }}' class='active'></li>
+	      		{% else %}
+	      			<li data-target='#myCarousel' data-slide-to='{{ loop.index-1 }}'></li>
+	      		{% endif %}
 		      {% endfor -%}
 		      </ol>
 		      <div class="carousel-inner" role="listbox">
 		      	{%- for notice in notices %}
-		      		{%- if loop.index == 1 %}
+		      		{% if loop.index == 1 %}
 		      		<div class='item active'>
-		      		{%- else %}
+		      		{% else %}
 		      		<div class='item'>
-		      		{% endif -%}
+		      		{% endif %}
 			          <div class="container">
 			            <div class="carousel-caption">
 			            	<a href ="{{ url_for ('GradeServer.read',articleIndex =notice.articleIndex) }}">
@@ -175,11 +187,11 @@
 						<div class="row-fluid">
 							<div class="span4 topcoder" style="border:1px solid; text-align:center">
 							<h4>Top Coder of this week</h4>
-							{%- if topCoderId %}
-							<a href ="{{ url_for ('GradeServer.user_history', memberId =topCoderId, pageNum =1) }}">{{ topCoderId }}</a>
-							{%- else %}
+							{% if topCoderId %}
+							<a href ="{{ url_for ('GradeServer.user_history', memberId =topCoderId, sortCondition ='submittedDate', pageNum =1) }}">{{ topCoderId }}</a>
+							{% else %}
 							None
-							{% endif -%}
+							{% endif %}
 							</div>
 							<div class="span4 manual" style="border:1px solid; text-align:center">
 							<h4>How to use</h4>
@@ -199,6 +211,9 @@
 		<!-- footer -->
 		<div class="fluid-footer" style="background-color: #ffffff"> Algorithmic Engineering Lab </div>
 
+		<!--<script src="../../static/bootstrap/js/modernizr-2.6.2.min.js"></script>-->
+		<!--<script src="../../static/bootstrap/js/jquery.js"></script>-->
+		<!--<script src="../../static/bootstrap/js/jquery-ui-1.10.1.min.js"></script>-->
 		<script src="../../static/bootstrap/js/bootstrap.js"></script>
 		<script src="../../static/bootstrap/js/dropzone.js"></script>
 		<script src="../../static/bootstrap/js/src/ace.js"></script>
@@ -206,4 +221,4 @@
 		<script src="../../static/bootstrap/js/Chart.js"></script>
 
 	</body>
-</html>
+	</html>

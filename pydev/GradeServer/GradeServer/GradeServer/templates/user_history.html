@@ -23,7 +23,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
   myNewChart = new Chart(ct).Doughnut(data, options);
   // input values and colors into the chart
   // need to change 'value:#' 
-  {% for raw in chartSubmissionRecords[0] %}
+  {% for raw in chartSubmissionRecords %}
   	myNewChart.addData ({
   		value :{{ raw }},
   		color :colors[0]
@@ -53,8 +53,8 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 						<div style="text-align:right;width:50%">
 							{% for i in range (0, chartSubmissionDescriptions|length) %}
 							<h4 style ="padding-bottom:5px">
-								<!--  chartSubmissionRecords[0] is Description, chartSubmissionRecords[1] is value -->
-								{{ chartSubmissionDescriptions[i] }}  :  {% if chartSubmissionRecords[i] %}{{ chartSubmissionRecords[i] }}{% else %}{{ 0 }}{% endif %}
+								<!--  chartSubmissionRecords is Value, chartSubmissionDescriptions is Description -->
+								{{ chartSubmissionDescriptions[i] }}  :  {{ chartSubmissionRecords[i] }}
 								<br>
 							</h4>
 							{% endfor %}
@@ -80,7 +80,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 								<td>{{ submissionRecords[i].score }}</td>
 								<td>{{ submissionRecords[i].runTime }}</td>
 								<td>{{ submissionRecords[i].sumOfSubmittedFileSize }}</td>
-								<td>{{ submissionRecords[i].usedLanguage }}</td>
+								<td>{{ submissionRecords[i].languageName }}</td>
 								<td>{{ submissionRecords[i].codeSubmissionDate }}</td>
 							</tr>
 							{% endfor -%}
