@@ -19,7 +19,10 @@ from GradeServer.model.submissions import Submissions
  '''
 def select_all_user():
         # 자동 완성을 위한 모든 유저기록
-    return dao.query(Members.memberId, Members.memberName).filter_by(authority =USER).subquery()
+    return dao.query(Members.memberId,
+                     Members.memberName).\
+               filter(Members.authority == USER).\
+               subquery()
     
     
 '''
@@ -27,7 +30,9 @@ def select_all_user():
  '''
 def select_match_member(memberId):
     # memberId Filterling
-    return dao.query(Members).filter_by(memberId =memberId).subquery()
+    return dao.query(Members).\
+               filter(Members.memberId == memberId).\
+               subquery()
 
 
 '''
@@ -37,44 +42,60 @@ def select_accept_courses():
     # 서버 마스터는 모든 과목에 대해서, 그 외에는 지정된 과목에 대해서
     # Server Master
     if 'ServerAdministrator' in session['authority']:
-        myCourses = dao.query(RegisteredCourses.courseId, RegisteredCourses.courseName)
+        myCourses = dao.query(RegisteredCourses.courseId,
+                              RegisteredCourses.courseName)
     # Class Master, User
     elif 'CourseAdministrator' in session['authority']:
-        myCourses = dao.query(RegisteredCourses.courseId, RegisteredCourses.courseName).\
-            filter_by(courseAdministratorId=session['memberId'])
+        myCourses = dao.query(RegisteredCourses.courseId,
+                              RegisteredCourses.courseName).\
+                        filter(RegisteredCourses.courseAdministratorId == session['memberId'])
     else:
-        myCourses = dao.query(Registrations.courseId, RegisteredCourses.courseName).\
-            filter(Registrations.memberId == session['memberId']).\
-            join(RegisteredCourses, Registrations.courseId == RegisteredCourses.courseId)
+        myCourses = dao.query(Registrations.courseId,
+                              RegisteredCourses.courseName).\
+                        filter(Registrations.memberId == session['memberId']).\
+                        join(RegisteredCourses,
+                             Registrations.courseId == RegisteredCourses.courseId)
             
     return myCourses.subquery()
 
 '''
  DB Select basic rank
  '''
-def select_rank(submissions, sortCondition =RATE):
+def select_rank(submissions, sortCondition = RATE):
     #Get SubmitCount
-    submissionCount =dao.query(submissions.c.memberId, func.sum(submissions.c.solutionCheckCount).label('submissionCount')).\
-        group_by(submissions.c.memberId).subquery()
+    submissionCount = dao.query(submissions.c.memberId,
+                                func.sum(submissions.c.solutionCheckCount).label('submissionCount')).\
+                          group_by(submissions.c.memberId).\
+                          subquery()
     #Get Solved Count
-    status =dao.query(submissions.c.memberId, func.count(submissions.c.status).label('solvedCount')).filter(submissions.c.status == SOLVED).\
-        group_by(submissions.c.memberId).subquery()
+    status = dao.query(submissions.c.memberId,
+                       func.count(submissions.c.status).label('solvedCount')).\
+                 filter(submissions.c.status == SOLVED).\
+                 group_by(submissions.c.memberId).subquery()
     #SubmitCount and SolvedCount Join
-    submissions =dao.query(submissionCount.c.memberId, submissionCount.c.submissionCount, status.c.solvedCount,
-                           (status.c.solvedCount /submissionCount.c.submissionCount *100).label('solvedRate')).\
-        join(status, submissionCount.c.memberId == status.c.memberId).subquery()
+    submissions = dao.query(submissionCount.c.memberId,
+                            submissionCount.c.submissionCount,
+                            status.c.solvedCount,
+                            (status.c.solvedCount / submissionCount.c.submissionCount * 100).label('solvedRate')).\
+                      join(status,
+                           submissionCount.c.memberId == status.c.memberId).\
+                      subquery()
     #Get Comment
     # rate 정렬
     if sortCondition == RATE:
-        print 'BBBBBB'
-        rankMemberRecords =dao.query(Members.memberId, Members.comment, submissions.c.submissionCount, submissions.c.solvedCount, submissions.c.solvedRate).\
-            join(submissions, Members.memberId == submissions.c.memberId).\
-            order_by(submissions.c.solvedRate.desc()).subqeury()
-        print 'CCCCC'
+        rankMemberRecords = dao.query(submissions,
+                                      Members.comment).\
+                                join(Members,
+                                     Members.memberId == submissions.c.memberId).\
+                                order_by(submissions.c.solvedRate.desc()).\
+                                subquery()
     else: #if sortCondition == SOLVED_PROBLEM
-        rankMemberRecords =dao.query(Members.memberId, Members.comment, submissions.c.submissionCount, submissions.c.solvedCount, submissions.c.solvedRate).\
-            join(submissions, Members.memberId == submissions.c.memberId).\
-            order_by(submissions.c.solvedCount.desc()).subquery()
+        rankMemberRecords = dao.query(submissions,
+                                      Members.comment).\
+                                join(Members,
+                                     Members.memberId == submissions.c.memberId).\
+                                order_by(submissions.c.solvedCount.desc()).\
+                                subquery()
     
     return rankMemberRecords
 
@@ -88,13 +109,21 @@ def select_notices():
     try:
         # 서버 공지만
         try:
-            serverAdministratorId =dao.query(Members.memberId).filter_by(authority =SERVER_ADMINISTRATOR).first().memberId
-            serverAdministratorNotices =dao.query(ArticlesOnBoard).\
-                filter_by(isNotice ='Notice', writerId =serverAdministratorId).subquery()
-            serverAdministratorNotices =dao.query(serverAdministratorNotices, RegisteredCourses.courseName).\
-                join(RegisteredCourses, serverAdministratorNotices.c.courseId == RegisteredCourses.courseId).all()
+            serverAdministratorId = dao.query(Members.memberId).\
+                                        filter(Members.authority == SERVER_ADMINISTRATOR).\
+                                        first().\
+                                        memberId
+            serverAdministratorNotices = dao.query(ArticlesOnBoard).\
+                                             filter(ArticlesOnBoard.isNotice == 'Notice',
+                                                    ArticlesOnBoard.writerId == serverAdministratorId).\
+                                             subquery()
+            serverAdministratorNotices = dao.query(serverAdministratorNotices,
+                                                   RegisteredCourses.courseName).\
+                                             join(RegisteredCourses,
+                                                  serverAdministratorNotices.c.courseId == RegisteredCourses.courseId).\
+                                             all()
         except Exception:
-            serverAdministratorNotices =[]
+            serverAdministratorNotices = []
             
         # 로그인 상태
         try:
@@ -102,29 +131,36 @@ def select_notices():
             if login_required:
                 # 서버 관리자는 모든 공지
                 if SERVER_ADMINISTRATOR in session['authority']:
-                    notices =dao.query(ArticlesOnBoard, RegisteredCourses.courseName).\
-                        join(RegisteredCourses, ArticlesOnBoard.courseId == RegisteredCourses.courseId).\
-                        filter_by(isNotice ='Notice').all()
+                    notices = dao.query(ArticlesOnBoard,
+                                        RegisteredCourses.courseName).\
+                                  join(RegisteredCourses,
+                                       ArticlesOnBoard.courseId == RegisteredCourses.courseId).\
+                                  filter(ArticlesOnBoard.isNotice == 'Notice').\
+                                  all()
                 # 과목 관리자 및 유저는 담당 과목 공지
                 else:
                     if COURSE_ADMINISTRATOR in session['authority']:
                         registeredCourseId = dao.query(RegisteredCourses.courseId).\
-                                                 filter_by(courseAdministratorId =session['memberId']).subquery()
+                                                 filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                                                 subquery()
                     # 학생인 경우
                     else: # elif User in session['authority']
                         registeredCourseId = dao.query(Registrations.courseId).\
-                                                 filter(Registrations.memberId == session['memberId']).subquery()
+                                                 filter(Registrations.memberId == session['memberId']).\
+                                                 subquery()
                     
                     # 해당 과목 추려내기
                     notices = dao.query(ArticlesOnBoard).\
                                   join(registeredCourseId,
                                        ArticlesOnBoard.courseId == registeredCourseId.c.courseId).\
-                                  filter(ArticlesOnBoard.isNotice == 'Notice').subquery()
+                                  filter(ArticlesOnBoard.isNotice == 'Notice').\
+                                  subquery()
                     # 과목이름 넣기
                     notices = dao.query(notices,
                                         RegisteredCourses.courseName).\
                                   join(RegisteredCourses,
-                                       notices.c.courseId == RegisteredCourses.courseId).all()
+                                       notices.c.courseId == RegisteredCourses.courseId).\
+                                  all()
                     notices.extend(serverAdministratorNotices)
                     
         except Exception:
@@ -178,12 +214,15 @@ def select_top_coder():
                                                                                   submissionDatePeriod['end'])).\
                                     group_by(Submissions.memberId,
                                              Submissions.problemId,
-                                             Submissions.courseId).subquery()
+                                             Submissions.courseId).\
+                                    subquery()
 
-        topCoder = select_rank(dayOfWeekSubmissions)
-        if topCoder:
+        try:
+            # return subquery
+            topCoder = dao.query(select_rank(dayOfWeekSubmissions)).\
+                           first()
             topCoderId = topCoder[0].memberId
-        else:
+        except Exception:
             topCoderId = None
     except Exception:
         # None Type Error
