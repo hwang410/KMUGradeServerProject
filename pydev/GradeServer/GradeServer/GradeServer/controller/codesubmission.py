@@ -76,7 +76,7 @@ def upload(courseId, problemId):
             filter(and_(SubmittedFiles.memberId == memberId,
                         SubmittedFiles.problemId == problemId,
                         SubmittedFiles.courseId == courseId)).\
-                        delete()
+            delete()
         dao.commit()
     except Exception as e:
         dao.rollback()
@@ -154,8 +154,8 @@ def upload(courseId, problemId):
         usedLanguageVersion = dao.query(LanguagesOfCourses.languageVersion).\
                                   filter(LanguagesOfCourses.courseId == courseId,
                                          LanguagesOfCourses.languageIndex == usedLanguage).\
-                                         first().\
-                                         languageVersion
+                                  first().\
+                                  languageVersion
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
@@ -166,7 +166,7 @@ def upload(courseId, problemId):
                        filter(Submissions.memberId == memberId,
                               Submissions.courseId == courseId,
                               Submissions.problemId == problemId).\
-                              first()
+                       first()
         subCountNum = subCount.submissionCount + 1
     except:
         subCountNum = 1
@@ -177,7 +177,7 @@ def upload(courseId, problemId):
                               Submissions.courseId == courseId,
                               Submissions.problemId == problemId,
                               Submissions.submissionCount == subCount.submissionCount).\
-                              first()
+                       first()
         solCountNum = solCount.solutionCheckCount
     except:
         solCountNum = 0
@@ -205,8 +205,8 @@ def upload(courseId, problemId):
                                   Problems.limitedTime,
                                   Problems.limitedMemory,
                                   Problems.solutionCheckType).\
-                                  filter(Problems.problemId == problemId).\
-                                  first()
+                            filter(Problems.problemId == problemId).\
+                            first()
     except Exception as e:
         print 'DB error : ' + str(e)
         raise e
@@ -262,7 +262,7 @@ def code(courseId, problemId):
             filter(and_(SubmittedFiles.memberId == memberId,
                         SubmittedFiles.problemId == problemId,
                         SubmittedFiles.courseId == courseId)).\
-                        delete()
+            delete()
         dao.commit()
     except Exception as e:
         dao.rollback()
@@ -356,8 +356,8 @@ def code(courseId, problemId):
         usedLanguageVersion = dao.query(LanguagesOfCourses.languageVersion).\
                                   filter(LanguagesOfCourses.courseId == courseId,
                                          LanguagesOfCourses.languageIndex == usedLanguage).\
-                                         first().\
-                                         languageVersion
+                                  first().\
+                                  languageVersion
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
@@ -365,27 +365,27 @@ def code(courseId, problemId):
     
     try:
         subCount = dao.query(func.max(Submissions.submissionCount).label('submissionCount')).\
-                             filter(Submissions.memberId == memberId,
+                       filter(Submissions.memberId == memberId,
                                     Submissions.courseId == courseId,
-                                    Submissions.problemId == int (problemId)).\
-                                    first()
+                                    Submissions.problemId == problemId).\
+                       first()
         subCountNum = subCount.submissionCount + 1
     except:
         subCountNum = 1
         
     try:
         solCount = dao.query(func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
-                             filter(Submissions.memberId == memberId,
+                       filter(Submissions.memberId == memberId,
                                     Submissions.courseId == courseId,
-                                    Submissions.problemId == int (problemId)).\
-                                    first()
+                                    Submissions.problemId == problemId).\
+                       first()
         solCountNum = solCount.solutionCheckCount + 1
     except:
         solCountNum = 0
     
     try:
         submissions = Submissions(memberId = memberId,
-                                  problemId = int (problemId),
+                                  problemId = problemId,
                                   courseId = courseId,
                                   submissionCount = subCountNum,
                                   solutionCheckCount = solCountNum,
