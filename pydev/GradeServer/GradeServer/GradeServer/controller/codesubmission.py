@@ -42,14 +42,18 @@ def upload(courseId, problemId):
     fileIndex = 1
     try:
         courseName = dao.query(RegisteredCourses.courseName).\
-                         filter(RegisteredCourses.courseId == courseId).first().courseName
+                         filter(RegisteredCourses.courseId == courseId).\
+                         first().\
+                         courseName
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
         raise e
     try:
         problemName = dao.query(Problems.problemName).\
-                          filter(Problems.problemId == problemId).first().problemName
+                          filter(Problems.problemId == problemId).\
+                          first().\
+                          problemName
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
@@ -71,7 +75,8 @@ def upload(courseId, problemId):
         dao.query(SubmittedFiles).\
             filter(and_(SubmittedFiles.memberId == memberId,
                         SubmittedFiles.problemId == problemId,
-                        SubmittedFiles.courseId == courseId)).delete()
+                        SubmittedFiles.courseId == courseId)).\
+                        delete()
         dao.commit()
     except Exception as e:
         dao.rollback()
@@ -89,7 +94,9 @@ def upload(courseId, problemId):
             if filename.rsplit('.', 1)[1] == 'c':
                 try:
                     usedLanguage = dao.query(Languages.languageIndex).\
-                                       filter(Languages.languageName == 'C').first().languageIndex
+                                       filter(Languages.languageName == 'C').\
+                                       first().\
+                                       languageIndex
                 except Exception as e:
                     dao.rollback()
                     print 'DB error : ' + str(e)
@@ -97,7 +104,9 @@ def upload(courseId, problemId):
             elif filename.rsplit('.', 1)[1] == 'cpp':
                 try:
                     usedLanguage = dao.query(Languages.languageIndex).\
-                                       filter(Languages.languageName == 'C++').first().languageIndex
+                                       filter(Languages.languageName == 'C++').\
+                                       first().\
+                                       languageIndex
                 except Exception as e:
                     dao.rollback()
                     print 'DB error : ' + str(e)
@@ -105,7 +114,9 @@ def upload(courseId, problemId):
             elif filename.rsplit('.', 1)[1] == 'java':
                 try:
                     usedLanguage = dao.query(Languages.languageIndex).\
-                                       filter(Languages.languageName == 'JAVA').first().languageIndex
+                                       filter(Languages.languageName == 'JAVA').\
+                                       first().\
+                                       languageIndex
                 except Exception as e:
                     dao.rollback()
                     print 'DB error : ' + str(e)
@@ -113,7 +124,9 @@ def upload(courseId, problemId):
             elif filename.rsplit('.', 1)[1] == 'py':
                 try:
                     usedLanguage = dao.query(Languages.languageIndex).\
-                                       filter(Languages.languageName == 'PYTHON').first().languageIndex
+                                       filter(Languages.languageName == 'PYTHON').\
+                                       first().\
+                                       languageIndex
                 except Exception as e:
                     dao.rollback()
                     print 'DB error : ' + str(e)
@@ -140,18 +153,20 @@ def upload(courseId, problemId):
     try:
         usedLanguageVersion = dao.query(LanguagesOfCourses.languageVersion).\
                                   filter(LanguagesOfCourses.courseId == courseId,
-                                         LanguagesOfCourses.languageIndex == usedLanguage).first().languageVersion
+                                         LanguagesOfCourses.languageIndex == usedLanguage).\
+                                         first().\
+                                         languageVersion
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
         raise e
 
     try:
-        subCount = dao.query(func.max(Submissions.submissionCount).\
-                       label ('submissionCount')).\
+        subCount = dao.query(func.max(Submissions.submissionCount).label ('submissionCount')).\
                        filter(Submissions.memberId == memberId,
                               Submissions.courseId == courseId,
-                              Submissions.problemId == int (problemId)).first()
+                              Submissions.problemId == problemId).\
+                              first()
         subCountNum = subCount.submissionCount + 1
     except:
         subCountNum = 1
@@ -160,15 +175,16 @@ def upload(courseId, problemId):
         solCount = dao.query(Submissions.solutionCheckCount).\
                        filter(Submissions.memberId == memberId,
                               Submissions.courseId == courseId,
-                              Submissions.problemId == int (problemId),
-                              Submissions.submissionCount == subCount.submissionCount).first()
+                              Submissions.problemId == problemId,
+                              Submissions.submissionCount == subCount.submissionCount).\
+                              first()
         solCountNum = solCount.solutionCheckCount
     except:
         solCountNum = 0
     
     try:
         submissions = Submissions(memberId = memberId,
-                                  problemId = int (problemId),
+                                  problemId = problemId,
                                   courseId = courseId,
                                   submissionCount = subCountNum,
                                   solutionCheckCount = solCountNum,
@@ -189,13 +205,16 @@ def upload(courseId, problemId):
                                   Problems.limitedTime,
                                   Problems.limitedMemory,
                                   Problems.solutionCheckType).\
-                                  filter(Problems.problemId == problemId).first()
+                                  filter(Problems.problemId == problemId).\
+                                  first()
     except Exception as e:
         print 'DB error : ' + str(e)
         raise e
     try:
         departmentIndex = dao.query(DepartmentsDetailsOfMembers.departmentIndex).\
-                              filter(DepartmentsDetailsOfMembers.memberId == memberId).first().departmentIndex
+                              filter(DepartmentsDetailsOfMembers.memberId == memberId).\
+                              first().\
+                              departmentIndex
     except Exception as e:
         print 'DB error : ' + str(e)
         raise e
@@ -220,14 +239,18 @@ def code(courseId, problemId):
     usedLanguageVersion = 0
     try:
         courseName = dao.query(RegisteredCourses.courseName).\
-                         filter(RegisteredCourses.courseId == courseId).first().courseName
+                         filter(RegisteredCourses.courseId == courseId).\
+                         first().\
+                         courseName
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
         raise e
     try:
         problemName = dao.query(Problems.problemName).\
-                          filter(Problems.problemId == problemId).first().problemName
+                          filter(Problems.problemId == problemId).\
+                          first().\
+                          problemName
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
@@ -238,7 +261,8 @@ def code(courseId, problemId):
         dao.query(SubmittedFiles).\
             filter(and_(SubmittedFiles.memberId == memberId,
                         SubmittedFiles.problemId == problemId,
-                        SubmittedFiles.courseId == courseId)).delete()
+                        SubmittedFiles.courseId == courseId)).\
+                        delete()
         dao.commit()
     except Exception as e:
         dao.rollback()
@@ -258,7 +282,9 @@ def code(courseId, problemId):
         fout.close()
         try:
             usedLanguage = dao.query(Languages.languageIndex).\
-                               filter(Languages.languageName == 'C').first().languageIndex
+                               filter(Languages.languageName == 'C').\
+                               first().\
+                               languageIndex
         except Exception as e:
             dao.rollback()
             print 'DB error : ' + str(e)
@@ -271,7 +297,9 @@ def code(courseId, problemId):
         fout.close()
         try:
             usedLanguage = dao.query(Languages.languageIndex).\
-                               filter(Languages.languageName == 'C++').first().languageIndex
+                               filter(Languages.languageName == 'C++').\
+                               first().\
+                               languageIndex
         except Exception as e:
             dao.rollback()
             print 'DB error : ' + str(e)
@@ -284,7 +312,9 @@ def code(courseId, problemId):
         fout.close()
         try:
             usedLanguage = dao.query(Languages.languageIndex).\
-                               filter(Languages.languageName == 'JAVA').first().languageIndex
+                               filter(Languages.languageName == 'JAVA').\
+                               first().\
+                               languageIndex
         except Exception as e:
             dao.rollback()
             print 'DB error : ' + str(e)
@@ -297,7 +327,9 @@ def code(courseId, problemId):
         fout.close()
         try:
             usedLanguage = dao.query(Languages.languageIndex).\
-                               filter(Languages.languageName == 'PYTHON').first().languageIndex
+                               filter(Languages.languageName == 'PYTHON').\
+                               first().\
+                               languageIndex
         except Exception as e:
             dao.rollback()
             print 'DB error : ' + str(e)
@@ -323,28 +355,30 @@ def code(courseId, problemId):
     try:
         usedLanguageVersion = dao.query(LanguagesOfCourses.languageVersion).\
                                   filter(LanguagesOfCourses.courseId == courseId,
-                                         LanguagesOfCourses.languageIndex == usedLanguage).first().languageVersion
+                                         LanguagesOfCourses.languageIndex == usedLanguage).\
+                                         first().\
+                                         languageVersion
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
         raise e   
     
     try:
-        subCount = dao.query(func.max(Submissions.submissionCount).\
-                             label('submissionCount')).\
+        subCount = dao.query(func.max(Submissions.submissionCount).label('submissionCount')).\
                              filter(Submissions.memberId == memberId,
                                     Submissions.courseId == courseId,
-                                    Submissions.problemId == int (problemId)).first()
+                                    Submissions.problemId == int (problemId)).\
+                                    first()
         subCountNum = subCount.submissionCount + 1
     except:
         subCountNum = 1
         
     try:
-        solCount = dao.query(func.max(Submissions.solutionCheckCount).\
-                             label('solutionCheckCount')).\
+        solCount = dao.query(func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
                              filter(Submissions.memberId == memberId,
                                     Submissions.courseId == courseId,
-                                    Submissions.problemId == int (problemId)).first()
+                                    Submissions.problemId == int (problemId)).\
+                                    first()
         solCountNum = solCount.solutionCheckCount + 1
     except:
         solCountNum = 0
