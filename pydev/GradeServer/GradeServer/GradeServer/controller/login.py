@@ -22,7 +22,7 @@ from werkzeug.security import check_password_hash
 from GradeServer.utils.utilMessages import get_message
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilQuery import select_accept_courses, select_notices, select_match_member, select_top_coder
-from GradeServer.utils.utils import*
+from GradeServer.utils.utils import *
 
 from GradeServer.model.members import Members
 from GradeServer.database import dao

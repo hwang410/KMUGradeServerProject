@@ -13,7 +13,11 @@ from flask import request, render_template, url_for, redirect, session
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
+
+from GradeServer.utils.utilMessages import get_message
 from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.utilQuery import select_accept_courses, select_notices, select_match_member, select_top_coder
+from GradeServer.utils.utils import *
 
 from GradeServer.model.registrations import Registrations
 from GradeServer.model.registeredCourses import RegisteredCourses

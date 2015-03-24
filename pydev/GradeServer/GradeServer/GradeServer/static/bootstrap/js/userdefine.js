@@ -350,11 +350,14 @@ function visibleButton(parent){
 }
 
 /* when server administrator add new users */
-function addIndivisualUserForm(){
-  var usertb = document.getElementById('indivisual');
-  var numOfRow = usertb.rows.length;
+function addIndivisualUserForm(permission){
+  var targetTable = document.getElementById('indivisual');
+  var numOfRow = targetTable.rows.length;
 
   reset_val = function(){
+    if(permission == 'course'){
+      $("#courseId1").val("");
+    }
     $("#userId1").val("");
     $("#username1").val("");
     $("#authority1").val("");
@@ -362,28 +365,21 @@ function addIndivisualUserForm(){
     $("#department1").val("");
   }
 
-  var newRow = usertb.insertRow(2);
-  
-  for(var i = 0; i <usertb.rows[0].cells.length; i++){  
-    var c= newRow.insertCell(i);
-    switch (i){
-      case 0:
-        var uploadObj = "<tr><td><input type='text' class='input-small formLine1' id='userId"+numOfRow+"' name = 'userId"+numOfRow+"' placeholder='User Id' value='"+$("#userId1").val()+"' form='addIndivisualUser'></td>";
-        break;
-      case 1:
-        var uploadObj = "<td><input type='text' class='input-small formLine1' id='college"+numOfRow+"' name = 'college"+numOfRow+"' placeholder='College' value='"+$("#college1").val()+"' form='addIndivisualUser'></td>";
-        break;
-      case 2:
-        var uploadObj = "<td><input type='text' class='input-small formLine1' id='department"+numOfRow+"' name = 'department"+numOfRow+"' placeholder='Department' value='"+$("#department1").val()+"' form='addIndivisualUser'></td></tr>";
-        break;
-      case 3:
-        var uploadObj = "<td><input type='text' class='input-small formLine1' id='username"+numOfRow+"' name = 'username"+numOfRow+"' placeholder='Username' value='"+$("#username1").val()+"' form='addIndivisualUser'></td>";
-        break;
-      case 4:
-        var uploadObj = "<td><input type='text' class='input-small formLine1' id='authority"+numOfRow+"' name = 'authority"+numOfRow+"' placeholder='Authority' value='"+$("#authority1").val()+"' form='addIndivisualUser'></td>";
-        break;
+  var newRow = targetTable.insertRow(2);
+  var uploadObj;
+  var keys = ['courseId', 'userId', 'college', 'department', 'username', 'authority'];
+  var placeholders = ['Course Id', 'User Id', 'College', 'Department', 'User name', 'Authority'];
+
+  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
+    uploadObj = "<tr><td><input type='text' class='input-small formLine1' ";
+    if(permission == 'server'){
+      i += 1;
     }
-    c.innerHTML = uploadObj;
+    uploadObj += "id = '" + keys[i] + numOfRow + "' name = '" + keys[i] + numOfRow + "' placeholder = '" + placeholders[i] + "' value = '" + $("#" + keys[i] + "1").val();
+    if(permission == 'server'){
+      i -= 1;
+    }
+    newRow.insertCell(i).innerHTML = uploadObj + "' form='addIndivisualUser'></td>";
   }
   reset_val();
 }
