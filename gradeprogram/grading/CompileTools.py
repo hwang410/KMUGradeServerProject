@@ -77,10 +77,10 @@ class CompileTools(object):
     def MakeCommand(self):
         # make compile command 
         if self.usingLang == 'C':
-            return 'gcc ' + self.filePath + '*.c -o main -O2 -lm -Wall 2>error.err'
+            return 'gcc ' + self.filePath + '*.c -o main -lm -Wall 2>error.err'
             
         elif self.usingLang == 'C++':
-            return 'g++ ' + self.filePath + '*.cpp -o main -O2 -lm -Wall 2>error.err'
+            return 'g++ ' + self.filePath + '*.cpp -o main -lm -Wall 2>error.err'
         
         elif self.usingLang == 'JAVA':
             return 'javac ' + self.filePath + '*.java 2>error.err'
