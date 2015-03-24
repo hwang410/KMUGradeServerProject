@@ -87,7 +87,7 @@ class EvaluateTools():
                 return 'time (python3 ' + self.runFileName + '.py 1>output.txt 2>core.1) 2>time.txt'
         
         elif self.usingLang == 'C' or self.usingLang == 'C++':
-            return 'ulimit -c unlimited; time (./main 1>output.txt 2>err.err) 2>time.txt'
+            return 'ulimit -c unlimited; time (./main 1>output.txt) 2>time.txt'
         
         elif self.usingLang == 'JAVA':
             return 'time (java ' + self.runFileName + ' 1>output.txt 2>core.1) 2>time.txt'
