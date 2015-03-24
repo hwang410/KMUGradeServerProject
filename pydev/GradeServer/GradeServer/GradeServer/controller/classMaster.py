@@ -434,7 +434,19 @@ def class_add_user():
     global newUsers
     error = None
     targetUserIdToDelete = []
+    authorities = ['Course Admin', 'User']
     
+    try:
+        ownCourses = dao.query(RegisteredCourses).\
+                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                         all()
+    except:
+        error = 'Error has been occurred while searching own courses'
+        return render_template('/class_add_user.html', 
+                               error = error, 
+                               ownCourses = ownCourses,
+                               authorities = authorities,
+                               newUsers = newUsers)
     
     if request.method == 'POST':
         if 'addIndivisualUser' in request.form:
@@ -476,6 +488,8 @@ def class_add_user():
                             error = 'Wrong department index has inserted'
                             return render_template('/class_add_user.html', 
                                                    error = error, 
+                                                   ownCourses = ownCourses,
+                                                   authorities = authorities,
                                                    newUsers = newUsers)
             for index in range(numberOfUsers):
                 newUsers.append(newUser[index])
@@ -513,7 +527,9 @@ def class_add_user():
                                         error = 'Wrong college index has inserted'
                                         return render_template('/class_add_user.html', 
                                                                error = error, 
-                                                               newUsers = newUsers) 
+                                                               ownCourses = ownCourses,
+                                                               authorities = authorities,
+                                                               newUsers = newUsers)
                                     newUser[3] = value
                                        
                                 elif key == 'department':
@@ -527,6 +543,8 @@ def class_add_user():
                                         error = 'Wrong department index has inserted'
                                         return render_template('/class_add_user.html', 
                                                                error = error, 
+                                                               ownCourses = ownCourses,
+                                                               authorities = authorities,
                                                                newUsers = newUsers)
                                     newUser[5] = value
                                     
@@ -536,19 +554,25 @@ def class_add_user():
                                     except:
                                         error = 'Wrong course id has inserted'
                                         return render_template('/class_add_user.html',
-                                                               error = error,
+                                                               error = error, 
+                                                               ownCourses = ownCourses,
+                                                               authorities = authorities,
                                                                newUsers = newUsers)
                                     
                                 else:
                                     error = 'Try again after check the manual'
                                     return render_template('/class_add_user.html', 
                                                            error = error, 
+                                                           ownCourses = ownCourses,
+                                                           authorities = authorities,
                                                            newUsers = newUsers)
                                     
                             else:
                                 error = 'Try again after check the manual'
                                 return render_template('/class_add_user.html', 
                                                        error = error, 
+                                                       ownCourses = ownCourses,
+                                                       authorities = authorities,
                                                        newUsers = newUsers)
                         
                         for user in newUsers:
@@ -556,6 +580,8 @@ def class_add_user():
                                 error = 'There is a duplicated user id. Check the file and added user list'
                                 return render_template('/class_add_user.html', 
                                                        error = error, 
+                                                       ownCourses = ownCourses,
+                                                       authorities = authorities,
                                                        newUsers = newUsers)
                                 
                         newUsers.append(newUser)
@@ -577,6 +603,8 @@ def class_add_user():
                         error = 'Error has been occurred while adding new users'
                         return render_template('/class_add_user.html', 
                                                error = error, 
+                                               ownCourses = ownCourses,
+                                               authorities = authorities,
                                                newUsers = newUsers)
                 if not dao.query(Registrations).filter(Registrations.memberId == newUser[0]).first():
                     try:
@@ -590,6 +618,8 @@ def class_add_user():
                         error = 'Error has been occurred while registering new users'
                         return render_template('/class_add_user.html', 
                                                error = error, 
+                                               ownCourses = ownCourses,
+                                               authorities = authorities,
                                                newUsers = newUsers)
                     
                     try:
@@ -626,6 +656,8 @@ def class_add_user():
         
     return render_template('/class_add_user.html', 
                            error = error, 
+                           ownCourses = ownCourses,
+                           authorities = authorities,
                            newUsers = newUsers)
 
 @GradeServer.route('/classmaster/user_submit/summary')

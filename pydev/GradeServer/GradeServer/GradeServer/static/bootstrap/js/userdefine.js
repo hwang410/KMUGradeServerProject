@@ -31,17 +31,17 @@ function showSourceCodeForm(parent){
 // else set 'try again'
 function moveWhereAfterSubmit(score){
 	$('#move_after').load(function(){
-    	//var buttonContent = document.getElementById("move_after");
-    	var score = 100;
-    	if(score == 100){
-    		//buttonContent.innerHTML = "one more?";
-    		this.innerHTML = "one more?";
-    	}
-    	else{
-    		//buttonContent.innerHTML = "try again";
-    		this.innerHTML = "try again";
-    	}
-    });
+  	//var buttonContent = document.getElementById("move_after");
+  	var score = 100;
+  	if(score == 100){
+  		//buttonContent.innerHTML = "one more?";
+  		this.innerHTML = "one more?";
+  	}
+  	else{
+  		//buttonContent.innerHTML = "try again";
+  		this.innerHTML = "try again";
+  	}
+  });
 }
 
 // if score is 100, moving to problem List
@@ -62,15 +62,15 @@ $(window).load(function(){
 		setLegend();
 	}
 	function setLegend(){
-    	// solved, wrong answer, time over, compile error, runtime error
-    	var colors = new Array("#0c274c", "#18709c", "#19bdc4", "#fff6ee", "#ef4089");
-    	var errors = new Array("Solved", "Wrong Answer", "Time Over", "Compile Error", "Runtime Error");
-    	var target = document.getElementById("legend-box");
-    	for(var i=0;i<colors.length;i++){
-    		if(i==3) target.innerHTML += "<span class='label' style='color:black;background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
-    		else target.innerHTML += "<span class='label' style='background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
-    	}
-    }
+  	// solved, wrong answer, time over, compile error, runtime error
+  	var colors = new Array("#0c274c", "#18709c", "#19bdc4", "#fff6ee", "#ef4089");
+  	var errors = new Array("Solved", "Wrong Answer", "Time Over", "Compile Error", "Runtime Error");
+  	var target = document.getElementById("legend-box");
+  	for(var i=0;i<colors.length;i++){
+  		if(i==3) target.innerHTML += "<span class='label' style='color:black;background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
+  		else target.innerHTML += "<span class='label' style='background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
+  	}
+  }
 });
 
 
@@ -124,8 +124,8 @@ editor.setOption("minLines", 20);
 editor.setOption("showPrintMargin", false);
 
 editor.getSession().on('change', function () {
-       textarea.val(editor.getSession().getValue());
-   });
+  textarea.val(editor.getSession().getValue());
+});
 // language change
 function selectLanguage(selectObj) {
 	var mode;
@@ -166,196 +166,193 @@ function selectLanguage(selectObj) {
 	if(selectObj.value == 36){ theme = "vibrant_ink"; }
 	if(selectObj.value == 37){ theme = "xcode"; }
 
-		var textarea = $('#copycode');
-		
-    ace.config.set("basePath", "../static/js/src");
-    var editor = ace.edit("editor");
-    ace.require("ace/ext/language_tools");
-    editor.session.setMode("ace/mode/" + mode);
-    editor.setTheme("ace/theme/" + theme);
-    editor.setAutoScrollEditorIntoView(true);
-    editor.setOption("maxLines", 70);
-    editor.setOption("minLines", 20);
-    
-    editor.getSession().on('change', function () {
-       textarea.val(editor.getSession().getValue());
-   	});
+	var textarea = $('#copycode');
+	
+  ace.config.set("basePath", "../static/js/src");
+  var editor = ace.edit("editor");
+  ace.require("ace/ext/language_tools");
+  editor.session.setMode("ace/mode/" + mode);
+  editor.setTheme("ace/theme/" + theme);
+  editor.setAutoScrollEditorIntoView(true);
+  editor.setOption("maxLines", 70);
+  editor.setOption("minLines", 20);
+  
+  editor.getSession().on('change', function () {
+    textarea.val(editor.getSession().getValue());
+ 	});
 }
 
 //dropzone
 Dropzone.options.myDropzoneC = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
-    autoProcessQueue: false, // auto false
-    uploadMultiple: true,	// 
-    parallelUploads: 10,	// 
-    maxFiles: 10,			// 
-    addRemoveLinks: true,	// Remove 
-    acceptedFiles: ".c, .h",		// 
+  autoProcessQueue: false, // auto false
+  uploadMultiple: true,	// 
+  parallelUploads: 10,	// 
+  maxFiles: 10,			// 
+  addRemoveLinks: true,	// Remove 
+  acceptedFiles: ".c, .h",		// 
 
-    // The setting up of the dropzone
-    // submit-all 
-    //  processQueue()
-    init: function() {
-    	var myDropzone = this;
-    	$("#submit-all").click(function (e) {
-           myDropzone.processQueue();
-        });
-        
+  // The setting up of the dropzone
+  // submit-all 
+  //  processQueue()
+  init: function() {
+  	var myDropzone = this;
+  	$("#submit-all").click(function (e) {
+         myDropzone.processQueue();
+    });
+      
     this.on("successmultiple", function(files, response) {
-	        // Gets triggered when the files have successfully been sent.
-	        // Redirect user or notify of success
-					address = "http://localhost/problemList/" + response
-	        location.href=address;
-	  	});
-    }
+      // Gets triggered when the files have successfully been sent.
+      // Redirect user or notify of success
+			address = "http://localhost/problemList/" + response
+      location.href=address;
+  	});
+  }
 }
 
 Dropzone.options.myDropzoneCpp = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
-    autoProcessQueue: false, // auto false
-    uploadMultiple: true,	// 
-    parallelUploads: 10,	// 
-    maxFiles: 10,			//
-    maxFilesize: 0.5, 
-    addRemoveLinks: true,	// Remove 
-    acceptedFiles: ".cpp, .h",		// 
+  autoProcessQueue: false, // auto false
+  uploadMultiple: true,	// 
+  parallelUploads: 10,	// 
+  maxFiles: 10,			//
+  maxFilesize: 0.5, 
+  addRemoveLinks: true,	// Remove 
+  acceptedFiles: ".cpp, .h",		// 
 
-    // The setting up of the dropzone
-    // submit-all 
-    //  processQueue()
-    init: function() {
-      var myDropzone = this;
-      $("#submit-all").click(function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          myDropzone.processQueue();
-      });
-      }
+  // The setting up of the dropzone
+  // submit-all 
+  //  processQueue()
+  init: function() {
+    var myDropzone = this;
+    $("#submit-all").click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        myDropzone.processQueue();
+    });
+  }
 }
 
 Dropzone.options.myDropzoneJAVA = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
-    autoProcessQueue: false, // auto false
-    uploadMultiple: true,	// 
-    parallelUploads: 10,	// 
-    maxFiles: 10,			// 
-    maxFilesize: 0.5,
-    addRemoveLinks: true,	// Remove 
-    acceptedFiles: ".java .class, .jar",		// 
+  autoProcessQueue: false, // auto false
+  uploadMultiple: true,	// 
+  parallelUploads: 10,	// 
+  maxFiles: 10,			// 
+  maxFilesize: 0.5,
+  addRemoveLinks: true,	// Remove 
+  acceptedFiles: ".java .class, .jar",		// 
 
-    // The setting up of the dropzone
-    // submit-all 
-    //  processQueue()
-    init: function() {
-    	var myDropzone = this;
-    	$("#submit-all").click(function (e) {
-           e.preventDefault();
-           e.stopPropagation();
-           myDropzone.processQueue();
-       }
-       );
+  // The setting up of the dropzone
+  // submit-all 
+  //  processQueue()
+  init: function() {
+  	var myDropzone = this;
+  	$("#submit-all").click(function (e) {
+         e.preventDefault();
+         e.stopPropagation();
+         myDropzone.processQueue();
+    });
 	}
 }
 
 Dropzone.options.myDropzonePYTHON = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
-    autoProcessQueue: false, // auto false
-    uploadMultiple: true,	// 
-    parallelUploads: 10,	// 
-    maxFiles: 10,			// 
-    maxFilesize: 0.5,
-    addRemoveLinks: true,	// Remove 
-    acceptedFiles: ".py",		// 
+  autoProcessQueue: false, // auto false
+  uploadMultiple: true,	// 
+  parallelUploads: 10,	// 
+  maxFiles: 10,			// 
+  maxFilesize: 0.5,
+  addRemoveLinks: true,	// Remove 
+  acceptedFiles: ".py",		// 
 
-    // The setting up of the dropzone
-    // submit-all 
-    //  processQueue()
-    init: function() {
-    	var myDropzone = this;
-    	$("#submit-all").click(function (e) {
-           e.preventDefault();
-           e.stopPropagation();
-           myDropzone.processQueue();
-       }
-       );
-
-    }
+  // The setting up of the dropzone
+  // submit-all 
+  //  processQueue()
+  init: function() {
+  	var myDropzone = this;
+  	$("#submit-all").click(function (e) {
+         e.preventDefault();
+         e.stopPropagation();
+         myDropzone.processQueue();
+    });
+  }
 }
 
-$('#myTabs a').click(function (e) {
+$("#myTabs a").click(function (e) {
   e.preventDefault()
-  $(this).tab('show')
+  $(this).tab("show")
 })
 
 jQuery(document).ready(function ($) {
-    $('#language').tab();
+  $("#language").tab();
 })
 
-$(document).on('click','.dropdown ul a',function(){
-    var text = $(this).text();
-    $(this).closest('.dropdown').children('a.dropdown-toggle').text(text);
+$(document).on("click",".dropdown ul a",function(){
+  var text = $(this).text();
+  $(this).closest(".dropdown").children("a.dropdown-toggle").text(text);
 }) 	
 
 
 // showing delete modal
 function showingDeleteModal(){
-	var items = $('.box-check').length;
-	var target = document.getElementsByClassName('box-check');
+	var items = $(".box-check").length;
+	var target = document.getElementsByClassName("box-check");
 	var cnt=0;
 	for(var i=0;i<items;i++){
 		if(target[i].checked == true) cnt++;
 	}
 	if(cnt==0) 
-        $('#deleteNoItem').modal();
-    else 
-        $('#deleteModal').modal();
+    $("#deleteNoItem").modal();
+  else 
+    $("#deleteModal").modal();
 }
 // showing delete modal
 function showingEditModal(){
-	var items = $('.box-check').length;
-	var target = document.getElementsByClassName('box-check');
+	var items = $(".box-check").length;
+	var target = document.getElementsByClassName("box-check");
 	var cnt=0;
 	for(var i=0;i<items;i++){
 		if(target[i].checked == true) cnt++;
 	}
 	if(cnt==0) 
-        $('#editNoItem').modal();
-    else 
-        $('#editModal').modal();
+    $("#editNoItem").modal();
+  else 
+    $("#editModal").modal();
 }
 
 // showing add user modal
 function addUserModal(){
-	$('#addUserModal').modal();
+	$("#addUserModal").modal();
 }
 
 // showing add gruop modal
 function addGroupModal(){
-	$('#addGroupModal').modal();
+	$("#addGroupModal").modal();
 }
 
 function visibleButton(parent){ 
 	var thisId = parent.id; 
 	//var target = ;
 	if(thisId == "link-all"){
-		document.getElementById('summary').style.display = "none";
+		document.getElementById("summary").style.display = "none";
 	}
 	else{
-		document.getElementById('summary').style.display = "";
+		document.getElementById("summary").style.display = "";
 	}
 }
 
 /* when server administrator add new users */
 function addIndivisualUserForm(permission){
-  var targetTable = document.getElementById('indivisual');
+  var targetTable = document.getElementById("indivisual");
   var numOfRow = targetTable.rows.length;
 
   reset_val = function(){
-    if(permission == 'course'){
+    if(permission == "course"){
       $("#courseId1").val("");
     }
     $("#userId1").val("");
@@ -366,20 +363,30 @@ function addIndivisualUserForm(permission){
   }
 
   var newRow = targetTable.insertRow(2);
-  var uploadObj;
-  var keys = ['courseId', 'userId', 'college', 'department', 'username', 'authority'];
-  var placeholders = ['Course Id', 'User Id', 'College', 'Department', 'User name', 'Authority'];
-
-  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
-    uploadObj = "<tr><td><input type='text' class='input-small formLine1' ";
+  var keys = ["courseId", "userId", "college", "department", "username", "authority"];
+  var placeholders = ["Course Id", "ID", "Name", "College", "Department", "Authority"];
+  var inputWidth = ["small", "small", "mini", "medium", "medium", "small"];
+  var uploadObj = "<tr>";
+  var j = 0;
+  if(permission == 'server'){
+    j = 1;
+  }
+  for(var i = 0; i < targetTable.rows[0].cells.length; i++, j++){  
+    var width = inputWidth[i];
     if(permission == 'server'){
-      i += 1;
+      width = "small";
     }
-    uploadObj += "id = '" + keys[i] + numOfRow + "' name = '" + keys[i] + numOfRow + "' placeholder = '" + placeholders[i] + "' value = '" + $("#" + keys[i] + "1").val();
-    if(permission == 'server'){
-      i -= 1;
+    uploadObj = "<td><input type = 'text' " +
+                          "class = 'input-" + width + " formLine1 ";
+    if(i == 0 || i == targetTable.rows[0].cells.length - 1){
+      uploadObj += keys[i] + "' ";
     }
-    newRow.insertCell(i).innerHTML = uploadObj + "' form='addIndivisualUser'></td>";
+    uploadObj +=             "id = '" + keys[j] + numOfRow + "' " +
+                           "name = '" + keys[j] + numOfRow + "' " +
+                    "placeholder = '" + placeholders[j] + "' " +
+                          "value = '" + $("#" + keys[j] + "1").val() + "' " +
+                           "form = 'addIndivisualUser'>";
+    newRow.insertCell(i).innerHTML = uploadObj;
   }
   reset_val();
 }
@@ -397,30 +404,56 @@ function manageUserForm(){
 
   var newRow = usertb.insertRow(usertb.rows.length);
   
-  for(var i = 0; i <usertb.rows[0].cells.length; i++){
+  for(var i = 0; i < usertb.rows[0].cells.length; i++){
     val_cID = $("#search-courses").val();
     val_uID = $("#search-members").val();
 
     var c= newRow.insertCell(i);
     switch (i){
       case 0:
-        var uploadObj = "<td>" + val_cID + "</td>";
+        var uploadObj = "<td>" + val_cID;
         break;
       case 1:
-        var uploadObj = "<td>" + val_uID + "</td>";
+        var uploadObj = "<td>" + val_uID;
         break;
       case 2:
-        var uploadObj="<td>" + memberName + "</td>";
+        var uploadObj = "<td>" + memberName;
         break;
       case 3:
-        var uploadObj="<td>" + memberDepartments + "</td>";
+        var uploadObj = "<td>" + memberDepartments;
         break;
     }
-    c.innerHTML=uploadObj;   
+    c.innerHTML = uploadObj;   
   } 
   reset_val(); 
 }
 
-function resetIndivisualUserForm(){
-  document.getElementById("indivisualUserForm").innerHTML = '<tr class="formLine"><td><input type="text" class="input-small formLine1" id="userId1" name="userId1" placeholder="User ID" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="college1" name="college1" placeholder="College" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="department1" name="department1" placeholder="Department" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="username1" name="username1" placeholder="User Name" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="authority1" name="authority1" placeholder="Authority" value="" form="addIndivisualUser"></td></tr>';
+function resetIndivisualUserForm(permission){
+  var targetTable = document.getElementById("indivisual");
+
+  var keys = ["courseId", "userId", "username", "college", "department", "authority"];
+  var placeholders = ["Course Id", "ID", "Name", "College", "Department", "Authority"];
+  var inputWidth = ["small", "small", "mini", "medium", "medium", "small"];
+  var resetString = "<tr>";
+  var j = 0;
+  if(permission == 'server'){
+    j = 1;
+  }
+  for(var i = 0; i < targetTable.rows[0].cells.length; i++, j++){
+    var width = inputWidth[i];
+    if(permission == 'server'){
+      width = "small";
+    }
+    resetString += "<td><input class = 'input-" + width + " formLine1 ";
+    if(i == 0 || i == keys.length - 1){
+      resetString += keys[j]
+    }
+    resetString +=            "' id = '" + keys[j] + "1' " + 
+                              "name = '" + keys[j] + "1' " + 
+                       "placeholder = '" + placeholders[j] + "' " +
+                              "type = 'text' " +
+                              "form = 'addIndivisualUser'>";
+  }
+  document.getElementById("indivisualUserForm").innerHTML = resetString;
 }
+

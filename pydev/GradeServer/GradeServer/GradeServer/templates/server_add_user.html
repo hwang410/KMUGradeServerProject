@@ -4,6 +4,19 @@
 		
 {%- extends "main.html" -%}
 {%- block body %}
+<script>
+$(function() {
+	var authorities = [
+		{%- for authority in authorities %}
+		{ value: "{{ authority }}" },
+		{% endfor -%}
+		{ value: ""}
+	];
+	$(".authority").autocomplete({
+		lookup: authorities
+	});
+});
+</script>
 <div class="container">
 	<div>
 		<h3>Add User</h3>
@@ -28,23 +41,23 @@
 					<thead>
 					<tr>
 						<td>User Id
+						<td>User Name
 						<td>College Index
 						<td>Department Index
-						<td>User Name
 						<td>Authority
 					<tbody id="indivisualUserForm">
 						<tr class="formLine">
-							<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="User ID" value="">
+							<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">
+							<td><input class="input-small formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">
 							<td><input class="input-small formLine1" id="college1" name="college1" type="text" form="addIndivisualUser" placeholder="College" value="">
 							<td><input class="input-small formLine1" id="department1" name="department1" type="text" form="addIndivisualUser" placeholder="Department" value="">
-							<td><input class="input-small formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="User Name" value="">
-							<td><input class="input-small formLine1" id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">
+							<td><input class="input-small formLine1 authority" id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">
 				</table>
 			</div>
 			<div class="modal-footer">
 				<form id="addIndivisualUser" method="post">
 					<button class="btn" name="addIndivisualUser" type="submit">Done</button>
-					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="resetIndivisualUserForm()">Close</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="resetIndivisualUserForm('server')">Close</button>
 				</form>
 			</div>
 		</div>
