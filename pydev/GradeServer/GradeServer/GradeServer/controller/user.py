@@ -45,9 +45,12 @@ def user_history(memberId, sortCondition, pageNum):
     try:       
         # 총 제출 횟수 
         sumOfSubmissionCount = dao.query(func.count(Submissions.memberId).label('sumOfSubmissionCount')).\
-                                    filter(Submissions.memberId == memberId).subquery()
+                                   filter(Submissions.memberId == memberId).\
+                                   subquery()
         # List Count
-        count = dao.query(sumOfSubmissionCount).first().sumOfSubmissionCount    
+        count = dao.query(sumOfSubmissionCount).\
+                    first().\
+                    sumOfSubmissionCount  
         # 모든 제출 정보
         submissions = dao.query(Submissions.problemId,
                                 Submissions.courseId, 
@@ -57,36 +60,47 @@ def user_history(memberId, sortCondition, pageNum):
                                 Submissions.runTime,
                                 Submissions.usedLanguage,
                                 Submissions.codeSubmissionDate).\
-                            filter(Submissions.memberId == memberId).subquery()
+                          filter(Submissions.memberId == memberId).\
+                          subquery()
         # Submit Language Join
         submissions = dao.query(submissions,
                                 Languages.languageName).\
-                            join(Languages, 
-                                submissions.c.usedLanguage == Languages.languageIndex).subquery()
+                          join(Languages, 
+                                submissions.c.usedLanguage == Languages.languageIndex).\
+                          subquery()
         # 중복 제거푼 문제숫
         sumOfSolvedProblemCount = dao.query(submissions).\
-                                        group_by(submissions.c.problemId,
-                                                 submissions.c.courseId).subquery()
+                                      group_by(submissions.c.problemId,
+                                               submissions.c.courseId).\
+                                      subquery()
+                                      
         sumOfSolvedProblemCount = dao.query(func.count(sumOfSolvedProblemCount.c.problemId).label('sumOfSolvedProblemCount')).\
-                                        filter(sumOfSolvedProblemCount.c.status == SOLVED).subquery()
+                                      filter(sumOfSolvedProblemCount.c.status == SOLVED).\
+                                      subquery()
         # 모든 맞춘 횟수
         sumOfSolvedCount = dao.query(func.count(submissions.c.problemId).label('sumOfSolvedCount')).\
-                                        filter(submissions.c.status == SOLVED).subquery()
+                               filter(submissions.c.status == SOLVED).\
+                               subquery()
         # 틀린 횟수
         sumOfWrongAnswerCount = dao.query(func.count(submissions.c.problemId).label('sumOfWrongAnswerCount')).\
-                                        filter(submissions.c.status == WRONG_ANSWER).subquery()
+                                    filter(submissions.c.status == WRONG_ANSWER).\
+                                    subquery()
         # 타임 오버 횟수
         sumOfTimeOverCount = dao.query(func.count(submissions.c.problemId).label('sumOfTimeOverCount')).\
-                                        filter(submissions.c.status == TIME_OVER).subquery()
+                                 filter(submissions.c.status == TIME_OVER).\
+                                 subquery()
         # 컴파일 에러 횟수
         sumOfCompileErrorCount = dao.query(func.count(submissions.c.problemId).label('sumOfCompileErrorCount')).\
-                                        filter(submissions.c.status == COMPILE_ERROR).subquery()
+                                     filter(submissions.c.status == COMPILE_ERROR).\
+                                     subquery()
         # 런타임 에러 횟수
         sumOfRunTimeErrorCount = dao.query(func.count(submissions.c.problemId).label('sumOfRunTimeErrorCount')).\
-                                        filter(submissions.c.status == RUN_TIME_ERROR).subquery()
+                                     filter(submissions.c.status == RUN_TIME_ERROR).\
+                                     subquery()
         # 서버 에러 횟수
         sumOfServerErrorCount = dao.query(func.count(submissions.c.problemId).label('sumOfServerErrorCount')).\
-                                        filter(submissions.c.status == SERVER_ERROR).subquery()
+                                    filter(submissions.c.status == SERVER_ERROR).\
+                                    subquery()
         # Viiew Value Text
         chartSubmissionDescriptions = ['맞춘 문제 갯수', '총 제출 횟수', '맞춘 횟수', '오답 횟수', '타임오버 횟수', '컴파일 에러 횟수', '런타임 에러 횟수', '서버 에러 횟수']
 
@@ -95,19 +109,23 @@ def user_history(memberId, sortCondition, pageNum):
             submissionRecords = dao.query(Problems.problemName,
                                           submissions).\
                                     join(submissions,
-                                         Problems.problemId == submissions.c.problemId).subquery()
+                                         Problems.problemId == submissions.c.problemId).\
+                                    subquery()
                 # 제출날짜순 정렬
             if sortCondition == SUBMITTED_DATE:
-                dao.query(submissionRecords).\
-                    order_by(submissionRecords.c.codeSubmissionDate.desc()).all()
+                submissionRecords = dao.query(submissionRecords).\
+                                        order_by(submissionRecords.c.codeSubmissionDate.desc()).\
+                                        all()
             # 실행 시간 순 정렬
             elif sortCondition == RUN_TIME:
-                dao.query(submissionRecords).\
-                    order_by(submissionRecords.c.runTime.asc()).all()
+                submissionRecords = dao.query(submissionRecords).\
+                                        order_by(submissionRecords.c.runTime.asc()).\
+                                        all()
             # 코드 길이별 정렬
             else: # elif sortCondition == CODE_LENGTH:
-                dao.query(submissionRecords).\
-                    order_by(submissionRecords.c.sumOfSubmittedFileSize.asc()).all()
+                submissionRecords = dao.query(submissionRecords).\
+                                        order_by(submissionRecords.c.sumOfSubmittedFileSize.asc()).\
+                                        all()
         except Exception:
             #None Type Exception
             submissionRecords = []
@@ -125,7 +143,7 @@ def user_history(memberId, sortCondition, pageNum):
         except Exception:
             #None Type Exception
             chartSubmissionRecords = []
-            
+        
         return render_template(USER_HISTORY_HTML,
                                memberId = memberId,
                                submissionRecords = submissionRecords,
@@ -154,7 +172,7 @@ def id_check(select, error = None):
                 password = request.form['password']
                 check = dao.query(Members.password).\
                             filter(Members.memberId == memberId).first()
-                print select
+                
                 # 암호가 일치 할 때
                 if check.password == password:#check_password_hash(password, check.password):
 
@@ -163,7 +181,6 @@ def id_check(select, error = None):
                         return redirect(url_for(EDIT_PERSONAL))
                     # server manager
                     elif select == 'server_manage_problem':
-                        print "AAAAA"
                         return redirect(url_for('.server_manage_problem'))
                     elif select == 'server_manage_class':
                         return redirect(url_for('.server_manage_class'))
