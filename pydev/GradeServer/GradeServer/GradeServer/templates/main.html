@@ -69,7 +69,7 @@
 							<ul class="dropdown-menu">
 								{%- if "ServerAdministrator" not in session['authority'] and "CourseAdministrator" not in session['authority'] %}
 								<li>
-									<a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submittedDate', pageNum =1) }}">Record</a>
+									<a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Record</a>
 								</li>
 								{% endif %}
 								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>
@@ -188,7 +188,7 @@
 							<div class="span4 topcoder" style="border:1px solid; text-align:center">
 							<h4>Top Coder of this week</h4>
 							{% if topCoderId %}
-							<a href ="{{ url_for ('GradeServer.user_history', memberId =topCoderId, sortCondition ='submittedDate', pageNum =1) }}">{{ topCoderId }}</a>
+							<a href ="{{ url_for ('GradeServer.user_history', memberId =topCoderId, sortCondition ='submissionDate', pageNum =1) }}">{{ topCoderId }}</a>
 							{% else %}
 							None
 							{% endif %}

@@ -22,45 +22,24 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
   myNewChart = new Chart(ct).Doughnut(data, options);
   // input values and colors into the chart
   // need to change 'value:#' 
-  {% if submittedRecords %}
-  myNewChart.addData({
-		value:{{ submittedRecords.sumOfSolvedCount }},
-		color: colors[0]
-	})
-	myNewChart.addData({
-		value:{{ submittedRecords.sumOfWrongCount }},
-		color: colors[1]
-	})
-	myNewChart.addData({
-		value:{{ submittedRecords.sumOfTimeOverCount }},
-		color: colors[2]
-	})
-	myNewChart.addData({
-		value:{{ submittedRecords.sumOfCompileErrorCount }},
-		color: colors[3]
-	})
-	myNewChart.addData({
-		value:{{ submittedRecords.sumOfRunTimeErrorCount }},
-		color: colors[4]
-	})
-  {% else %}
-  // when the value is 0, it doesn't show up
-  for(var i=0;i<5;i++){
-  	myNewChart.addData({
-  		value: 0,
-  		color: colors[i]
-  	})
-  }
-	{% endif %}
+  {% for i in range(0, colors|length) %}
+  	{% if chartSubmissionRecords[i] %}
+  	myNewChart.addData ({
+  		value :{{ chartSubmissionRecords[i + 3] }},
+  		color :colors[{{ i }}]
+  		})
+		{% endif %}
+  {% endfor %}
+
 })
 </script>
 <div class="container">
 	<div style="text-align:center">
-		<h3>{{ problemInformation.problemName }}</h3>
+		<h3>{{ problemInformationRecords.problemName }}</h3>
 		<h4>
 			<div style="row-fluid">
-				<div class="span6" id="time-limit">Time Limit : {{ problemInformation.limitedTime }} &nbsp&nbsp&nbsp|</div>
-				<div class="span6" id="memory-limit">Memory Limit : {{ problemInformation.limitedMemory }}</div>
+				<div class="span6" id="time-limit">Time Limit : {{ problemInformationRecords.limitedTime }} &nbsp&nbsp&nbsp|</div>
+				<div class="span6" id="memory-limit">Memory Limit : {{ problemInformationRecords.limitedMemory }}</div>
 			</div>
 		</h4>
 	</div>
@@ -79,36 +58,43 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 							</div>
 						</div>
 						<div style="text-align:right;width:60%">
-							<h4>
-								people :  <br>
-								solved people :   <br>
-								{% if submittedRecords %}
-								total submit count : {{ submittedRecords.sumOfSubmissionCount }} <br>
-								solved : {{ submittedRecords.sumOfSolvedCount }}  <br>
-								wrong answer : {{ submittedRecords.sumOfWrongCount }}  <br>
-								time over : {{ submittedRecords.sumOfTimeOverCount }}  <br>
-								compile error : {{ submittedRecords.sumOfCompileErrorCount }}  <br>
-								runtime error : {{ submittedRecords.sumOfRunTimeErrorCount }}  <br>
-								{% else %}
-								total submit count : 0 <br>
-								solved : 0  <br>
-								wrong answer : 0  <br>
-								time over : 0  <br>
-								compile error : 0  <br>
-								runtime error : 0  <br>
-								{% endif %}
+							{% for i in range (0, chartSubmissionDescriptions|length) %}
+							<h4 style ="padding-bottom:5px">
+								<!--  chartSubmissionRecords is Value, chartSubmissionDescriptions is Description -->
+								{{ chartSubmissionDescriptions[i] }}  :  {% if not chartSubmissionRecords[i] %}0{% else %}{{ chartSubmissionRecords[i] }}{% endif %}
+								<br>
 							</h4>
+							{% endfor %}
 						</div>
 					</div>
 					<!-- user list section -->
 					<div class="user_list span7" style="text-align:center">
 						<table class="problem_list table table-bordered">
 							<tr>
-								<td>Rank</td><td>User Id</td><td>Run Time</td><td>Code Length</td><td>Sumission Date</td>
+								<td>Rank</td>
+								<td>User Id</td>
+								<td><a href = '{{ url_for("GradeServer.record", 
+																					courseId = courseId, 
+																					problemId = problemInformationRecords.problemId, 
+																					sortCondition = "runTime") }}'>Run Time</a></td>
+								<td><a href = '{{ url_for("GradeServer.record", 
+																					courseId = courseId, 
+																					problemId = problemInformationRecords.problemId, 
+																					sortCondition = "codeLength") }}'>Code Length</td>
+								<td><a href = '{{ url_for("GradeServer.record", 
+																					courseId = courseId, 
+																					problemId = problemInformationRecords.problemId, 
+																					sortCondition = "submissionDate") }}'>Sumission Date</td>
 							</tr>
+							{% for i in range(0, problemSolvedUserRecords|length) %}
 							<tr>
-								<td></td><td><a href="{{ url_for('GradeServer.user_record') }}">"User Id"</a></td><td>"Run Time"</td><td>"Code Length"</td><td>"Due Date"</td>
+								<td>{{ i + 1 }}</td>
+								<td><a href='{{ url_for("GradeServer.user_record") }}'>{{ problemSolvedUserRecords[i].memberId }}</a></td>
+								<td>{{ problemSolvedUserRecords[i].runTime }}</td>
+								<td>{{ problemSolvedUserRecords[i].sumOfSubmittedFileSize }}</td>
+								<td>{{ problemSolvedUserRecords[i].codeSubmissionDate }}</td>
 							</tr>
+							{% endfor %}
 						</table>
 					</div>
 				</div>

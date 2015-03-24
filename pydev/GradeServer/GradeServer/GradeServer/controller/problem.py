@@ -3,9 +3,12 @@
 from flask import request, redirect, session, url_for, render_template, flash
 from sqlalchemy import and_, func
 
+from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.utils import *
+
 from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
-from GradeServer.utils.loginRequired import login_required
+
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.model.problems import Problems
@@ -115,25 +118,102 @@ def submit():
     """
     return render_template('/result.html')
 
-@GradeServer.route('/record/<courseId>/<problemId>')
+@GradeServer.route('/record/<courseId>/<problemId>?<sortCondition>')
 @login_required
-def record(courseId, problemId):
+def record(courseId, problemId, sortCondition = RUN_TIME):
     """
     navbar - class - Record of problem
     """
+    # Viiew Value Text
+    chartSubmissionDescriptions = ['Total Submit People',
+                                   'Total Solved People',
+                                   'Total Submit Count',
+                                   'Solved',
+                                   'Wrong Answer',
+                                   'Time Over',
+                                   'Compile Error',
+                                   'RunTime Error']
     try:
-        submittedRecords = dao.query(SubmittedRecordsOfProblems).\
-                               filter_by(problemId=problemId).\
-                               filter_by(courseId=courseId).all()
+        submissions = dao.query(Submissions).\
+                          filter(Submissions.problemId == problemId,
+                                 Submissions.courseId == courseId).\
+                          group_by(Submissions.memberId,
+                                   Submissions.problemId,
+                                   Submissions.courseId).\
+                          subquery()
+        # Submitted Members Count
+        sumOfSubmissionPeopleCount = dao.query(func.count(submissions.c.memberId).label('sumOfSubmissionPeopleCount')).\
+                                         subquery()
+        # Solved Members Count
+        sumOfSolvedPeopleCount =dao.query(func.count(submissions.c.memberId).label('sumOfSolvedPeopleCount')).\
+                                    filter(submissions.c.status == SOLVED).\
+                                    subquery()
+                              
+        problemSubmittedRecords = dao.query(func.max(SubmittedRecordsOfProblems.sumOfSubmissionCount).label('sumOfSubmissionCount'),
+                                            func.max(SubmittedRecordsOfProblems.sumOfSolvedCount).label('sumOfSolvedCount'),
+                                            func.max(SubmittedRecordsOfProblems.sumOfWrongCount).label('sumOfWrongCount'),
+                                            func.max(SubmittedRecordsOfProblems.sumOfTimeOverCount).label('sumOfTimeOverCount'),
+                                            func.max(SubmittedRecordsOfProblems.sumOfCompileErrorCount).label('sumOfCompileErrorCount'),
+                                            func.max(SubmittedRecordsOfProblems.sumOfRuntimeErrorCount).label('sumOfRuntimeErrorCount')).\
+                                      filter(SubmittedRecordsOfProblems.problemId == problemId,
+                                             SubmittedRecordsOfProblems.courseId == courseId).\
+                                      subquery()
+        chartSubmissionRecords =dao.query(sumOfSubmissionPeopleCount,
+                                          sumOfSolvedPeopleCount,
+                                          problemSubmittedRecords).\
+                                    first()
     except:
         print 'SubmittedRecordsOfProblems table is empty'
-        submittedRecords = []
+        chartSubmissionRecords = []
+        
+    # Problem Information (LimitedTime, LimitedMemory
+    try:
+        problemInformationRecords = dao.query(Problems.problemId,
+                                              Problems.problemName,
+                                              Problems.limitedTime,
+                                              Problems.limitedMemory).\
+                                        filter(Problems.problemId == problemId).\
+                                        first()
+    except Exception:
+        problemInformationRecords = []
+    # Problem Solved Users
+    try:
+        problemSolvedUserRecords =dao.query(Submissions.memberId,
+                                            Submissions.runTime,
+                                            Submissions.sumOfSubmittedFileSize,
+                                            Submissions.codeSubmissionDate).\
+                                      filter(Submissions.problemId == problemId,
+                                             Submissions.courseId == courseId,
+                                             Submissions.status == SOLVED).\
+                                      group_by(Submissions.memberId,
+                                               Submissions.problemId,
+                                               Submissions.courseId).\
+                                      subquery()
+        # Sort Run Time
+        if sortCondition == RUN_TIME:
+            problemSolvedUserRecords = dao.query(problemSolvedUserRecords).\
+                                           order_by(problemSolvedUserRecords.c.runTime.asc()).\
+                                           all()
+        # Sort Submission Date
+        elif sortCondition == SUBMISSION_DATE:
+            problemSolvedUserRecords = dao.query(problemSolvedUserRecords).\
+                                           order_by(problemSolvedUserRecords.c.codeSubmissionDate.asc()).\
+                                           all()
+        # Sort Code Length
+        if sortCondition == CODE_LENGTH:
+            problemSolvedUserRecords = dao.query(problemSolvedUserRecords).\
+                                           order_by(problemSolvedUserRecords.c.sumOfSubmittedFileSize.asc()).\
+                                           all()
+            
+    except Exception:
+        problemSolvedUserRecords = []
     
-    problemInformation = dao.query(Problems).\
-                             filter(Problems.problemId == problemId).first()
     return render_template('/record.html',
-                           submittedRecords = submittedRecords,
-                           problemInformation = problemInformation)
+                           courseId = courseId,
+                           problemSolvedUserRecords = problemSolvedUserRecords,
+                           problemInformationRecords = problemInformationRecords,
+                           chartSubmissionDescriptions = chartSubmissionDescriptions,
+                           chartSubmissionRecords = chartSubmissionRecords)
 
 @GradeServer.route('/problem/userid')
 @login_required
