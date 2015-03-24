@@ -52,40 +52,11 @@ $(function() {
 		<h3>Add User</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
-			<a class="btn" data-toggle="modal" href="#addUserModal" rol="button">Add</a>
+			<a href="{{ url_for('GradeServer.class_add_user') }}"><button class="btn" type="button">Add</button></a>
 			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">Delete</a>
 		</div>
 
 		<!-- hidden modal pop -->
-		<div class="modal hide fade" id="addUserModal" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true" tabindex="-1">
-			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
-				<h3 id="addUserModalLabel">Add User</h3>
-			</div>
-			<div class="modal-body">
-				<div style="text-align:right"><button class="btn" type="button">Add line</button></div>
-				<table class="table table-bordered" style="margin-top:10px">
-					<thead>
-						<tr>
-							<td>Course Id
-							<td>User Id
-							<td>User Name
-							<td>Department
-					<tbody>
-						<tr>
-							<td><div id="searchfield"><input class="input-ularge" id="search-courses" name="courseId" type="text" value="" form="addUser"></div>
-							<td><div id="searchfield"><input class="input-ularge" id="search-members" name="memberId" type="text" value="" form="addUser"></div>
-							<td id="member-name">
-							<td id="department-name">
-				</table>
-			</div>
-			<div class="modal-footer">
-				<form id="addUser" method="post">
-					<button class="btn" type="submit">Done</button>
-					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-				</form>
-			</div>
-		</div>
 		<!-- if any item choiced -->
 		<div class="modal hide fade" id="deleteModal" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">

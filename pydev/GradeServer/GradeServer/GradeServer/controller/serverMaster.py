@@ -298,10 +298,7 @@ def server_manage_user():
                            users = users, 
                            index = len(users))
 
-@GradeServer.route('/master/manage_service')
-@login_required
-def server_manage_service():
-    return render_template('/server_manage_service.html')
+
 
 @GradeServer.route('/master/add_class', methods = ['GET', 'POST'])
 @login_required
@@ -432,8 +429,7 @@ def server_add_class():
                            languages = allLanguages,
                            allCourseAdministrators = allCourseAdministrators)
 
-@GradeServer.route('/master/addUser', 
-                   methods = ['GET', 'POST'])
+@GradeServer.route('/master/addUser', methods = ['GET', 'POST'])
 @login_required
 def server_add_user():
     global newUsers
@@ -444,7 +440,8 @@ def server_add_user():
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
             numberOfUsers = (len(request.form) - 1) / 5
-            newUser = [[''] * 8] * (numberOfUsers + 1)
+            newUser = [['' for i in range(8)] for j in range(numberOfUsers + 1)]
+            
             for form in request.form:
                 if form != 'addIndivisualUser':
                     value, index = re.findall('\d+|\D+', form)
@@ -480,6 +477,7 @@ def server_add_user():
                             return render_template('/server_add_user.html', 
                                                    error = error, 
                                                    newUsers = newUsers)
+                    
             for index in range(numberOfUsers):
                 newUsers.append(newUser[index])
                 
@@ -604,3 +602,8 @@ def server_add_user():
     return render_template('/server_add_user.html', 
                            error = error, 
                            newUsers = newUsers)
+
+@GradeServer.route('/master/manage_service')
+@login_required
+def server_manage_service():
+    return render_template('/server_manage_service.html')

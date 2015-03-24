@@ -25,15 +25,13 @@ from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.model.submissions import Submissions
 from sqlalchemy import and_, exc
+from datetime import datetime
 
 import os
+import re
 
 projectPath = '/mnt/shared'
-
-@GradeServer.route('/classmaster/<memberId>')
-@login_required
-def class_master_signin(memberId):
-    return render_template('/class_master_signin.html')
+newUsers = []
 
 @GradeServer.route('/classmaster/user_submit')
 @login_required
@@ -417,8 +415,6 @@ def class_manage_user():
             
         return redirect(url_for('.class_manage_user'))
     
-    for k in ownUsersToData:
-        print k
     return render_template('/class_manage_user.html', 
                            error=error, 
                            ownCourses=ownCourses, 
@@ -426,6 +422,207 @@ def class_manage_user():
                            allUsers=allUsersToData, 
                            colleges=colleges,
                            departments=departments)
+    
+    
+@GradeServer.route('/classmaster/add_user', methods=['GET', 'POST'])
+@login_required
+def class_add_user():
+    global newUsers
+    error = None
+    targetUserIdToDelete = []
+    
+    
+    if request.method == 'POST':
+        if 'addIndivisualUser' in request.form:
+            # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
+            numberOfUsers = (len(request.form) - 1) / 5
+            newUser = [['' for i in range(8)] for j in range(numberOfUsers + 1)]
+            
+            for form in request.form:
+                if form != 'addIndivisualUser':
+                    value, index = re.findall('\d+|\D+', form)
+                    index = int(index)
+                    data = request.form[form]
+                    if value == 'userId':
+                        newUser[index - 1][0] = data
+                    elif value == 'username':
+                        newUser[index - 1][1] = data
+                    elif value == 'authority':
+                        newUser[index - 1][2] = data
+                    elif value == 'college':
+                        newUser[index - 1][3] = data
+                        try:
+                            newUser[index - 1][4] = dao.query(Colleges).\
+                                                        filter(Colleges.collegeIndex == data).\
+                                                        first().\
+                                                        collegeName
+                        except:
+                            error = 'Wrong college index has inserted'
+                            return render_template('/class_add_user.html', 
+                                                   error = error, 
+                                                   newUsers = newUsers)
+                    elif value == 'department':
+                        newUser[index - 1][5] = data
+                        try:
+                            newUser[index - 1][6] = dao.query(Departments).\
+                                                        filter(Departments.departmentIndex == data).\
+                                                        first().\
+                                                        departmentName
+                        except:
+                            error = 'Wrong department index has inserted'
+                            return render_template('/class_add_user.html', 
+                                                   error = error, 
+                                                   newUsers = newUsers)
+            for index in range(numberOfUsers):
+                newUsers.append(newUser[index])
+                
+        elif 'addUserGroup' in request.form:
+            files = request.files.getlist('files')
+            if list(files)[0].filename:
+                # read each file
+                for fileData in files:
+                    # read each line    
+                    for userData in fileData:
+                        # slice and make information from 'key=value'
+                        userInformation = userData.split(', ')
+                        # userId, userName, authority, collegeIndex, collegeName, departmentIndex, departmentName
+                        newUser = [''] * 8
+                        
+                        for eachData in userInformation:
+                            if '=' in eachData:
+                                # all authority is user in adding user from text file
+                                newUser[2] = 'User'
+                                key, value = eachData.split('=')
+                                if key == 'userId':
+                                    newUser[0] = value 
+                                    
+                                elif key == 'username':
+                                    newUser[1] = value
+                                    
+                                elif key == 'college':
+                                    try:
+                                        newUser[4] = dao.query(Colleges).\
+                                                         filter(Colleges.collegeIndex == value).\
+                                                         first().\
+                                                         collegeName
+                                    except:
+                                        error = 'Wrong college index has inserted'
+                                        return render_template('/class_add_user.html', 
+                                                               error = error, 
+                                                               newUsers = newUsers) 
+                                    newUser[3] = value
+                                       
+                                elif key == 'department':
+                                    try:
+                                        newUser[6] = dao.query(Departments).\
+                                                         filter(Departments.departmentIndex == value).\
+                                                         first().\
+                                                         departmentName
+                                                         
+                                    except:
+                                        error = 'Wrong department index has inserted'
+                                        return render_template('/class_add_user.html', 
+                                                               error = error, 
+                                                               newUsers = newUsers)
+                                    newUser[5] = value
+                                    
+                                elif key == 'courseId':
+                                    try:
+                                        newUser[7] = value.strip()
+                                    except:
+                                        error = 'Wrong course id has inserted'
+                                        return render_template('/class_add_user.html',
+                                                               error = error,
+                                                               newUsers = newUsers)
+                                    
+                                else:
+                                    error = 'Try again after check the manual'
+                                    return render_template('/class_add_user.html', 
+                                                           error = error, 
+                                                           newUsers = newUsers)
+                                    
+                            else:
+                                error = 'Try again after check the manual'
+                                return render_template('/class_add_user.html', 
+                                                       error = error, 
+                                                       newUsers = newUsers)
+                        
+                        for user in newUsers:
+                            if user[0] == newUser[0] and user[3] == newUser[3] and user[5] == newUser[5]:
+                                error = 'There is a duplicated user id. Check the file and added user list'
+                                return render_template('/class_add_user.html', 
+                                                       error = error, 
+                                                       newUsers = newUsers)
+                                
+                        newUsers.append(newUser)
+                        
+        elif 'addUser' in request.form:
+            for newUser in newUsers:
+                if not dao.query(Members).filter(Members.memberId == newUser[0]).first():
+                    try:
+                        # at first insert to 'Members'. Duplicated tuple will be ignored.
+                        freshman = Members(memberId = newUser[0], 
+                                           password = newUser[0], 
+                                           memberName = newUser[1], 
+                                           authority = newUser[2],
+                                           signedInDate = datetime.now())
+                        dao.add(freshman)
+                        dao.commit()
+                    except:
+                        dao.rollback()
+                        error = 'Error has been occurred while adding new users'
+                        return render_template('/class_add_user.html', 
+                                               error = error, 
+                                               newUsers = newUsers)
+                if not dao.query(Registrations).filter(Registrations.memberId == newUser[0]).first():
+                    try:
+                        # then insert to 'Registrations'.
+                        freshman = Registrations(memberId = newUser[0],
+                                                 courseId = newUser[7])
+                        dao.add(freshman)
+                        dao.commit()
+                    except:
+                        dao.rollback()
+                        error = 'Error has been occurred while registering new users'
+                        return render_template('/class_add_user.html', 
+                                               error = error, 
+                                               newUsers = newUsers)
+                    
+                    try:
+                        departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[0], 
+                                                                            collegeIndex = newUser[3], 
+                                                                            departmentIndex = newUser[5])
+                        dao.add(departmentInformation)
+                        dao.commit()
+                    except:
+                        dao.rollback()
+                    
+            newUsers = [] # initialize add user list
+            return redirect(url_for('.class_manage_user'))
+            
+        elif 'deleteUser' in request.form:
+            for form in request.form:
+                if not form is 'deleteUser':
+                    targetUserIdToDelete.append(form)
+                
+        # if id list is not empty
+        if len(targetUserIdToDelete) != 0:
+            # each target user id
+            for targetUser in targetUserIdToDelete:
+                index = 0
+                #print targetUser
+                # each new user id
+                for newUser in newUsers:
+                    # if target id and new user id are same
+                    if targetUser == newUser[0]:
+                        del newUsers[index]
+                        break
+                    index += 1
+                               
+        
+    return render_template('/class_add_user.html', 
+                           error = error, 
+                           newUsers = newUsers)
 
 @GradeServer.route('/classmaster/user_submit/summary')
 @login_required
