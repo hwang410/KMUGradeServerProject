@@ -21,7 +21,7 @@
 			<td>{{ problem.status }}</td>
 			<td>{{ problem.endDateOfSubmission }}</td>
 			<td>{{ problem.submissionCount }}</td>
-			<td><a href="{{ url_for('GradeServer.record', courseId=course.courseId, problemId=problem.problemId) }}" onclick="setLegend()">"Record"</a></td>
+			<td><a href="{{ url_for('GradeServer.record', courseId=course.courseId, problemId=problem.problemId, sortCondition = 'runTime') }}" onclick="setLegend()">"Record"</a></td>
 		{% endfor %}
 	</table>
 	<!-- page number section -->

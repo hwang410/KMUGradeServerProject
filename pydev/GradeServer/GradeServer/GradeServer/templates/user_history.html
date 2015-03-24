@@ -23,11 +23,13 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
   myNewChart = new Chart(ct).Doughnut(data, options);
   // input values and colors into the chart
   // need to change 'value:#' 
-  {% for raw in chartSubmissionRecords %}
+  {% for i in range(0, colors|length) %}
+  	{% if chartSubmissionRecords[i] %}
   	myNewChart.addData ({
-  		value :{{ raw }},
-  		color :colors[0]
-  	})
+  		value :{{ chartSubmissionRecords[i + 2] }},
+  		color :colors[{{ i }}]
+  		})
+		{% endif %}
   {% endfor %}
 })
 </script>
@@ -71,7 +73,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 								<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='runTime', pageNum =1) }}">Runtime</a></td>
 								<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='codeLength', pageNum =1) }}">Code Length</a></td>
 								<td>Language</td>
-								<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submittedDate', pageNum =1) }}">Submit Date</a></td>
+								<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Submit Date</a></td>
 							</tr>
 							{%- for i in range (pages['startList'], pages['endList']) %}
 							<tr>

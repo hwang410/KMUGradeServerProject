@@ -305,7 +305,7 @@ def team_record(teamName, error = None):
         # user.py ->user_history이용       
         return redirect(url_for(USER_HISTORY,
                                 memberId = teamName,
-                                sortCondition = SUBMITTED_DATE,
+                                sortCondition = SUBMISSION_DATE,
                                 pageNum = 1))
     except Exception:
         # Unknow Error

@@ -101,8 +101,22 @@ def user_history(memberId, sortCondition, pageNum):
         sumOfServerErrorCount = dao.query(func.count(submissions.c.problemId).label('sumOfServerErrorCount')).\
                                     filter(submissions.c.status == SERVER_ERROR).\
                                     subquery()
+        try:
+                        # 차트 정보
+            chartSubmissionRecords = dao.query(sumOfSolvedProblemCount,
+                                               sumOfSubmissionCount,
+                                               sumOfSolvedCount,
+                                               sumOfWrongAnswerCount,
+                                               sumOfTimeOverCount,
+                                               sumOfCompileErrorCount,
+                                               sumOfRunTimeErrorCount,
+                                               sumOfServerErrorCount).\
+                                         first()
+        except Exception:
+            #None Type Exception
+            chartSubmissionRecords = []
         # Viiew Value Text
-        chartSubmissionDescriptions = ['맞춘 문제 갯수', '총 제출 횟수', '맞춘 횟수', '오답 횟수', '타임오버 횟수', '컴파일 에러 횟수', '런타임 에러 횟수', '서버 에러 횟수']
+        chartSubmissionDescriptions = ['맞춘 문제 갯수','총 제출 횟수', '맞춘 횟수', '오답 횟수', '타임오버 횟수', '컴파일 에러 횟수', '런타임 에러 횟수', '서버 에러 횟수']
 
         try:                           
                 # 모든 제출 정보
@@ -112,7 +126,7 @@ def user_history(memberId, sortCondition, pageNum):
                                          Problems.problemId == submissions.c.problemId).\
                                     subquery()
                 # 제출날짜순 정렬
-            if sortCondition == SUBMITTED_DATE:
+            if sortCondition == SUBMISSION_DATE:
                 submissionRecords = dao.query(submissionRecords).\
                                         order_by(submissionRecords.c.codeSubmissionDate.desc()).\
                                         all()
@@ -130,20 +144,6 @@ def user_history(memberId, sortCondition, pageNum):
             #None Type Exception
             submissionRecords = []
 
-        try:
-                # 차트 정보
-            chartSubmissionRecords = dao.query(sumOfSolvedProblemCount,
-                                               sumOfSubmissionCount,
-                                               sumOfSolvedCount,
-                                               sumOfWrongAnswerCount,
-                                               sumOfTimeOverCount,
-                                               sumOfCompileErrorCount,
-                                               sumOfRunTimeErrorCount,
-                                               sumOfServerErrorCount).first()
-        except Exception:
-            #None Type Exception
-            chartSubmissionRecords = []
-        
         return render_template(USER_HISTORY_HTML,
                                memberId = memberId,
                                submissionRecords = submissionRecords,
