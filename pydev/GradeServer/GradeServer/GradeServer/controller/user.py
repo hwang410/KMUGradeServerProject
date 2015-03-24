@@ -18,8 +18,12 @@ from GradeServer.model.languages import Languages
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.model.colleges import Colleges
 
+from GradeServer.controller.serverMaster import *
+from GradeServer.controller.classMaster import *
+
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
+
 
 
 @GradeServer.teardown_request
@@ -150,7 +154,7 @@ def id_check(select, error = None):
                 password = request.form['password']
                 check = dao.query(Members.password).\
                             filter(Members.memberId == memberId).first()
-
+                print select
                 # 암호가 일치 할 때
                 if check.password == password:#check_password_hash(password, check.password):
 
@@ -159,6 +163,7 @@ def id_check(select, error = None):
                         return redirect(url_for(EDIT_PERSONAL))
                     # server manager
                     elif select == 'server_manage_problem':
+                        print "AAAAA"
                         return redirect(url_for('.server_manage_problem'))
                     elif select == 'server_manage_class':
                         return redirect(url_for('.server_manage_class'))
