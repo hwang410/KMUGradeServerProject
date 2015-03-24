@@ -439,6 +439,7 @@ def server_add_user():
     global newUsers
     error = None
     targetUserIdToDelete = []
+    authorities = ['Course Admin', 'User']
     
     if request.method == 'POST':
         if 'addIndivisualUser' in request.form:
@@ -468,6 +469,7 @@ def server_add_user():
                             error = 'Wrong college index has inserted'
                             return render_template('/server_add_user.html', 
                                                    error = error, 
+                                                   authorities = authorities,
                                                    newUsers = newUsers)
                     elif value == 'department':
                         newUser[index - 1][5] = data
@@ -480,6 +482,7 @@ def server_add_user():
                             error = 'Wrong department index has inserted'
                             return render_template('/server_add_user.html', 
                                                    error = error, 
+                                                   authorities = authorities,
                                                    newUsers = newUsers)
                     
             for index in range(numberOfUsers):
@@ -520,6 +523,7 @@ def server_add_user():
                                         error = 'Wrong college index has inserted'
                                         return render_template('/server_add_user.html', 
                                                                error = error, 
+                                                               authorities = authorities,
                                                                newUsers = newUsers)
                                         
                                 elif key == 'department':
@@ -534,25 +538,29 @@ def server_add_user():
                                         error = 'Wrong department index has inserted'
                                         return render_template('/server_add_user.html', 
                                                                error = error, 
+                                                               authorities = authorities,
                                                                newUsers = newUsers)
                                         
                                 else:
                                     error = 'Try again after check the manual'
                                     return render_template('/server_add_user.html', 
                                                            error = error, 
-                                                           newUsers = newUsers)
+                                                          authorities = authorities,
+                                                          newUsers = newUsers)
                                     
                             else:
                                 error = 'Try again after check the manual'
                                 return render_template('/server_add_user.html', 
                                                        error = error, 
-                                                       newUsers = newUsers)
+                                                      authorities = authorities,
+                                                      newUsers = newUsers)
                         
                         for user in newUsers:
                             if user[0] == newUser[0] and user[3] == newUser[3] and user[5] == newUser[5]:
                                 error = 'There is a duplicated user id. Check the file and added user list'
                                 return render_template('/server_add_user.html', 
                                                        error = error, 
+                                                       authorities = authorities,
                                                        newUsers = newUsers)
                                 
                         newUsers.append(newUser)
@@ -605,6 +613,7 @@ def server_add_user():
         
     return render_template('/server_add_user.html', 
                            error = error, 
+                           authorities = authorities,
                            newUsers = newUsers)
 
 @GradeServer.route('/master/manage_service')

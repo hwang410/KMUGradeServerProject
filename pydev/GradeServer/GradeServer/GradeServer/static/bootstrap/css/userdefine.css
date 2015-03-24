@@ -286,3 +286,6 @@ thead{
 	width:700px;
 	margin-left:-350px
 }
+
+.autocomplete-suggestions{
+	width:auto;
