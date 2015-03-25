@@ -58,11 +58,11 @@
 				<td>Del
 			<tbody>
 				<script> index = {{ index }}; </script>
-				{%- for user in users %}
+				{%- for user, college, department in users %}
 				<tr>
 					<td><script> document.write(index--); </script>
 					<td>{{ user.memberId }}
-					<td>{{ user.collegeName }} {{ user.departmentName }}
+					<td>{{ college.collegeName }} {{ department.departmentName }}
 					<td>{{ user.memberName }}
 					<td>{{ user.contactNumber }}
 					<td>{{ user.emailAddress }}

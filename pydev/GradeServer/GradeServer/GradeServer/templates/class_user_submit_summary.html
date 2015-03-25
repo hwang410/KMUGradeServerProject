@@ -15,7 +15,7 @@
 				{% else %} 
 					<li> 
 				{% endif -%}
-				<a id="link-{{ ownCourse.courseId }}" data-toggle="tab" href="#{{ ownCourse.courseId }}" onclick="visibleButton(this)">{{ ownCourse.courseName }}</a>
+				<a id="link-{{ ownCourse.courseId }}" data-toggle="tab" href="#{{ ownCourse.courseId }}" onclick="visibleButton(this)">{{ ownCourse.courseName }}</a></li>
 			{% endfor -%}
 			<div style="text-align:right">
 				<a href="{{ url_for('GradeServer.class_user_submit') }}"><button id="detail" type="button" style="display">Detail</button></a>
@@ -53,8 +53,8 @@
 					<script> var checker = 0; </script>
 					<!-- submission status of each member per each problem  -->
 					{%- for ownProblem in ownProblems %}
-						{%- for submission in submissions %}
-							{%- if submission.problemId == ownProblem.problemId and submission.memberId==ownMember.memberId %}
+						{%- for submission, problem in submissions %}
+							{%- if problem.problemId == ownProblem.problemId and submission.memberId==ownMember.memberId %}
 							<script> 
 								if(checker == 0){ 
 									checker = 1; 
