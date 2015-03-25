@@ -14,7 +14,7 @@ from datetime import datetime
 from GradeServer.database import dao
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
-from GradeServer.controller.login import login_required
+from GradeServer.utils.loginRequired import login_required
 from GradeServer.controller.problem import *
 from GradeServer.model.members import Members
 from GradeServer.model.registeredCourses import RegisteredCourses
@@ -83,73 +83,78 @@ def upload(courseId, problemId):
         print 'DB error : ' + str(e)
         raise e 
     
-    for file in upload_files:
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(tempPath, filename))
-            fileSize = os.stat(tempPath + '/' + filename).st_size
-            filenames.append(filename)
-            shutil.copy(os.path.join(tempPath, filename), filePath )
-            
-            if filename.rsplit('.', 1)[1] == 'c':
-                try:
-                    usedLanguage = dao.query(Languages.languageIndex).\
-                                       filter(Languages.languageName == 'C').\
-                                       first().\
-                                       languageIndex
-                except Exception as e:
-                    dao.rollback()
-                    print 'DB error : ' + str(e)
-                    raise e 
-            elif filename.rsplit('.', 1)[1] == 'cpp':
-                try:
-                    usedLanguage = dao.query(Languages.languageIndex).\
-                                       filter(Languages.languageName == 'C++').\
-                                       first().\
-                                       languageIndex
-                except Exception as e:
-                    dao.rollback()
+    try:
+        for file in upload_files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(tempPath, filename))
+                fileSize = os.stat(tempPath + '/' + filename).st_size
+                filenames.append(filename)
+                shutil.copy(os.path.join(tempPath, filename), filePath )
+                
+                if filename.rsplit('.', 1)[1] == 'c':
+                    try:
+                        usedLanguage = dao.query(Languages.languageIndex).\
+                                           filter(Languages.languageName == 'C').\
+                                           first().\
+                                           languageIndex
+                    except Exception as e:
+                        dao.rollback()
+                        print 'DB error : ' + str(e)
+                        raise e 
+                elif filename.rsplit('.', 1)[1] == 'cpp':
+                    try:
+                        usedLanguage = dao.query(Languages.languageIndex).\
+                                           filter(Languages.languageName == 'C++').\
+                                           first().\
+                                           languageIndex
+                    except Exception as e:
+                        dao.rollback()
                     print 'DB error : ' + str(e)
                     raise e                                                                    
-            elif filename.rsplit('.', 1)[1] == 'java':
-                try:
-                    usedLanguage = dao.query(Languages.languageIndex).\
-                                       filter(Languages.languageName == 'JAVA').\
-                                       first().\
-                                       languageIndex
-                except Exception as e:
-                    dao.rollback()
-                    print 'DB error : ' + str(e)
-                    raise e
-            elif filename.rsplit('.', 1)[1] == 'py':
-                try:
-                    usedLanguage = dao.query(Languages.languageIndex).\
-                                       filter(Languages.languageName == 'PYTHON').\
-                                       first().\
-                                       languageIndex
-                except Exception as e:
-                    dao.rollback()
-                    print 'DB error : ' + str(e)
-                    raise e
+                elif filename.rsplit('.', 1)[1] == 'java':
+                    try:
+                        usedLanguage = dao.query(Languages.languageIndex).\
+                                           filter(Languages.languageName == 'JAVA').\
+                                           first().\
+                                           languageIndex
+                    except Exception as e:
+                        dao.rollback()
+                        print 'DB error : ' + str(e)
+                        raise e
+                elif filename.rsplit('.', 1)[1] == 'py':
+                    try:
+                        usedLanguage = dao.query(Languages.languageIndex).\
+                                           filter(Languages.languageName == 'PYTHON').\
+                                           first().\
+                                           languageIndex
+                    except Exception as e:
+                        dao.rollback()
+                        print 'DB error : ' + str(e)
+                        raise e
                                                                      
                               
-            try:
-                submittedFiles = SubmittedFiles(memberId = memberId,
-                                                problemId = problemId,
-                                                courseId = courseId,
-                                                fileIndex = fileIndex,
-                                                fileName = filename,
-                                                filePath = filePath,
-                                                fileSize = fileSize)                
-                dao.add(submittedFiles)
-                dao.commit()
-            except Exception as e:
-                dao.rollback()
-                print 'DB error : ' + str(e)
-                raise e            
-            fileIndex += 1
-            sumOfSubmittedFileSize += fileSize
-
+                try:
+                    submittedFiles = SubmittedFiles(memberId = memberId,
+                                                    problemId = problemId,
+                                                    courseId = courseId,
+                                                    fileIndex = fileIndex,
+                                                    fileName = filename,
+                                                    filePath = filePath,
+                                                    fileSize = fileSize)                
+                    dao.add(submittedFiles)
+                    dao.commit()
+                except Exception as e:
+                    dao.rollback()
+                    print 'DB error : ' + str(e)
+                    raise e            
+                fileIndex += 1
+                sumOfSubmittedFileSize += fileSize
+    except:
+        shutil.rmtree(tempPath)
+        for filename in glob.glob(os.path.join(filePath, '*.*')):
+            shutil.copy(filename, tempPath)
+        
     try:
         usedLanguageVersion = dao.query(LanguagesOfCourses.languageVersion).\
                                   filter(LanguagesOfCourses.courseId == courseId,
@@ -379,7 +384,7 @@ def code(courseId, problemId):
                                     Submissions.courseId == courseId,
                                     Submissions.problemId == problemId).\
                        first()
-        solCountNum = solCount.solutionCheckCount + 1
+        solCountNum = solCount.solutionCheckCount
     except:
         solCountNum = 0
     
