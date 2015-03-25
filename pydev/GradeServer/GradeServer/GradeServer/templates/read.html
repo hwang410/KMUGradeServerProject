@@ -87,8 +87,8 @@
 			<!-- delete button -->
 			<!-- replier and masters are available to delete the comments -->
 			{% if comments[i].boardReplierId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
-			<a href="#deleteComment{{ comments[i].boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
-			<div id="deleteComment{{ comments[i].boardReplyIndex }}" class="modal hide fade" style="text-align:center">
+			<a href="#deleteBoardComment{{ comments[i].boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
+			<div id="deleteBoardComment{{ comments[i].boardReplyIndex }}" class="modal hide fade" style="text-align:center">
 				<div class="modal-header">
 					<h3>Delete Comment</h3>
 				</div>
@@ -100,6 +100,9 @@
 					<button href="#" class="delete btn btn-primary" name="deleteComment{{ comments[i].boardReplyIndex }}" type="submit">Confirm</button>
 				</div>
 			</div>
+			<!-- modify button -->
+			<!-- replier and masters are available to modify the comments -->
+			<a href="#modifyBoardComment{{ comments[i].boardReplyIndex }}" role="button" class="btn btn-link"><i class="icon-pencil"></i></a>
 			{% endif %}
 			<br>
 		</form>
