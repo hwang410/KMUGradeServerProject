@@ -21,6 +21,7 @@ from GradeServer.utils.utils import *
 
 from GradeServer.model.registrations import Registrations
 from GradeServer.model.registeredCourses import RegisteredCourses
+from GradeServer.model.submittedRecordsOfProblems import SubmittedRecordsOfProblems
 from GradeServer.model.members import Members
 from GradeServer.model.colleges import Colleges
 from GradeServer.model.departments import Departments
@@ -35,6 +36,7 @@ import os
 import re
 
 projectPath = '/mnt/shared'
+coursesPath = 'CurrentCourses'
 newUsers = []
 
 @GradeServer.route('/classmaster/user_submit')
@@ -54,21 +56,18 @@ def class_user_submit():
                                submissions = [])
         
     try:
-        submissions = dao.query(Submissions.courseId, 
-                                Submissions.status, 
-                                Submissions.submissionCount, 
-                                Submissions.codeSubmissionDate,
-                                RegisteredCourses.courseName, 
-                                Problems.problemName).\
-                                order_by(Submissions.codeSubmissionDate.desc()).\
-                                                     group_by(Submissions.memberId, 
-                                                              Submissions.courseId, 
-                                                              Submissions.problemId).\
-                                join(RegisteredCourses, 
-                                     RegisteredCourses.courseId == Submissions.courseId).\
-                                join(Problems, 
-                                     Problems.problemId == Submissions.problemId).\
-                                all()
+        submissions = (dao.query(Submissions,
+                                 RegisteredCourses, 
+                                 Problems).\
+                           order_by(Submissions.codeSubmissionDate.desc()).\
+                           group_by(Submissions.memberId, 
+                                    Submissions.courseId, 
+                                    Submissions.problemId).\
+                           join(RegisteredCourses, 
+                                RegisteredCourses.courseId == Submissions.courseId).\
+                           join(Problems, 
+                                Problems.problemId == Submissions.problemId)).\
+                      all()
     except:
         error = 'Error has been occurred while searching submission records.'
         return render_template('/class_user_submit.html', 
@@ -114,21 +113,16 @@ def class_manage_problem():
                                ownProblems = [])
     
     try:
-        ownProblems = dao.query(RegisteredProblems.courseId, 
-                                RegisteredProblems.isAllInputCaseInOneFile, 
-                                RegisteredProblems.startDateOfSubmission,
-                                RegisteredProblems.endDateOfSubmission, 
-                                RegisteredProblems.openDate, 
-                                RegisteredProblems.closeDate, 
-                                RegisteredProblems.problemId,
-                                RegisteredCourses.courseName, 
-                                Problems.problemName).\
-                          join(RegisteredCourses, 
-                               RegisteredCourses.courseId == RegisteredProblems.courseId).\
-                          join(Problems, 
-                               Problems.problemId == RegisteredProblems.problemId).\
-                          filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
-                          all()
+        ownProblems = (dao.query(RegisteredProblems,
+                                 RegisteredCourses, 
+                                 Problems).\
+                           join(RegisteredCourses, 
+                                RegisteredCourses.courseId == RegisteredProblems.courseId).\
+                           join(Problems, 
+                                Problems.problemId == RegisteredProblems.problemId).\
+                           filter(RegisteredCourses.courseAdministratorId == session['memberId'])).\
+                      all()
+        
     except:
         error = 'Error has been occurred while searching own problems'
         return render_template('/class_manage_problem.html', 
@@ -179,7 +173,8 @@ def class_manage_problem():
                 if 'Tab' in editTarget:
                     editTarget = editTarget[:-3]
                 for ownProblem in ownProblems:
-                    if ownProblem.courseId == courseId and ownProblem.problemId == int(problemId):
+                    if ownProblem.courseId == courseId and\
+                       ownProblem.problemId == int(problemId):
                         kwargs = { editTarget : targetData }
                         try:
                             dao.query(RegisteredProblems).\
@@ -204,9 +199,10 @@ def class_manage_problem():
                 openDate = request.form['openDate']
                 closeDate = request.form['closeDate']
                 courseId = int(request.form['courseId'][:10])
+                limitedFileSize = 1024
                 problemId = int(request.form['problemId'][:5])
                 if form == 'multipleFiles':
-                    isAllInputCaseInOneFile = 'MultipleFiles'  
+                    isAllInputCaseInOneFile = 'MultipleFiles'
                 
         # when 'add' button is pushed, insert new problem into RegisteredProblems table
         if isNewProblem:
@@ -231,10 +227,12 @@ def class_manage_problem():
                                        ownProblems = ownProblems)
             
             try:
+                print "id", problemId, 'cid', courseId, 'sct', solutionCheckType, 'icif', isAllInputCaseInOneFile, 'fs', limitedFileSize, 'st', startDate, 'ed', endDate, 'op', openDate, 'cd', closeDate
                 newProblem = RegisteredProblems(problemId = problemId,
                                                 courseId = courseId, 
                                                 solutionCheckType = solutionCheckType, 
                                                 isAllInputCaseInOneFile = isAllInputCaseInOneFile,
+                                                limittedFileSize = limitedFileSize,
                                                 startDateOfSubmission = startDate, 
                                                 endDateOfSubmission = endDate, 
                                                 openDate = openDate, 
@@ -251,10 +249,29 @@ def class_manage_problem():
                                        allProblems = allProblems, 
                                        ownCourses = ownCourses, 
                                        ownProblems = ownProblems)
+            try:
+                newProblemRecord = SubmittedRecordsOfProblems(problemId = problemId,
+                                                              courseId = courseId)
+                dao.add(newProblemRecord)
+                dao.commit()
+            except:
+                dao.rollback()
+                error = 'Error has been occurred while creating new record'
+                return render_template('/class_manage_problem.html', 
+                           error = error, 
+                           modalError = modalError,
+                           allProblems = allProblems, 
+                           ownCourses = ownCourses, 
+                           ownProblems = ownProblems)
                 
             courseName = request.form['courseId'][10:]
             problemName = request.form['problemId'][5:]
-            problemPath = '%s/CurrentCourses/%s_%s/%s_%s' % (projectPath, courseId, courseName, problemId, problemName)
+            problemPath = '%s/%s/%s_%s/%s_%s' % (projectPath, 
+                                                 coursesPath,
+                                                 courseId, 
+                                                 courseName, 
+                                                 problemId, 
+                                                 problemName)
             
             if not os.path.exists(problemPath):
                 os.makedirs(problemPath)
@@ -288,14 +305,13 @@ def class_manage_user():
                                departments=[])
     
     # all registered users
-    allUsers = dao.query(DepartmentsDetailsOfMembers.memberId, 
-                         DepartmentsDetailsOfMembers.collegeIndex, 
-                         DepartmentsDetailsOfMembers.departmentIndex, 
-                         Members.memberName).\
-                   join(Members, Members.memberId == DepartmentsDetailsOfMembers.memberId).\
-                   filter_by(authority = 'User').\
-                   order_by(DepartmentsDetailsOfMembers.memberId).\
-                   all()
+    allUsers = (dao.query(DepartmentsDetailsOfMembers, 
+                          Members).\
+                    join(Members, 
+                         Members.memberId == DepartmentsDetailsOfMembers.memberId).\
+                    filter(Members.authority == 'User').\
+                    order_by(DepartmentsDetailsOfMembers.memberId)).\
+               all()
     
     colleges = dao.query(Colleges).\
                    all()
@@ -304,41 +320,42 @@ def class_manage_user():
     
     allUsersToData = []
     userIndex = 1
-    for index, eachUser in enumerate(allUsers):
-        if index == 0:
-            allUsersToData.append([eachUser.memberId, 
+    loopIndex = 0
+    for departmentsDetailsOfMember, eachUser in allUsers:
+        if loopIndex == 0:
+            allUsersToData.append([departmentsDetailsOfMember.memberId, 
                                    eachUser.memberName, 
-                                   eachUser.collegeIndex, 
-                                   eachUser.departmentIndex])
+                                   departmentsDetailsOfMember.collegeIndex, 
+                                   departmentsDetailsOfMember.departmentIndex])
         else:
             if eachUser.memberId == allUsersToData[userIndex-1][0]:
-                allUsersToData[userIndex-1].append(eachUser.collegeIndex)
-                allUsersToData[userIndex-1].append(eachUser.departmentIndex)
+                allUsersToData[userIndex-1].append(departmentsDetailsOfMember.collegeIndex)
+                allUsersToData[userIndex-1].append(departmentsDetailsOfMember.departmentIndex)
             else:
-                allUsersToData.append([eachUser.memberId, 
+                allUsersToData.append([departmentsDetailsOfMember.memberId, 
                                        eachUser.memberName, 
-                                       eachUser.collegeIndex, 
-                                       eachUser.departmentIndex])
+                                       departmentsDetailsOfMember.collegeIndex, 
+                                       departmentsDetailsOfMember.departmentIndex])
                 userIndex += 1
+        loopIndex += 1
         
     ownUsers = []
     for ownCourse in ownCourses:
         try:
-            ownUsersOfCourse = dao.query(Registrations.courseId, 
-                                         Registrations.memberId, 
-                                         Members.memberName, 
-                                         Colleges.collegeName, 
-                                         Departments.departmentName).\
-                                   join(Members, 
-                                        Registrations.memberId == Members.memberId).\
-                                   join(DepartmentsDetailsOfMembers, 
-                                        DepartmentsDetailsOfMembers.memberId == Registrations.memberId).\
-                                   join(Colleges, 
-                                        Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
-                                   join(Departments, 
-                                        Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
-                                   filter(Registrations.courseId == ownCourse.courseId).\
-                                   all()
+            ownUsersOfCourse = (dao.query(Registrations, 
+                                          Members, 
+                                          Colleges, 
+                                          Departments).\
+                                    join(Members, 
+                                         Registrations.memberId == Members.memberId).\
+                                    join(DepartmentsDetailsOfMembers, 
+                                         DepartmentsDetailsOfMembers.memberId == Registrations.memberId).\
+                                    join(Colleges, 
+                                         Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
+                                    join(Departments, 
+                                         Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
+                                    filter(Registrations.courseId == ownCourse.courseId)).\
+                               all()
         except:
             error = 'Error has been occurred while searching own users'
             return render_template('/class_manage_user.html', 
@@ -350,32 +367,32 @@ def class_manage_user():
                                    departments=[])
             
         for ownUser in ownUsersOfCourse:
-                ownUsers.append(ownUser)
+            ownUsers.append(ownUser)
                 
     ownUsersToData = []
     userIndex = 1
-    for loopIndex, eachUser in enumerate(ownUsers):
+    loopIndex = 0
+    for registration, eachUser, college, department in ownUsers:
         if loopIndex == 0:
-            ownUsersToData.append([eachUser.courseId, 
-                                   eachUser.memberId, 
+            ownUsersToData.append([registration.courseId, 
+                                   registration.memberId, 
                                    eachUser.memberName, 
-                                   eachUser.collegeName, 
-                                   eachUser.departmentName])
+                                   college.collegeName, 
+                                   department.departmentName])
         else:
-            if eachUser.memberId == ownUsersToData[userIndex-1][1] and eachUser.courseId == ownUsersToData[userIndex-1][0]:
-                ownUsersToData[userIndex-1].append(eachUser.collegeName)
-                ownUsersToData[userIndex-1].append(eachUser.departmentName)
+            if registration.memberId == ownUsersToData[userIndex-1][1] and registration.courseId == ownUsersToData[userIndex-1][0]:
+                ownUsersToData[userIndex-1].append(college.collegeName)
+                ownUsersToData[userIndex-1].append(department.departmentName)
             else:
-                ownUsersToData.append([eachUser.courseId, 
-                                       eachUser.memberId, 
+                ownUsersToData.append([registration.courseId, 
+                                       registration.memberId, 
                                        eachUser.memberName, 
-                                       eachUser.collegeName, 
-                                       eachUser.departmentName])
+                                       college.collegeName, 
+                                       department.departmentName])
                 userIndex += 1  
+        loopIndex += 1
         
     if request.method == 'POST':
-        newMemberId = ''
-        targetCourseId = ''
         for form in request.form:
             if 'delete' in form:
                 courseId, memberId = form[7:].split('_')
@@ -385,37 +402,6 @@ def class_manage_user():
                                  first()
                 dao.delete(targetUser)
                 dao.commit()
-            else:
-                newMemberId = request.form['memberId'].split()[0]
-                targetCourseId = request.form['courseId'].split()[0]
-                try:
-                    newMember = Registrations(memberId = newMemberId, 
-                                              courseId = targetCourseId)
-                    dao.add(newMember)
-                    dao.commit()
-                
-                except exc.SQLAlchemyError:
-                    error = 'Exist duplicated students'
-                    print error
-                    return redirect(url_for('.class_manage_user'))
-                 
-                registeredProblems = dao.query(RegisteredProblems.problemId, 
-                                               RegisteredProblems.courseId, 
-                                               Problems.problemName, 
-                                               RegisteredCourses.courseName).\
-                                         join(Problems, 
-                                              RegisteredProblems.problemId == Problems.problemId).\
-                                         filter(RegisteredProblems.courseId == targetCourseId).\
-                                         all()
-                                        
-                for registeredProblem in registeredProblems:
-                    userFolderPath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s' % (registeredProblem.courseId, 
-                                                                                    registeredProblem.courseName, 
-                                                                                    registeredProblem.problemId, 
-                                                                                    registeredProblem.problemName, 
-                                                                                    newMemberId)
-                    if not os.path.exists(userFolderPath):                 
-                        os.makedirs(userFolderPath)
             
         return redirect(url_for('.class_manage_user'))
     
@@ -426,7 +412,6 @@ def class_manage_user():
                            allUsers=allUsersToData, 
                            colleges=colleges,
                            departments=departments)
-    
     
 @GradeServer.route('/classmaster/add_user', methods=['GET', 'POST'])
 @login_required
@@ -476,6 +461,8 @@ def class_add_user():
                             error = 'Wrong college index has inserted'
                             return render_template('/class_add_user.html', 
                                                    error = error, 
+                                                   ownCourses = ownCourses,
+                                                   authorities = authorities,
                                                    newUsers = newUsers)
                     elif value == 'department':
                         newUser[index - 1][5] = data
@@ -491,6 +478,9 @@ def class_add_user():
                                                    ownCourses = ownCourses,
                                                    authorities = authorities,
                                                    newUsers = newUsers)
+                    elif value == 'courseId':
+                        newUser[index-1][7] = data.strip()
+                        
             for index in range(numberOfUsers):
                 newUsers.append(newUser[index])
                 
@@ -551,6 +541,7 @@ def class_add_user():
                                 elif key == 'courseId':
                                     try:
                                         newUser[7] = value.strip()
+                                        print newUser[7]
                                     except:
                                         error = 'Wrong course id has inserted'
                                         return render_template('/class_add_user.html',
@@ -576,7 +567,9 @@ def class_add_user():
                                                        newUsers = newUsers)
                         
                         for user in newUsers:
-                            if user[0] == newUser[0] and user[3] == newUser[3] and user[5] == newUser[5]:
+                            if user[0] == newUser[0] and\
+                               user[3] == newUser[3] and\
+                               user[5] == newUser[5]:
                                 error = 'There is a duplicated user id. Check the file and added user list'
                                 return render_template('/class_add_user.html', 
                                                        error = error, 
@@ -588,7 +581,8 @@ def class_add_user():
                         
         elif 'addUser' in request.form:
             for newUser in newUsers:
-                if not dao.query(Members).filter(Members.memberId == newUser[0]).first():
+                isExist = dao.query(Members).filter(Members.memberId == newUser[0]).first() 
+                if not isExist:
                     try:
                         # at first insert to 'Members'. Duplicated tuple will be ignored.
                         freshman = Members(memberId = newUser[0], 
@@ -630,14 +624,39 @@ def class_add_user():
                         dao.commit()
                     except:
                         dao.rollback()
-                    
+                        
+                ## create user folder 
+                newMemberId = newUser[0]
+                targetCourseId = newUser[7]
+                
+                registeredProblems = (dao.query(RegisteredProblems, 
+                                                Problems, 
+                                                RegisteredCourses).\
+                                          join(Problems, 
+                                               Problems.problemId == RegisteredProblems.problemId).\
+                                          join(RegisteredCourses,
+                                               RegisteredCourses.courseId == RegisteredProblems.courseId).\
+                                          filter(RegisteredProblems.courseId == targetCourseId)).\
+                                     all()
+                                        
+                for registeredProblem, problem, registeredCourse in registeredProblems:
+                    userFolderPath = '%s/%s/%s_%s/%s_%s/%s' % (projectPath,
+                                                               coursesPath,
+                                                               registeredProblem.courseId, 
+                                                               registeredCourse.courseName, 
+                                                               registeredProblem.problemId, 
+                                                               problem.problemName, 
+                                                               newMemberId)
+                    os.makedirs(userFolderPath) if not os.path.exists(userFolderPath) else 0                 
+                        
+                ## creation end
+            
             newUsers = [] # initialize add user list
             return redirect(url_for('.class_manage_user'))
             
         elif 'deleteUser' in request.form:
             for form in request.form:
-                if not form is 'deleteUser':
-                    targetUserIdToDelete.append(form)
+                targetUserIdToDelete.append(form) if not form is 'deleteUser' else 0
                 
         # if id list is not empty
         if len(targetUserIdToDelete) != 0:
@@ -673,17 +692,15 @@ def user_submit_summary():
                      all()
         
     try:
-        submissions = dao.query(Submissions.courseId, 
-                                Problems.problemId, 
-                                Submissions.status, 
-                                Submissions.memberId).\
-                          order_by(Submissions.codeSubmissionDate.desc()).\
-                          group_by(Submissions.memberId, 
-                                   Submissions.courseId, 
-                                   Submissions.problemId).\
-                          join(RegisteredCourses, RegisteredCourses.courseId == Submissions.courseId).\
-                          join(Problems, Problems.problemId == Submissions.problemId).\
-                          all()
+        submissions = (dao.query(Submissions, 
+                                 Problems).\
+                           order_by(Submissions.codeSubmissionDate.desc()).\
+                           group_by(Submissions.memberId, 
+                                    Submissions.courseId, 
+                                    Submissions.problemId).\
+                           join(RegisteredCourses, RegisteredCourses.courseId == Submissions.courseId).\
+                           join(Problems, Problems.problemId == Submissions.problemId)).\
+                      all()
     except:
         print 'Submissions table is empty'
         submissions = []

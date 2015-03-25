@@ -56,15 +56,15 @@
 					<td>Finish Date
 					<td>Delete
 			<tbody>
-				{%- for course in courses %}
+				{%- for course, member in courses %}
 				<tr>
 					<td>{{ course.courseId }}
 					<td>{{ course.courseName }}
-					<td>{{ course.courseAdministratorId }} {{ course.memberName }}
-					<td>{%- for language in languagesOfCourse %}
-								{%- if course.courseId==language.courseId %}
+					<td>{{ course.courseAdministratorId }} {{ member.memberName }}
+					<td>{%- for languageOfCourse, language in languagesOfCourse %}
+								{%- if course.courseId==languageOfCourse.courseId %}
 									{{ language.languageName }}
-									{%- if language.languageVersion!='0' %}
+									{%- if languageOfCourse.languageVersion!='0' %}
 										{{ language.languageVersion }}
 									{% endif -%}
 									<br>

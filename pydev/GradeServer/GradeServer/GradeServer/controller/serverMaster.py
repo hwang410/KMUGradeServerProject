@@ -38,6 +38,7 @@ import os
 import subprocess
 
 projectPath = '/mnt/shared'
+problemsPath = 'Problems'
 # if there's additional difficulty then change the value 'numberOfDifficulty'
 numberOfDifficulty = 5
 newUsers = []
@@ -114,7 +115,9 @@ def server_manage_problem():
                                                                           
                     # place the difficulty at the left most
                     problemId = difficulty * 10000 + numberOfProblemsOfDifficulty[difficulty - 1]
-                    problemPath = '%s/Problems/%s' % (projectPath, str(problemId) + '_' + problemName)
+                    problemPath = '%s/%s/%s' % (projectPath, 
+                                                problemsPath,
+                                                str(problemId) + '_' + problemName)
                     
                     try:
                         newProblem = Problems(problemIndex = nextIndex, 
@@ -135,14 +138,16 @@ def server_manage_problem():
                                                uploadedProblems = [])
                         
                     # rename new problem folder
-                    os.chdir('%s/%s_%s' % (tmpPath, problemName, solutionCheckType))
+                    os.chdir('%s/%s_%s' % (tmpPath, 
+                                           problemName, 
+                                           solutionCheckType))
                     try:
                         subprocess.call('rename "s/\.*/%s_/" *' % (problemId), shell=True)
                     except OSError:
                         error = 'Error has occurred while renaming a folder'
                         return render_template('/server_manage_problem.html', 
-                                       error = error,
-                                       uploadedProblems = [])
+                                               error = error,
+                                               uploadedProblems = [])
                         
                     # change problems information files name
                     os.chdir('%s/' % (tmpPath))
@@ -151,8 +156,8 @@ def server_manage_problem():
                     except OSError:
                         error = 'Error has occured while renaming a folder'
                         return render_template('/server_manage_problem.html', 
-                                       error = error,
-                                       uploadedProblems = [])
+                                               error = error,
+                                               uploadedProblems = [])
                     
                     # create final goal path
                     if not os.path.exists(problemPath):
@@ -164,8 +169,8 @@ def server_manage_problem():
                     except OSError :
                         error = 'Error has occurred while moving new problem'
                         return render_template('/server_manage_problem.html', 
-                                       error = error,
-                                       uploadedProblems = [])
+                                               error = error,
+                                               uploadedProblems = [])
                     
             else:
                 try:
@@ -177,8 +182,8 @@ def server_manage_problem():
                     dao.rollback()
                     error = 'Problem deletion error'
                     return render_template('/server_manage_problem.html', 
-                                       error = error,
-                                       uploadedProblems = [])
+                                           error = error,
+                                           uploadedProblems = [])
 
         return redirect(url_for('.server_manage_problem'))
         
@@ -200,29 +205,23 @@ def server_manage_class():
     error = None
     
     try:
-        courses = dao.query(RegisteredCourses.courseId,
-                            RegisteredCourses.courseName,
-                            RegisteredCourses.startDateOfCourse,
-                            RegisteredCourses.endDateOfCourse,
-                            RegisteredCourses.courseAdministratorId,
-                            Members.memberName).\
-                      join(Members,
-                           Members.memberId == RegisteredCourses.courseAdministratorId).\
-                      order_by(RegisteredCourses.endDateOfCourse.desc()).\
-                      all()
+        courses = (dao.query(RegisteredCourses,
+                             Members).\
+                       join(Members,
+                            Members.memberId == RegisteredCourses.courseAdministratorId).\
+                       order_by(RegisteredCourses.endDateOfCourse.desc())).\
+                  all()
     except:
         error = 'No courses exists'
         print 'Empty \'RegisteredCourses\' table'
         
     try:
-        languagesOfCourse = dao.query(LanguagesOfCourses.courseId, 
-                                      LanguagesOfCourses.languageIndex, 
-                                      LanguagesOfCourses.languageVersion, 
-                                      Languages.languageName).\
-                                join(Languages, 
-                                     and_(LanguagesOfCourses.languageIndex == Languages.languageIndex, 
-                                          LanguagesOfCourses.languageVersion == Languages.languageVersion)).\
-                                all()
+        languagesOfCourse = (dao.query(LanguagesOfCourses, 
+                                       Languages).\
+                                 join(Languages, 
+                                      and_(LanguagesOfCourses.languageIndex == Languages.languageIndex, 
+                                           LanguagesOfCourses.languageVersion == Languages.languageVersion))).\
+                            all()
     except:
         error = 'No information of languages of courses'
         print 'Empty \'LanguagesOfCourse\' table'
@@ -254,22 +253,17 @@ def server_manage_user():
     error = None
     
     try:
-        users = dao.query(Members.memberId, 
-                          Members.memberName, 
-                          Members.contactNumber, 
-                          Members.emailAddress, 
-                          Members.authority, 
-                          Members.lastAccessDate,
-                          Colleges.collegeName,
-                          Departments.departmentName).\
-                    join(DepartmentsDetailsOfMembers, 
-                         Members.memberId == DepartmentsDetailsOfMembers.memberId).\
-                    join(Colleges,
-                         Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
-                    join(Departments, 
-                         Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
-                    order_by(Members.signedInDate.desc()).\
-                    all()
+        users = (dao.query(Members,
+                           Colleges,
+                           Departments).\
+                     join(DepartmentsDetailsOfMembers, 
+                          Members.memberId == DepartmentsDetailsOfMembers.memberId).\
+                     join(Colleges,
+                          Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
+                     join(Departments, 
+                          Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
+                     order_by(Members.signedInDate.desc())).\
+                all()
                           
     except:
         error = 'Error has occurred while getting member information'
@@ -301,8 +295,6 @@ def server_manage_user():
                            error = error,
                            users = users, 
                            index = len(users))
-
-
 
 @GradeServer.route('/master/add_class', methods = ['GET', 'POST'])
 @login_required
@@ -556,7 +548,9 @@ def server_add_user():
                                                       newUsers = newUsers)
                         
                         for user in newUsers:
-                            if user[0] == newUser[0] and user[3] == newUser[3] and user[5] == newUser[5]:
+                            if user[0] == newUser[0] and\
+                               user[3] == newUser[3] and\
+                               user[5] == newUser[5]:
                                 error = 'There is a duplicated user id. Check the file and added user list'
                                 return render_template('/server_add_user.html', 
                                                        error = error, 
