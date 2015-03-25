@@ -60,9 +60,9 @@ class EvaluateTools():
         coreList = glob.glob('core.[0-9]*')
         
         if len(coreList) > 0:
-            os.path.getsize(coreList[0])
+            coreSize = os.path.getsize(coreList[0])
         
-        if runTime > 0.001:    # time over -> need modify
+        if runTime > 100:    # time over -> need modify
             return 'time over', runTime
         
         elif coreSize == 0:  # if not exist core file -> evaluate output
@@ -73,7 +73,7 @@ class EvaluateTools():
             return success, runTime
         
         elif coreSize > 0: # runtime error.
-            return 'runtime'
+            return 'runtime', 0
         
         else:   # server error
             return 'error', 0
