@@ -21,40 +21,52 @@ from GradeServer.model.languagesOfCourses import LanguagesOfCourses
 @login_required
 def problemList(courseId):
     """ problem submitting page """
-    course = []
-    problems = []
+    # Get Last Submitted History
+    submissions = dao.query(Submissions.problemId,
+                            Submissions.score,
+                            Submissions.status,
+                            Submissions.solutionCheckCount).\
+                      filter(Submissions.memberId == session[MEMBER_ID],
+                             Submissions.courseId == courseId).\
+                      group_by(Submissions.memberId,
+                               Submissions.problemId,
+                               Submissions.courseId).\
+                      subquery()
+    # Get Problem Informations
+    problems = dao.query(RegisteredProblems.problemId,
+                         RegisteredProblems.startDateOfSubmission,
+                         RegisteredProblems.endDateOfSubmission).\
+                   filter(RegisteredProblems.courseId == courseId).\
+                   subquery()
+    # Join Problems add Name   
+    problems = dao.query(Problems.problemName,
+                         problems).\
+                   join(problems,
+                        Problems.problemId == problems.c.problemId).\
+                   subquery()
+    # Get ProblemListRecords
     try:
-        submissionRecords = dao.query(Submissions).\
-                                filter(Submissions.memberId == session['memberId']).\
-                                order_by(Submissions.problemId.desc(),
-                                         Submissions.courseId.desc()).\
-                                group_by(Submissions.problemId,
-                                         Submissions.courseId).subquery()
-    except:
-        print 'failed submissionRecords'
+        problemListRecords = dao.query(problems,
+                                       submissions.c.score,
+                                       submissions.c.status,
+                                       submissions.c.solutionCheckCount).\
+                                 outerjoin(submissions,
+                                           problems.c.problemId == submissions.c.problemId).\
+                                 all()
+    except Exception:
+        problemListRecords = []
+    # Get Course Information
     try:
-        problems = dao.query(RegisteredProblems).\
-                       outerjoin(submissionRecords,
-                                 and_(submissionRecords.c.problemId == RegisteredProblems.problemId,
-                                      submissionRecords.c.courseId == RegisteredProblems.courseId)).\
-                                      filter(RegisteredProblems.courseId == courseId).subquery()
+        courseRecords = dao.query(RegisteredCourses.courseId,
+                                  RegisteredCourses.courseName).\
+                            filter(RegisteredCourses.courseId == courseId).\
+                            first()
     except:
-        print 'failed problems'
-    try:
-        problems = dao.query(problems,
-                             Problems.problemName).\
-                       join(Problems,
-                            Problems.problemId == problems.c.problemId).all()
-    except:
-        print 'failed problems2'
-    try:
-        course = dao.query(RegisteredCourses).filter_by(courseId=courseId).first()
-    except:
-        print 'failed course'
-    
+        courseRecords = []
+
     return render_template('/problem_list.html',
-                           course = course,
-                           problems = problems)
+                           courseRecords = courseRecords,
+                           problemListRecords = problemListRecords)
 
 @GradeServer.route('/problem/<courseId>/<problemId>')
 @login_required

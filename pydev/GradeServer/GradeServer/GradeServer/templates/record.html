@@ -16,17 +16,21 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
   var c = $('#submitChart');
   var ct = c.get(0).getContext('2d');
   var ctx = document.getElementById("submitChart").getContext("2d");
-  var colors = new Array("#0c274c", "#18709c", "#19bdc4", "#fff6ee", "#ef4089");
+  // Purple, Black, Dark Blue, Cyan, Pink
+  var colors = new Array("#ef4089", "#0c274c", "#18709c", "#19bdc4", "#fff6ee");
+  var highlightColors =new Array('#ff0000', '#ffbb00', '#ffe400', '#1DDB16', '#5F00FF') ;
   /*************************************************************************/
 
   myNewChart = new Chart(ct).Doughnut(data, options);
   // input values and colors into the chart
   // need to change 'value:#' 
-  {% for i in range(0, colors|length) %}
-  	{% if chartSubmissionRecords[i] %}
+  {% for i in range(0, 5) %}
+  	{% if chartSubmissionRecords[i + 3] %}
   	myNewChart.addData ({
-  		value :{{ chartSubmissionRecords[i + 3] }},
-  		color :colors[{{ i }}]
+  		value: {{ chartSubmissionRecords[i + 3] }},
+  		color: colors[{{ i }}],
+  		label: '{{ chartSubmissionDescriptions[i + 3] }}',
+  		highlight: highlightColors[{{ i }}]
   		})
 		{% endif %}
   {% endfor %}
