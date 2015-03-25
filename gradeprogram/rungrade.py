@@ -28,7 +28,7 @@ if __name__ == '__main__':
             # update database 'compile error'
             try :
                 dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
-                                        submissionCount = submitCount).update(dict(status = 5, score = 0, runTime = 0,\
+                                        submissionCount = submitCount).update(dict(status = 6, score = 0, runTime = 0,\
                                                                                         usedMemory = 0, solutionCheckCount = Submissions.solutionCheckCount + 1))
                 
                 dao.query(SubmittedRecordsOfProblems).filter_by(problemId = problemNum, courseId = courseNum).\
@@ -47,7 +47,7 @@ if __name__ == '__main__':
             # update database 'server error'
             try :
                 dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
-                                        submissionCount = submitCount).update(dict(status = 7, score = 0, runTime = 0, usedMemory = 0))
+                                        submissionCount = submitCount).update(dict(status = 8, score = 0, runTime = 0, usedMemory = 0))
                 dao.commit()
             except Exception as e :
                 raise e 
@@ -63,7 +63,7 @@ if __name__ == '__main__':
                 # update database 'solved'
                 try:
                     dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
-                                        submissionCount = submitCount).update(dict(status = 2, score = 100, runTime = runTime,\
+                                        submissionCount = submitCount).update(dict(status = 3, score = 100, runTime = runTime,\
                                                                                         usedMemory = 0, solutionCheckCount = Submissions.solutionCheckCount+1))
                     
                     dao.query(SubmittedRecordsOfProblems).filter_by(problemId = problemNum, courseId = courseNum).\
@@ -82,7 +82,7 @@ if __name__ == '__main__':
                 # update database 'time out'
                 try:
                     dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
-                                        submissionCount = submitCount).update(dict(status = 3, score = 0, runTime = runTime,\
+                                        submissionCount = submitCount).update(dict(status = 4, score = 0, runTime = runTime,\
                                                                                         usedMemory = 0, solutionCheckCount = Submissions.solutionCheckCount+1))
                     
                     dao.query(SubmittedRecordsOfProblems).filter_by(problemId = problemNum, courseId = courseNum).\
@@ -101,12 +101,12 @@ if __name__ == '__main__':
                 # update database 'runtime error'
                 try:
                     dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
-                                        submissionCount = submitCount).update(dict(status = 6, score = 0, runTime = runTime,\
+                                        submissionCount = submitCount).update(dict(status = 7, score = 0, runTime = runTime,\
                                                                                         usedMemory = 0, solutionCheckCount = Submissions.solutionCheckCount+1))
                     
                     dao.query(SubmittedRecordsOfProblems).filter_by(problemId = problemNum, courseId = courseNum).\
                             update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,\
-                                        sumOFRuntimeErrorCount = SubmittedRecordsOfProblems.sumOfRuntimeErrorCount + 1))
+                                        sumOfRuntimeErrorCount = SubmittedRecordsOfProblems.sumOfRuntimeErrorCount + 1))
                     
                     dao.commit()
                 except Exception as e:
@@ -120,7 +120,7 @@ if __name__ == '__main__':
                 # update database 'wrong answer'
                 try:
                     dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
-                                        submissionCount = submitCount).update(dict(status = 4, score = result, runTime = runTime,\
+                                        submissionCount = submitCount).update(dict(status = 5, score = result, runTime = runTime,\
                                                                                         usedMemory = 0, solutionCheckCount = Submissions.solutionCheckCount+1))
                     
                     dao.query(SubmittedRecordsOfProblems).filter_by(problemId = problemNum, courseId = courseNum).\
@@ -139,7 +139,7 @@ if __name__ == '__main__':
             # update database 'server error'
                 try :
                     dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
-                                        submissionCount = submitCount).update(dict(status = 7, score = 0, runTime = 0, usedMemory = 0))
+                                        submissionCount = submitCount).update(dict(status = 8, score = 0, runTime = 0, usedMemory = 0))
                     dao.commit()
                 except Exception as e:
                     raise e 

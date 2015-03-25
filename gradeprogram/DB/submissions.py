@@ -26,7 +26,7 @@ class Submissions (Base) :
     courseId =Column (VARCHAR (10), ForeignKey (SubmittedFiles.courseId, onupdate ="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable = False)
     submissionCount =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, default =1, nullable =False)
     solutionCheckCount =Column (INTEGER (unsigned =True), nullable =False)
-    status =Column (ENUM ('NeverSubmitted', 'Solved', 'TimeOver', 'WrongAnswer', 'CompileError', 'RunTimeError', 'ServerError'), default ='NeverSubmitted', nullable =False)
+    status =Column (ENUM ('NeverSubmitted', 'Judging', 'Solved', 'TimeOver', 'WrongAnswer', 'CompileError', 'RunTimeError', 'ServerError'), default ='NeverSubmitted', nullable =False)
     score =Column (INTEGER (unsigned =True), default =0, nullable =False)
     codeSubmissionDate =Column (DATETIME, nullable =False)
     viewCount =Column (INTEGER (unsigned =True), default =0, nullable =False)
