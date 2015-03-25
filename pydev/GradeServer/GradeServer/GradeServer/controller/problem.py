@@ -47,7 +47,9 @@ def problemList(courseId):
     # Get ProblemListRecords
     try:
         problemListRecords = dao.query(problems,
-                                       submissions).\
+                                       submissions.c.score,
+                                       submissions.c.status,
+                                       submissions.c.solutionCheckCount).\
                                  outerjoin(submissions,
                                            problems.c.problemId == submissions.c.problemId).\
                                  all()
@@ -61,7 +63,7 @@ def problemList(courseId):
                             first()
     except:
         courseRecords = []
-    
+
     return render_template('/problem_list.html',
                            courseRecords = courseRecords,
                            problemListRecords = problemListRecords)

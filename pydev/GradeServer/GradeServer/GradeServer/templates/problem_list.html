@@ -7,21 +7,39 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
-	<h2>{{ course.courseId }} {{ course.courseName }}</h2>
+	<h2>{{ courseRecords.courseId }} {{ courseRecords.courseName }}</h2>
 	<table class="problem_list table table-bordered">
 		<tr>
 			<td>Num</td><td>Title</td><td>Score</td><td>Status</td><td>Due Date</td><td>Count</td><td>Record</td>
 		</tr>
-		<script> index = {{ problems|length }}; </script>
-		{% for problem in problems %}
+		{% for i in range(0, problemListRecords|length) %}
 		<tr>
-			<td><script> document.write(index--);</script></td>
-			<td><a href="{{ url_for('GradeServer.problem', courseId=course.courseId, problemId=problem.problemId) }}">{{ problem.problemName }}</a></td>
-			<td>{{ problem.score }}</td>
-			<td>{{ problem.status }}</td>
-			<td>{{ problem.endDateOfSubmission }}</td>
-			<td>{{ problem.submissionCount }}</td>
-			<td><a href="{{ url_for('GradeServer.record', courseId=course.courseId, problemId=problem.problemId, sortCondition = 'runTime') }}" onclick="setLegend()">"Record"</a></td>
+			<td style ='vertical-align: middle'>
+				{{ problemListRecords|length - i }}
+			</td>
+			<td style ='vertical-align: middle'>
+				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecords[-i].problemId) }}">
+					{{ problemListRecords[-i].problemName }}
+				</a>
+			</td>
+			<td style ='vertical-align: middle'>
+				{% if problemListRecords[-i].score %}{{ problemListRecords[-i].score }}{% endif %}
+			</td>
+			<td style ='vertical-align: middle'>
+				{% if problemListRecords[-i].status %}{{ problemListRecords[-i].status }}{% else %}'Never Submitted'{% endif %}
+			</td>
+			<td style ='vertical-align: middle'>
+				{{ problemListRecords[-i].startDateOfSubmission }}<br>~{{ problemListRecords[-i].endDateOfSubmission }}
+			</td>
+			<td style ='vertical-align: middle'>
+				{% if problemListRecords[i].submissionCount %}{{ problemListRecords[i].submissionCount }}{% endif %}
+			</td>
+			<td style ='vertical-align: middle'>
+				<a href="{{ url_for('GradeServer.record', courseId = courseRecords.courseId, problemId = problemListRecords[-i].problemId, sortCondition = 'runTime') }}" onclick="setLegend()">
+					Problem Record
+				</a>
+			</td>
+		</tr>
 		{% endfor %}
 	</table>
 	<!-- page number section -->
