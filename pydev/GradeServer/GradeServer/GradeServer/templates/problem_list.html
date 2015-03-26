@@ -19,20 +19,20 @@
 			</td>
 			<td style ='vertical-align: middle'>
 				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecords[i].problemId, pageNum = pages['pageNum']) }}">
-					{{ problemListRecords[-i].problemName }}
+					{{ problemListRecords[i].problemName }}
 				</a>
 			</td>
 			<td style ='vertical-align: middle'>
-				{% if problemListRecords[i].score %}{{ problemListRecords[i].score }}{% endif %}
+				{% if problemListRecords[i].score %}{{ problemListRecords[i].score }}{% else %}0{% endif %}
 			</td>
 			<td style ='vertical-align: middle'>
-				{% if problemListRecords[i].status %}{{ problemListRecords[i].status }}{% else %}'Never Submitted'{% endif %}
+				{% if problemListRecords[i].status %}{{ problemListRecords[i].status }}{% else %}Never Submitted{% endif %}
 			</td>
 			<td style ='vertical-align: middle'>
 				{{ problemListRecords[i].startDateOfSubmission }}<br>~{{ problemListRecords[i].endDateOfSubmission }}
 			</td>
 			<td style ='vertical-align: middle'>
-				{% if problemListRecords[i].submissionCount %}{{ problemListRecords[i].submissionCount }}{% endif %}
+				{% if problemListRecords[i].solutionCheckCount %}{{ problemListRecords[i].solutionCheckCount }}{% else %}0{% endif %}
 			</td>
 			<td style ='vertical-align: middle'>
 				<a href="{{ url_for('GradeServer.record', courseId = courseRecords.courseId, problemId = problemListRecords[i].problemId, sortCondition = 'runTime') }}" onclick="setLegend()">
