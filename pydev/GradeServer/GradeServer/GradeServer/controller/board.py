@@ -100,21 +100,23 @@ def board(pageNum):
                                   course.c.courseName).\
                             join(course,
                                  articlesOnBoard.c.courseId == course.c.courseId).\
-                                 subquery()
+                            subquery()
                 
             # 과목 게시글 모음
             try:
                 courses.append(dao.query(courseSub).\
-                                filter(courseSub.c.isNotice == 'Not-Notice').\
-                                order_by(courseSub.c.articleIndex.desc()).all())
+                                filter(courseSub.c.isNotice == NOT_NOTICE).\
+                                order_by(courseSub.c.articleIndex.desc()).\
+                                all())
             except Exception:
                 #None Type Exception
                 courses.append([])
             try:   
                 # 과목 공지글 모음
                 courseNotices.append(dao.query(courseSub).\
-                                      filter(courseSub.c.isNotice == 'Notice').\
-                                      order_by(courseSub.c.articleIndex.desc()).all())
+                                      filter(courseSub.c.isNotice == NOTICE).\
+                                      order_by(courseSub.c.articleIndex.desc()).\
+                                      all())
             except Exception:
                 #None Type Exception
                 courseNotices.append([])
@@ -122,21 +124,30 @@ def board(pageNum):
             # 과목 게시글 유니온
             articles.extend(courses[i])
             # 과목 게시물 페이지 정보 구하기
-            pages.append(get_page_pointed(int(pageNum), len(courses[i])))
+            pages.append(get_page_pointed(int(pageNum),
+                                          len(courses[i])))
             # 과목 공지글 유니온        
             articleNotices.extend(courseNotices[i])
         
         # 모드느 과목 페이징 정보 구하기
-        allPages = get_page_pointed(int(pageNum), len(articles))
+        allPages = get_page_pointed(int(pageNum),
+                                    len(articles))
         # 허용 과목 리스트
         try:
-            myCourses =dao.query(myCourses).all()
+            myCourses = dao.query(myCourses).\
+                           all()
         except Exception:
-            myCourses =[]
-        
-        return render_template('/board.html', articles=articles, articleNotices=articleNotices, myCourses =myCourses,
-                               courses=courses, courseNotices=courseNotices, allPages =allPages, pages=pages,
-                               Filters =Filters) # classType, condition은 검색 할 때 필요한 변수    
+            myCourses = []
+        print "ABC"
+        return render_template('/board.html',
+                               articles = articles,
+                               articleNotices =  articleNotices,
+                               myCourses = myCourses,
+                               courses = courses,
+                               courseNotices = courseNotices,
+                               allPages = allPages,
+                               pages  =pages,
+                               Filters = Filters) # classType, condition은 검색 할 때 필요한 변수    
     except Exception:
         return unknown_error()
  
@@ -153,18 +164,27 @@ def read(articleIndex, error =None):
     try:
         # 게시글 정보
         article = dao.query(ArticlesOnBoard).\
-            filter(ArticlesOnBoard.articleIndex == articleIndex).subquery()
-        article =dao.query(article, RegisteredCourses.courseName).\
-            join(RegisteredCourses, article.c.courseId == RegisteredCourses.courseId).first()
+                      filter(ArticlesOnBoard.articleIndex == articleIndex).\
+                      subquery()
+        article = dao.query(article, 
+                            RegisteredCourses.courseName).\
+                      join(RegisteredCourses,
+                           article.c.courseId == RegisteredCourses.courseId).\
+                           first()
             
         # 내가 게시글에 누른 좋아요 정보
-        isPostLiked =dao.query(LikesOnBoard.cancelledLike).filter_by(boardLikerId=session['memberId'], articleIndex=articleIndex).first()
+        isPostLiked = dao.query(LikesOnBoard.cancelledLike).\
+                          filter(LikesOnBoard.boardLikerId == session[MEMBER_ID],
+                                 LikesOnBoard.articleIndex == articleIndex).\
+                          first()
         if isPostLiked:
-            isPostLiked =isPostLiked.cancelledLike
+            isPostLiked = isPostLiked.cancelledLike
         # replies 정보
         comments = dao.query(RepliesOnBoard).\
-            filter_by(isDeleted='Not-Deleted', articleIndex=articleIndex).\
-            order_by(RepliesOnBoard.boardReplyIndex.asc()).all() 
+                       filter(RepliesOnBoard.isDeleted == NOT_DELETED,
+                              RepliesOnBoard.articleIndex == articleIndex).\
+                       order_by(RepliesOnBoard.boardReplyIndex.desc()).\
+                       all() 
         # 내가 게시글 리플에 누른 좋아요 정보
         boardReplyLikeCheck = dao.query(LikesOnReplyOfBoard).\
             filter_by(articleIndex=articleIndex, boardReplyLikerId=session['memberId'], cancelledLike ='Not-Cancelled').\

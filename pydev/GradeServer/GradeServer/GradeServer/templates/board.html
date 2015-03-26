@@ -43,7 +43,7 @@
 					<!-- All Board -->
 					{%- for i in range (allPages['startList'], allPages['endList']) %}
 				 	<tr>
-				 		<td>{{ i +1 }}</td>
+				 		<td>{{ (allPages['endList'] -allPages['startList']) -i }}</td>
 						<td>{{ articles[i].courseId }} {{ articles[i].courseName }}</td>
 						<td><a href="/board/{{ articles[i].articleIndex }}">{{ articles[i].title }}</a>
 							{%- if articles[i].replyCount > 0 %}
@@ -105,7 +105,7 @@
 					<!-- Course Board -->
 					{% for j in range (pages[i]['startList'], pages[i]['endList']) %}
 					<tr>
-						<td>{{ j +1 }}</td>
+						<td>{{ (pages[i]['endList'] - pages[i]['startList']) -j }}</td>
 						<td>{{ courses[i][j].courseId}} {{ courses[i][j].courseName }}</td>
 						<td><a href="/board/{{ courses[i][j].articleIndex }}">{{ courses[i][j].title }}</a>
 							{% if courses[i][j].replyCount > 0 %}
