@@ -67,10 +67,29 @@ $(function() {
 	  });
 	  reset_val();
 	
-
+	
 
 	});
+    $("#resetIndivisualUserForm").bind('click',function(){
+		
+		
+	  document.getElementById("indivisualUserForm").innerHTML = '<td><input class="input-small formLine1 " id="courseId1" name="courseId1" type="text" form="addIndivisualUser" placeholder="Course ID" value="">' +
+			'<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">'+
+			'<td><input class="input-mini formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">'+
+			'<td><input class="input-medium formLine1" id="college1" name="college1" type="text" form="addIndivisualUser" placeholder="College" value="">'+
+			'<td><input class="input-medium formLine1" id="department1" name="department1" type="text" form="addIndivisualUser" placeholder="Department" value="">'+
+			'<td><input class="input-small formLine1 " id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">';
 	
+	  $("#authority1").autocomplete({
+	        lookup: authorities
+			});
+	  $("#courseId1").autocomplete({
+	        lookup: ownCourses,
+	        onSelect: function(suggestion){
+	              document.getElementById(this.id).value = suggestion.data;
+	        }
+	  });
+	});
 });
 </script>
 <div class="container">
@@ -116,7 +135,7 @@ $(function() {
 			<div class="modal-footer">
 				<form id="addIndivisualUser" method="post">
 					<button class="btn" name="addIndivisualUser" type="submit">Done</button>
-					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="resetIndivisualUserForm('course')">Close</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetIndivisualUserForm">Close</button>
 				</form>
 			</div>
 		</div>
