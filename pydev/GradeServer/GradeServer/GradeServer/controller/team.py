@@ -526,8 +526,8 @@ def insert_team_member_id(teamName, teamMemberId, isTeamMaster = NOT_MASTER):
                        RegisteredTeamMembers.teamMemberId == teamMemberId).first():
         
         return (RegisteredTeamMembers(teamName = teamName,
-                                     teamMemberId = teamMemberId,
-                                     isTeamMaster = isTeamMaster))
+                                      teamMemberId = teamMemberId,
+                                      isTeamMaster = isTeamMaster))
     # else then Update
     else:
         return dao.query(RegisteredTeamMembers).\
