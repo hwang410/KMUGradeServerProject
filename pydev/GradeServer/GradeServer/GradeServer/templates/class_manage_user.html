@@ -1,52 +1,5 @@
 {%- extends "main.html" -%}
 {%- block body %}
-<script>
-$(function() {
-	var ownCourses = [
-		{%- for course in ownCourses %}
-		{ value: "{{ course.courseId }} {{ course.courseName }}" },
-		{% endfor -%}
-		{ value : ""}
-	];
-	var members = [
-		{%- for eachUser in allUsers %}
-			{ value: "{{ eachUser[0] }} {{ eachUser[1] }}", data: "{% for eachData in eachUser %}{{ eachData }} {% endfor %}"},
-		{% endfor -%}
-		{ value: "", data: "" }
-	];
-	$("#search-courses").autocomplete({
-		lookup: ownCourses,
-		onSelect: function(suggestion){
-
-		}
-	});
-	$("#search-members").autocomplete({
-		lookup: members,
-		onSelect: function(suggestion){
-			memberDatas = (suggestion.data).split(" ");
-			memberId = memberDatas[0];
-			memberName = memberDatas[1];
-			memberDepartments = ""
-			for(var $i = 2;$i < memberDatas.length - 1;$i += 2){
-				if($i > 3) memberDepartments += "<br>"; /* if more colleges and departments,then change the line */
-				{% for college in colleges %}
-					if(memberDatas[$i] == {{ college.collegeIndex }}){
-						memberDepartments += "{{ college.collegeName }} ";
-					}
-				{% endfor %}
-				{% for department in departments %}
-					if(memberDatas[$i + 1] == {{ department.departmentIndex }}){
-						memberDepartments += "{{ department.departmentName }} ";
-					}
-				{% endfor %}
-			}
-			$("#search-members").attr("value", memberId);
-			$("#member-name").html(memberName);
-			$("#department-name").html(memberDepartments);
-    }
-	});
-});
-</script>
 <div class="container">
 	<div>
 		<h3>Add User</h3>

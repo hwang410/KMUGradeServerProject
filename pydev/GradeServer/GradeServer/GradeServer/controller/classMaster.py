@@ -29,7 +29,7 @@ from GradeServer.model.problems import Problems
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.model.submissions import Submissions
-from sqlalchemy import and_, exc
+from sqlalchemy import and_, exc, or_
 from datetime import datetime
 
 import os
@@ -429,10 +429,55 @@ def class_add_user():
         error = 'Error has been occurred while searching own courses'
         return render_template('/class_add_user.html', 
                                error = error, 
+                               ownCourses = [],
+                               allUsers = [],
+                               allColleges = [],
+                               allDepartments = [],
+                               authorities = authorities,
+                               newUsers = newUsers)
+    try:
+        allUsers = dao.query(Members).\
+                       filter(or_(Members.authority == "User",
+                                  Members.authority == "CourseAdministrator")).\
+                       all()
+    except:
+        error = 'Error has been occurred while searching all users'
+        return render_template('/class_add_user.html', 
+                               error = error, 
                                ownCourses = ownCourses,
+                               allUsers = [],
+                               allColleges = [],
+                               allDepartments = [],
                                authorities = authorities,
                                newUsers = newUsers)
     
+    try:
+        allColleges = dao.query(Colleges).\
+                          all()
+    except:
+        error = 'Error has been occurred while searching all colleges'
+        return render_template('/class_add_user.html', 
+                               error = error, 
+                               ownCourses = ownCourses,
+                               allUsers = allUsers,
+                               allColleges = [],
+                               allDepartments = [],
+                               authorities = authorities,
+                               newUsers = newUsers)
+    try:
+        allDepartments = dao.query(Departments).\
+                             all()
+    except:
+        error = 'Error has been occurred while searching all departments'
+        return render_template('/class_add_user.html', 
+                               error = error, 
+                               ownCourses = ownCourses,
+                               allUsers = allUsers,
+                               allColleges = allColleges,
+                               allDepartments = allDepartments,
+                               authorities = authorities,
+                               newUsers = newUsers)
+        
     if request.method == 'POST':
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
@@ -444,6 +489,8 @@ def class_add_user():
                     value, index = re.findall('\d+|\D+', form)
                     index = int(index)
                     data = request.form[form]
+                    print form
+                    print data
                     if value == 'userId':
                         newUser[index - 1][0] = data
                     elif value == 'username':
@@ -451,10 +498,10 @@ def class_add_user():
                     elif value == 'authority':
                         newUser[index - 1][2] = data
                     elif value == 'college':
-                        newUser[index - 1][3] = data
+                        newUser[index - 1][3] = data.split()[0]
                         try:
                             newUser[index - 1][4] = dao.query(Colleges).\
-                                                        filter(Colleges.collegeIndex == data).\
+                                                        filter(Colleges.collegeIndex == newUser[index - 1][3]).\
                                                         first().\
                                                         collegeName
                         except:
@@ -462,13 +509,16 @@ def class_add_user():
                             return render_template('/class_add_user.html', 
                                                    error = error, 
                                                    ownCourses = ownCourses,
+                                                   allUsers = allUsers,
+                                                   allColleges = allColleges,
+                                                   allDepartments = allDepartments,
                                                    authorities = authorities,
                                                    newUsers = newUsers)
                     elif value == 'department':
-                        newUser[index - 1][5] = data
+                        newUser[index - 1][5] = data.split()[0]
                         try:
                             newUser[index - 1][6] = dao.query(Departments).\
-                                                        filter(Departments.departmentIndex == data).\
+                                                        filter(Departments.departmentIndex == newUser[index - 1][5]).\
                                                         first().\
                                                         departmentName
                         except:
@@ -476,6 +526,9 @@ def class_add_user():
                             return render_template('/class_add_user.html', 
                                                    error = error, 
                                                    ownCourses = ownCourses,
+                                                   allUsers = allUsers,
+                                                   allColleges = allColleges,
+                                                   allDepartments = allDepartments,
                                                    authorities = authorities,
                                                    newUsers = newUsers)
                     elif value == 'courseId':
@@ -518,6 +571,9 @@ def class_add_user():
                                         return render_template('/class_add_user.html', 
                                                                error = error, 
                                                                ownCourses = ownCourses,
+                                                               allUsers = allUsers,
+                                                               allColleges = allColleges,
+                                                               allDepartments = allDepartments,
                                                                authorities = authorities,
                                                                newUsers = newUsers)
                                     newUser[3] = value
@@ -533,9 +589,12 @@ def class_add_user():
                                         error = 'Wrong department index has inserted'
                                         return render_template('/class_add_user.html', 
                                                                error = error, 
-                                                               ownCourses = ownCourses,
-                                                               authorities = authorities,
-                                                               newUsers = newUsers)
+                                                   ownCourses = ownCourses,
+                                                   allUsers = allUsers,
+                                                   allColleges = allColleges,
+                                                   allDepartments = allDepartments,
+                                                   authorities = authorities,
+                                                   newUsers = newUsers)
                                     newUser[5] = value
                                     
                                 elif key == 'courseId':
@@ -547,6 +606,9 @@ def class_add_user():
                                         return render_template('/class_add_user.html',
                                                                error = error, 
                                                                ownCourses = ownCourses,
+                                                               allUsers = allUsers,
+                                                               allColleges = allColleges,
+                                                               allDepartments = allDepartments,
                                                                authorities = authorities,
                                                                newUsers = newUsers)
                                     
@@ -555,6 +617,9 @@ def class_add_user():
                                     return render_template('/class_add_user.html', 
                                                            error = error, 
                                                            ownCourses = ownCourses,
+                                                           allUsers = allUsers,
+                                                           allColleges = allColleges,
+                                                           allDepartments = allDepartments,
                                                            authorities = authorities,
                                                            newUsers = newUsers)
                                     
@@ -563,6 +628,9 @@ def class_add_user():
                                 return render_template('/class_add_user.html', 
                                                        error = error, 
                                                        ownCourses = ownCourses,
+                                                       allUsers = allUsers,
+                                                       allColleges = allColleges,
+                                                       allDepartments = allDepartments,
                                                        authorities = authorities,
                                                        newUsers = newUsers)
                         
@@ -574,6 +642,9 @@ def class_add_user():
                                 return render_template('/class_add_user.html', 
                                                        error = error, 
                                                        ownCourses = ownCourses,
+                                                       allUsers = allUsers,
+                                                       allColleges = allColleges,
+                                                       allDepartments = allDepartments,
                                                        authorities = authorities,
                                                        newUsers = newUsers)
                                 
@@ -598,9 +669,18 @@ def class_add_user():
                         return render_template('/class_add_user.html', 
                                                error = error, 
                                                ownCourses = ownCourses,
+                                               allUsers = allUsers,
+                                               allColleges = allColleges,
+                                               allDepartments = allDepartments,
                                                authorities = authorities,
                                                newUsers = newUsers)
-                if not dao.query(Registrations).filter(Registrations.memberId == newUser[0]).first():
+                        
+                isExist = dao.query(Registrations).\
+                              filter(and_(Registrations.memberId == newUser[0],
+                                          Registrations.courseId == newUser[7])).\
+                              first()
+                # new member
+                if not isExist:
                     try:
                         # then insert to 'Registrations'.
                         freshman = Registrations(memberId = newUser[0],
@@ -613,6 +693,9 @@ def class_add_user():
                         return render_template('/class_add_user.html', 
                                                error = error, 
                                                ownCourses = ownCourses,
+                                               allUsers = allUsers,
+                                               allColleges = allColleges,
+                                               allDepartments = allDepartments,
                                                authorities = authorities,
                                                newUsers = newUsers)
                     
@@ -621,6 +704,17 @@ def class_add_user():
                                                                             collegeIndex = newUser[3], 
                                                                             departmentIndex = newUser[5])
                         dao.add(departmentInformation)
+                        dao.commit()
+                    except:
+                        dao.rollback()
+                # old member
+                else:
+                    # suppose the user's department is different with his registered information
+                    try:
+                        departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[0],
+                                                                            collegeIndex = newUser[3],
+                                                                            departmentIndex =newUser[5])
+                        dao.all(departmentInformation)
                         dao.commit()
                     except:
                         dao.rollback()
@@ -676,6 +770,9 @@ def class_add_user():
     return render_template('/class_add_user.html', 
                            error = error, 
                            ownCourses = ownCourses,
+                           allUsers = allUsers,
+                           allColleges = allColleges,
+                           allDepartments = allDepartments,
                            authorities = authorities,
                            newUsers = newUsers)
 
@@ -684,7 +781,7 @@ def class_add_user():
 def user_submit_summary():
     error = None
     ownCourses = dao.query(RegisteredCourses).\
-                     filter_by(courseAdministratorId=session['memberId']).\
+                     filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
                      all()
     ownProblems = dao.query(RegisteredProblems).\
                       all()
@@ -698,8 +795,10 @@ def user_submit_summary():
                            group_by(Submissions.memberId, 
                                     Submissions.courseId, 
                                     Submissions.problemId).\
-                           join(RegisteredCourses, RegisteredCourses.courseId == Submissions.courseId).\
-                           join(Problems, Problems.problemId == Submissions.problemId)).\
+                           join(RegisteredCourses, 
+                                RegisteredCourses.courseId == Submissions.courseId).\
+                           join(Problems, 
+                                Problems.problemId == Submissions.problemId)).\
                       all()
     except:
         print 'Submissions table is empty'
