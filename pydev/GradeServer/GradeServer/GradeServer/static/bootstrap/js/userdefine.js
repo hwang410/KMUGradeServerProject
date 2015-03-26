@@ -250,7 +250,7 @@ Dropzone.options.myDropzoneJAVA = { // The camelized version of the ID of the fo
     maxFiles: 10,			// 
     maxFilesize: 0.5,
     addRemoveLinks: true,	// Remove 
-    acceptedFiles: ".java .class, .jar",		// 
+    acceptedFiles: ".java, .class, .jar",		// 
 
     // The setting up of the dropzone
     // submit-all 
