@@ -84,12 +84,16 @@ $(function() {
 	  var keys = ['courseId', 'userId', 'username', 'college', 'department', 'authority'];
 	  var placeholders = ['Course Id', 'ID', 'Name', 'College', 'Department', 'Authority'];
 	  var formsize = ['small', 'small', 'mini', 'medium', 'medium', 'small'];
+
 	  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
-	    uploadObj = "<tr><td><input type='text' ";
+	    uploadObj = "<tr><td><input class = 'input-" + formsize[i] + " formLine1' " +
+	    													 "id = '" + keys[i] + numOfRow + "' " +
+	    													 "name = '" + keys[i] + numOfRow + "' " +
+	    													 "type='text' form='addIndivisualUser' " +
+	    													 "placeholder = '" + placeholders[i] + "' " +
+	    													 "value = '" + $("#" + keys[i] + "1").val() + "'></td>";
 
-	    uploadObj += "class = 'input-" + formsize[i] +" formLine1' id = '" + keys[i] + numOfRow + "' name = '" + keys[i] + numOfRow + "' placeholder = '" + placeholders[i] + "' value = '" + $("#" + keys[i] + "1").val();
-
-	    newRow.insertCell(i).innerHTML = uploadObj + "' form='addIndivisualUser'></td>";
+	    newRow.insertCell(i).innerHTML = uploadObj;
 	  }
 
 	  $("#authority"+numOfRow).autocomplete({
@@ -106,7 +110,6 @@ $(function() {
 	  $("#college"+numOfRow).autocomplete({
 	  	lookup: allColleges
 	  });
-	  reset_val();
 
 	  $("#department"+numOfRow).autocomplete({
 	  	lookup: allDepartments
@@ -122,14 +125,22 @@ $(function() {
 	  		document.getElementById("username"+userIdx).value = userName;
 	  	}
 	  });
+
+	  reset_val();
 	});
   $("#resetIndivisualUserForm").bind('click',function(){
 		var keys = ['courseId', 'userId', 'username', 'college', 'department', 'authority'];
 	  var placeholders = ['Course Id', 'ID', 'Name', 'College', 'Department', 'Authority'];
 	  var formsize = ['small', 'small', 'mini', 'medium', 'medium', 'small'];
 	  var uploadObj = "";
-	  for(var i = 0; i < 6; i++){  
-	    uploadObj += "<td><input class = 'input-" + formsize[i] +" formLine1' id = '" + keys[i] + "1' name = '" + keys[i] + "1' type='text' form='addIndivisualUser' placeholder = '" + placeholders[i] + "' value = ''>";
+
+	  for(var i = 0; i < keys.length; i++){  
+	    uploadObj += "<td><input class = 'input-" + formsize[i] +" formLine1' " +
+	    												"id = '" + keys[i] + "1' " +
+	    												"name = '" + keys[i] + "1' " +
+	    												"type='text' form='addIndivisualUser' " +
+	    												"placeholder = '" + placeholders[i] + "' " +
+	    												"value = ''>";
 	  }
 	  document.getElementById("indivisualUserForm").innerHTML = uploadObj;
 
@@ -162,7 +173,6 @@ $(function() {
 	  		document.getElementById("username"+userIdx).value = userName;
 	  	}
 	  });
-	  
 	});
 });
 </script>
