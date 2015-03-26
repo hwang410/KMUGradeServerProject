@@ -39,9 +39,9 @@ def problemList(courseId, pageNum):
                             Submissions.solutionCheckCount).\
                       join(maxSubmissionCount,
                            and_(Submissions.memberId == maxSubmissionCount.c.memberId,
-                           Submissions.problemId == maxSubmissionCount.c.problemId,
-                           Submissions.courseId == maxSubmissionCount.c.courseId,
-                           Submissions.submissionCount == maxSubmissionCount.c.submissionCount)).\
+                                Submissions.problemId == maxSubmissionCount.c.problemId,
+                                Submissions.courseId == maxSubmissionCount.c.courseId,
+                                Submissions.submissionCount == maxSubmissionCount.c.submissionCount)).\
                       subquery()
     # Get Problem Informations
     problems = dao.query(RegisteredProblems.problemId,
@@ -83,7 +83,7 @@ def problemList(courseId, pageNum):
                            pages = get_page_pointed(int(pageNum),
                                                     len(problemListRecords)))
 
-@GradeServer.route('/problem/<courseId>/page<pageNum>/<problemId>')
+@GradeServer.route('/problem/<courseId>/<problemId>?page<pageNum>')
 @login_required
 def problem(courseId, problemId, pageNum):
     """

@@ -205,11 +205,9 @@ def make_team(error = None):
                         # this Commit Succeeded Go Next Step
                         dao.commit()
                                                 # 마스터 정보
-                        print "FDDDD"
-                        insert_team_member_id(gTeamName,
+                        dao.add(insert_team_member_id(gTeamName,
                                               session[MEMBER_ID],
-                                              MASTER)
-                        print "ABCD"
+                                              MASTER))
                         # this Commit Succeeded Go Next Step
                         try:
                             dao.commit()
@@ -526,13 +524,12 @@ def insert_team_member_id(teamName, teamMemberId, isTeamMaster = NOT_MASTER):
     if not dao.query(RegisteredTeamMembers).\
                 filter(RegisteredTeamMembers.teamName == teamName,
                        RegisteredTeamMembers.teamMemberId == teamMemberId).first():
-        print "ABCDAAAA"
-        return dao.add(RegisteredTeamMembers(teamName = teamName,
+        
+        return (RegisteredTeamMembers(teamName = teamName,
                                      teamMemberId = teamMemberId,
                                      isTeamMaster = isTeamMaster))
     # else then Update
     else:
-        print "SDFSDFAAAA", isTeamMaster
         return dao.query(RegisteredTeamMembers).\
                 filter(RegisteredTeamMembers.teamName == teamName,
                        RegisteredTeamMembers.teamMemberId == teamMemberId).\
