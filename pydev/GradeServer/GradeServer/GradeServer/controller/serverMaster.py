@@ -433,6 +433,29 @@ def server_add_user():
     targetUserIdToDelete = []
     authorities = ['Course Admin', 'User']
     
+    try:
+        allColleges = dao.query(Colleges).\
+                          all()
+    except:
+        error = 'Error has been occurred while searching all colleges'
+        return render_template('/server_add_user.html', 
+                               error = error, 
+                               allColleges = [],
+                               allDepartments = [],
+                               authorities = authorities,
+                               newUsers = newUsers)
+    try:
+        allDepartments = dao.query(Departments).\
+                             all()
+    except:
+        error = 'Error has been occurred while searching all departments'
+        return render_template('/class_add_user.html', 
+                               error = error, 
+                               allColleges = allColleges,
+                               allDepartments = [],
+                               authorities = authorities,
+                               newUsers = newUsers)
+        
     if request.method == 'POST':
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
@@ -451,29 +474,33 @@ def server_add_user():
                     elif value == 'authority':
                         newUser[index - 1][2] = data
                     elif value == 'college':
-                        newUser[index - 1][3] = data
+                        newUser[index - 1][3] = data.split()[0]
                         try:
                             newUser[index - 1][4] = dao.query(Colleges).\
-                                                        filter(Colleges.collegeIndex == data).\
+                                                        filter(Colleges.collegeIndex == newUser[index - 1][3]).\
                                                         first().\
                                                         collegeName
                         except:
                             error = 'Wrong college index has inserted'
                             return render_template('/server_add_user.html', 
                                                    error = error, 
+                                                   allColleges = allColleges,
+                                                   allDepartments = allDepartments,
                                                    authorities = authorities,
                                                    newUsers = newUsers)
                     elif value == 'department':
-                        newUser[index - 1][5] = data
+                        newUser[index - 1][5] = data.split()[0]
                         try:
                             newUser[index - 1][6] = dao.query(Departments).\
-                                                        filter(Departments.departmentIndex == data).\
+                                                        filter(Departments.departmentIndex == newUser[index - 1][5]).\
                                                         first().\
                                                         departmentName
                         except:
                             error = 'Wrong department index has inserted'
                             return render_template('/server_add_user.html', 
                                                    error = error, 
+                                                   allColleges = allColleges,
+                                                   allDepartments = allDepartments,
                                                    authorities = authorities,
                                                    newUsers = newUsers)
                     
@@ -515,6 +542,8 @@ def server_add_user():
                                         error = 'Wrong college index has inserted'
                                         return render_template('/server_add_user.html', 
                                                                error = error, 
+                                                               allColleges = allColleges,
+                                                               allDepartments = allDepartments,
                                                                authorities = authorities,
                                                                newUsers = newUsers)
                                         
@@ -530,6 +559,8 @@ def server_add_user():
                                         error = 'Wrong department index has inserted'
                                         return render_template('/server_add_user.html', 
                                                                error = error, 
+                                                               allColleges = allColleges,
+                                                               allDepartments = allDepartments,
                                                                authorities = authorities,
                                                                newUsers = newUsers)
                                         
@@ -537,15 +568,19 @@ def server_add_user():
                                     error = 'Try again after check the manual'
                                     return render_template('/server_add_user.html', 
                                                            error = error, 
-                                                          authorities = authorities,
-                                                          newUsers = newUsers)
+                                                           allColleges = allColleges,
+                                                           allDepartments = allDepartments,
+                                                           authorities = authorities,
+                                                           newUsers = newUsers)
                                     
                             else:
                                 error = 'Try again after check the manual'
                                 return render_template('/server_add_user.html', 
                                                        error = error, 
-                                                      authorities = authorities,
-                                                      newUsers = newUsers)
+                                                       allColleges = allColleges,
+                                                       allDepartments = allDepartments,
+                                                       authorities = authorities,
+                                                       newUsers = newUsers)
                         
                         for user in newUsers:
                             if user[0] == newUser[0] and\
@@ -554,6 +589,8 @@ def server_add_user():
                                 error = 'There is a duplicated user id. Check the file and added user list'
                                 return render_template('/server_add_user.html', 
                                                        error = error, 
+                                                       allColleges = allColleges,
+                                                       allDepartments = allDepartments,
                                                        authorities = authorities,
                                                        newUsers = newUsers)
                                 
@@ -607,6 +644,8 @@ def server_add_user():
         
     return render_template('/server_add_user.html', 
                            error = error, 
+                           allColleges = allColleges,
+                           allDepartments = allDepartments,
                            authorities = authorities,
                            newUsers = newUsers)
 
