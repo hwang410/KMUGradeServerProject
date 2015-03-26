@@ -23,15 +23,25 @@ from GradeServer.model.languagesOfCourses import LanguagesOfCourses
 def problemList(courseId, pageNum):
     """ problem submitting page """
     # Get Last Submitted History
+    maxSubmissionCount = dao.query(Submissions.memberId,
+                                   Submissions.problemId,
+                                   Submissions.courseId,
+                                   func.max(Submissions.submissionCount).label('submissionCount')).\
+                             filter(Submissions.memberId == session[MEMBER_ID],
+                                    Submissions.courseId == courseId).\
+                             group_by(Submissions.memberId,
+                                      Submissions.problemId,
+                                      Submissions.courseId).\
+                             subquery()
     submissions = dao.query(Submissions.problemId,
                             Submissions.score,
                             Submissions.status,
                             Submissions.solutionCheckCount).\
-                      filter(Submissions.memberId == session[MEMBER_ID],
-                             Submissions.courseId == courseId).\
-                      group_by(Submissions.memberId,
-                               Submissions.problemId,
-                               Submissions.courseId).\
+                      join(maxSubmissionCount,
+                           and_(Submissions.memberId == maxSubmissionCount.c.memberId,
+                           Submissions.problemId == maxSubmissionCount.c.problemId,
+                           Submissions.courseId == maxSubmissionCount.c.courseId,
+                           Submissions.submissionCount == maxSubmissionCount.c.submissionCount)).\
                       subquery()
     # Get Problem Informations
     problems = dao.query(RegisteredProblems.problemId,
@@ -73,9 +83,9 @@ def problemList(courseId, pageNum):
                            pages = get_page_pointed(int(pageNum),
                                                     len(problemListRecords)))
 
-@GradeServer.route('/problem/<courseId>/<problemId>')
+@GradeServer.route('/problem/<courseId>/page<pageNum>/<problemId>')
 @login_required
-def problem(courseId, problemId):
+def problem(courseId, problemId, pageNum):
     """
     use db to get its problem page
     now, it moves to just default problem page
@@ -114,7 +124,8 @@ def problem(courseId, problemId):
                            problemInformation = problemInformation,
                            languageName = languageName,
                            languageVersion = languageVersion,
-                           languageIndex = languageIndex)
+                           languageIndex = languageIndex,
+                           pageNum = pageNum)
 
 """
     in the main page, it uses methods so 
