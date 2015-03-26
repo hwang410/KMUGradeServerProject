@@ -12,9 +12,59 @@ $(function() {
 		{% endfor -%}
 		{ value: ""}
 	];
-	$(".authority").autocomplete({
+	$("#authority1").autocomplete({
 		lookup: authorities
 	});
+	$("#addline").bind('click',function(){
+		
+		  var targetTable = document.getElementById('indivisual');
+		  var numOfRow = targetTable.rows.length;
+
+		  reset_val = function(){
+		    
+		    
+		    $("#userId1").val("");
+		    $("#username1").val("");
+		    $("#authority1").val("");
+		    $("#college1").val("");
+		    $("#department1").val("");
+		  }
+
+		  var newRow = targetTable.insertRow(2);
+		  var uploadObj;
+		  var keys = ['userId', 'username', 'college', 'department', 'authority'];
+		  var placeholders = ['ID', 'Name', 'College', 'Department', 'Authority'];
+		  var formsize = ['input-small formLine1', 'input-small formLine1', 'input-small formLine1', 'input-small formLine1', 'input-small formLine1'];
+		  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
+		    uploadObj = "<tr><td><input type='text' ";
+
+		    uploadObj += "class = '" + formsize[i] +"' id = '" + keys[i] + numOfRow + "' name = '" + keys[i] + numOfRow + "' placeholder = '" + placeholders[i] + "' value = '" + $("#" + keys[i] + "1").val();
+
+		    newRow.insertCell(i).innerHTML = uploadObj + "' form='addIndivisualUser'></td>";
+		  }
+		  $("#authority"+numOfRow).autocomplete({
+		        lookup: authorities
+				});
+
+		  reset_val();
+		
+		
+
+		});
+	    $("#resetIndivisualUserForm").bind('click',function(){
+			
+			
+		  document.getElementById("indivisualUserForm").innerHTML = '<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">' +
+				'<td><input class="input-small formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">' +
+				'<td><input class="input-small formLine1" id="college1" name="college1" type="text" form="addIndivisualUser" placeholder="College" value="">' +
+				'<td><input class="input-small formLine1" id="department1" name="department1" type="text" form="addIndivisualUser" placeholder="Department" value="">' +
+				'<td><input class="input-small formLine1" id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">';
+		
+		  $("#authority1").autocomplete({
+		        lookup: authorities
+				});
+
+		});
 });
 </script>
 <div class="container">
@@ -35,7 +85,7 @@ $(function() {
 				<h3 id="addUserModalLabel">Add User</h3>
 			</div>
 			<div class="modal-body">
-				<div style="text-align:right"><button class="btn" type="button" onclick="addIndivisualUserForm('server')">Add line</button></div>
+				<div style="text-align:right"><button class="btn" type="button" id="addline">Add line</button></div>
 				<!--  leeyoungchan  add table id(indivisual') -->
 				<table class="table table-bordered" id="indivisual" style="margin-top:10px">
 					<thead>
@@ -51,13 +101,13 @@ $(function() {
 							<td><input class="input-small formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">
 							<td><input class="input-small formLine1" id="college1" name="college1" type="text" form="addIndivisualUser" placeholder="College" value="">
 							<td><input class="input-small formLine1" id="department1" name="department1" type="text" form="addIndivisualUser" placeholder="Department" value="">
-							<td><input class="input-small formLine1 authority" id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">
+							<td><input class="input-small formLine1" id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">
 				</table>
 			</div>
 			<div class="modal-footer">
 				<form id="addIndivisualUser" method="post">
 					<button class="btn" name="addIndivisualUser" type="submit">Done</button>
-					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="resetIndivisualUserForm('server')">Close</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetIndivisualUserForm">Close</button>
 				</form>
 			</div>
 		</div>
