@@ -433,7 +433,40 @@ function manageUserForm(){
   } 
   reset_val(); 
 }
+/*
+function resetIndivisualUserForm(permission){
+	
+	if(permission=='course'){
+		document.getElementById("indivisualUserForm").innerHTML = '<td><input class="input-small formLine1 " id="courseId1" name="courseId1" type="text" form="addIndivisualUser" placeholder="Course ID" value="">' +
+			'<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">'+
+			'<td><input class="input-mini formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">'+
+			'<td><input class="input-medium formLine1" id="college1" name="college1" type="text" form="addIndivisualUser" placeholder="College" value="">'+
+			'<td><input class="input-medium formLine1" id="department1" name="department1" type="text" form="addIndivisualUser" placeholder="Department" value="">'+
+			'<td><input class="input-small formLine1 " id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">';
+	}
+	else {
+		alert(permission);
+		
+	}
 
-function resetIndivisualUserForm(){
-  document.getElementById("indivisualUserForm").innerHTML = '<tr class="formLine"><td><input type="text" class="input-small formLine1" id="userId1" name="userId1" placeholder="User ID" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="college1" name="college1" placeholder="College" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="department1" name="department1" placeholder="Department" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="username1" name="username1" placeholder="User Name" value="" form="addIndivisualUser"></td><td><input type="text" class="input-small formLine1" id="authority1" name="authority1" placeholder="Authority" value="" form="addIndivisualUser"></td></tr>';
 }
+*/
+/*
+function resetAddProblemForm(permission){
+	
+	if(permission=='course'){
+		document.getElementById("addProblemForm").innerHTML = '<td><div id="searchfield"><input class="input-ularge" id="search-courses1" name="courseId" type="text" form="addProblem" placeholder="course name"></div>'+
+			'<td><div id="searchfield"><input class="input-ularge" id="search-problems1" name="problemId" type="text" form="addProblem" placeholder="problem name"></div>'+
+			'<td><label class="checkbox-center"><input class="box-check" name="multipleFiles" id="a_box1" type="checkbox"></label>'+
+			'<td><input class="datepicker input-usmall" id="startDate1" name="startDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">'+
+			'<td><input class="datepicker input-usmall" id="endDate1" name="endDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">'+
+			'<td><input class="datepicker input-usmall" id="openDate1" name="openDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">'+
+			'<td><input class="datepicker input-usmall" id="closeDate1" name="closeDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">';
+
+	}
+	else {
+		alert(permission);
+		
+	}
+}
+*/
