@@ -102,12 +102,12 @@
 				</div>
 				<div class="modal-footer">
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-					<button href="#" class="delete btn btn-primary" name="deleteComment{{ comments[i].boardReplyIndex }}" type="submit">Confirm</button>
+					<button href="#" class="delete btn btn-primary" name="deleteBoardComment{{ comments[i].boardReplyIndex }}" type="submit">Confirm</button>
 				</div>
 			</div>
 			<!-- modify button -->
 			<!-- replier and masters are available to modify the comments -->
-			<button name ='modifyBoardComment{{ comments[i].boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></a>
+			<button name ='modifyBoardComment{{ comments[i].boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></button>
 			{% endif %}
 			<br>
 		</form>
