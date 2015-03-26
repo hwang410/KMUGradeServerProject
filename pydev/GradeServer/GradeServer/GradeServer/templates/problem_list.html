@@ -18,7 +18,7 @@
 				{{ (pages['endList'] - pages['startList']) - i }}
 			</td>
 			<td style ='vertical-align: middle'>
-				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecords[i].problemId) }}">
+				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecords[i].problemId, pageNum = pages['pageNum']) }}">
 					{{ problemListRecords[-i].problemName }}
 				</a>
 			</td>
