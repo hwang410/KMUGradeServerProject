@@ -41,7 +41,7 @@
 								<li class="nav-header">Current Class</li>
 								{%- if session['ownCourses'] %}
 									{%- for course in session['ownCourses'] %}
-									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId)}}" class="currentClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId, pageNum = 1)}}" class="currentClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
 									<li class="disabled"><a tabindex="-1" href="#">None</a></li>
@@ -53,7 +53,7 @@
 							{% endif -%}
 						</li>
 						<li>
-							<a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum =1) }}"><abbr title="Showing the submit record of each person and each problem">Rank</abbr></a>
+							<a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum = 1) }}"><abbr title="Showing the submit record of each person and each problem">Rank</abbr></a>
 						</li>
 						<li>
 							<a href="{{ url_for('GradeServer.board', pageNum =1) }}"><abbr title="QA board">Board</abbr></a>

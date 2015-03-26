@@ -4,6 +4,7 @@ from flask import request, redirect, session, url_for, render_template, flash
 from sqlalchemy import and_, func
 
 from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.utilPaging import get_page_pointed
 from GradeServer.utils.utils import *
 
 from GradeServer.database import dao
@@ -17,9 +18,9 @@ from GradeServer.model.submittedRecordsOfProblems import SubmittedRecordsOfProbl
 from GradeServer.model.languages import Languages
 from GradeServer.model.languagesOfCourses import LanguagesOfCourses
 
-@GradeServer.route('/problemList/<courseId>')
+@GradeServer.route('/problemList/<courseId>/page<pageNum>')
 @login_required
-def problemList(courseId):
+def problemList(courseId, pageNum):
     """ problem submitting page """
     # Get Last Submitted History
     submissions = dao.query(Submissions.problemId,
@@ -52,9 +53,11 @@ def problemList(courseId):
                                        submissions.c.solutionCheckCount).\
                                  outerjoin(submissions,
                                            problems.c.problemId == submissions.c.problemId).\
+                                 order_by(problems.c.startDateOfSubmission.desc()).\
                                  all()
     except Exception:
         problemListRecords = []
+        
     # Get Course Information
     try:
         courseRecords = dao.query(RegisteredCourses.courseId,
@@ -66,7 +69,9 @@ def problemList(courseId):
 
     return render_template('/problem_list.html',
                            courseRecords = courseRecords,
-                           problemListRecords = problemListRecords)
+                           problemListRecords = problemListRecords,
+                           pages = get_page_pointed(int(pageNum),
+                                                    len(problemListRecords)))
 
 @GradeServer.route('/problem/<courseId>/<problemId>')
 @login_required

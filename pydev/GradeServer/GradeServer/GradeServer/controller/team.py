@@ -67,7 +67,8 @@ def team(pageNum = 1, error = None):
                                  RegisteredTeamMembers.teamName == teamNames.c.teamName).\
                             filter(RegisteredTeamMembers.isTeamMaster == MASTER,
                                    RegisteredTeamMembers.isDeleted == NOT_DELETED).\
-                            group_by(RegisteredTeamMembers.teamName).subquery()
+                            group_by(RegisteredTeamMembers.teamName).\
+                            subquery()
     
         # NonType Exception
         try:
@@ -75,7 +76,9 @@ def team(pageNum = 1, error = None):
                                     teamMasters.c.teamMasterId,
                                     teamMemberCounts.c.teamMemberCount).\
                                 join(teamMemberCounts,
-                                     teamMasters.c.teamName == teamMemberCounts.c.teamName).all()
+                                     teamMasters.c.teamName == teamMemberCounts.c.teamName).\
+                                order_by(teamMasters.c.teamName.asc()).\
+                                all()
         except Exception:
             # None Type Error
             teamRecords =[]

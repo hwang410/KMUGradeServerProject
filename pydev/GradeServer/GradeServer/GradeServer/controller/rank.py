@@ -33,9 +33,6 @@ def close_db_session(exception = None):
 def rank(sortCondition, pageNum, error =None):
     
     try:
-        #Rank members
-        count = dao.query(func.count(distinct(Submissions.memberId)).label('count')).\
-                    filter(Submissions.status == SOLVED).first().count
         try:
             # Auto Complete MemberIds
             memberRecords = dao.query(select_all_user()).all()
@@ -74,7 +71,7 @@ def rank(sortCondition, pageNum, error =None):
                                memberRecords = memberRecords,
                                rankMemberRecords = rankMemberRecords,
                                pages = get_page_pointed(int(pageNum),
-                                                        count),
+                                                        len(rankMemberRecords)),
                                error = error) # 페이지 정보
     except Exception:
         return unknown_error()        

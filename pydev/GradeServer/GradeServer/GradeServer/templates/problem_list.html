@@ -12,47 +12,52 @@
 		<tr>
 			<td>Num</td><td>Title</td><td>Score</td><td>Status</td><td>Due Date</td><td>Count</td><td>Record</td>
 		</tr>
-		{% for i in range(0, problemListRecords|length) %}
+		{% for i in range(pages['startList'], pages['endList']) %}
 		<tr>
 			<td style ='vertical-align: middle'>
-				{{ problemListRecords|length - i }}
+				{{ (pages['endList'] - pages['startList']) - i }}
 			</td>
 			<td style ='vertical-align: middle'>
-				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecords[-i].problemId) }}">
+				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecords[i].problemId) }}">
 					{{ problemListRecords[-i].problemName }}
 				</a>
 			</td>
 			<td style ='vertical-align: middle'>
-				{% if problemListRecords[-i].score %}{{ problemListRecords[-i].score }}{% endif %}
+				{% if problemListRecords[i].score %}{{ problemListRecords[i].score }}{% endif %}
 			</td>
 			<td style ='vertical-align: middle'>
-				{% if problemListRecords[-i].status %}{{ problemListRecords[-i].status }}{% else %}'Never Submitted'{% endif %}
+				{% if problemListRecords[i].status %}{{ problemListRecords[i].status }}{% else %}'Never Submitted'{% endif %}
 			</td>
 			<td style ='vertical-align: middle'>
-				{{ problemListRecords[-i].startDateOfSubmission }}<br>~{{ problemListRecords[-i].endDateOfSubmission }}
+				{{ problemListRecords[i].startDateOfSubmission }}<br>~{{ problemListRecords[i].endDateOfSubmission }}
 			</td>
 			<td style ='vertical-align: middle'>
 				{% if problemListRecords[i].submissionCount %}{{ problemListRecords[i].submissionCount }}{% endif %}
 			</td>
 			<td style ='vertical-align: middle'>
-				<a href="{{ url_for('GradeServer.record', courseId = courseRecords.courseId, problemId = problemListRecords[-i].problemId, sortCondition = 'runTime') }}" onclick="setLegend()">
+				<a href="{{ url_for('GradeServer.record', courseId = courseRecords.courseId, problemId = problemListRecords[i].problemId, sortCondition = 'runTime') }}" onclick="setLegend()">
 					Problem Record
 				</a>
 			</td>
 		</tr>
 		{% endfor %}
 	</table>
-	<!-- page number section -->
+	<!-- Paging -->
 	<div class="pagination pagination-centered">
 		<ul>
-			<li><a href="#">Prev</a></li>
-			<li><a href="#">1</a></li>
-			<li><a href="#">2</a></li>
-			<li><a href="#">3</a></li>
-			<li><a href="#">4</a></li>
-			<li><a href="#">5</a></li>
-			<li><a href="#">Next</a></li>
+			{%- if pages['pageNum'] > pages['BLOCK'] %}
+			<li><a href="{{ url_for ('GradeServer.board', pageNum = pages['startPage'] -1) }}">Prev</a></li>
+			{% endif -%}
+			
+			{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
+			<li><a href="{{ url_for ('GradeServer.board', pageNum = i) }}">{{ i }}</a></li>
+			{% endfor -%}
+			
+			{%- if pages['endPage'] < pages['allPage'] %}
+			<li><a href="{{ url_for ('GradeServer.board', pageNum =pages['endPage'] +1) }}">Next</a></li>
+			{% endif -%}
 		</ul>
 	</div>
+	<!-- End Paging -->
 </div>
 {% endblock -%}
