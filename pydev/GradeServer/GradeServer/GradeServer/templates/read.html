@@ -36,7 +36,7 @@
 	<div style="text-align:center">
 		<form method="post">
 			<button class="btn btn-default btn-lg" type="submit" name="postLike">
-			{% if isPostLiked == 'Non-Cancelled' %} UnLike {% else %} Like {% endif %}<i class="icon-thumbs-up"></i>
+			{% if isPostLiked == 'Not-Cancelled' %} UnLike {% else %} Like {% endif %}<i class="icon-thumbs-up"></i>
 			</button>
 			{% if article.writerId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
 			<button href="#deletePost" class="delete btn" data-toggle="modal">Delete</button>
@@ -66,26 +66,31 @@
 
 	<div style="text-align:center">
 		<form method="post">
-			<input type="textarea" name="comment" style="width:92%" placeholder="Comment">
+			<input type="textarea" name="boardCommentWrite" style="width:92%" placeholder="Comment">
 			<button class="submit">Write</button>
 		</form>
 	</div>
 	<div>
 		{% for i in range (0, comments|length) %}
-		<form method="post" id="myform">
-			{{ comments[i].boardReplierId }} : {{ comments[i].boardReplyContent }} | {{ comments[i].boardRepliedDate }} |
+		<form method = "post" id="myform">
+			<a href = '{{ url_for ("GradeServer.user_history", memberId = comments[i].boardReplierId, sortCondition = "submissionDate", pageNum = 1) }}'>
+				{{ comments[i].boardReplierId }}
+			</a>
+			<!-- Content, WrittenDate -->
+			: {{ comments[i].boardReplyContent }} | {{ comments[i].boardRepliedDate }} |
+			
 			<!-- like button -->
-			<button class="like btn btn-link" href="#" name="replyLike{{ comments[i].boardReplyIndex }}" type="submit">
+			<button class="like btn btn-link" href="#" name="boardReplyLike{{ comments[i].boardReplyIndex }}" type="submit">
 			{% if isLikeds[i]['isLiked'] == 'Liked' %} 
 				UnLike 
 			{% else %} 
 				Like 
 			{% endif %}
 			</button>
-			
 			{{ comments[i].sumOfLikeCount }}
+			
 			<!-- delete button -->
-			<!-- replier and masters are available to delete the comments -->
+			<!-- replier and masters are availables to delete the comments -->
 			{% if comments[i].boardReplierId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
 			<a href="#deleteBoardComment{{ comments[i].boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
 			<div id="deleteBoardComment{{ comments[i].boardReplyIndex }}" class="modal hide fade" style="text-align:center">
@@ -97,12 +102,12 @@
 				</div>
 				<div class="modal-footer">
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-					<button href="#" class="delete btn btn-primary" name="deleteComment{{ comments[i].boardReplyIndex }}" type="submit">Confirm</button>
+					<button href="#" class="delete btn btn-primary" name="deleteBoardComment{{ comments[i].boardReplyIndex }}" type="submit">Confirm</button>
 				</div>
 			</div>
 			<!-- modify button -->
 			<!-- replier and masters are available to modify the comments -->
-			<a href="#modifyBoardComment{{ comments[i].boardReplyIndex }}" role="button" class="btn btn-link"><i class="icon-pencil"></i></a>
+			<button name ='modifyBoardComment{{ comments[i].boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></button>
 			{% endif %}
 			<br>
 		</form>

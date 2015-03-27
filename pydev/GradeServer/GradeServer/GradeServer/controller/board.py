@@ -92,34 +92,18 @@ def board(pageNum):
             
         for i in range(0, len(courseList)):
             # 과목의 정보 취득
-            course = dao.query(myCourses).\
-                         filter(myCourses.c.courseId == courseList[i].courseId).\
-                         subquery()
             # 가져온 과목정에 맞는 게시판 글 취득
-            courseSub = dao.query(articlesOnBoard,
-                                  course.c.courseName).\
-                            join(course,
-                                 articlesOnBoard.c.courseId == course.c.courseId).\
+            courseSub = dao.query(myCourses.c.courseName,
+                                  articlesOnBoard).\
+                            filter(myCourses.c.courseId == courseList[i].courseId).\
+                            join(articlesOnBoard,
+                                 articlesOnBoard.c.courseId == myCourses.c.courseId).\
                             subquery()
-                
             # 과목 게시글 모음
-            try:
-                courses.append(dao.query(courseSub).\
-                                filter(courseSub.c.isNotice == NOT_NOTICE).\
-                                order_by(courseSub.c.articleIndex.desc()).\
-                                all())
-            except Exception:
-                #None Type Exception
-                courses.append([])
-            try:   
-                # 과목 공지글 모음
-                courseNotices.append(dao.query(courseSub).\
-                                      filter(courseSub.c.isNotice == NOTICE).\
-                                      order_by(courseSub.c.articleIndex.desc()).\
-                                      all())
-            except Exception:
-                #None Type Exception
-                courseNotices.append([])
+            courses.append(select_article(courseSub,
+                                          NOT_NOTICE))
+            courseNotices.append(select_article(courseSub,
+                                               NOTICE))
             
             # 과목 게시글 유니온
             articles.extend(courses[i])
@@ -135,10 +119,10 @@ def board(pageNum):
         # 허용 과목 리스트
         try:
             myCourses = dao.query(myCourses).\
-                           all()
+                            all()
         except Exception:
             myCourses = []
-        print "ABC"
+        
         return render_template('/board.html',
                                articles = articles,
                                articleNotices =  articleNotices,
@@ -150,15 +134,28 @@ def board(pageNum):
                                Filters = Filters) # classType, condition은 검색 할 때 필요한 변수    
     except Exception:
         return unknown_error()
+
+'''
+Board Notice Classification
+'''
+def select_article(courseSub, isNotice):
+    try:
+        return dao.query(courseSub).\
+                   filter(courseSub.c.isNotice == isNotice).\
+                   order_by(courseSub.c.articleIndex.desc()).\
+                   all()
+    except Exception:
+        #None Type Exception
+        return []
  
  
 '''
 게시글을 눌렀을 때 
 글 내용을 보여주는 페이지
 '''
-@GradeServer.route('/board/<articleIndex>', methods=['GET', 'POST'])
+@GradeServer.route('/board/<articleIndex>', methods = ['GET', 'POST'])
 @login_required
-def read(articleIndex, error =None):
+def read(articleIndex, error = None):
     ''' when you push a title of board content '''
     # Final 
     try:
@@ -166,38 +163,52 @@ def read(articleIndex, error =None):
         article = dao.query(ArticlesOnBoard).\
                       filter(ArticlesOnBoard.articleIndex == articleIndex).\
                       subquery()
-        article = dao.query(article, 
-                            RegisteredCourses.courseName).\
-                      join(RegisteredCourses,
-                           article.c.courseId == RegisteredCourses.courseId).\
-                           first()
-            
-        # 내가 게시글에 누른 좋아요 정보
-        isPostLiked = dao.query(LikesOnBoard.cancelledLike).\
-                          filter(LikesOnBoard.boardLikerId == session[MEMBER_ID],
-                                 LikesOnBoard.articleIndex == articleIndex).\
+        try:
+            article = dao.query(article, 
+                                RegisteredCourses.courseName).\
+                          join(RegisteredCourses,
+                               article.c.courseId == RegisteredCourses.courseId).\
                           first()
+        except Exception:
+            article = []
+            
+        # 내가 게시글에 누른 좋아요 정보submissionCount
+        try:
+            isPostLiked = dao.query(LikesOnBoard.cancelledLike).\
+                              filter(LikesOnBoard.boardLikerId == session[MEMBER_ID],
+                                     LikesOnBoard.articleIndex == articleIndex).\
+                              first() 
+        except Exception:
+            isPostLiked = NOT_CANCELLED
+            
         if isPostLiked:
             isPostLiked = isPostLiked.cancelledLike
         # replies 정보
-        comments = dao.query(RepliesOnBoard).\
-                       filter(RepliesOnBoard.isDeleted == NOT_DELETED,
-                              RepliesOnBoard.articleIndex == articleIndex).\
-                       order_by(RepliesOnBoard.boardReplyIndex.desc()).\
-                       all() 
+        try:
+            comments = dao.query(RepliesOnBoard).\
+                           filter(RepliesOnBoard.isDeleted == NOT_DELETED,
+                                  RepliesOnBoard.articleIndex == articleIndex).\
+                           order_by(RepliesOnBoard.boardReplyIndex.desc()).\
+                           all()
+        except Exception:
+            comments = []
+            
         # 내가 게시글 리플에 누른 좋아요 정보
         boardReplyLikeCheck = dao.query(LikesOnReplyOfBoard).\
-            filter_by(articleIndex=articleIndex, boardReplyLikerId=session['memberId'], cancelledLike ='Not-Cancelled').\
-            order_by(LikesOnReplyOfBoard.boardReplyIndex.asc()).all()
+                                  filter(LikesOnReplyOfBoard.articleIndex == articleIndex,
+                                         LikesOnReplyOfBoard.boardReplyLikerId == session[MEMBER_ID],
+                                         LikesOnReplyOfBoard.cancelledLike == NOT_CANCELLED).\
+                                  order_by(LikesOnReplyOfBoard.boardReplyIndex.desc()).\
+                                  all()
         # 나의 댓글 좋아요 여부 적용
         subIndex = 0
-        isLikeds =[]
+        isLikeds = []
         for i in range(0, len(comments)):
             # 나의 댓글 좋아요 정보 비교
-            isLikeds.append(dict(isLiked ='Not-Liked'))
+            isLikeds.append(dict(isLiked = NOT_LIKED))
             for j in range(subIndex, len(boardReplyLikeCheck)):
                 if comments[i].boardReplyIndex == boardReplyLikeCheck[j].boardReplyIndex:
-                    isLikeds[i]['isLiked'] ='Liked'
+                    isLikeds[i]['isLiked'] = LIKED
                     # 다음 시작 루프 인덱스 변경
                     subIndex = j
                     
@@ -208,12 +219,19 @@ def read(articleIndex, error =None):
         
     if request.method == 'GET':
         # 읽은 횟수 카운팅
-        dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=article.viewCount + 1))
+        dao.query(ArticlesOnBoard).\
+            filter(ArticlesOnBoard.articleIndex == articleIndex).\
+            update(dict(viewCount = article.viewCount + 1))
         # Commit Exception
         try:
             dao.commit()
             
-            return render_template('/read.html', article=article, comments=comments, isLikeds =isLikeds, isPostLiked =isPostLiked, error =error)
+            return render_template(READ_HTML,
+                                   article = article,
+                                   comments = comments,
+                                   isLikeds = isLikeds,
+                                   isPostLiked = isPostLiked,
+                                   error = error)
         except Exception:
             dao.rollback()
             
@@ -228,79 +246,100 @@ def read(articleIndex, error =None):
             if form == 'postLike':
                 # 좋아요를 누른적 없을 때
                 if not isPostLiked:
-                    dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).\
-                        update(dict(sumOfLikeCount=article.sumOfLikeCount +1))
-                    newLike = LikesOnBoard(articleIndex=articleIndex, boardLikerId=session['memberId'])
+                    
+                    dao.add(update_board_like_count(articleIndex,
+                                                    article.sumOfLikeCount + 1))
+                    
+                    newLike = LikesOnBoard(articleIndex = articleIndex,
+                                           boardLikerId = session[MEMBER_ID])
                     dao.add(newLike)
                 # 다시 좋아요 누를 때
-                elif isPostLiked == 'Cancelled':
-                    dao.query(ArticlesOnBoard).filter_by(articleIndex =articleIndex).\
-                        update(dict(sumOfLikeCount=article.sumOfLikeCount +1))
-                    dao.query(LikesOnBoard).filter_by(articleIndex =articleIndex, boardLikerId=session['memberId']).\
-                        update(dict(cancelledLike ='Not-Cancelled'))
+                elif isPostLiked == CANCELLED:
+                    
+                    dao.add(update_board_like_count(articleIndex,
+                                                    article.sumOfLikeCount + 1))
+                    dao.add(update_board_liker_cancelled (articleIndex,
+                                                          session[MEMBER_ID],
+                                                          NOT_CANCELLED))
                 # 좋아요 취소 할 때
                 else:  # if it's already exist then change the value of 'pushedLike'
-                    dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).\
-                        update(dict(sumOfLikeCount=article.sumOfLikeCount -1))
-                    dao.query(LikesOnBoard).filter_by(articleIndex=articleIndex, boardLikerId=session['memberId']).\
-                        update(dict(cancelledLike ='Cancelled'))
+                    
+                    dao.add(update_board_like_count(articleIndex,
+                                                    article.sumOfLikeCount -1))
+                    dao.add(update_board_liker_cancelled (articleIndex,
+                                                          session[MEMBER_ID],
+                                                          CANCELLED))
+                    
                 # remove duplicated read count
-                dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=article.viewCount - 1))
+                dao.query(ArticlesOnBoard).\
+                    filter(ArticlesOnBoard.articleIndex == articleIndex).\
+                    update(dict(viewCount = article.viewCount - 1))
                 
                 break 
                 # 댓글 달기
-            elif form == 'comment':
+            elif form == 'boardCommentWrite':
+                
                 # 현재 게시물의 댓글중에 마지막 인덱스
                 boardReplyIndex =dao.query(func.max(RepliesOnBoard.boardReplyIndex).label('boardReplyIndex')).\
                     filter_by(articleIndex =articleIndex).first().boardReplyIndex
                 # 첫 댓글일 경우
                 if not boardReplyIndex:
-                    boardReplyIndex =1
+                    boardReplyIndex = 1
                 else:
-                    boardReplyIndex +=1
+                    boardReplyIndex += 1
                 
                 # 새로운 댓글 정보
-                newComment = RepliesOnBoard(boardReplyIndex =boardReplyIndex, articleIndex=article.articleIndex, boardReplierId=session['memberId'],
-                                            boardReplyContent=request.form['comment'], boardReplierIp=socket.gethostbyname(socket.gethostname()),
-                                            boardRepliedDate=datetime.now())
+                newComment = RepliesOnBoard(boardReplyIndex = boardReplyIndex,
+                                            articleIndex = article.articleIndex,
+                                            boardReplierId = session[MEMBER_ID],
+                                            boardReplyContent = request.form['boardCommentWrite'],
+                                            boardReplierIp = socket.gethostbyname(socket.gethostname()),
+                                            boardRepliedDate = datetime.now())
                 dao.add(newComment)
                 # remove duplicated read count
-                dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=article.viewCount - 1, replyCount =article.replyCount +1))
+                dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=article.viewCount - 1, replyCount =article.replyCount + 1))
                 
                 flashMsg =get_message('writtenComment')
                 
                 break 
             # 댓글 좋아요
-            elif form[:9] == 'replyLike':  # the name starts with 'replyLike' and it has its unique number
+            elif 'boardReplyLike' in form:  # the name starts with 'replyLike' and it has its unique number
+                idIndex = len('boardReplyLike')
                 # 해당 댓글의 좋아요 갯수
-                sumOfLikeCount = dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex=int(form[9:])).first().sumOfLikeCount
+                sumOfLikeCount = dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex=int(form[idIndex:])).first().sumOfLikeCount
                 # 
-                commentLikeCheck = dao.query(LikesOnReplyOfBoard).filter_by(articleIndex=articleIndex, boardReplyIndex =int(form[9:]),
+                commentLikeCheck = dao.query(LikesOnReplyOfBoard).filter_by(articleIndex=articleIndex, boardReplyIndex =int(form[idIndex:]),
                                                                              boardReplyLikerId =session['memberId']).first()
                 if not commentLikeCheck:  # initial pushing
-                    dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex =int(form[9:])).update(dict(sumOfLikeCount=sumOfLikeCount + 1))
-                    newLike = LikesOnReplyOfBoard(articleIndex=articleIndex, boardReplyIndex =int(form[9:]), boardReplyLikerId =session['memberId'])
+                    dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex =int(form[idIndex:])).update(dict(sumOfLikeCount=sumOfLikeCount + 1))
+                    newLike = LikesOnReplyOfBoard(articleIndex=articleIndex, boardReplyIndex =int(form[idIndex:]), boardReplyLikerId =session['memberId'])
                     dao.add(newLike)
                 else:
                     if commentLikeCheck.cancelledLike == 'Cancelled':
-                        dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex =int(form[9:])).update(dict(sumOfLikeCount =sumOfLikeCount + 1))
-                        dao.query(LikesOnReplyOfBoard).filter_by(articleIndex=articleIndex, boardReplyIndex =int(form[9:]),
+                        dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex =int(form[idIndex:])).update(dict(sumOfLikeCount =sumOfLikeCount + 1))
+                        dao.query(LikesOnReplyOfBoard).filter_by(articleIndex=articleIndex, boardReplyIndex =int(form[idIndex:]),
                                                                   boardReplyLikerId =session['memberId']).update(dict(cancelledLike ='Not-Cancelled'))
                     else:
-                        dao.query(LikesOnReplyOfBoard).filter_by(articleIndex=articleIndex, boardReplyIndex=int(form[9:]),
+                        dao.query(LikesOnReplyOfBoard).filter_by(articleIndex=articleIndex, boardReplyIndex=int(form[idIndex:]),
                                                                   boardReplyLikerId =session['memberId']).update(dict(cancelledLike ='Cancelled'))
-                        dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex=int(form[9:])).update(dict(sumOfLikeCount=sumOfLikeCount - 1))
+                        dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex=int(form[idIndex:])).update(dict(sumOfLikeCount=sumOfLikeCount - 1))
                 # remove duplicated read count
                 dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=article.viewCount - 1))
                 
                 break 
             # 댓글 삭제   
-            elif form[:13] == 'deleteComment':
-                deleteCheck = dao.query(RepliesOnBoard.isDeleted).filter_by(articleIndex=articleIndex, boardReplyIndex=form[13:]).first()
+            elif 'deleteBoardComment' in form:
+                
+                idIndex = len('deleteBoardComment')
+                
+                deleteCheck = dao.query(RepliesOnBoard.isDeleted).\
+                                  filter(RepliesOnBoard.articleIndex == articleIndex,
+                                         RepliesOnBoard.boardReplyIndex == form[idIndex:]).\
+                                  first()
                 
                 # 삭제 시킬 경우
                 if deleteCheck.isDeleted == 'Not-Deleted':
-                    dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex=form[13:]).update(dict(isDeleted ='Deleted'))
+                    dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex=form[idIndex:]).update(dict(isDeleted ='Deleted'))
                     dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(replyCount=article.replyCount - 1))
                     # remove duplicated read count
                     dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=article.viewCount - 1))
@@ -308,6 +347,9 @@ def read(articleIndex, error =None):
                     flashMsg =get_message('deletedComment')
                     
                     break 
+    # Commit Modify
+            elif 'modifyBoardComment' in form :
+                print "ABC"
             # 게시물 삭제
             elif form == 'deletePost':
                 deleteCheck = dao.query(ArticlesOnBoard.isDeleted).filter_by(articleIndex=articleIndex).first()
@@ -320,9 +362,10 @@ def read(articleIndex, error =None):
                         flash(get_message('deletedPost'))
                     except Exception:
                         dao.rollback()
-                        error =get_message('updateFailed')
+                        error = get_message('updateFailed')
                         
-                    return redirect(url_for('.board', pageNum =1))
+                    return redirect(url_for(BOARD,
+                                            pageNum = 1))
         
         # Commit Exception
         try:
@@ -332,12 +375,15 @@ def read(articleIndex, error =None):
                 flash(flashMsg)
         except Exception:
             dao.rollback()
-            error =get_message('updateFailed')
+            error = get_message('updateFailed')
             
-        return redirect(url_for('.read', articleIndex=articleIndex, error =error))
+        return redirect(url_for(READ,
+                                articleIndex = articleIndex,
+                                error = error))
     
     # Exception View    
-    return redirect(url_for('.board', pageNum =1))
+    return redirect(url_for(BOARD,
+                            pageNum = 1))
 
 
 '''
@@ -424,7 +470,23 @@ def write(articleIndex, error =None):
         # Unknown Error
         return unknown_error()
     
-    
+ 
+'''
+  Board Like Count
+'''
+def update_board_like_count(articleIndex, count):
+    return dao.query(ArticlesOnBoard).\
+               filter(ArticlesOnBoard.articleIndex == articleIndex).\
+               update(dict(sumOfLikeCount = count))   
+               
+'''
+Board LIker Cancelled
+'''
+def update_board_liker_cancelled(articleIndex, likerId, cancelledLike):
+    return dao.query(LikesOnBoard).\
+               filter(LikesOnBoard.articleIndex == articleIndex,
+                      LikesOnBoard.boardLikerId == likerId).\
+               update(dict(cancelledLike = cancelledLike))
 '''
 게시판 검색
 '''

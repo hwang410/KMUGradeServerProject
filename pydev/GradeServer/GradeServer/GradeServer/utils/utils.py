@@ -2,7 +2,7 @@
 
 
 # String
-SERVER_ADMINISTRATOR = 'ServerAdministrator'
+SERVER_ADMINISTRATOR = 'ServerAdministrator' 
 COURSE_ADMINISTRATOR = 'CourseAdministrator'
 USER = 'User'
 
@@ -15,6 +15,10 @@ DELETED = 'Deleted'
 NOT_DELETED = 'Not-Deleted'
 NOTICE ='Notice'
 NOT_NOTICE ='Not-Notice'
+CANCELLED = 'Cancelled'
+NOT_CANCELLED = 'Not-Cancelled'
+LIKED = 'Liked'
+NOT_LIKED = 'Not-Liked'
 MASTER = 'Master'
 NOT_MASTER = 'Not-Master'
 ACCEPT = 'accept'
@@ -44,6 +48,7 @@ USER_HISTORY_HTML = '/user_history.html'
 EDIT_PERSONAL_HTML = '/edit_personal.html'
 ID_CHECK_HTML = '/id_check.html'
 RANK_HTML  = '/rank.html'
+READ_HTML = '/read.html'
 
 
 # Route Name
@@ -51,4 +56,6 @@ SIGN_IN = '.sign_in'
 TEAM = '.team'
 EDIT_PERSONAL = '.edit_personal'
 USER_HISTORY = '.user_history'
+BOARD = '.board'
+READ = '.read'
 
