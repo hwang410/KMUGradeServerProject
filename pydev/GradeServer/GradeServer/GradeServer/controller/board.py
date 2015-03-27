@@ -184,11 +184,15 @@ def read(articleIndex, error = None):
         if isPostLiked:
             isPostLiked = isPostLiked.cancelledLike
         # replies 정보
-        comments = dao.query(RepliesOnBoard).\
-                       filter(RepliesOnBoard.isDeleted == NOT_DELETED,
-                              RepliesOnBoard.articleIndex == articleIndex).\
-                       order_by(RepliesOnBoard.boardReplyIndex.desc()).\
-                       all() 
+        try:
+            comments = dao.query(RepliesOnBoard).\
+                           filter(RepliesOnBoard.isDeleted == NOT_DELETED,
+                                  RepliesOnBoard.articleIndex == articleIndex).\
+                           order_by(RepliesOnBoard.boardReplyIndex.desc()).\
+                           all()
+        except Exception:
+            comments = []
+            
         # 내가 게시글 리플에 누른 좋아요 정보
         boardReplyLikeCheck = dao.query(LikesOnReplyOfBoard).\
                                   filter(LikesOnReplyOfBoard.articleIndex == articleIndex,

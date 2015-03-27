@@ -206,8 +206,7 @@ Dropzone.options.myDropzoneC = { // The camelized version of the ID of the form 
 		this.on("successmultiple", function(files, response) {
 		// Gets triggered when the files have successfully been sent.
 		// Redirect user or notify of success
-			address = "http://localhost/problemList/" + response;
-			location.href=address;
+			location.href = parent.document.referrer;
 	 	});
 	}
 }
@@ -236,7 +235,7 @@ Dropzone.options.myDropzoneCpp = { // The camelized version of the ID of the for
 		// Gets triggered when the files have successfully been sent.
 		// Redirect user or notify of success
 			address = "http://localhost/problemList/" + response;
-			location.href=address;
+			location.href = parent.document.referrer;
 	 	});
 	}
 }
@@ -264,8 +263,7 @@ Dropzone.options.myDropzoneJAVA = { // The camelized version of the ID of the fo
 		this.on("successmultiple", function(files, response) {
 		// Gets triggered when the files have successfully been sent.
 		// Redirect user or notify of success
-			address = "http://localhost/problemList/" + response;
-			location.href=address;
+			location.href = parent.document.referrer;
 	 	});
 	}
 }
@@ -293,8 +291,7 @@ Dropzone.options.myDropzonePYTHON = { // The camelized version of the ID of the 
 		this.on("successmultiple", function(files, response) {
 		// Gets triggered when the files have successfully been sent.
 		// Redirect user or notify of success
-			address = "http://localhost/problemList/" + response;
-			location.href=address;
+			location.href = parent.document.referrer;
 	 	});
 	}
 }
@@ -361,112 +358,3 @@ function visibleButton(parent){
 		document.getElementById('summary').style.display = "";
 	}
 }
-
-/* when server administrator add new users */
-function addIndivisualUserForm(permission){
-  var targetTable = document.getElementById('indivisual');
-  var numOfRow = targetTable.rows.length;
-
-  reset_val = function(){
-    if(permission == 'course'){
-      $("#courseId1").val("");
-    }
-    $("#userId1").val("");
-    $("#username1").val("");
-    $("#authority1").val("");
-    $("#college1").val("");
-    $("#department1").val("");
-  }
-
-  var newRow = targetTable.insertRow(2);
-  var uploadObj;
-  var keys = ['courseId', 'userId', 'college', 'department', 'username', 'authority'];
-  var placeholders = ['Course Id', 'User Id', 'College', 'Department', 'User name', 'Authority'];
-
-  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
-    uploadObj = "<tr><td><input type='text' class='input-small formLine1' ";
-    if(permission == 'server'){
-      i += 1;
-    }
-    uploadObj += "id = '" + keys[i] + numOfRow + "' name = '" + keys[i] + numOfRow + "' placeholder = '" + placeholders[i] + "' value = '" + $("#" + keys[i] + "1").val();
-    if(permission == 'server'){
-      i -= 1;
-    }
-    newRow.insertCell(i).innerHTML = uploadObj + "' form='addIndivisualUser'></td>";
-  }
-  reset_val();
-}
-
-function manageUserForm(){
-  var val_cID;
-  var val_uID;
-  var m_name,d_name;
-  var usertb=document.getElementById('manageusertb');
-  
-  reset_val = function(){
-    val_cID = $("#search-courses").val("");
-    val_uID = $("#search-members").val("");
-  }
-
-  var newRow = usertb.insertRow(usertb.rows.length);
-  
-  for(var i = 0; i <usertb.rows[0].cells.length; i++){
-    val_cID = $("#search-courses").val();
-    val_uID = $("#search-members").val();
-
-    var c= newRow.insertCell(i);
-    switch (i){
-      case 0:
-        var uploadObj = "<td>" + val_cID + "</td>";
-        break;
-      case 1:
-        var uploadObj = "<td>" + val_uID + "</td>";
-        break;
-      case 2:
-        var uploadObj="<td>" + memberName + "</td>";
-        break;
-      case 3:
-        var uploadObj="<td>" + memberDepartments + "</td>";
-        break;
-    }
-    c.innerHTML=uploadObj;   
-  } 
-  reset_val(); 
-}
-/*
-function resetIndivisualUserForm(permission){
-	
-	if(permission=='course'){
-		document.getElementById("indivisualUserForm").innerHTML = '<td><input class="input-small formLine1 " id="courseId1" name="courseId1" type="text" form="addIndivisualUser" placeholder="Course ID" value="">' +
-			'<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">'+
-			'<td><input class="input-mini formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">'+
-			'<td><input class="input-medium formLine1" id="college1" name="college1" type="text" form="addIndivisualUser" placeholder="College" value="">'+
-			'<td><input class="input-medium formLine1" id="department1" name="department1" type="text" form="addIndivisualUser" placeholder="Department" value="">'+
-			'<td><input class="input-small formLine1 " id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">';
-	}
-	else {
-		alert(permission);
-		
-	}
-
-}
-*/
-/*
-function resetAddProblemForm(permission){
-	
-	if(permission=='course'){
-		document.getElementById("addProblemForm").innerHTML = '<td><div id="searchfield"><input class="input-ularge" id="search-courses1" name="courseId" type="text" form="addProblem" placeholder="course name"></div>'+
-			'<td><div id="searchfield"><input class="input-ularge" id="search-problems1" name="problemId" type="text" form="addProblem" placeholder="problem name"></div>'+
-			'<td><label class="checkbox-center"><input class="box-check" name="multipleFiles" id="a_box1" type="checkbox"></label>'+
-			'<td><input class="datepicker input-usmall" id="startDate1" name="startDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">'+
-			'<td><input class="datepicker input-usmall" id="endDate1" name="endDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">'+
-			'<td><input class="datepicker input-usmall" id="openDate1" name="openDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">'+
-			'<td><input class="datepicker input-usmall" id="closeDate1" name="closeDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">';
-
-	}
-	else {
-		alert(permission);
-		
-	}
-}
-*/

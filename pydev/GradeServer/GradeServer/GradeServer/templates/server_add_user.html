@@ -15,56 +15,98 @@ $(function() {
 	$("#authority1").autocomplete({
 		lookup: authorities
 	});
+
+	var allColleges = [
+  	{%- for college in allColleges %}
+  	{ value: "{{ college.collegeIndex }} {{ college.collegeName }}" },
+  	{% endfor -%}
+  	{ value: "" }
+  ];
+  $("#college1").autocomplete({
+  	lookup: allColleges
+  });
+
+  var allDepartments = [
+  	{%- for department in allDepartments %}
+  	{ value: "{{ department.departmentIndex }} {{ department.departmentName }}" },
+  	{% endfor -%}
+  	{ value: "" }
+  ];
+  $("#department1").autocomplete({
+  	lookup: allDepartments
+  });
+
 	$("#addline").bind('click',function(){
-		
-		  var targetTable = document.getElementById('indivisual');
-		  var numOfRow = targetTable.rows.length;
+	  var targetTable = document.getElementById('indivisual');
+	  var numOfRow = targetTable.rows.length;
 
-		  reset_val = function(){
-		    
-		    
-		    $("#userId1").val("");
-		    $("#username1").val("");
-		    $("#authority1").val("");
-		    $("#college1").val("");
-		    $("#department1").val("");
-		  }
+	  reset_val = function(){
+	    $("#userId1").val("");
+	    $("#username1").val("");
+	    $("#authority1").val("");
+	    $("#college1").val("");
+	    $("#department1").val("");
+	  }
 
-		  var newRow = targetTable.insertRow(2);
-		  var uploadObj;
-		  var keys = ['userId', 'username', 'college', 'department', 'authority'];
-		  var placeholders = ['ID', 'Name', 'College', 'Department', 'Authority'];
-		  var formsize = ['input-small formLine1', 'input-small formLine1', 'input-small formLine1', 'input-small formLine1', 'input-small formLine1'];
-		  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
-		    uploadObj = "<tr><td><input type='text' ";
+	  var newRow = targetTable.insertRow(2);
+	  var uploadObj;
+	  var keys = ['userId', 'username', 'college', 'department', 'authority'];
+	  var placeholders = ['ID', 'Name', 'College', 'Department', 'Authority'];
+	  var formsize = ['small', 'mini', 'medium', 'medium', 'small'];
 
-		    uploadObj += "class = '" + formsize[i] +"' id = '" + keys[i] + numOfRow + "' name = '" + keys[i] + numOfRow + "' placeholder = '" + placeholders[i] + "' value = '" + $("#" + keys[i] + "1").val();
+	  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
+	    uploadObj = "<tr><td><input class = 'input-" + formsize[i] + " formLine1' " +
+	    													 "id = '" + keys[i] + numOfRow + "' " +
+	    													 "name = '" + keys[i] + numOfRow + "' " +
+	    													 "type='text' form='addIndivisualUser' " +
+	    													 "placeholder = '" + placeholders[i] + "' " +
+	    													 "value = '" + $("#" + keys[i] + "1").val() +"' >";
 
-		    newRow.insertCell(i).innerHTML = uploadObj + "' form='addIndivisualUser'></td>";
-		  }
-		  $("#authority"+numOfRow).autocomplete({
-		        lookup: authorities
-				});
+	    newRow.insertCell(i).innerHTML = uploadObj;
+	  }
 
-		  reset_val();
-		
-		
-
+	  $("#authority"+numOfRow).autocomplete({
+      lookup: authorities
 		});
-	    $("#resetIndivisualUserForm").bind('click',function(){
-			
-			
-		  document.getElementById("indivisualUserForm").innerHTML = '<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">' +
-				'<td><input class="input-small formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">' +
-				'<td><input class="input-small formLine1" id="college1" name="college1" type="text" form="addIndivisualUser" placeholder="College" value="">' +
-				'<td><input class="input-small formLine1" id="department1" name="department1" type="text" form="addIndivisualUser" placeholder="Department" value="">' +
-				'<td><input class="input-small formLine1" id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">';
-		
-		  $("#authority1").autocomplete({
-		        lookup: authorities
-				});
 
+	  $("#college"+numOfRow).autocomplete({
+	  	lookup: allColleges
+	  });
+
+	  $("#department"+numOfRow).autocomplete({
+	  	lookup: allDepartments
+	  });
+
+	  reset_val();
+	});
+  $("#resetIndivisualUserForm").bind('click',function(){
+		var keys = ['userId', 'username', 'college', 'department', 'authority'];
+	  var placeholders = ['ID', 'Name', 'College', 'Department', 'Authority'];
+	  var formsize = ['small', 'mini', 'medium', 'medium', 'small'];
+	  var uploadObj = "";
+	  
+	  for(var i = 0; i < keys.length; i++){  
+	    uploadObj += "<td><input class = 'input-" + formsize[i] + " formLine1' " +
+	    												"id = '" + keys[i] + "1' " +
+	    												"name = '" + keys[i] + "1' " +
+	    												"type='text' form='addIndivisualUser' " +
+	    												"placeholder = '" + placeholders[i] + "' " +
+	    												"value = ''>";
+	  }
+	  document.getElementById("indivisualUserForm").innerHTML = uploadObj;
+
+	  $("#authority1").autocomplete({
+      lookup: authorities
 		});
+
+		$("#college1").autocomplete({
+	  	lookup: allColleges
+	  });
+
+	  $("#department1").autocomplete({
+	  	lookup: allDepartments
+	  });
+	});
 });
 </script>
 <div class="container">
@@ -79,7 +121,7 @@ $(function() {
 
 		<!-- hidden modal pop -->
 		<!-- ///// Add indivisual ///// -->
-		<div class="modal hide fade" id="addUserModal" aria-labelledby="addUserModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+		<div class="modal hide fade" id="addUserModal" aria-labelledby="addUserModalLabel" aria-hidden="true" role="dialog" tabindex="-1" style="width:800px;margin-left:-400px">
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 				<h3 id="addUserModalLabel">Add User</h3>
@@ -98,9 +140,9 @@ $(function() {
 					<tbody id="indivisualUserForm">
 						<tr class="formLine">
 							<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">
-							<td><input class="input-small formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">
-							<td><input class="input-small formLine1" id="college1" name="college1" type="text" form="addIndivisualUser" placeholder="College" value="">
-							<td><input class="input-small formLine1" id="department1" name="department1" type="text" form="addIndivisualUser" placeholder="Department" value="">
+							<td><input class="input-mini formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">
+							<td><input class="input-medium formLine1" id="college1" name="college1" type="text" form="addIndivisualUser" placeholder="College" value="">
+							<td><input class="input-medium formLine1" id="department1" name="department1" type="text" form="addIndivisualUser" placeholder="Department" value="">
 							<td><input class="input-small formLine1" id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">
 				</table>
 			</div>
