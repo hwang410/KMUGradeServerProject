@@ -71,29 +71,29 @@
 		</form>
 	</div>
 	<div>
-		{% for i in range (0, comments|length) %}
+		{% for i in range (0, commentRecords|length) %}
 		<form method = "post" id="myform">
-			<a href = '{{ url_for ("GradeServer.user_history", memberId = comments[i].boardReplierId, sortCondition = "submissionDate", pageNum = 1) }}'>
-				{{ comments[i].boardReplierId }}
+			<a href = '{{ url_for ("GradeServer.user_history", memberId = commentRecords[i].boardReplierId, sortCondition = "submissionDate", pageNum = 1) }}'>
+				{{ commentRecords[i].boardReplierId }}
 			</a>
 			<!-- Content, WrittenDate -->
-			: {{ comments[i].boardReplyContent }} | {{ comments[i].boardRepliedDate }} |
+			: {{ commentRecords[i].boardReplyContent }} | {{ commentRecords[i].boardRepliedDate }} |
 			
 			<!-- like button -->
-			<button class="like btn btn-link" href="#" name="boardReplyLike{{ comments[i].boardReplyIndex }}" type="submit">
+			<button class="like btn btn-link" href="#" name="boardReplyLike{{ commentRecords[i].boardReplyIndex }}" type="submit">
 			{% if isLikeds[i]['isLiked'] == 'Liked' %} 
 				UnLike 
 			{% else %} 
 				Like 
 			{% endif %}
 			</button>
-			{{ comments[i].sumOfLikeCount }}
+			{{ commentRecords[i].sumOfLikeCount }}
 			
 			<!-- delete button -->
 			<!-- replier and masters are availables to delete the comments -->
-			{% if comments[i].boardReplierId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
-			<a href="#deleteBoardComment{{ comments[i].boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
-			<div id="deleteBoardComment{{ comments[i].boardReplyIndex }}" class="modal hide fade" style="text-align:center">
+			{% if commentRecords[i].boardReplierId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
+			<a href="#deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
+			<div id="deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" class="modal hide fade" style="text-align:center">
 				<div class="modal-header">
 					<h3>Delete Comment</h3>
 				</div>
@@ -102,12 +102,12 @@
 				</div>
 				<div class="modal-footer">
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-					<button href="#" class="delete btn btn-primary" name="deleteBoardComment{{ comments[i].boardReplyIndex }}" type="submit">Confirm</button>
+					<button href="#" class="delete btn btn-primary" name="deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" type="submit">Confirm</button>
 				</div>
 			</div>
 			<!-- modify button -->
 			<!-- replier and masters are available to modify the comments -->
-			<button name ='modifyBoardComment{{ comments[i].boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></button>
+			<button name ='modifyBoardComment{{ commentRecords[i].boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></button>
 			{% endif %}
 			<br>
 		</form>
