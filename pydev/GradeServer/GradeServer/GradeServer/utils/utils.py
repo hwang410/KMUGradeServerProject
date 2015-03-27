@@ -2,7 +2,7 @@
 
 
 # String
-SERVER_ADMINISTRATOR = 'ServerAdministrator'
+SERVER_ADMINISTRATOR = 'ServerAdministrator' 
 COURSE_ADMINISTRATOR = 'CourseAdministrator'
 USER = 'User'
 

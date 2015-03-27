@@ -177,7 +177,7 @@ def read(articleIndex, error = None):
             isPostLiked = dao.query(LikesOnBoard.cancelledLike).\
                               filter(LikesOnBoard.boardLikerId == session[MEMBER_ID],
                                      LikesOnBoard.articleIndex == articleIndex).\
-                              first()
+                              first() 
         except Exception:
             isPostLiked = NOT_CANCELLED
             

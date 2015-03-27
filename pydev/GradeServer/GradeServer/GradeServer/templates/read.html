@@ -90,7 +90,7 @@
 			{{ comments[i].sumOfLikeCount }}
 			
 			<!-- delete button -->
-			<!-- replier and masters are available to delete the comments -->
+			<!-- replier and masters are availables to delete the comments -->
 			{% if comments[i].boardReplierId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
 			<a href="#deleteBoardComment{{ comments[i].boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
 			<div id="deleteBoardComment{{ comments[i].boardReplyIndex }}" class="modal hide fade" style="text-align:center">

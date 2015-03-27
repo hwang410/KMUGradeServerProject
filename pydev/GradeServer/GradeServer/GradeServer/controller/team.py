@@ -530,7 +530,7 @@ def insert_team_member_id(teamName, teamMemberId, isTeamMaster = NOT_MASTER):
                                       isTeamMaster = isTeamMaster))
     # else then Update
     else:
-        return dao.query(RegisteredTeamMembers).\
+        return dao.query(RegisteredTeamMembers).\ 
                 filter(RegisteredTeamMembers.teamName == teamName,
                        RegisteredTeamMembers.teamMemberId == teamMemberId).\
                 update(dict(isDeleted = NOT_DELETED,
