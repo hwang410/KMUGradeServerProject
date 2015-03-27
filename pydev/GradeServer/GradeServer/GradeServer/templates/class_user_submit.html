@@ -10,7 +10,7 @@
 		<ul class="nav nav-tabs">
 			<li class="active"><a id="link-all" data-toggle="tab" href="#all" onclick="visibleButton(this)">all</a>
 			{%- for ownCourse in ownCourses %}
-			<li><a id="link-{{ ownCourse.courseId }}" data-toggle="tab" href="#{{ ownCourse.courseId }}" onclick="visibleButton(this)">{{ ownCourse.courseName }}</a></li>
+			<li><a id="link-{{ ownCourse.courseId }}" data-toggle="tab" href="#{{ ownCourse.courseId }}" onclick="visibleButton(this)">{{ ownCourse.courseId }} {{ ownCourse.courseName }}</a></li>
 			{% endfor -%}
 			<div style="text-align:right">
 				<a href="{{ url_for('GradeServer.user_submit_summary') }}"><button id="summary" type="button" style="display:none">Summary</button></a>
@@ -24,6 +24,7 @@
 						<td>Course Id
 						<td>Course Name
 						<td>Problem Name
+						<td>Member Id
 						<td>Status
 						<td>Submission Count
 						<td>Submission Date
@@ -32,6 +33,7 @@
 						<td>{{ submission.courseId }}
 						<td>{{ registeredCourse.courseName }}
 						<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ problem.problemName }}</a>
+						<td>{{ submission.memberId }}
 						<td>{{ submission.status }}
 						<td>{{ submission.submissionCount }}
 						<td>{{ submission.codeSubmittedDate }}
@@ -45,6 +47,7 @@
 						<td>Course Id
 						<td>Course Name
 						<td>Problem Name
+						<td>Member Id
 						<td>Status
 						<td>Submission Count
 						<td>Submission Date
@@ -54,6 +57,7 @@
 						<td>{{ submission.courseId }}
 						<td>{{ registeredCourse.courseName }}
 						<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ problem.problemName }}</a>
+						<td>{{ submission.memberId }}
 						<td>{{ submission.status }}
 						<td>{{ submission.submissionCount }}
 						<td>{{ submission.codeSubmittedDate }}

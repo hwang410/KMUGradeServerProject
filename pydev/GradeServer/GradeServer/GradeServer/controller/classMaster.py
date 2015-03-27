@@ -29,7 +29,7 @@ from GradeServer.model.problems import Problems
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.model.submissions import Submissions
-from sqlalchemy import and_, exc, or_
+from sqlalchemy import and_, exc, or_, func
 from datetime import datetime
 
 import os
@@ -780,26 +780,55 @@ def class_add_user():
 @login_required
 def user_submit_summary():
     error = None
-    ownCourses = dao.query(RegisteredCourses).\
-                     filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
-                     all()
-    ownProblems = dao.query(RegisteredProblems).\
-                      all()
-    ownMembers = dao.query(Registrations).\
-                     all()
-        
+
     try:
-        submissions = (dao.query(Submissions, 
-                                 Problems).\
-                           order_by(Submissions.codeSubmissionDate.desc()).\
-                           group_by(Submissions.memberId, 
-                                    Submissions.courseId, 
-                                    Submissions.problemId).\
-                           join(RegisteredCourses, 
-                                RegisteredCourses.courseId == Submissions.courseId).\
-                           join(Problems, 
-                                Problems.problemId == Submissions.problemId)).\
-                      all()
+        ownCourses = dao.query(RegisteredCourses).\
+                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                         all()
+    except:
+        return render_template('/class_user_submit_summary.html', 
+                               error=error, 
+                               ownCourses=[], 
+                               ownProblems=[], 
+                               ownMembers=[], 
+                               submissions=[])
+    try:       
+        ownProblems = dao.query(RegisteredProblems).\
+                          join(RegisteredCourses,
+                               RegisteredProblems.courseId == RegisteredCourses.courseId).\
+                          filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                          all()
+    except:
+        return render_template('/class_user_submit_summary.html', 
+                               error=error, 
+                               ownCourses=ownCourses, 
+                               ownProblems=[], 
+                               ownMembers=[], 
+                               submissions=[])     
+    try:                 
+        ownMembers = dao.query(Registrations).\
+                         join(RegisteredCourses,
+                              RegisteredCourses.courseId == Registrations.courseId).\
+                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                         all()
+    except:
+        return render_template('/class_user_submit_summary.html', 
+                               error=error, 
+                               ownCourses=ownCourses, 
+                               ownProblems=ownProblems, 
+                               ownMembers=[], 
+                               submissions=[])                     
+    try:
+        submissions = dao.query(Submissions.memberId, Submissions.courseId, Submissions.problemId, func.max(Submissions.submissionCount).label("maxSubmissionCount")).\
+                      group_by(Submissions.memberId, Submissions.courseId, Submissions.problemId).\
+                      subquery()
+
+        latestSubmissions = dao.query(Submissions).\
+                                filter(Submissions.memberId == submissions.c.memberId,
+                                       Submissions.courseId == submissions.c.courseId,
+                                       Submissions.problemId == submissions.c.problemId,
+                                       Submissions.submissionCount == submissions.c.maxSubmissionCount).\
+                                all()
     except:
         print 'Submissions table is empty'
         submissions = []
@@ -809,7 +838,7 @@ def user_submit_summary():
                            ownCourses=ownCourses, 
                            ownProblems=ownProblems, 
                            ownMembers=ownMembers, 
-                           submissions=submissions)
+                           submissions=latestSubmissions)
 
 @GradeServer.route('/classmaster/manage_service')
 @login_required
