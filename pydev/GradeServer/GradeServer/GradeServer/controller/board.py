@@ -185,29 +185,32 @@ def read(articleIndex, error = None):
             isPostLiked = isPostLiked.cancelledLike
         # replies 정보
         try:
-            comments = dao.query(RepliesOnBoard).\
+            commentRecords = dao.query(RepliesOnBoard).\
                            filter(RepliesOnBoard.isDeleted == NOT_DELETED,
                                   RepliesOnBoard.articleIndex == articleIndex).\
                            order_by(RepliesOnBoard.boardReplyIndex.desc()).\
                            all()
         except Exception:
-            comments = []
+            commentRecords = []
             
         # 내가 게시글 리플에 누른 좋아요 정보
-        boardReplyLikeCheck = dao.query(LikesOnReplyOfBoard).\
-                                  filter(LikesOnReplyOfBoard.articleIndex == articleIndex,
-                                         LikesOnReplyOfBoard.boardReplyLikerId == session[MEMBER_ID],
-                                         LikesOnReplyOfBoard.cancelledLike == NOT_CANCELLED).\
-                                  order_by(LikesOnReplyOfBoard.boardReplyIndex.desc()).\
-                                  all()
+        try:
+            boardReplyLikeCheckRecords = dao.query(LikesOnReplyOfBoard).\
+                                      filter(LikesOnReplyOfBoard.articleIndex == articleIndex,
+                                             LikesOnReplyOfBoard.boardReplyLikerId == session[MEMBER_ID],
+                                             LikesOnReplyOfBoard.cancelledLike == NOT_CANCELLED).\
+                                      order_by(LikesOnReplyOfBoard.boardReplyIndex.desc()).\
+                                      all()
+        except Exception:
+            boardReplyLikeCheckRecords = []
         # 나의 댓글 좋아요 여부 적용
         subIndex = 0
         isLikeds = []
-        for i in range(0, len(comments)):
+        for i in range(0, len(commentRecords)):
             # 나의 댓글 좋아요 정보 비교
             isLikeds.append(dict(isLiked = NOT_LIKED))
-            for j in range(subIndex, len(boardReplyLikeCheck)):
-                if comments[i].boardReplyIndex == boardReplyLikeCheck[j].boardReplyIndex:
+            for j in range(subIndex, len(boardReplyLikeCheckRecords)):
+                if commentRecords[i].boardReplyIndex == boardReplyLikeCheckRecords[j].boardReplyIndex:
                     isLikeds[i]['isLiked'] = LIKED
                     # 다음 시작 루프 인덱스 변경
                     subIndex = j
@@ -228,7 +231,7 @@ def read(articleIndex, error = None):
             
             return render_template(READ_HTML,
                                    article = article,
-                                   comments = comments,
+                                   commentRecords = commentRecords,
                                    isLikeds = isLikeds,
                                    isPostLiked = isPostLiked,
                                    error = error)
