@@ -69,7 +69,6 @@ def board(pageNum):
                 
             filterCondition = request.form['filterCondition']
             keyWord = request.form['keyWord']
-            print courseId, filterCondition, keyWord
             # courseId가 None이 아닐 때 해당 courseId로 필터링
             if courseId:
                 myCourses = dao.query(myCourses).\
@@ -99,21 +98,21 @@ def board(pageNum):
                             join(articlesOnBoard,
                                  articlesOnBoard.c.courseId == myCourses.c.courseId).\
                             subquery()
+            for raw in dao.query(courseSub).all():
+                print raw.courseName, raw.isNotice, raw.articleIndex
             # 과목 게시글 모음
             try:
                 courses.append(dao.query(get_page_record(dao.query(select_article(courseSub,
-                                                                        NOT_NOTICE))),
-                                                        int(pageNum)).\
+                                                                                  NOT_NOTICE)),
+                                                        int(pageNum))).\
                                    all())
-                print "ABCCCC"
             except Exception:
-                print "ABCCCCD"
                 courses.append([])
             try:
                 courseNotices.append(dao.query(get_page_record(dao.query(select_article(courseSub,
-                                                                              NOTICE))),
+                                                                                        NOTICE)),
                                                                int(pageNum),
-                                                               LIST = 5).\
+                                                               LIST = 5)).\
                                          all())
             except Exception:
                 courseNotices.append([])
@@ -130,7 +129,7 @@ def board(pageNum):
         # All 과목 게시글
         try:
             articles = dao.query(get_page_record(dao.query(select_article(courseSub,
-                                                                NOT_NOTICE)),
+                                                                          NOT_NOTICE)),
                                                  int(pageNum))).\
                            all()
         except Exception:
@@ -138,7 +137,7 @@ def board(pageNum):
         # All 과목 공지글    
         try:    
             articleNotices = dao.query(get_page_record(dao.query(select_article(courseSub,
-                                                                      NOTICE)),
+                                                                                NOTICE)),
                                                        int(pageNum),
                                                        LIST = 5)).\
                                  all()

@@ -35,7 +35,7 @@ def get_page_pointed(pageNum, count, BLOCK = 6, LIST = 15):
 Page Number Case Record
 '''
 def get_page_record(recordsSub, pageNum, LIST = 15):
-    
+
     return recordsSub.slice((pageNum - 1) * LIST,
                             LIST).\
                       subquery()
