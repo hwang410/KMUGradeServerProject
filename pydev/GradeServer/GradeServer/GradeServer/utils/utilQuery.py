@@ -43,15 +43,18 @@ def select_accept_courses():
     # Server Master
     if 'ServerAdministrator' in session['authority']:
         myCourses = dao.query(RegisteredCourses.courseId,
-                              RegisteredCourses.courseName)
+                              RegisteredCourses.courseName,
+                              RegisteredCourses.endDateOfCourse)
     # Class Master, User
     elif 'CourseAdministrator' in session['authority']:
         myCourses = dao.query(RegisteredCourses.courseId,
-                              RegisteredCourses.courseName).\
+                              RegisteredCourses.courseName,
+                              RegisteredCourses.endDateOfCourse).\
                         filter(RegisteredCourses.courseAdministratorId == session['memberId'])
     else:
         myCourses = dao.query(Registrations.courseId,
-                              RegisteredCourses.courseName).\
+                              RegisteredCourses.courseName,
+                              RegisteredCourses.endDateOfCourse).\
                         filter(Registrations.memberId == session['memberId']).\
                         join(RegisteredCourses,
                              Registrations.courseId == RegisteredCourses.courseId)
