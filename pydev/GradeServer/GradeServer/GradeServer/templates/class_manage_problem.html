@@ -13,40 +13,17 @@ $(function() {
     }
 });
 $(function() {
-	var problems = [
-		{% for problem in allProblems %}
-			{ value: "{{ problem.problemId }}{{ problem.problemName }}" },
-		{% endfor %}
-		{ value: ""}
-	];
-	var courses = [
-		{% for course in ownCourses %}
-			{ value: "{{ course.courseId }}{{ course.courseName }}" },
-		{% endfor %}
-		{ value: ""}
-	];
-	$("#search-courses1").autocomplete({
-		lookup: courses,
-		onSelect: function(suggestion){
-			
-    }
-	});
-	$("#search-problems1").autocomplete({
-		lookup: problems,
-		onSelect: function(suggestion){
-			
-    }
-	});
 	 $("#addline_problem").bind('click',function(){
-			
 		  var targetTable = document.getElementById('problems');
 		  var numOfRow = targetTable.rows.length;
+			
+			var selectedItem = document.getElementById("courseId1");
+			var index = selectedItem.options[selectedItem.selectedIndex].index + 1;
 
 		  reset_val = function(){
-		    
-		    $("#search-courses1").val("");
-		    $("#search-problems1").val("");
-		    $("#a_box1").attr("checked",false);
+		    $("#courseId1").val("");
+		    $("#problemId1").val("");
+		    $("#multipleFiles1").attr("checked",false);
 		    $("#startDate1").val("");
 		    $("#openDate1").val("");
 		    $("#endDate1").val("");
@@ -55,81 +32,100 @@ $(function() {
 		
 		  var newRow = targetTable.insertRow(2);
 		  var uploadObj;
-		  var keys = ['search-courses', 'search-problems', 'a_box', 'startDate', 'endDate', 'openDate', 'closeDate'];
-		  var names = ['courseId', 'problemId', 'multipleFiles', 'startDate', 'endDate', 'openDate', 'closeDate'];
+		  var keys = ['courseId', 'problemId', 'multipleFiles', 'startDate', 'endDate', 'openDate', 'closeDate'];
 		  var placeholders = ['course name', 'problem name', '', 'click', 'click', 'click', 'click'];
-		  var formsize = ['input-ularge', 'input-ularge', 'checkbox-center','datepicker input-usmall', 'datepicker input-usmall', 'datepicker input-usmall', 'datepicker input-usmall'];
+		  var formsize = ['', '', 'checkbox-center','datepicker input-usmall', 'datepicker input-usmall', 'datepicker input-usmall', 'datepicker input-usmall'];
+
 		  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
-		    if(i<2){
-				uploadObj = "<tr><td><div id='searchfield'><input type='text' ";
-			    uploadObj += "class = '" + formsize[i] +"' id = '" + keys[i] + numOfRow + "' name = '" + names[i] + "' placeholder = '" + placeholders[i] + "' value = '" + $("#" + keys[i] + "1").val();
-			    newRow.insertCell(i).innerHTML = uploadObj + "' form='addProblem'></td>";
+		  	uploadObj = "<tr>";
+		    if(i < 2){
+					uploadObj += "<td>" +
+													"<select id='" + keys[i] + numOfRow + "' " +
+															    "name='" + keys[i] + "' " +
+															    "value='" + $("#" + keys[i] + "1").val() + "' " +
+															    "form='addProblem'>";
+					if(i == 0){
+						{%- for ownCourse in ownCourses %}
+						uploadObj += "<option";
+						if(index == "{{ loop.index }}"){
+							uploadObj += " selected";
+						}
+						uploadObj += ">{{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>";
+						{% endfor -%}
+					}
+					else{
+						{%- for problem in allProblems %}
+						uploadObj += "<option";
+						if(index == "{{ loop.index }}"){
+							uploadObj += " selected";
+						}
+						uploadObj += ">{{ problem.problemId }} {{ problem.problemName }} </option>";
+						{% endfor -%}
+					}
+					uploadObj += "</select>";
 		    }
-		    else if(i==2){
-		    	var val_mf = document.getElementById('a_box1')
+		    else if(i == 2){
+		    	var val_mf = document.getElementById('multipleFiles1')
+		    	uploadObj += "<td>";
 		    	if(val_mf.checked == true){
-			    	uploadObj = "<td><label ";
-			    	uploadObj += "class ='" + formsize[i] +"'><input class='box-check' name='" + names[i] + "' type='checkbox' id='" + keys[i] + numOfRow +"' checked=true></label>";
-			    	newRow.insertCell(i).innerHTML = uploadObj;
+			    	uploadObj += "<label class='" + formsize[i] + "'>" +
+			    							   "<input class='box-check' " +
+		    											 	  "id='" + keys[i] + numOfRow + "' " +
+		    											 	  "name='" + keys[i] + "' " +
+		    											 	  "type='checkbox' " +
+		    											 	  "checked=true>" +
+												 "</label>";
 		    	}
 		    	else{
-		    		uploadObj = "<td><label ";
-			    	uploadObj += "class ='" + formsize[i] +"'><input class='box-check' name='" + names[i] + "' type='checkbox' id='" + keys[i] + numOfRow +"' ></label>";
-			    	newRow.insertCell(i).innerHTML = uploadObj;
-		    		
+		    		uploadObj += "<label class='" + formsize[i] +"'>" +
+		    								   "<input class='box-check' " +
+	    												 	  "id='" + keys[i] + numOfRow +"' " +
+	    										 		 	  "name='" + keys[i] + "' " +
+	    										 		 	  "type='checkbox'>" +
+	    									 "</label>";
 		    	}
 		    }
 		    else {
-		    	uploadObj = "<td><input type='date' ";
-		    	uploadObj += "class='" + formsize[i] + "' id='" + keys[i] + numOfRow + "' name='" + names[i] + "' data-date-format='yyyy-mm-dd' autocomplete='off' placeholder='" + placeholders[i] + "' value = '" + $("#" + keys[i] + "1").val();
-		    	newRow.insertCell(i).innerHTML = uploadObj + "' form='addProblem'></td>";
+		    	uploadObj += "<td>" +
+		    							   "<input class='" + formsize[i] + "' " +
+		    			 								  "id='" + keys[i] + numOfRow + "' " +
+		    											  "name='" + keys[i] + "' " +
+		    											  "type='date' " +
+		    											  "data-date-format='yyyy-mm-dd' " +
+		    											  "autocomplete='off' " +
+		    											  "placeholder='" + placeholders[i] + "' " +
+		    											  "value='" + $("#" + keys[i] + "1").val() + "' " +
+		    											  "form='addProblem'>";
 		    }
-		  }
-			$("#search-courses"+numOfRow).autocomplete({
-				lookup: courses,
-				onSelect: function(suggestion){
-					
-		    }
-			});
-			$("#search-problems"+numOfRow).autocomplete({
-				lookup: problems,
-				onSelect: function(suggestion){
-					
-		    }
-			});
-		    if (!Modernizr.inputtypes['date']) {
-		        $('input[type=date]').datepicker({
-		            dateFormat: 'yy-mm-dd'
-		        });
-		    }
+		    newRow.insertCell(i).innerHTML = uploadObj;
+	 	 	}
+	    if (!Modernizr.inputtypes['date']) {
+	        $('input[type=date]').datepicker({
+	            dateFormat: 'yy-mm-dd'
+	        });
+	    }
 		  reset_val();
-		
-
-
 		});
 	 	$("#resetAddProblemForm").bind('click',function(){
-
-			
-			document.getElementById("addProblemForm").innerHTML = '<td><div id="searchfield"><input class="input-ularge" id="search-courses1" name="courseId" type="text" form="addProblem" placeholder="course name"></div>'+
-					'<td><div id="searchfield"><input class="input-ularge" id="search-problems1" name="problemId" type="text" form="addProblem" placeholder="problem name"></div>' +
-					'<td><label class="checkbox-center"><input class="box-check" name="multipleFiles" id="a_box1" type="checkbox"></label>' +
-					'<td><input class="datepicker input-usmall" id="startDate1" name="startDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
-					'<td><input class="datepicker input-usmall" id="endDate1" name="endDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
-					'<td><input class="datepicker input-usmall" id="openDate1" name="openDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
-					'<td><input class="datepicker input-usmall" id="closeDate1" name="closeDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' ;
+			document.getElementById("addProblemForm").innerHTML = 
+				'<td>' +
+					'<select id="courseId1" name="courseId" form="addProblem">' +
+						'{%- for ownCourse in ownCourses %}' +
+						'<option> {{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>' +
+						'{% endfor -%}' +
+						'</select>' +
+				'<td>' +
+					'<select id="problemId1" name="problemId" form="addProblem">' +
+						'{%- for problem in allProblems %}' +
+						'<option> {{ problem.problemId }} {{ problem.problemName }} </option>' +
+						'{% endfor -%}' +
+					'</select>' +
+				'<td><label class="checkbox-center"><input class="box-check" name="multipleFiles" id="multipleFiles1" type="checkbox"></label>' +
+				'<td><input class="datepicker input-usmall" id="startDate1" name="startDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
+				'<td><input class="datepicker input-usmall" id="endDate1" name="endDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
+				'<td><input class="datepicker input-usmall" id="openDate1" name="openDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
+				'<td><input class="datepicker input-usmall" id="closeDate1" name="closeDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' ;
 					
-			$("#search-courses1").autocomplete({
-				lookup: courses,
-				onSelect: function(suggestion){
-					
-		    }
-			});
-			$("#search-problems1").autocomplete({
-				lookup: problems,
-				onSelect: function(suggestion){
-					
-		    }
-			});
 			if (!Modernizr.inputtypes['date']) {
 		        $('input[type=date]').datepicker({
 		            dateFormat: 'yy-mm-dd'
@@ -174,9 +170,23 @@ $(function() {
 							<td>Close Date
 					<tbody id="addProblemForm">
 					<tr>
-						<td><div id="searchfield"><input class="input-ularge" id="search-courses1" name="courseId" type="text" form="addProblem" placeholder="course name"></div>
-						<td><div id="searchfield"><input class="input-ularge" id="search-problems1" name="problemId" type="text" form="addProblem" placeholder="problem name"></div>
-						<td><label class="checkbox-center"><input class="box-check" name="multipleFiles" id="a_box1" type="checkbox"></label>
+						<!--
+						<td><input class="input-ularge" id="search-courses1" name="courseId" type="text" form="addProblem" placeholder="course name"></div>
+						<td><input class="input-ularge" id="search-problems1" name="problemId" type="text" form="addProblem" placeholder="problem name"></div>
+						-->
+						<td>
+							<select id="courseId1" name="courseId" form="addProblem">
+								{%- for ownCourse in ownCourses %}
+								<option> {{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>
+								{% endfor -%}
+							</select>
+						<td>
+							<select id="problemId1" name="problemId" form="addProblem">
+								{%- for problem in allProblems %}
+								<option> {{ problem.problemId }} {{ problem.problemName }} </option>
+								{% endfor -%}
+							</select>
+						<td><label class="checkbox-center"><input class="box-check" name="multipleFiles" id="multipleFiles1" type="checkbox"></label>
 						<td><input class="datepicker input-usmall" id="startDate1" name="startDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">
 						<td><input class="datepicker input-usmall" id="endDate1" name="endDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">
 						<td><input class="datepicker input-usmall" id="openDate1" name="openDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">

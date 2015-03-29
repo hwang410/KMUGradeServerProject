@@ -167,14 +167,15 @@ def class_manage_problem():
                 isNewProblem = False
                 editTarget, courseId, problemId, targetData = form[5:].split('_')
                 targetData = request.form[form]
+
                 # actually editTarget is 'id' value of tag. 
                 # That's why it may have 'Tab' at the last of id to clarify whether it's 'all' tab or any tab of each course.
                 # so when user pushes one of tab and modify the data, then we need to remake the editTarget 
                 if 'Tab' in editTarget:
                     editTarget = editTarget[:-3]
-                for ownProblem in ownProblems:
-                    if ownProblem.courseId == courseId and\
-                       ownProblem.problemId == int(problemId):
+                for registeredProblem, registeredCourse, problemName in ownProblems:
+                    if registeredCourse.courseId == courseId and\
+                       registeredProblem.problemId == int(problemId):
                         kwargs = { editTarget : targetData }
                         try:
                             dao.query(RegisteredProblems).\
@@ -203,7 +204,7 @@ def class_manage_problem():
                 problemId = int(request.form['problemId'][:5])
                 if form == 'multipleFiles':
                     isAllInputCaseInOneFile = 'MultipleFiles'
-                
+                    
         # when 'add' button is pushed, insert new problem into RegisteredProblems table
         if isNewProblem:
             # if openDate, closeDate are empty then same with startDate, endDate
@@ -227,7 +228,7 @@ def class_manage_problem():
                                        ownProblems = ownProblems)
             
             try:
-                print "id", problemId, 'cid', courseId, 'sct', solutionCheckType, 'icif', isAllInputCaseInOneFile, 'fs', limitedFileSize, 'st', startDate, 'ed', endDate, 'op', openDate, 'cd', closeDate
+                #print "id", problemId, 'cid', courseId, 'sct', solutionCheckType, 'icif', isAllInputCaseInOneFile, 'fs', limitedFileSize, 'st', startDate, 'ed', endDate, 'op', openDate, 'cd', closeDate
                 newProblem = RegisteredProblems(problemId = problemId,
                                                 courseId = courseId, 
                                                 solutionCheckType = solutionCheckType, 
@@ -275,7 +276,7 @@ def class_manage_problem():
             
             if not os.path.exists(problemPath):
                 os.makedirs(problemPath)
-                
+
         return redirect(url_for('.class_manage_problem'))
         
     return render_template('/class_manage_problem.html', 
