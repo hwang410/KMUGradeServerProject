@@ -34,7 +34,7 @@ $(function() {
 				<td><a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum =1) }}">Rate</a></td>
 			</tr>
 		</thead>
-		{%- for i in range (pages['startList'], pages['endList']) %}
+		{%- for i in range (0, pages['endList'] - pages['startList']) %}
 		<tr>
 			<td>{{ i +1 }}</td>
 			<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submittedDate', pageNum =1) }}">{{ rankMemberRecords[i].memberId }}</a></td>

@@ -5,7 +5,7 @@ from flask import render_template, request
 from sqlalchemy import func, distinct
 
 from GradeServer.utils.loginRequired import login_required
-from GradeServer.utils.utilPaging import get_page_pointed
+from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilQuery import select_all_user, select_rank
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utils import *
@@ -48,8 +48,10 @@ def rank(sortCondition, pageNum, error =None):
         
         # 랭크 정보
         try:
-            rankMemberRecords = dao.query(select_rank(submissions,
-                                                      sortCondition)).all()
+            rankMemberRecords = dao.query(get_page_record(dao.query(select_rank(submissions,
+                                                                                sortCondition)),
+                                                          int(pageNum))).\
+                                    all()
         except Exception:
             rankMemberRecords = []
             

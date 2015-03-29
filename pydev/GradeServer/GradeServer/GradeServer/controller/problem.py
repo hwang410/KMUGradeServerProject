@@ -4,7 +4,7 @@ from flask import request, redirect, session, url_for, render_template, flash
 from sqlalchemy import and_, func
 
 from GradeServer.utils.loginRequired import login_required
-from GradeServer.utils.utilPaging import get_page_pointed
+from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utils import *
 
 from GradeServer.database import dao
@@ -57,13 +57,14 @@ def problemList(courseId, pageNum):
                    subquery()
     # Get ProblemListRecords
     try:
-        problemListRecords = dao.query(problems,
-                                       submissions.c.score,
-                                       submissions.c.status,
-                                       submissions.c.solutionCheckCount).\
-                                 outerjoin(submissions,
-                                           problems.c.problemId == submissions.c.problemId).\
-                                 order_by(problems.c.startDateOfSubmission.desc()).\
+        problemListRecords = dao.query(get_page_record(dao.query(problems,
+                                                                 submissions.c.score,
+                                                                 submissions.c.status,
+                                                                 submissions.c.solutionCheckCount).\
+                                                           outerjoin(submissions,
+                                                                     problems.c.problemId == submissions.c.problemId).\
+                                                           order_by(problems.c.startDateOfSubmission.desc()),
+                                                       int(pageNum))).\
                                  all()
     except Exception:
         problemListRecords = []

@@ -15,7 +15,7 @@ from flask import render_template, request, session, redirect, url_for, flash
 from datetime import datetime
 from sqlalchemy import func, or_
 
-from GradeServer.utils.utilPaging import get_page_pointed
+from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilQuery import select_accept_courses
@@ -69,7 +69,6 @@ def board(pageNum):
                 
             filterCondition = request.form['filterCondition']
             keyWord = request.form['keyWord']
-            print courseId, filterCondition, keyWord
             # courseId가 None이 아닐 때 해당 courseId로 필터링
             if courseId:
                 myCourses = dao.query(myCourses).\
@@ -99,20 +98,51 @@ def board(pageNum):
                             join(articlesOnBoard,
                                  articlesOnBoard.c.courseId == myCourses.c.courseId).\
                             subquery()
+            for raw in dao.query(courseSub).all():
+                print raw.courseName, raw.isNotice, raw.articleIndex
             # 과목 게시글 모음
-            courses.append(select_article(courseSub,
-                                          NOT_NOTICE))
-            courseNotices.append(select_article(courseSub,
-                                               NOTICE))
+            try:
+                courses.append(dao.query(get_page_record(dao.query(select_article(courseSub,
+                                                                                  NOT_NOTICE)),
+                                                        int(pageNum))).\
+                                   all())
+            except Exception:
+                courses.append([])
+            try:
+                courseNotices.append(dao.query(get_page_record(dao.query(select_article(courseSub,
+                                                                                        NOTICE)),
+                                                               int(pageNum),
+                                                               LIST = 5)).\
+                                         all())
+            except Exception:
+                courseNotices.append([])
             
-            # 과목 게시글 유니온
-            articles.extend(courses[i])
             # 과목 게시물 페이지 정보 구하기
             pages.append(get_page_pointed(int(pageNum),
                                           len(courses[i])))
-            # 과목 공지글 유니온        
-            articleNotices.extend(courseNotices[i])
-        
+        # All Course Subquery
+        courseSub = dao.query(myCourses.c.courseName,
+                              articlesOnBoard).\
+                        join(articlesOnBoard,
+                             articlesOnBoard.c.courseId == myCourses.c.courseId).\
+                        subquery()
+        # All 과목 게시글
+        try:
+            articles = dao.query(get_page_record(dao.query(select_article(courseSub,
+                                                                          NOT_NOTICE)),
+                                                 int(pageNum))).\
+                           all()
+        except Exception:
+            articles = []
+        # All 과목 공지글    
+        try:    
+            articleNotices = dao.query(get_page_record(dao.query(select_article(courseSub,
+                                                                                NOTICE)),
+                                                       int(pageNum),
+                                                       LIST = 5)).\
+                                 all()
+        except Exception:
+            articleNotices = []
         # 모드느 과목 페이징 정보 구하기
         allPages = get_page_pointed(int(pageNum),
                                     len(articles))
@@ -139,14 +169,11 @@ def board(pageNum):
 Board Notice Classification
 '''
 def select_article(courseSub, isNotice):
-    try:
-        return dao.query(courseSub).\
-                   filter(courseSub.c.isNotice == isNotice).\
-                   order_by(courseSub.c.articleIndex.desc()).\
-                   all()
-    except Exception:
-        #None Type Exception
-        return []
+    
+    return dao.query(courseSub).\
+               filter(courseSub.c.isNotice == isNotice).\
+               order_by(courseSub.c.articleIndex.desc()).\
+               subquery()
  
  
 '''
