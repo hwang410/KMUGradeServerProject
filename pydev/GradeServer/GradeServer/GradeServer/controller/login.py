@@ -67,12 +67,29 @@ def sign_in():
                         session[AUTHORITY] = list(check.authority)
                         session[LAST_ACCESS_DATE] = datetime.now()
                         
+                        ownCourses = select_accept_courses()
                         # Get My Accept Courses
                         try:
-                            session[OWN_COURSES] = dao.query(select_accept_courses ()).all ()
+                            session[OWN_CURRENT_COURSES] = dao.query(ownCourses).\
+                                                               filter(ownCourses.c.endDateOfCourse >= datetime.now()).\
+                                                               all ()
                         except Exception:
-                            session[OWN_COURSES] = []
-                                
+                            session[OWN_CURRENT_COURSES] = []
+                        
+                        for k in session[OWN_CURRENT_COURSES]:
+                            print k.courseId, k.courseName, k.endDateOfCourse
+                            
+                        try:
+                            session[OWN_PAST_COURSES] = dao.query(ownCourses).\
+                                                            filter(ownCourses.c.endDateOfCourse < datetime.now()).\
+                                                            all ()
+                        except Exception:
+                            session[OWN_PAST_COURSES] = []
+                        
+                        for k in session[OWN_PAST_COURSES]:
+                            print k.courseId, k.courseName, k.endDateOfCourse
+                            
+                                    
                         dao.query(Members).\
                             filter(Members.memberId == memberId).\
                             update(dict(lastAccessDate = session[LAST_ACCESS_DATE]))

@@ -45,6 +45,7 @@ encoding//GradeServer/GradeServer/model/teamInvitations.py=utf-8
 encoding//GradeServer/GradeServer/model/teams.py=utf-8
 encoding//GradeServer/GradeServer/utils/__init__.py=utf-8
 encoding//GradeServer/GradeServer/utils/loginRequired.py=utf-8
+encoding//GradeServer/GradeServer/utils/utilQuery.py=utf-8
 encoding//GradeServer/GradeServer/utils/utils.py=utf-8
 encoding//GradeServer/runserver.py=utf-8
 encoding/<project>=UTF-8

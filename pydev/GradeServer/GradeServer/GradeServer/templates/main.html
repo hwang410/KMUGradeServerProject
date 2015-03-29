@@ -39,16 +39,24 @@
 							{%- if session['memberId'] != NULL %}
 							<ul class="dropdown-menu">
 								<li class="nav-header">Current Class</li>
-								{%- if session['ownCourses'] %}
-									{%- for course in session['ownCourses'] %}
+								{%- if session['ownCurrentCourses'] %}
+									{%- for course in session['ownCurrentCourses'] %}
 									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId, pageNum = 1)}}" class="currentClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
-									<li class="disabled"><a tabindex="-1" href="#">None</a></li>
-								{% endif -%}
-								<li class="divider"></li> <!-- seperation line -->
-								<li class="nav-header">Post Class</li>
 								<li class="disabled"><a tabindex="-1" href="#">None</a></li>
+								{% endif -%}
+								
+								<li class="divider"></li> <!-- seperation line -->
+
+								<li class="nav-header">Past Class</li>
+								{%- if session['ownPastCourses'] %}
+									{%- for course in session['ownPastCourses'] %}
+									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId, pageNum = 1)}}" class="pastClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
+									{% endfor -%}
+								{%- else %}
+								<li class="disabled"><a tabindex="-1" href="#">None</a></li>
+								{% endif -%}
 							</ul>
 							{% endif -%}
 						</li>
