@@ -76,19 +76,12 @@ def sign_in():
                         except Exception:
                             session[OWN_CURRENT_COURSES] = []
                         
-                        for k in session[OWN_CURRENT_COURSES]:
-                            print k.courseId, k.courseName, k.endDateOfCourse
-                            
                         try:
                             session[OWN_PAST_COURSES] = dao.query(ownCourses).\
                                                             filter(ownCourses.c.endDateOfCourse < datetime.now()).\
                                                             all ()
                         except Exception:
                             session[OWN_PAST_COURSES] = []
-                        
-                        for k in session[OWN_PAST_COURSES]:
-                            print k.courseId, k.courseName, k.endDateOfCourse
-                            
                                     
                         dao.query(Members).\
                             filter(Members.memberId == memberId).\
