@@ -79,15 +79,15 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 								<td>Language</td>
 								<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Submit Date</a></td>
 							</tr>
-							{%- for i in range (pages['startList'], pages['endList']) %}
+							{%- for i in range (0, pages['endList'] - pages['startList']) %}
 							<tr>
-								<td>{{ submissionRecords[i].problemName }}</td>
-								<td>{{ submissionRecords[i].status }}</td>
-								<td>{{ submissionRecords[i].score }}</td>
-								<td>{{ submissionRecords[i].runTime }}</td>
-								<td>{{ submissionRecords[i].sumOfSubmittedFileSize }}</td>
-								<td>{{ submissionRecords[i].languageName }}</td>
-								<td>{{ submissionRecords[i].codeSubmissionDate }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecords[i].problemName }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecords[i].status }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecords[i].score }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecords[i].runTime }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecords[i].sumOfSubmittedFileSize }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecords[i].languageName }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecords[i].codeSubmissionDate }}</td>
 							</tr>
 							{% endfor -%}
 						</table>

@@ -41,7 +41,7 @@
 					{% endfor -%}
 
 					<!-- All Board -->
-					{%- for i in range (allPages['startList'], allPages['endList']) %}
+					{%- for i in range (0, allPages['endList'] - allPages['startList']) %}
 				 	<tr>
 				 		<td>{{ (allPages['endList'] -allPages['startList']) -i }}</td>
 						<td>{{ articles[i].courseId }} {{ articles[i].courseName }}</td>
@@ -103,7 +103,7 @@
 					{% endfor %}
 					
 					<!-- Course Board -->
-					{% for j in range (pages[i]['startList'], pages[i]['endList']) %}
+					{% for j in range (0, pages[i]['endList'] - pages[i]['startList']) %}
 					<tr>
 						<td>{{ (pages[i]['endList'] - pages[i]['startList']) -j }}</td>
 						<td>{{ courses[i][j].courseId}} {{ courses[i][j].courseName }}</td>

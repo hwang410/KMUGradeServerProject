@@ -2,6 +2,8 @@
 
 import math 
 
+from database import dao
+
 
 """
 페이징에 필요한 정보들을 구하는 모듈
@@ -19,12 +21,21 @@ def get_page_pointed(pageNum, count, BLOCK = 6, LIST = 15):
     #Minimum Page
     if endPage > allPage:
         endPage = allPage
-    page_dick = {'BLOCK': BLOCK,
-                 'pageNum': pageNum,
-                 'startList': startList,
-                 'endList': endList,
-                 'startPage': startPage,
-                 'endPage': endPage,
-                 'allPage': allPage}
+        
+    return {'BLOCK': BLOCK,
+            'pageNum': pageNum,
+            'startList': startList,
+            'endList': endList,
+            'startPage': startPage,
+            'endPage': endPage,
+            'allPage': allPage}
     
-    return page_dick
+    
+'''
+Page Number Case Record
+'''
+def get_page_record(recordsSub, pageNum, LIST = 15):
+    
+    return recordsSub.slice((pageNum - 1) * LIST,
+                            LIST).\
+                      subquery()

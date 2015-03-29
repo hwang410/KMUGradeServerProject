@@ -12,7 +12,7 @@
 		<tr>
 			<td>Num</td><td>Title</td><td>Score</td><td>Status</td><td>Due Date</td><td>Count</td><td>Record</td>
 		</tr>
-		{% for i in range(pages['startList'], pages['endList']) %}
+		{% for i in range(0, pages['endList'] - pages['startList']) %}
 		<tr>
 			<td style ='vertical-align: middle'>
 				{{ (pages['endList'] - pages['startList']) - i }}
