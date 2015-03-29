@@ -42,7 +42,7 @@ problemsPath = 'Problems'
 # if there's additional difficulty then change the value 'numberOfDifficulty'
 numberOfDifficulty = 5
 newUsers = []
-
+    
 @GradeServer.route('/master/manage_problem', methods=['GET', 'POST'])
 @login_required
 def server_manage_problem():
