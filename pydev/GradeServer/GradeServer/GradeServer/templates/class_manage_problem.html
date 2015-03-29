@@ -321,12 +321,12 @@ $(function() {
 							<td>{{ registeredProblem.courseId }}
 							<td>{{ registeredCourse.courseName }}
 							<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ problem.problemName }}</a>
-							<td ondblclick="modifySelector(this.id)" id="isAllInputCaseInOneFileTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}">{{ registeredProblem.isAllInputCaseInOneFile }}
-							<td ondblclick="modifySelector(this.id)" id="startDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}">{{ registeredProblem.startDateOfSubmission }}
-							<td ondblclick="modifySelector(this.id)" id="endDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}">{{ registeredProblem.endDateOfSubmission }}
-							<td ondblclick="modifySelector(this.id)" id="openDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}">{{ registeredProblem.openDate }}
-							<td ondblclick="modifySelector(this.id)" id="closeDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}">{{ registeredProblem.closeDate }}
-							<td><label class="checkbox-center"><input type="checkbox" name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}" class="box-check" form="deleteProblem"></label>
+							<td id="isAllInputCaseInOneFileTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.isAllInputCaseInOneFile }}
+							<td id="startDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.startDateOfSubmission }}
+							<td id="endDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.endDateOfSubmission }}
+							<td id="openDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.openDate }}
+							<td id="closeDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.closeDate }}
+							<td><label class="checkbox-center"><input class="box-check" name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}" type="checkbox" form="deleteProblem"></label>
 						<div id="isAllInputCaseInOneFileTab_{{registeredProblem.courseId}}_{{registeredProblem.problemId}}"></div>
 						{% endif %}
 					{% endfor %}
@@ -337,6 +337,18 @@ $(function() {
 			function modifySelector(target){ // target == isAllInputCaseInOneFile_ or startDateOfSubmission_ or endDateOfSubmission_ or openDate_ or closeDate_ or delete_
 				document.getElementById("editButton").innerHTML = "EditConfirm";
 				var $targetValue = document.getElementById(target).innerHTML;
+				// when user double clicked the form, innerHTML contains the word 'input'
+				// In this case, targetValue shouldn't be '<input ... >' but only date.
+				// using regular expression, find date value.
+				if($targetValue.indexOf("input") > -1){
+					var tokens = $targetValue.split(' ');
+					for(var i=0;i<tokens.length;i++){
+						if(tokens[i].indexOf("value") > -1){
+							$targetValue = tokens[i].split("=\"")[1];
+							break;
+						}
+					}
+				}
 				if(target.split("_")[0] == "isAllInputCaseInOneFile" || target.split("_")[0] == "isAllInputCaseInOneFileTab"){
 					if($targetValue == "OneFile"){
 						$targetValue = document.getElementById(target).innerHTML = "MultipleFiles";
@@ -348,7 +360,14 @@ $(function() {
 				}
 				// about dates
 				else{
-					document.getElementById(target).innerHTML = '<input class="datepicker input-usmall" type="date" id="' + target + '" name="edit_' + target + '" data-date-format="yyyy-mm-dd" placeholder="click" autocomplete="off" onmousedown="datepicker();" value="' + $targetValue + '" form="editProblem">';
+					document.getElementById(target).innerHTML = '<input class="datepicker input-usmall" ' +
+																														 'id="' + target + '" ' +
+																														 'name="edit_' + target + '" ' +
+																														 'data-date-format="yyyy-mm-dd" ' +
+																														 'type="date" ' +
+																														 'value="' + $targetValue + '" ' +
+																														 'autocomplete="off" form="editProblem" ' +
+																														 'placeholder="click" onmousedown="datepicker();">';
 				}
 			}
 			function datepicker() {
