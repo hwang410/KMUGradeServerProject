@@ -4,36 +4,125 @@
 
 {%- extends "main.html" -%}
 {%- block body %}
-<div class="container">
-	<div style="text-align:center">
-		<h3>"Title"</h3>
-		<h4>
-			<!-- code information -->
-			<div class="container">
-				<div class="row-fluid">
-					<div class="span12">
-						<div class="row-fluid">
-							<div class="span3">"User Id"</div>
-							<div class="span2">"Run Time"</div>
-							<div class="span2">"Used Memory"</div>
-							<div class="span2">"Code Length"</div>
-							<div class="span3" style="text-align:right"><button type="button" id="code-down">Download source code</button></div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- end code information -->
-		</h4>
-		<!-- code section -->
-		<div class="container" style="border:1px solid">
-			<!-- put the code here -->
 
+<script>
+	alert (1);
+	ace.config.set("basePath", "/mnt/shared/pydev/GradeServer/GradeServer/GradeServer/static/bootstrap/js/src");
+	alert (2);
+	
+	{%  for fileInfo in submittedFileRecords %}
+	alert (3);
+	var editor{{ loop.index0 }} = ace.edit("editor");
+	alert (4);
+	ace.require("ace/ext/language_tools");
+	editor{{ loop.index0 }}.session.setMode("ace/mode/c_cpp");
+	editor{{ loop.index0 }}.setTheme("ace/theme/eclipse");
+	editor{{ loop.index0 }}.setAutoScrollEditorIntoView(true);
+	editor{{ loop.index0 }}.setOption("maxLines", 70);
+	editor{{ loop.index0 }}.setOption("minLines", 20);
+	editor{{ loop.index0 }}.setOption("showPrintMargin", false);
+	{% endfor %}
+</script>
+
+<div class="container">
+	<h3>{{ problemName }}</h3>
+		<!-- code information -->
+		<div class="container">
+			<div class="row-fluid">
+				<table class="user_code table table-bordered">
+					<div class="span3">
+						<thead>
+							<tr>
+									<td>MemberId</td>
+									<td>Run Time</td>
+									<td>Used Memory</td>
+									<td>Code Length</td>
+									<td>&nbsp;</td>
+							</tr>
+						</thead>
+						<tr>
+							<td>{{ problemSolvedUserRecords.memberId }}</td>
+							<td>{{ problemSolvedUserRecords.runTime }} ms</td>
+							<td>{{ problemSolvedUserRecords.usedMemory }} MB</td>
+							<td>{{ problemSolvedUserRecords.sumOfSubmittedFileSize }} Byte</td>
+							<td style="text-align: center"><button type="button" id="code-down">Download source code</button></td>
+						</tr>
+					</div>
+				</table>
+			</div>
 		</div>
-		<br>
-		<!-- comment section -->
-		<div class="container" style="border:1px solid">
-			<!-- put the comment here -->
+	<!-- end code information -->
+	
+	<!-- code section -->
+	<div class="container">
+		<!-- put the code here -->
+		<div class="tabbable">
+			<ul class="nav nav-tabs">
+				{% for fileInfo in submittedFileRecords %}
+					{% if not loop.index0 %}
+					<li class = 'active'>
+					{% else %}
+					<li class>
+					{% endif %}
+					<a href="#{{ loop.index0 }}" data-toggle="tab">{{ fileInfo }}</a></li>
+				{% endfor %}
+			</ul>
+		
+			<div class="tab-content">
+			<!-- File Content -->
+			{% for fileInfo in submittedFileRecords %}
+					{% if not loop.index0 %}
+				<div id="{{ loop.index0 }}" class="tab-pane active">
+					{% else %}
+				<div id="{{ loop.index0 }}" class="tab-pane">
+					{% endif %}
+					<div>
+						Theme :
+						<select type = "text" id="language" name="language" onchange="selectLanguage(this)">
+							<option value = "6"> ambiance </option>
+							<option value = "7"> chaos </option>
+							<option value = "8"> chrome </option>
+							<option value = "9"> clouds_midnight </option>
+							<option value = "10"> clouds </option>
+							<option value = "11"> cobalt </option>
+							<option value = "12"> crimson_editor </option>
+							<option value = "13"> dawn </option>
+							<option value = "14"> dreamweaver </option>
+							<option selected = "selected" value = "15"> eclipse </option>
+							<option value = "16"> github </option>
+							<option value = "17"> idle_fingers </option>
+							<option value = "18"> katzenmilch </option>
+							<option value = "19"> kr_theme </option>
+							<option value = "20"> kuroir </option>
+							<option value = "21"> merbivore_soft </option>
+							<option value = "22"> merbivore </option>
+							<option value = "23"> mono_industrial </option>
+							<option value = "24"> monokai </option>
+							<option value = "25"> pastel_on_dark </option>
+							<option value = "26"> solarized_dark </option>
+							<option value = "27"> solarized_light </option>
+							<option value = "28"> terminal </option>
+							<option value = "29"> textmate </option>
+							<option value = "30"> tomorrow_night_blue </option>
+							<option value = "31"> tomorrow_night_bright </option>
+							<option value = "32"> tomorrow_night_eighties </option>
+							<option value = "33"> tomorrow_night </option>
+							<option value = "34"> tomorrow </option>
+							<option value = "35"> twilight </option>
+							<option value = "36"> vibrant_ink </option>
+							<option value = "37"> xcode </option>
+						</select>
+					</div>
+					<div id="editor">{{ fileData[loop.index0] }}</div>
+				</div>
+			{% endfor %}
+			</div>
 		</div>
+	</div>
+	
+	<!-- comment section -->
+	<div class="container" style="border:1px solid">
+		<!-- put the comment here -->
 	</div>
 </div>	
 {% endblock -%}
