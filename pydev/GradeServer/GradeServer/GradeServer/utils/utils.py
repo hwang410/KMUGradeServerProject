@@ -50,7 +50,7 @@ EDIT_PERSONAL_HTML = '/edit_personal.html'
 ID_CHECK_HTML = '/id_check.html'
 RANK_HTML  = '/rank.html'
 READ_HTML = '/read.html'
-
+USER_CODE_HTML = '/user_code.html'
 
 # Route Name
 SIGN_IN = '.sign_in'
