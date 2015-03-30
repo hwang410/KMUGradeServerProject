@@ -212,6 +212,11 @@ def upload(courseId, problemId):
                                   Problems.solutionCheckType).\
                             filter(Problems.problemId == problemId).\
                             first()
+                            
+        problemPath = problemsParam[0]
+        limitedTime = problemsParam[1]
+        limitedMemory = problemsParam[2]
+        solutionCheckType = problemsParam[3]
     except Exception as e:
         print 'DB error : ' + str(e)
         raise e
@@ -231,7 +236,20 @@ def upload(courseId, problemId):
            caseCount -= 1
         else:
             caseCount = 1
-    
+            
+    """Celery(filePath,
+           problemPath,
+           memberId,
+           problemId,
+           solutionCheckType,
+           caseCount,
+           limitedTime,
+           limitedMemory,
+           usedLanguage,
+           usedLanguageVersion,
+           courseId,
+           subCount)"""
+           
     return courseId
         
 @GradeServer.route('/problem/<courseId>/<problemId>/codesubmission', methods = ['POST'])
