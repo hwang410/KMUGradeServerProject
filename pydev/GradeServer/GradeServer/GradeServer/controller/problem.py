@@ -14,9 +14,11 @@ from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.model.problems import Problems
 from GradeServer.model.submissions import Submissions
+from GradeServer.model.submittedFiles import SubmittedFiles
 from GradeServer.model.submittedRecordsOfProblems import SubmittedRecordsOfProblems
 from GradeServer.model.languages import Languages
 from GradeServer.model.languagesOfCourses import LanguagesOfCourses
+
 
 @GradeServer.route('/problemList/<courseId>/page<pageNum>')
 @login_required
@@ -210,7 +212,8 @@ def record(courseId, problemId, sortCondition = RUN_TIME):
         problemSolvedUserRecords =dao.query(Submissions.memberId,
                                             Submissions.runTime,
                                             Submissions.sumOfSubmittedFileSize,
-                                            Submissions.codeSubmissionDate).\
+                                            Submissions.codeSubmissionDate,
+                                            Submissions.usedMemory).\
                                       filter(Submissions.problemId == problemId,
                                              Submissions.courseId == courseId,
                                              Submissions.status == SOLVED).\
@@ -244,7 +247,78 @@ def record(courseId, problemId, sortCondition = RUN_TIME):
                            chartSubmissionDescriptions = chartSubmissionDescriptions,
                            chartSubmissionRecords = chartSubmissionRecords)
 
-@GradeServer.route('/problem/userid')
+@GradeServer.route('/problem/<problemId>/<courseId>')
 @login_required
-def user_record():
-    return render_template('/user_code.html')
+def user_record(problemId, courseId):
+    
+    # Problem Information (LimitedTime, LimitedMemory
+    try:
+        problemName = dao.query(Problems.problemName).\
+                                filter(Problems.problemId == problemId).\
+                                first().\
+                                problemName
+    except Exception:
+        problemName = None
+    # Problem Solved Users
+    try:
+        problemSolvedUserRecords =dao.query(Submissions.memberId,
+                                            Submissions.runTime,
+                                            Submissions.sumOfSubmittedFileSize,
+                                            Submissions.codeSubmissionDate,
+                                            Submissions.usedMemory).\
+                                      filter(Submissions.problemId == problemId,
+                                             Submissions.courseId == courseId,
+                                             Submissions.memberId == session[MEMBER_ID],
+                                             Submissions.status == SOLVED).\
+                                      group_by(Submissions.memberId,
+                                               Submissions.problemId,
+                                               Submissions.courseId).\
+                                      first()
+    except Exception:
+        problemSolvedUserRecords = []
+        
+    # Submitted Files
+    try:
+        count = dao.query(func.count(SubmittedFiles.fileIndex).label('count')).\
+                    filter(SubmittedFiles.memberId == session[MEMBER_ID],
+                           SubmittedFiles.problemId == problemId,
+                           SubmittedFiles.courseId == courseId).\
+                    first().\
+                    count
+    except Exception:
+        count = 0
+        
+    # Submitted Files Information
+    try:
+        submittedFileRecords = dao.query(SubmittedFiles.fileName,
+                                         SubmittedFiles.filePath).\
+                                   filter(SubmittedFiles.memberId == session[MEMBER_ID],
+                                          SubmittedFiles.problemId == problemId,
+                                          SubmittedFiles.courseId == courseId).\
+                                   all()
+        fileData =[]
+        for raw in submittedFileRecords:
+            # Open
+            #file = open(raw.filePath + raw.fileName)
+            file = open("/mnt/c.c")
+            # Read
+            data = file.read()
+            fileData.append(data)
+            # Close
+            file.close()
+        file = open("/mnt/aa.c")
+        # Read
+        data = file.read()
+        fileData.append(data)
+        # Close
+        file.close()
+        submittedFileRecords = ['a.c', 'ab.c']
+    except Exception:
+        submittedFileRecords = []
+        fileData = []
+   
+    return render_template(USER_CODE_HTML,
+                           submittedFileRecords = submittedFileRecords,
+                           fileData = fileData,
+                           problemName = problemName,
+                           problemSolvedUserRecords = problemSolvedUserRecords)

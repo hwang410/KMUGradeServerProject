@@ -74,28 +74,30 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 					<!-- user list section -->
 					<div class="user_list span7" style="text-align:center">
 						<table class="problem_list table table-bordered">
-							<tr>
-								<td>Rank</td>
-								<td>User Id</td>
-								<td><a href = '{{ url_for("GradeServer.record", 
-																					courseId = courseId, 
-																					problemId = problemInformationRecords.problemId, 
-																					sortCondition = "runTime") }}'>Run Time</a></td>
-								<td><a href = '{{ url_for("GradeServer.record", 
-																					courseId = courseId, 
-																					problemId = problemInformationRecords.problemId, 
-																					sortCondition = "codeLength") }}'>Code Length</td>
-								<td><a href = '{{ url_for("GradeServer.record", 
-																					courseId = courseId, 
-																					problemId = problemInformationRecords.problemId, 
-																					sortCondition = "submissionDate") }}'>Sumission Date</td>
-							</tr>
+							<thead>
+								<tr>
+									<td>Rank</td>
+									<td>Member Id</td>
+									<td><a href = '{{ url_for("GradeServer.record", 
+																						courseId = courseId, 
+																						problemId = problemInformationRecords.problemId, 
+																						sortCondition = "runTime") }}'>Run Time</a></td>
+									<td><a href = '{{ url_for("GradeServer.record", 
+																						courseId = courseId, 
+																						problemId = problemInformationRecords.problemId, 
+																						sortCondition = "codeLength") }}'>Code Length</td>
+									<td><a href = '{{ url_for("GradeServer.record", 
+																						courseId = courseId, 
+																						problemId = problemInformationRecords.problemId, 
+																						sortCondition = "submissionDate") }}'>Sumission Date</td>
+								</tr>
+							</thead>
 							{% for i in range(0, problemSolvedUserRecords|length) %}
 							<tr>
 								<td>{{ i + 1 }}</td>
-								<td><a href='{{ url_for("GradeServer.user_record") }}'>{{ problemSolvedUserRecords[i].memberId }}</a></td>
-								<td>{{ problemSolvedUserRecords[i].runTime }}</td>
-								<td>{{ problemSolvedUserRecords[i].sumOfSubmittedFileSize }}</td>
+								<td><a href='{{ url_for("GradeServer.user_record", problemId = problemInformationRecords.problemId, courseId = courseId) }}'>{{ problemSolvedUserRecords[i].memberId }}</a></td>
+								<td>{{ problemSolvedUserRecords[i].runTime }} ms</td>
+								<td>{{ problemSolvedUserRecords[i].sumOfSubmittedFileSize }} Byte</td>
 								<td>{{ problemSolvedUserRecords[i].codeSubmissionDate }}</td>
 							</tr>
 							{% endfor %}

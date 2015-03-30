@@ -9,9 +9,11 @@
 <div class="container">
 	<h2>{{ courseRecords.courseId }} {{ courseRecords.courseName }}</h2>
 	<table class="problem_list table table-bordered">
-		<tr>
-			<td>Num</td><td>Title</td><td>Score</td><td>Status</td><td>Due Date</td><td>Count</td><td>Record</td>
-		</tr>
+		<thead>
+			<tr>
+				<td>Num</td><td>Title</td><td>Score</td><td>Status</td><td>Due Date</td><td>Count</td><td>Record</td>
+			</tr>
+		</thead>
 		{% for i in range(0, pages['endList'] - pages['startList']) %}
 		<tr>
 			<td style ='vertical-align: middle'>

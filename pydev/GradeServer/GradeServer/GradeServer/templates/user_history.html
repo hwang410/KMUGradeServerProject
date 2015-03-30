@@ -70,22 +70,24 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 					<!--  startList -->
 					<div class="span7" style="text-align:center">
 						<table class="problem_list table table-bordered">
-							<tr>
-								<td>Problem Title</td>
-								<td>Status</td>
-								<td>Score</td>
-								<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='runTime', pageNum =1) }}">Runtime</a></td>
-								<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='codeLength', pageNum =1) }}">Code Length</a></td>
-								<td>Language</td>
-								<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Submit Date</a></td>
-							</tr>
+							<thead>
+								<tr>
+									<td style ='vertical-align: middle'>Problem Title</td>
+									<td style ='vertical-align: middle'>Status</td>
+									<td style ='vertical-align: middle'>Score</td>
+									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='runTime', pageNum =1) }}">Runtime</a></td>
+									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='codeLength', pageNum =1) }}">Code Length</a></td>
+									<td style ='vertical-align: middle'>Language</td>
+									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Submit Date</a></td>
+								</tr>
+							</thead>
 							{%- for i in range (0, pages['endList'] - pages['startList']) %}
 							<tr>
 								<td style ='vertical-align: middle'>{{ submissionRecords[i].problemName }}</td>
 								<td style ='vertical-align: middle'>{{ submissionRecords[i].status }}</td>
 								<td style ='vertical-align: middle'>{{ submissionRecords[i].score }}</td>
-								<td style ='vertical-align: middle'>{{ submissionRecords[i].runTime }}</td>
-								<td style ='vertical-align: middle'>{{ submissionRecords[i].sumOfSubmittedFileSize }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecords[i].runTime }} ms</td>
+								<td style ='vertical-align: middle'>{{ submissionRecords[i].sumOfSubmittedFileSize }} Byte</td>
 								<td style ='vertical-align: middle'>{{ submissionRecords[i].languageName }}</td>
 								<td style ='vertical-align: middle'>{{ submissionRecords[i].codeSubmissionDate }}</td>
 							</tr>
