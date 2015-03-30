@@ -228,7 +228,6 @@ def class_manage_problem():
                                        ownProblems = ownProblems)
             
             try:
-                #print "id", problemId, 'cid', courseId, 'sct', solutionCheckType, 'icif', isAllInputCaseInOneFile, 'fs', limitedFileSize, 'st', startDate, 'ed', endDate, 'op', openDate, 'cd', closeDate
                 newProblem = RegisteredProblems(problemId = problemId,
                                                 courseId = courseId, 
                                                 solutionCheckType = solutionCheckType, 
@@ -484,14 +483,11 @@ def class_add_user():
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
             numberOfUsers = (len(request.form) - 1) / 5
             newUser = [['' for i in range(8)] for j in range(numberOfUsers + 1)]
-            
             for form in request.form:
                 if form != 'addIndivisualUser':
                     value, index = re.findall('\d+|\D+', form)
                     index = int(index)
                     data = request.form[form]
-                    print form
-                    print data
                     if value == 'userId':
                         newUser[index - 1][0] = data
                     elif value == 'username':
@@ -601,7 +597,6 @@ def class_add_user():
                                 elif key == 'courseId':
                                     try:
                                         newUser[7] = value.strip()
-                                        print newUser[7]
                                     except:
                                         error = 'Wrong course id has inserted'
                                         return render_template('/class_add_user.html',
@@ -685,7 +680,7 @@ def class_add_user():
                     try:
                         # then insert to 'Registrations'.
                         freshman = Registrations(memberId = newUser[0],
-                                                 courseId = newUser[7])
+                                                 courseId = newUser[7].split()[0])
                         dao.add(freshman)
                         dao.commit()
                     except:

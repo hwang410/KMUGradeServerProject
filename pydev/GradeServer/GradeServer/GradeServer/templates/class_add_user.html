@@ -6,19 +6,6 @@
 {%- block body %}
 <script>
 $(function() {
-  var ownCourses = [
-    {%- for course in ownCourses %}
-    { value: "{{ course.courseId }} {{ course.courseName }}", data: "{{ course.courseId }}" },
-    {% endfor -%}
-    { value : ""}
-  ];
-  $("#courseId1").autocomplete({
-    lookup: ownCourses,
-    onSelect: function(suggestion){
-      document.getElementById(this.id).value = suggestion.data;
-    }
-  });
-
   var allUsers = [
   	{%- for user in allUsers %}
   	{ value: "{{ user.memberId }} {{ user.memberName }}", data: "{{ user.memberId }} {{ user.memberName }}" },
@@ -35,36 +22,6 @@ $(function() {
   		document.getElementById("username"+userIdx).value = userName;
   	}
   });
-
-  var allColleges = [
-  	{%- for college in allColleges %}
-  	{ value: "{{ college.collegeIndex }} {{ college.collegeName }}" },
-  	{% endfor -%}
-  	{ value: "" }
-  ];
-  $("#college1").autocomplete({
-  	lookup: allColleges
-  });
-
-  var allDepartments = [
-  	{%- for department in allDepartments %}
-  	{ value: "{{ department.departmentIndex }} {{ department.departmentName }}" },
-  	{% endfor -%}
-  	{ value: "" }
-  ];
-  $("#department1").autocomplete({
-  	lookup: allDepartments
-  });
-
-  var authorities = [
-    {%- for authority in authorities %}
-    { value: "{{ authority }}" },
-    {% endfor -%}
-    { value: ""}
-  ];
-  $("#authority1").autocomplete({
-    lookup: authorities
-  });
   
   $("#addline").bind('click',function(){
 	  var targetTable = document.getElementById('indivisual');
@@ -80,40 +37,81 @@ $(function() {
 	  }
 
 	  var newRow = targetTable.insertRow(2);
-	  var uploadObj;
 	  var keys = ['courseId', 'userId', 'username', 'college', 'department', 'authority'];
 	  var placeholders = ['Course Id', 'ID', 'Name', 'College', 'Department', 'Authority'];
-	  var formsize = ['small', 'small', 'mini', 'medium', 'medium', 'small'];
+	  var formsize = ['', 'small', 'mini', 'medium', 'medium', 'medium'];
 
 	  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
-	    uploadObj = "<tr><td><input class = 'input-" + formsize[i] + " formLine1' " +
-	    													 "id = '" + keys[i] + numOfRow + "' " +
-	    													 "name = '" + keys[i] + numOfRow + "' " +
-	    													 "type='text' form='addIndivisualUser' " +
-	    													 "placeholder = '" + placeholders[i] + "' " +
-	    													 "value = '" + $("#" + keys[i] + "1").val() + "'></td>";
-
+	  	var uploadObj = "<td>";
+	  	var selectedItme, index; 
+	  	if(i != 1 && i != 2){
+		  	selectedItem = document.getElementById(keys[i]+"1");
+				index = selectedItem.options[selectedItem.selectedIndex].index + 1;
+			}
+	    if(i < 1){
+				uploadObj += "<select id='" + keys[i] + numOfRow + "' " +
+											       "name='" + keys[i] + numOfRow + "' " +
+													   "value='" + $("#" + keys[i] + "1").val() + "' " +
+													   "form='addIndivisualUser' " +
+													   "style='width:115px'>";
+				{%- for ownCourse in ownCourses %}
+				uploadObj += "<option";
+				if(index == "{{ loop.index }}"){
+					uploadObj += " selected";
+				}
+				uploadObj += ">{{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>";
+				{% endfor -%}
+				uploadObj += "</select>";
+			}
+			else if(i < 3){
+				uploadObj += "<input class='input-" + formsize[i] + "' " +
+														"id='" + keys[i] + numOfRow + "' " +
+														"name='" + keys[i] + "' " +
+														"type='text' " +
+														"autocomplete='off' " +
+														"placeholder='" + placeholders[i] + "' " +
+														"value='" + $("#" + keys[i] + "1").val() + "' " +
+														"form='addIndivisualUser'>";			
+			}
+			else{
+	    	uploadObj += "<select class='input-" + formsize[i] + "' " +
+	    											 "id='" + keys[i] + numOfRow + "' " +
+											       "name='" + keys[i] + numOfRow + "' " +
+													   "value='" + $("#" + keys[i] + "1").val() + "' " +
+													   "form='addIndivisualUser'>";
+				switch(i){
+					case 3:
+						{%- for college in allColleges %}
+						uploadObj += "<option";
+						if(index == "{{ loop.index }}"){
+							uploadObj += " selected";
+						}
+						uploadObj += ">{{ college.collegeIndex }} {{ college.collegeName }} </option>";
+						{% endfor -%}
+						break;
+					case 4:
+						{%- for department in allDepartments %}
+						uploadObj += "<option";
+						if(index == "{{ loop.index }}"){
+							uploadObj += " selected";
+						}
+						uploadObj += ">{{ department.departmentIndex }} {{ department.departmentName }} </option>";
+						{% endfor -%}
+						break;
+					case 5:
+						{%- for authority in authorities %}
+						uploadObj += "<option";
+						if(index == "{{ loop.index }}"){
+							uploadObj += " selected";
+						}
+						uploadObj += ">{{ authority }} </option>";
+						{% endfor -%}
+						break;
+				}
+				uploadObj += "</select>";
+			}
 	    newRow.insertCell(i).innerHTML = uploadObj;
 	  }
-
-	  $("#authority"+numOfRow).autocomplete({
-	        lookup: authorities
-			});
-
-	  $("#courseId"+numOfRow).autocomplete({
-	        lookup: ownCourses,
-	        onSelect: function(suggestion){
-	              document.getElementById(this.id).value = suggestion.data;
-	        }
-	  });
-
-	  $("#college"+numOfRow).autocomplete({
-	  	lookup: allColleges
-	  });
-
-	  $("#department"+numOfRow).autocomplete({
-	  	lookup: allDepartments
-	  });
 
 	  $("#userId"+numOfRow).autocomplete({
 	  	lookup: allUsers,
@@ -128,40 +126,35 @@ $(function() {
 
 	  reset_val();
 	});
+
   $("#resetIndivisualUserForm").bind('click',function(){
-		var keys = ['courseId', 'userId', 'username', 'college', 'department', 'authority'];
-	  var placeholders = ['Course Id', 'ID', 'Name', 'College', 'Department', 'Authority'];
-	  var formsize = ['small', 'small', 'mini', 'medium', 'medium', 'small'];
-	  var uploadObj = "";
-
-	  for(var i = 0; i < keys.length; i++){  
-	    uploadObj += "<td><input class = 'input-" + formsize[i] +" formLine1' " +
-	    												"id = '" + keys[i] + "1' " +
-	    												"name = '" + keys[i] + "1' " +
-	    												"type='text' form='addIndivisualUser' " +
-	    												"placeholder = '" + placeholders[i] + "' " +
-	    												"value = ''>";
-	  }
+    var uploadObj = '<td>' +
+		    							'<select id="courseId1" name="courseId1" form="addIndivisualUser" style="width:115px">' +
+											  '{%- for ownCourse in ownCourses %}' +
+											  '<option> {{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>' +
+											  '{% endfor -%}' +
+										  '</select>' +
+										'<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">' +
+										'<td><input class="input-mini formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">' +
+										'<td>' +
+											'<select class="input-medium" id="college1" name="college1" form="addIndivisualUser">' +
+												'{%- for college in allColleges %}' +
+												'<option> {{ college.collegeIndex }} {{ college.collegeName }} </option>' +
+												'{% endfor -%}' +
+											'</select>' +
+										'<td>' +
+											'<select class="input-medium" id="department1" name="department1" form="addIndivisualUser">' +
+												'{%- for department in allDepartments %}' +
+												'<option> {{ department.departmentIndex }} {{ department.departmentName }} </option>' +
+												'{% endfor -%}' +
+											'</select>' +
+										'<td>' +
+											'<select class="input-medium" id="authority1" name="authority1" form="addIndivisualUser">' +
+												'{%- for authority in authorities %}' +
+												'<option> {{ authority }} </option>' +
+												'{% endfor -%}' +
+											'</select>';
 	  document.getElementById("indivisualUserForm").innerHTML = uploadObj;
-
-	  $("#authority1").autocomplete({
-	        lookup: authorities
-			});
-
-	  $("#courseId1").autocomplete({
-	        lookup: ownCourses,
-	        onSelect: function(suggestion){
-	              document.getElementById(this.id).value = suggestion.data;
-	        }
-	  });
-
-	  $("#college1").autocomplete({
-	  	lookup: allColleges
-	  });
-
-	  $("#department1").autocomplete({
-	  	lookup: allDepartments
-	  });
 
 	  $("#userId1").autocomplete({
 	  	lookup: allUsers,
@@ -208,12 +201,32 @@ $(function() {
 							<td>Authority
 					<tbody id="indivisualUserForm">
 						<tr>
-							<td><input class="input-small formLine1 " id="courseId1" name="courseId1" type="text" form="addIndivisualUser" placeholder="Course ID" value="">
+							<td>
+								<select id="courseId1" name="courseId1" form="addIndivisualUser" style="width:115px">
+									{%- for ownCourse in ownCourses %}
+									<option> {{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>
+									{% endfor -%}
+								</select>
 							<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">
 							<td><input class="input-mini formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">
-							<td><input class="input-medium formLine1" id="college1" name="college1" type="text" form="addIndivisualUser" placeholder="College" value="">
-							<td><input class="input-medium formLine1" id="department1" name="department1" type="text" form="addIndivisualUser" placeholder="Department" value="">
-							<td><input class="input-small formLine1 " id="authority1" name="authority1" type="text" form="addIndivisualUser" placeholder="Authority" value="">
+							<td>
+								<select class="input-medium" id="college1" name="college1" form="addIndivisualUser">
+									{%- for college in allColleges %}
+									<option> {{ college.collegeIndex }} {{ college.collegeName }} </option>
+									{% endfor -%}
+								</select>
+							<td>
+								<select class="input-medium" id="department1" name="department1" form="addIndivisualUser">
+									{%- for department in allDepartments %}
+									<option> {{ department.departmentIndex }} {{ department.departmentName }} </option>
+									{% endfor -%}
+								</select>
+							<td>
+								<select class="input-medium" id="authority1" name="authority1" form="addIndivisualUser">
+									{%- for authority in authorities %}
+									<option> {{ authority }} </option>
+									{% endfor -%}
+								</select>
 				</table>
 			</div>
 			<div class="modal-footer">

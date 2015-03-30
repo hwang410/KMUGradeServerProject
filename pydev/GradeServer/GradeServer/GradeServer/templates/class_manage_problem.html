@@ -40,10 +40,10 @@ $(function() {
 		  	uploadObj = "<tr>";
 		    if(i < 2){
 					uploadObj += "<td>" +
-													"<select id='" + keys[i] + numOfRow + "' " +
-															    "name='" + keys[i] + "' " +
-															    "value='" + $("#" + keys[i] + "1").val() + "' " +
-															    "form='addProblem'>";
+											   "<select id='" + keys[i] + numOfRow + "' " +
+													       "name='" + keys[i] + "' " +
+															   "value='" + $("#" + keys[i] + "1").val() + "' " +
+															   "form='addProblem'>";
 					if(i == 0){
 						{%- for ownCourse in ownCourses %}
 						uploadObj += "<option";
@@ -69,33 +69,33 @@ $(function() {
 		    	uploadObj += "<td>";
 		    	if(val_mf.checked == true){
 			    	uploadObj += "<label class='" + formsize[i] + "'>" +
-			    							   "<input class='box-check' " +
-		    											 	  "id='" + keys[i] + numOfRow + "' " +
-		    											 	  "name='" + keys[i] + "' " +
-		    											 	  "type='checkbox' " +
-		    											 	  "checked=true>" +
-												 "</label>";
+										       "<input class='box-check' " +
+															 	  "id='" + keys[i] + numOfRow + "' " +
+															 	  "name='" + keys[i] + "' " +
+															 	  "type='checkbox' " +
+															 	  "checked=true>" +
+											   "</label>";
 		    	}
 		    	else{
 		    		uploadObj += "<label class='" + formsize[i] +"'>" +
-		    								   "<input class='box-check' " +
-	    												 	  "id='" + keys[i] + numOfRow +"' " +
-	    										 		 	  "name='" + keys[i] + "' " +
-	    										 		 	  "type='checkbox'>" +
-	    									 "</label>";
+										  	   "<input class='box-check' " +
+															 	  "id='" + keys[i] + numOfRow +"' " +
+													 		 	  "name='" + keys[i] + "' " +
+													 		 	  "type='checkbox'>" +
+												 "</label>";
 		    	}
 		    }
 		    else {
 		    	uploadObj += "<td>" +
-		    							   "<input class='" + formsize[i] + "' " +
-		    			 								  "id='" + keys[i] + numOfRow + "' " +
-		    											  "name='" + keys[i] + "' " +
-		    											  "type='date' " +
-		    											  "data-date-format='yyyy-mm-dd' " +
-		    											  "autocomplete='off' " +
-		    											  "placeholder='" + placeholders[i] + "' " +
-		    											  "value='" + $("#" + keys[i] + "1").val() + "' " +
-		    											  "form='addProblem'>";
+									       "<input class='" + formsize[i] + "' " +
+							 								  "id='" + keys[i] + numOfRow + "' " +
+															  "name='" + keys[i] + "' " +
+															  "type='date' " +
+															  "data-date-format='yyyy-mm-dd' " +
+															  "autocomplete='off' " +
+															  "placeholder='" + placeholders[i] + "' " +
+															  "value='" + $("#" + keys[i] + "1").val() + "' " +
+															  "form='addProblem'>";
 		    }
 		    newRow.insertCell(i).innerHTML = uploadObj;
 	 	 	}

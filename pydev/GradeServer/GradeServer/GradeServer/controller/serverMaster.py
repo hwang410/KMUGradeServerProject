@@ -310,15 +310,25 @@ def server_add_class():
     courseName = ''
     languages = []
     
-    allCourses = dao.query(Courses).\
-                     all()
-    allLanguages = dao.query(Languages).\
-                       all()
-                       
-    allCourseAdministrators = dao.query(Members).\
-                                  filter(Members.authority=="CourseAdministrator").\
-                                  all()
-                                  
+    try:
+        allCourses = dao.query(Courses).\
+                         all()
+    except:
+        error = 'Error has been occurred while searching courses'
+    
+    try:
+        allLanguages = dao.query(Languages).\
+                           all()
+    except:
+        error = 'Error has been occurred while searching languages'
+    
+    try:               
+        allCourseAdministrators = dao.query(Members).\
+                                      filter(Members.authority=="CourseAdministrator").\
+                                      all()
+    except:
+         error = 'Error has been occurred while searching course administrators'
+                          
     if request.method == 'POST':
         courseAdministrator = request.form['courseAdministrator']
         semester = request.form['semester'] 
