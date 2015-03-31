@@ -113,19 +113,6 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 
 var textarea = $('#copycode');
 
-ace.config.set("basePath", "../../static/bootstrap/js/src");
-var editor = ace.edit("editor");
-ace.require("ace/ext/language_tools");
-editor.session.setMode("ace/mode/c_cpp");
-editor.setTheme("ace/theme/eclipse");
-editor.setAutoScrollEditorIntoView(true);
-editor.setOption("maxLines", 70);
-editor.setOption("minLines", 20);
-editor.setOption("showPrintMargin", false);
-
-editor.getSession().on('change', function () {
-       textarea.val(editor.getSession().getValue());
-   });
 // language change
 function selectLanguage(selectObj) {
 	var mode;
@@ -133,53 +120,16 @@ function selectLanguage(selectObj) {
 	if(selectObj.value == 1 || selectObj.value == 2){ mode = "c_cpp"; }
 	if(selectObj.value == 3){ mode = "java"; }
 	if(selectObj.value == 4 || selectObj.value == 5){ mode = "python"; }
-	if(selectObj.value == 6){ theme = "ambiance"; }
-	if(selectObj.value == 7){ theme = "chaos"; }
-	if(selectObj.value == 8){ theme = "chrome"; }
-	if(selectObj.value == 9){ theme = "clouds_midnight"; }
-	if(selectObj.value == 10){ theme = "clouds"; }
-	if(selectObj.value == 11){ theme = "cobalt"; }
-	if(selectObj.value == 12){ theme = "crimson_editor"; }
-	if(selectObj.value == 13){ theme = "dawn"; }
-	if(selectObj.value == 14){ theme = "dreamweaver"; }
-	if(selectObj.value == 15){ theme = "eclipse"; }
-	if(selectObj.value == 16){ theme = "github"; }
-	if(selectObj.value == 17){ theme = "idle_fingers"; }
-	if(selectObj.value == 18){ theme = "katzenmilch"; }
-	if(selectObj.value == 19){ theme = "kr_theme"; }
-	if(selectObj.value == 20){ theme = "kuroir"; }
-	if(selectObj.value == 21){ theme = "merbivore_soft"; }
-	if(selectObj.value == 22){ theme = "merbivore"; }
-	if(selectObj.value == 23){ theme = "mono_industrial"; }
-	if(selectObj.value == 24){ theme = "monokai"; }
-	if(selectObj.value == 25){ theme = "pastel_on_dark"; }
-	if(selectObj.value == 26){ theme = "solarized_dark"; }
-	if(selectObj.value == 27){ theme = "solarized_light"; }
-	if(selectObj.value == 28){ theme = "terminal"; }
-	if(selectObj.value == 29){ theme = "textmate"; }
-	if(selectObj.value == 30){ theme = "tomorrow_night_blue"; }
-	if(selectObj.value == 31){ theme = "tomorrow_night_bright"; }
-	if(selectObj.value == 32){ theme = "tomorrow_night_eighties"; }
-	if(selectObj.value == 33){ theme = "tomorrow_night"; }
-	if(selectObj.value == 34){ theme = "tomorrow"; }
-	if(selectObj.value == 35){ theme = "twilight"; }
-	if(selectObj.value == 36){ theme = "vibrant_ink"; }
-	if(selectObj.value == 37){ theme = "xcode"; }
+	if(selectObj.value == 6){ theme = "chrome"; }
+	if(selectObj.value == 7){ theme = "clouds"; }
+	if(selectObj.value == 8){ theme = "eclipse"; }
+	if(selectObj.value == 9){ theme = "github"; }
+	if(selectObj.value == 10){ theme = "monokai"; }
+	if(selectObj.value == 11){ theme = "textmate"; }
+	if(selectObj.value == 12){ theme = "tomorrow"; }
 
-		var textarea = $('#copycode');
-		
-    ace.config.set("basePath", "../static/js/src");
-    var editor = ace.edit("editor");
-    ace.require("ace/ext/language_tools");
-    editor.session.setMode("ace/mode/" + mode);
-    editor.setTheme("ace/theme/" + theme);
-    editor.setAutoScrollEditorIntoView(true);
-    editor.setOption("maxLines", 70);
-    editor.setOption("minLines", 20);
-    
-    editor.getSession().on('change', function () {
-       textarea.val(editor.getSession().getValue());
-   		});
+  editor.session.setMode("ace/mode/" + mode);
+  editor.setTheme("ace/theme/" + theme);
 }
 
 //dropzone
@@ -312,30 +262,70 @@ $(document).on('click','.dropdown ul a',function(){
 
 
 // showing delete modal
-function showingDeleteModal(){
-	var items = $('.box-check').length;
-	var target = document.getElementsByClassName('box-check');
-	var cnt=0;
-	for(var i=0;i<items;i++){
-		if(target[i].checked == true) cnt++;
+function showingDeleteModal(target){
+	var items, checkboxes;
+	if(target == 'college'){
+		items = $('.college-box-check').length;
+		checkboxes = $('.college-box-check');
 	}
-	if(cnt==0) 
-        $('#deleteNoItem').modal();
-    else 
-        $('#deleteModal').modal();
+	else if(target == 'department'){
+		items = $('.department-box-check').length;
+		checkboxes = $('.department-box-check');
+	}
+	else{
+		items = $('.box-check').length;
+		checkboxes = $('.box-check');
+	}
+
+	var cnt = 0;
+	for(var i = 0; i < items; i++){
+		if(checkboxes[i].checked == true){
+			cnt++;
+			break;
+		}
+	}
+
+	if(cnt == 0){ 
+		if(target == 'college'){
+			$('#deleteNoCollegeItem').modal();
+		}
+		else if(target == 'department'){
+			$('#deleteNoDepartmentItem').modal();
+		}
+		else{
+	    $('#deleteNoItem').modal();
+	  }
+  }
+
+	else{ 
+		if(target == 'college'){
+			$('#deleteCollegeModal').modal();
+		}
+		else if(target == 'department'){
+			$('#deleteDepartmentModal').modal();
+		}
+		else{
+	    $('#deleteModal').modal();
+	  }
+  }
 }
+
 // showing delete modal
 function showingEditModal(){
 	var items = $('.box-check').length;
-	var target = document.getElementsByClassName('box-check');
+	var target = $('.box-check');
 	var cnt=0;
 	for(var i=0;i<items;i++){
-		if(target[i].checked == true) cnt++;
+		if(target[i].checked == true){
+			cnt++;
+			break;
+		} 
 	}
 	if(cnt==0) 
-        $('#editNoItem').modal();
-    else 
-        $('#editModal').modal();
+    $('#editNoItem').modal();
+  else{
+		$('#editModal').modal();
+  }
 }
 
 // showing add user modal
@@ -352,9 +342,9 @@ function visibleButton(parent){
 	var thisId = parent.id; 
 	//var target = ;
 	if(thisId == "link-all"){
-		document.getElementById('summary').style.display = "none";
+		$('#summary').style.display = "none";
 	}
 	else{
-		document.getElementById('summary').style.display = "";
+		$('#summary').style.display = "";
 	}
 }
