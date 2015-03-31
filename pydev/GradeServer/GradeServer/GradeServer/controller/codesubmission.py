@@ -27,7 +27,7 @@ from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMe
 from GradeServer.GradeServer_config import GradeServerConfig
 from sqlalchemy import and_, func
 from datetime import datetime
-from celeryServer import Grade
+#from GradeServer.celeryServer import Grade
 
 # Initialize the Flask application
 ALLOWED_EXTENSIONS = set(['py', 'java', 'class', 'c', 'cpp', 'h', 'jar'])
