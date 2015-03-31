@@ -27,6 +27,7 @@ from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMe
 from GradeServer.GradeServer_config import GradeServerConfig
 from sqlalchemy import and_, func
 from datetime import datetime
+from celeryServer import Grade
 
 # Initialize the Flask application
 ALLOWED_EXTENSIONS = set(['py', 'java', 'class', 'c', 'cpp', 'h', 'jar'])
@@ -237,7 +238,7 @@ def upload(courseId, problemId):
         else:
             caseCount = 1
             
-    """Celery(filePath,
+    """Grade.delay(filePath,
            problemPath,
            memberId,
            problemId,
