@@ -147,11 +147,15 @@ def class_manage_problem():
                 isNewProblem = False
                 courseId, problemId = form[7:].split('_')
                 try:
+                    print courseId, problemId
                     targetProblem = dao.query(RegisteredProblems).\
                                         filter(and_(RegisteredProblems.courseId == courseId, 
                                                     RegisteredProblems.problemId == problemId)).\
                                         first()
+                    targetProblem.problemId, targetProblem.courseId
+                        
                     dao.delete(targetProblem)
+                    print "pass1"
                     dao.commit()
                 except:
                     dao.rollback()
@@ -266,6 +270,7 @@ def class_manage_problem():
                 
             courseName = request.form['courseId'][10:]
             problemName = request.form['problemId'][5:]
+            print "okok"
             problemPath = '%s/%s/%s_%s/%s_%s' % (projectPath, 
                                                  coursesPath,
                                                  courseId, 
@@ -673,7 +678,7 @@ def class_add_user():
                         
                 isExist = dao.query(Registrations).\
                               filter(and_(Registrations.memberId == newUser[0],
-                                          Registrations.courseId == newUser[7])).\
+                                          Registrations.courseId == newUser[7].split()[0])).\
                               first()
                 # new member
                 if not isExist:
@@ -717,7 +722,7 @@ def class_add_user():
                         
                 ## create user folder 
                 newMemberId = newUser[0]
-                targetCourseId = newUser[7]
+                targetCourseId = newUser[7].split()[0]
                 
                 registeredProblems = (dao.query(RegisteredProblems, 
                                                 Problems, 
@@ -728,7 +733,7 @@ def class_add_user():
                                                RegisteredCourses.courseId == RegisteredProblems.courseId).\
                                           filter(RegisteredProblems.courseId == targetCourseId)).\
                                      all()
-                                        
+                                                             
                 for registeredProblem, problem, registeredCourse in registeredProblems:
                     userFolderPath = '%s/%s/%s_%s/%s_%s/%s' % (projectPath,
                                                                coursesPath,
@@ -737,7 +742,9 @@ def class_add_user():
                                                                registeredProblem.problemId, 
                                                                problem.problemName, 
                                                                newMemberId)
-                    os.makedirs(userFolderPath) if not os.path.exists(userFolderPath) else 0                 
+                    print userFolderPath
+                    if not os.path.exists(userFolderPath):
+                        os.makedirs(userFolderPath)                 
                         
                 ## creation end
             
@@ -746,8 +753,9 @@ def class_add_user():
             
         elif 'deleteUser' in request.form:
             for form in request.form:
-                targetUserIdToDelete.append(form) if not form is 'deleteUser' else 0
-                
+                if not form is 'deleteUser':
+                    targetUserIdToDelete.append(form)
+                                    
         # if id list is not empty
         if len(targetUserIdToDelete) != 0:
             # each target user id
