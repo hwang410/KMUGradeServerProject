@@ -47,7 +47,106 @@ newUsers = []
 @login_required
 def server_manage_collegedepartment():
     error = None
-    return render_template('/server_manage_collegedepartment.html', error=error)
+    try:
+        allColleges = dao.query(Colleges).\
+                          all()
+    except:
+        error = 'Error has been occurred while searching colleges'
+        return render_template('/server_manage_collegedepartment.html', 
+                               error=error,
+                               allColleges = [],
+                               allDepartments = [])
+    try:    
+        allDepartments = dao.query(Departments).\
+                             all()
+    except:
+        error = 'Error has been occurred while searching departments'
+        return render_template('/server_manage_collegedepartment.html', 
+                               error=error,
+                               allColleges = allColleges,
+                               allDepartments = [])
+    
+    if request.method == 'POST':
+        code = ''
+        name = ''
+        isNewCollege = False
+        isNewDepartment = False
+        for form in request.form:
+            if 'addCollege' in request.form:
+                isNewCollege = True
+                if form == 'collegeCode':
+                    code = request.form[form]
+                elif form == 'collegeName':
+                    name = request.form[form]
+            elif 'addDepartment' in request.form:
+                isNewDepartment = True
+                if form == 'departmentCode':
+                    code = request.form[form]
+                elif form == 'departmentName':
+                    name = request.form[form]
+            elif 'deleteCollege' in request.form:
+                if 'college' in form:
+                    try:
+                        collegeIndex = re.findall('\d+|\D+', form)[1]
+                        target = dao.query(Colleges).filter(Colleges.collegeIndex == collegeIndex).first()
+                        dao.delete(target)
+                        dao.commit()
+                    except:
+                        error = 'Error has been occurred while searching colleges'
+                        dao.rollback()
+                        return render_template('/server_manage_collegedepartment.html', 
+                                               error=error,
+                                               allColleges = allColleges,
+                                               allDepartments = allDepartments)
+            elif 'deleteDepartment' in request.form:
+                if 'department' in form:
+                    try:
+                        departmentIndex = re.findall('\d+|\D+', form)[1]
+                        target = dao.query(Departments).filter(Departments.departmentIndex == departmentIndex).first()
+                        dao.delete(target)
+                        dao.commit()
+                    except:
+                        error = 'Error has been occurred while searching departments'
+                        dao.rollback()
+                        return render_template('/server_manage_collegedepartment.html', 
+                                               error=error,
+                                               allColleges = allColleges,
+                                               allDepartments = allDepartments)
+        if isNewCollege:
+            try:
+                newCollege = Colleges(collegeCode = code,
+                                      collegeName = name)
+                dao.add(newCollege)
+                dao.commit()
+            except:
+                error = 'Error has been occurred while making new college'
+                dao.rollback()
+                return render_template('/server_manage_collegedepartment.html', 
+                                       error=error,
+                                       allColleges = allColleges,
+                                       allDepartments = allDepartments)
+        if isNewDepartment:
+            try:
+                newDepartment = Departments(departmentCode = code,
+                                            departmentName = name)
+                dao.add(newDepartment)
+                dao.commit()
+            except:
+                error = 'Error has been occurred while making new department'
+                dao.rollback()
+                return render_template('/server_manage_collegedepartment.html', 
+                                       error=error,
+                                       allColleges = allColleges,
+                                       allDepartments = allDepartments)
+            
+        return redirect(url_for('.server_manage_collegedepartment'))
+        
+    return render_template('/server_manage_collegedepartment.html', 
+                           error=error,
+                           allColleges = allColleges,
+                           allDepartments = allDepartments)
+        
+        
 @GradeServer.route('/master/manage_class', methods = ['GET', 'POST'])
 @login_required
 def server_manage_class():

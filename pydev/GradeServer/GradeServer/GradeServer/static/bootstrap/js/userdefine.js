@@ -312,30 +312,70 @@ $(document).on('click','.dropdown ul a',function(){
 
 
 // showing delete modal
-function showingDeleteModal(){
-	var items = $('.box-check').length;
-	var target = document.getElementsByClassName('box-check');
-	var cnt=0;
-	for(var i=0;i<items;i++){
-		if(target[i].checked == true) cnt++;
+function showingDeleteModal(target){
+	var items, checkboxes;
+	if(target == 'college'){
+		items = $('.college-box-check').length;
+		checkboxes = $('.college-box-check');
 	}
-	if(cnt==0) 
-        $('#deleteNoItem').modal();
-    else 
-        $('#deleteModal').modal();
+	else if(target == 'department'){
+		items = $('.department-box-check').length;
+		checkboxes = $('.department-box-check');
+	}
+	else{
+		items = $('.box-check').length;
+		checkboxes = $('.box-check');
+	}
+
+	var cnt = 0;
+	for(var i = 0; i < items; i++){
+		if(checkboxes[i].checked == true){
+			cnt++;
+			break;
+		}
+	}
+
+	if(cnt == 0){ 
+		if(target == 'college'){
+			$('#deleteNoCollegeItem').modal();
+		}
+		else if(target == 'department'){
+			$('#deleteNoDepartmentItem').modal();
+		}
+		else{
+	    $('#deleteNoItem').modal();
+	  }
+  }
+
+	else{ 
+		if(target == 'college'){
+			$('#deleteCollegeModal').modal();
+		}
+		else if(target == 'department'){
+			$('#deleteDepartmentModal').modal();
+		}
+		else{
+	    $('#deleteModal').modal();
+	  }
+  }
 }
+
 // showing delete modal
 function showingEditModal(){
 	var items = $('.box-check').length;
-	var target = document.getElementsByClassName('box-check');
+	var target = $('.box-check');
 	var cnt=0;
 	for(var i=0;i<items;i++){
-		if(target[i].checked == true) cnt++;
+		if(target[i].checked == true){
+			cnt++;
+			break;
+		} 
 	}
 	if(cnt==0) 
-        $('#editNoItem').modal();
-    else 
-        $('#editModal').modal();
+    $('#editNoItem').modal();
+  else{
+		$('#editModal').modal();
+  }
 }
 
 // showing add user modal
@@ -352,9 +392,9 @@ function visibleButton(parent){
 	var thisId = parent.id; 
 	//var target = ;
 	if(thisId == "link-all"){
-		document.getElementById('summary').style.display = "none";
+		$('#summary').style.display = "none";
 	}
 	else{
-		document.getElementById('summary').style.display = "";
+		$('#summary').style.display = "";
 	}
 }
