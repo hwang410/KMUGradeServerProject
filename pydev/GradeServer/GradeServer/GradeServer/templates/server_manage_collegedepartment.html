@@ -1,4 +1,207 @@
 {%- extends "main.html" -%}
 {%- block body %}
+<div class="container">
+	<div class="tabbable">
+		<ul class="nav nav-tabs">
+			<li class="active"><a id="college" data-toggle="tab" href="#colleges">College</a>
+			<li><a id="department" data-toggle="tab" href="#departments">Department</a></li>
+			<div style="text-align:right">
+				<a class="btn" id="addModal" data-toggle="modal" href="#collegeModal" rol="button">Add</a>
+			</div>	
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="colleges">
+				<table class="table">
+					<thead>
+						<tr>
+							<td>Index
+							<td>Code
+							<td>Name
+							<td>IsAbolished
+							<td>Check
+					<tbody>
+					{%- for college in allColleges %}
+						<tr>
+							<td>{{ loop.index }}
+							<td>{{ college.collegeCode }}
+							<td>{{ college.collegeName }}
+							<td>{{ college.isAbolished }}
+							<td><input class="college-box-check" name="college{{ college.collegeIndex }}" type="checkbox" form="deleteCollege">
+					{% endfor -%}
+				</table>
+			</div>
+			<div class="tab-pane" id="departments">
+				<table class="table">
+					<thead>
+						<tr>
+							<td>Index
+							<td>Code
+							<td>Name
+							<td>IsAbolished
+							<td>Check
+					<tbody>
+					{%- for department in allDepartments %}
+						<tr>
+							<td>{{ loop.index }}
+							<td>{{ department.departmentCode }}
+							<td>{{ department.departmentName }}
+							<td>{{ department.isAbolished }}
+							<td><input class="department-box-check" name="department{{ department.departmentIndex }}" type="checkbox" form="deleteDepartment">
+					{% endfor -%}
+				</table>
+			</div>
+		</div>
+	</div>
 
+	<!-- ///// College Modal ///// -->
+	<!-- ///// Add case ///// -->
+	<div class="modal hide fade" id="collegeModal" tabindex="-1" role="dialog" aria-labelledby="addCollegeModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+			<h3 id="addCollegeModalLabel">Add College</h3>
+		</div>
+		<div class="modal-body">
+			<p></p>
+			<div style="text-align:right"><button class="btn" type="button" id="addline_college">Add line</button></div>
+			<table class="table table-bordered" id='Colleges' style="margin-top:10px">
+				<thead>
+					<tr>
+						<td>College Code
+						<td>College Name
+				<tbody id="addCollegeForm">
+				<tr>
+					<td><input class="input-medium" name="collegeCode" type="text" form="addCollege" placeholder="Optional"></div>
+					<td><input class="input-medium" name="collegeName" type="text" form="addCollege" placeholder="College Name"></div>
+			</table>
+		</div>
+		<div class="modal-footer">
+			<form id="addCollege" method="post">
+				<button class="btn" name="addCollege" type="submit">Done</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetAddCollegeForm">Close</button>
+			</form>
+		</div>
+	</div>
+	<!-- ///// Delete case ///// -->
+	<div class="modal hide fade" id="deleteCollegeModal" role="dialog" aria-labelledby="deleteCollegeModalLabel" aria-hidden="true" tabindex="-1">
+		<div class="modal-header">
+			<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
+			<h3 id="deleteCollegeModalLabel">Delete College</h3>
+		</div>
+		<div class="modal-body">
+			<p>Do you really want to delete it?</p>
+		</div>
+		<div class="modal-footer">
+			<form method="post" id="deleteCollege">
+				<button class="btn" name="deleteCollege" type="submit">Save changes</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			</form>
+		</div>
+	</div>
+	<!-- no items choiced -->
+	<div class="modal hide fade" id="deleteNoCollegeItem" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
+		<div class="modal-header">
+			<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
+			<h3 id="deleteModalLabel">Delete College</h3>
+		</div>
+		<div class="modal-body">
+			<p>No items choiced</p>
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		</div>
+	</div>
+	<!-- ***** end College Modal ***** -->
+
+	<!-- ///// Department Modal ///// -->
+	<!-- ///// Add case ///// -->
+	<div class="modal hide fade" id="departmentModal" tabindex="-1" role="dialog" aria-labelledby="addDepartmentModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+			<h3 id="addDepartmentModalLabel">Add Department</h3>
+		</div>
+		<div class="modal-body">
+			<p></p>
+			<div style="text-align:right"><button class="btn" type="button" id="addline_department">Add line</button></div>
+			<table class="table table-bordered" id='Departments' style="margin-top:10px">
+				<thead>
+					<tr>
+						<td>Department Code
+						<td>Department Name
+				<tbody id="addDepartmentForm">
+				<tr>
+					<td><input class="input-medium" name="departmentCode" type="text" form="addDepartment" placeholder="Optional"></div>
+					<td><input class="input-medium" name="departmentName" type="text" form="addDepartment" placeholder="Department Name"></div>
+			</table>
+		</div>
+		<div class="modal-footer">
+			<form id="addDepartment" method="post">
+				<button class="btn" name="addDepartment" type="submit">Done</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetAddDepartmentForm">Close</button>
+			</form>
+		</div>
+	</div>
+	<!-- ///// Delete case ///// -->
+	<div class="modal hide fade" id="deleteDepartmentModal" role="dialog" aria-labelledby="deleteDepartmentModalLabel" aria-hidden="true" tabindex="-1">
+		<div class="modal-header">
+			<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
+			<h3 id="deleteDepartmentModalLabel">Delete Department</h3>
+		</div>
+		<div class="modal-body">
+			<p>Do you really want to delete it?</p>
+		</div>
+		<div class="modal-footer">
+			<form method="post" id="deleteDepartment">
+				<button class="btn" name="deleteDepartment" type="submit">Save changes</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			</form>
+		</div>
+	</div>
+	<!-- no items choiced -->
+	<div class="modal hide fade" id="deleteNoDepartmentItem" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
+		<div class="modal-header">
+			<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
+			<h3 id="deleteModalLabel">Delete Department</h3>
+		</div>
+		<div class="modal-body">
+			<p>No items choiced</p>
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		</div>
+	</div>
+	<!-- ***** end Department Modal ***** -->
+
+	<div id="deleteButton" style="text-align:right">
+		<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal('college')"> Delete </a>
+	</div>
+</div>
+<script>
+$('a[data-toggle="tab"]').on('shown', function(e){
+	var id = $(e.target).attr('id');
+	document.getElementById('addModal').href = "#" + id + "Modal";
+	var innerhtml = document.getElementById('deleteButton').innerHTML.split(' ');
+	var newinnerhtml = '';
+	if(id == 'department'){
+		for(var i=0;i<innerhtml.length;i++){
+			if(innerhtml[i].indexOf('onclick') > -1){
+				newinnerhtml += "onclick=\"showingDeleteModal('department')\"> ";
+			}
+			else{
+				newinnerhtml += innerhtml[i] + ' ';
+			}
+		}
+	}
+	else{
+		for(var i=0;i<innerhtml.length;i++){
+			if(innerhtml[i].indexOf('onclick') > -1){
+				newinnerhtml += "onclick=\"showingDeleteModal('college')\"> ";
+			}
+			else{
+				newinnerhtml += innerhtml[i] + ' ';
+			}
+		}
+	}
+	document.getElementById('deleteButton').innerHTML = newinnerhtml;
+})
+</script>
 {% endblock -%}

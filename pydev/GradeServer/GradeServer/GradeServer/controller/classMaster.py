@@ -155,7 +155,6 @@ def class_manage_problem():
                     targetProblem.problemId, targetProblem.courseId
                         
                     dao.delete(targetProblem)
-                    print "pass1"
                     dao.commit()
                 except:
                     dao.rollback()
