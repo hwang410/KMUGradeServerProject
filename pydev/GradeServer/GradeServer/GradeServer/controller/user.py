@@ -175,34 +175,36 @@ def id_check(select, error = None):
                 
                 # 암호가 일치 할 때
                 if check.password == password:#check_password_hash(password, check.password):
-
                     # for all user
                     if select == 'account':
                         return redirect(url_for(EDIT_PERSONAL))
                     # server manager
-                    elif select == 'server_manage_problem':
-                        return redirect(url_for('.server_manage_problem'))
-                    elif select == 'server_manage_class':
-                        return redirect(url_for('.server_manage_class'))
-                    elif select == 'server_manage_user':
-                        return redirect(url_for('.server_manage_user'))
-                    elif select == 'server_manage_service':
-                        return redirect(url_for('.server_manage_service'))
+                    elif session[AUTHORITY][0] == SERVER_ADMINISTRATOR:
+                        if select == 'server_manage_collegedepartment':
+                            return redirect(url_for('.server_manage_collegedepartment'))
+                        elif select == 'server_manage_class':
+                            return redirect(url_for('.server_manage_class'))
+                        elif select == 'server_manage_problem':
+                            return redirect(url_for('.server_manage_problem'))
+                        elif select == 'server_manage_user':
+                            return redirect(url_for('.server_manage_user'))
+                        elif select == 'server_manage_service':
+                            return redirect(url_for('.server_manage_service'))
                     # class manager
-                    elif select == 'user_submit':
-                        return redirect(url_for('.class_user_submit'))
-                    elif select == 'cm_manage_problem':
-                        return redirect(url_for('.class_manage_problem'))
-                    elif select == 'cm_manage_user':
-                        return redirect(url_for('.class_manage_user'))
-                    elif select == 'cm_manage_service':
-                        return redirect(url_for('.class_manage_service'))
-                    
+                    elif session[AUTHORITY][0] == COURSE_ADMINISTRATOR:
+                        if select == 'user_submit':
+                            return redirect(url_for('.class_user_submit'))
+                        elif select == 'cm_manage_problem':
+                            return redirect(url_for('.class_manage_problem'))
+                        elif select == 'cm_manage_user':
+                            return redirect(url_for('.class_manage_user'))
+                        elif select == 'cm_manage_service':
+                            return redirect(url_for('.class_manage_service'))
                     else:
                         return unknown_error()
                 # 암호가 일치 하지 않을 때
                 else:
-                    error = get_message('wrongPassword')
+                    error = get_message('wrong password')
             except Exception as e:
                 Log.error(str(e))
                 raise e
