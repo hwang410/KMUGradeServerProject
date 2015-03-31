@@ -42,6 +42,59 @@ problemsPath = 'Problems'
 # if there's additional difficulty then change the value 'numberOfDifficulty'
 numberOfDifficulty = 5
 newUsers = []
+
+@GradeServer.route('/master/manage_collegedepartment', methods = ['GET', 'POST'])
+@login_required
+def server_manage_collegedepartment():
+    error = None
+    return render_template('/server_manage_collegedepartment.html', error=error)
+@GradeServer.route('/master/manage_class', methods = ['GET', 'POST'])
+@login_required
+def server_manage_class():
+    error = None
+    
+    try:
+        courses = (dao.query(RegisteredCourses,
+                             Members).\
+                       join(Members,
+                            Members.memberId == RegisteredCourses.courseAdministratorId).\
+                       order_by(RegisteredCourses.endDateOfCourse.desc())).\
+                  all()
+    except:
+        error = 'No courses exists'
+        print 'Empty \'RegisteredCourses\' table'
+        
+    try:
+        languagesOfCourse = (dao.query(LanguagesOfCourses, 
+                                       Languages).\
+                                 join(Languages, 
+                                      and_(LanguagesOfCourses.languageIndex == Languages.languageIndex, 
+                                           LanguagesOfCourses.languageVersion == Languages.languageVersion))).\
+                            all()
+    except:
+        error = 'No information of languages of courses'
+        print 'Empty \'LanguagesOfCourse\' table'
+
+    if request.method == 'POST':
+        for form in request.form:
+            try:
+                deleteTarget = dao.query(RegisteredCourses).\
+                                   filter(RegisteredCourses.courseId == form).\
+                                   first()
+                dao.delete(deleteTarget)
+                dao.commit()
+            except:
+                dao.rollback()
+                print 'Deletion Error'
+                
+        return redirect(url_for('.server_manage_class'))
+    
+    session['ownCourses'] = dao.query(RegisteredCourses).all()
+    
+    return render_template('/server_manage_class.html', 
+                           error = error, 
+                           courses = courses, 
+                           languagesOfCourse = languagesOfCourse)
     
 @GradeServer.route('/master/manage_problem', methods=['GET', 'POST'])
 @login_required
@@ -198,54 +251,6 @@ def server_manage_problem():
     return render_template('/server_manage_problem.html', 
                            error = error,
                            uploadedProblems = uploadedProblems)
-
-@GradeServer.route('/master/manage_class', methods = ['GET', 'POST'])
-@login_required
-def server_manage_class():
-    error = None
-    
-    try:
-        courses = (dao.query(RegisteredCourses,
-                             Members).\
-                       join(Members,
-                            Members.memberId == RegisteredCourses.courseAdministratorId).\
-                       order_by(RegisteredCourses.endDateOfCourse.desc())).\
-                  all()
-    except:
-        error = 'No courses exists'
-        print 'Empty \'RegisteredCourses\' table'
-        
-    try:
-        languagesOfCourse = (dao.query(LanguagesOfCourses, 
-                                       Languages).\
-                                 join(Languages, 
-                                      and_(LanguagesOfCourses.languageIndex == Languages.languageIndex, 
-                                           LanguagesOfCourses.languageVersion == Languages.languageVersion))).\
-                            all()
-    except:
-        error = 'No information of languages of courses'
-        print 'Empty \'LanguagesOfCourse\' table'
-
-    if request.method == 'POST':
-        for form in request.form:
-            try:
-                deleteTarget = dao.query(RegisteredCourses).\
-                                   filter(RegisteredCourses.courseId == form).\
-                                   first()
-                dao.delete(deleteTarget)
-                dao.commit()
-            except:
-                dao.rollback()
-                print 'Deletion Error'
-                
-        return redirect(url_for('.server_manage_class'))
-    
-    session['ownCourses'] = dao.query(RegisteredCourses).all()
-    
-    return render_template('/server_manage_class.html', 
-                           error = error, 
-                           courses = courses, 
-                           languagesOfCourse = languagesOfCourse)
 
 @GradeServer.route('/master/manage_users', methods = ['GET', 'POST'])
 @login_required

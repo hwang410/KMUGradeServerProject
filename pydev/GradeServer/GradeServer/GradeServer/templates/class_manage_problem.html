@@ -335,7 +335,7 @@ $(function() {
 			{% endfor %}
 			<script>
 			function modifySelector(target){ // target == isAllInputCaseInOneFile_ or startDateOfSubmission_ or endDateOfSubmission_ or openDate_ or closeDate_ or delete_
-				document.getElementById("editButton").innerHTML = "EditConfirm";
+				document.getElementById("editButton").style.display = "";
 				var $targetValue = document.getElementById(target).innerHTML;
 				// when user double clicked the form, innerHTML contains the word 'input'
 				// In this case, targetValue shouldn't be '<input ... >' but only date.
@@ -349,7 +349,8 @@ $(function() {
 						}
 					}
 				}
-				if(target.split("_")[0] == "isAllInputCaseInOneFile" || target.split("_")[0] == "isAllInputCaseInOneFileTab"){
+				if(target.split("_")[0] == "isAllInputCaseInOneFile" || 
+					 target.split("_")[0] == "isAllInputCaseInOneFileTab"){
 					if($targetValue == "OneFile"){
 						$targetValue = document.getElementById(target).innerHTML = "MultipleFiles";
 					}
@@ -382,7 +383,7 @@ $(function() {
 	</div>
 	<div style="text-align:right">
 		<form id="editProblem" method="post">
-			<button class="btn" id="editButton" type="submit">Edit</button> 
+			<button class="btn" id="editButton" type="submit" style="display:None">Confirm Edit</button> 
 			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">Delete</a>
 		</form>
 	</div>

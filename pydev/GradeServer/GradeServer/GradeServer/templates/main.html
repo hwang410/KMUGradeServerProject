@@ -87,8 +87,9 @@
 								<li class="dropdown-submenu">
 									<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="server-management">Server Management</a>
 									<ul class="dropdown-menu" id="menu-box">
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_problem') }}" id='manage-problem'>Problem</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_collegedepartment') }}" id='manage-collegedepartment'>College&Department</a></li>
 										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_class') }}" id='manage-class'>Class</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_problem') }}" id='manage-problem'>Problem</a></li>
 										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_user') }}" id='manage-user'>User</a></li>
 										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_service') }}" id='manage-service'>Service</a></li>
 									</ul>
