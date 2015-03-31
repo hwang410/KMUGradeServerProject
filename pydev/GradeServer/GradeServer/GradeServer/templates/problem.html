@@ -73,7 +73,7 @@
       	{% endfor %} 
       	</div>
     	</div>
-    	<button class="btn btn-primary" id='submit-all' type="submit">submit files</button>
+    	<button class="btn" id='submit-all' type="submit">submit files</button>
 		</div>
   	<div class="tab-pane" id="write">
 	  	<div>
@@ -89,42 +89,17 @@
 					</select>
 					&nbsp; &nbsp; &nbsp; &nbsp; Theme :
 					<select type = "text" id="language" name="language" onchange="selectLanguage(this)">
-						<option value = "6"> ambiance </option>
-						<option value = "7"> chaos </option>
-						<option value = "8"> chrome </option>
-						<option value = "9"> clouds_midnight </option>
-						<option value = "10"> clouds </option>
-						<option value = "11"> cobalt </option>
-						<option value = "12"> crimson_editor </option>
-						<option value = "13"> dawn </option>
-						<option value = "14"> dreamweaver </option>
-						<option selected = "selected" value = "15"> eclipse </option>
-						<option value = "16"> github </option>
-						<option value = "17"> idle_fingers </option>
-						<option value = "18"> katzenmilch </option>
-						<option value = "19"> kr_theme </option>
-						<option value = "20"> kuroir </option>
-						<option value = "21"> merbivore_soft </option>
-						<option value = "22"> merbivore </option>
-						<option value = "23"> mono_industrial </option>
-						<option value = "24"> monokai </option>
-						<option value = "25"> pastel_on_dark </option>
-						<option value = "26"> solarized_dark </option>
-						<option value = "27"> solarized_light </option>
-						<option value = "28"> terminal </option>
-						<option value = "29"> textmate </option>
-						<option value = "30"> tomorrow_night_blue </option>
-						<option value = "31"> tomorrow_night_bright </option>
-						<option value = "32"> tomorrow_night_eighties </option>
-						<option value = "33"> tomorrow_night </option>
-						<option value = "34"> tomorrow </option>
-						<option value = "35"> twilight </option>
-						<option value = "36"> vibrant_ink </option>
-						<option value = "37"> xcode </option>
+						<option value = "6"> chrome </option>
+						<option value = "7"> clouds </option>
+						<option selected = "selected" value = "8"> eclipse </option>
+						<option value = "9"> github </option>
+						<option value = "10"> monokai </option>
+						<option value = "11"> textmate </option>
+						<option value = "12"> tomorrow </option>
 					</select>
 				</div>
 					<div id="editor"></div>
-					<div class=actions><button class="btn btn-primary" type="submit">submit code</div>
+					<div class=actions><button class="btn" type="submit">submit code</div>
 					<textarea name="copycode" id="copycode" style="display:none;"></textarea>
 				</form>
 			</div>
