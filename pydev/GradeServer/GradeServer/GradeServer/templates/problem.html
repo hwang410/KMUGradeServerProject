@@ -131,6 +131,26 @@
 		</div>
 	</div>
 </div>
+<script>
+var editor = ace.edit("editor");
+ace.require("ace/ext/language_tools");
+editor.setTheme("ace/theme/eclipse");
+{% if languageName[0].languageName == "JAVA" %}
+	editor.session.setMode("ace/mode/java");
+{% elif languageName[0].languageName == "PYTHON" %}
+	editor.session.setMode("ace/mode/python");
+{% else %}
+	editor.session.setMode("ace/mode/c_cpp");
+{% endif %}
+editor.setAutoScrollEditorIntoView(true);
+editor.setOption("maxLines", 70);
+editor.setOption("minLines", 20);
+editor.setOption("showPrintMargin", false);
+
+editor.getSession().on('change', function () {
+       textarea.val(editor.getSession().getValue());
+   });
+</script>
 {% endblock -%}	
 <!-- comment space -->
 {% endblock -%}
