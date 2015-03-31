@@ -152,7 +152,8 @@ def upload(courseId, problemId):
                 fileIndex += 1
                 sumOfSubmittedFileSize += fileSize
     except:
-        shutil.rmtree(tempPath)
+        for filename in glob.glob(os.path.join(tempPath, '*.*')):
+            os.remove(filename)
         for filename in glob.glob(os.path.join(filePath, '*.*')):
             shutil.copy(filename, tempPath)
         
@@ -422,6 +423,51 @@ def code(courseId, problemId):
     except Exception as e:
         print 'DB error : ' + str(e)
         raise e
+    
+    try:
+        problemsParam = dao.query(Problems.problemPath,
+                                  Problems.limitedTime,
+                                  Problems.limitedMemory,
+                                  Problems.solutionCheckType).\
+                            filter(Problems.problemId == problemId).\
+                            first()
+                            
+        problemPath = problemsParam[0]
+        limitedTime = problemsParam[1]
+        limitedMemory = problemsParam[2]
+        solutionCheckType = problemsParam[3]
+    except Exception as e:
+        print 'DB error : ' + str(e)
+        raise e
+    try:
+        departmentIndex = dao.query(DepartmentsDetailsOfMembers.departmentIndex).\
+                              filter(DepartmentsDetailsOfMembers.memberId == memberId).\
+                              first().\
+                              departmentIndex
+    except Exception as e:
+        print 'DB error : ' + str(e)
+        raise e
+    
+    caseCount = len(glob.glob(problemsParam[0]))/2
+    
+    if caseCount > 1:
+        if departmentIndex == 1:
+           caseCount -= 1
+        else:
+            caseCount = 1
+            
+    """Grade.delay(filePath,
+           problemPath,
+           memberId,
+           problemId,
+           solutionCheckType,
+           caseCount,
+           limitedTime,
+           limitedMemory,
+           usedLanguage,
+           usedLanguageVersion,
+           courseId,
+           subCount)"""
     
     flash('submission success!')
     return redirect(url_for('.problemList',
