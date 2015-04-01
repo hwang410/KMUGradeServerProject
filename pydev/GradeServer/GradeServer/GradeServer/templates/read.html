@@ -60,6 +60,7 @@
 </div>
 <!-- end content block -->
 <hr style="margin-left:5%;margin-right:5%">
+
 <!-- comment block -->
 <div class="container">
 	<!-- put the comments here -->
@@ -77,37 +78,41 @@
 				{{ commentRecords[i].boardReplierId }}
 			</a>
 			<!-- Content, WrittenDate -->
-			: {{ commentRecords[i].boardReplyContent }} | {{ commentRecords[i].boardRepliedDate }} |
-			
-			<!-- like button -->
-			<button class="like btn btn-link" href="#" name="boardReplyLike{{ commentRecords[i].boardReplyIndex }}" type="submit">
-			{% if isLikeds[i]['isLiked'] == 'Liked' %} 
-				UnLike 
-			{% else %} 
-				Like 
-			{% endif %}
-			</button>
-			{{ commentRecords[i].sumOfLikeCount }}
-			
-			<!-- delete button -->
-			<!-- replier and masters are availables to delete the comments -->
-			{% if commentRecords[i].boardReplierId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
-			<a href="#deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
-			<div id="deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" class="modal hide fade" style="text-align:center">
-				<div class="modal-header">
-					<h3>Delete Comment</h3>
+			{% if boardReplyIndex and boardReplyIndex == commentRecords[i].boardReplyIndex %}
+				<input type="textarea" name="modifyComfirmBoardComment{{ boardReplyIndex }}" style="width:90%" value = '{{commentRecords[i].boardReplyContent }}'>
+				<button class="submit">Comfirm</button>
+			{% else %}
+				: {{ commentRecords[i].boardReplyContent }} | {{ commentRecords[i].boardRepliedDate }} |
+				<!-- like button -->
+				<button class="like btn btn-link" href="#" name="boardReplyLike{{ commentRecords[i].boardReplyIndex }}" type="submit">
+				{% if isLikeds[i]['isLiked'] == 'Liked' %} 
+					UnLike 
+				{% else %} 
+					Like 
+				{% endif %}
+				</button>
+				{{ commentRecords[i].sumOfLikeCount }}
+				
+				<!-- delete button -->
+				<!-- replier and masters are availables to delete the comments -->
+				{% if commentRecords[i].boardReplierId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
+				<a href="#deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
+				<div id="deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" class="modal hide fade" style="text-align:center">
+					<div class="modal-header">
+						<h3>Delete Comment</h3>
+					</div>
+					<div class="modal-body">
+						<p>Do you really want to delete it?</p>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button href="#" class="delete btn btn-primary" name="deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" type="submit">Confirm</button>
+					</div>
 				</div>
-				<div class="modal-body">
-					<p>Do you really want to delete it?</p>
-				</div>
-				<div class="modal-footer">
-					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-					<button href="#" class="delete btn btn-primary" name="deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" type="submit">Confirm</button>
-				</div>
-			</div>
-			<!-- modify button -->
-			<!-- replier and masters are available to modify the comments -->
-			<button name ='modifyBoardComment{{ commentRecords[i].boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></button>
+				<!-- modify button -->
+				<!-- replier and masters are available to modify the comments -->
+				<button name ='modifyBoardComment{{ commentRecords[i].boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></button>
+				{% endif %}
 			{% endif %}
 			<br>
 		</form>
