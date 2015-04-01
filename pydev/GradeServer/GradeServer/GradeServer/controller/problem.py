@@ -128,23 +128,11 @@ def problem(courseId, problemId, pageNum):
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
-        raise
+        raise        
     
-    try:
-        problemName = dao.query(Problems.problemName).\
-                          filter(Problems.problemId == problemId).\
-                          first().\
-                          problemName
-    except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise                 
-                             
-    print problemName
     return render_template('/problem.html',
                            courseId = courseId,
                            problemId = problemId,
-                           problemName = problemName,
                            problemInformation = problemInformation,
                            languageName = languageName,
                            languageVersion = languageVersion,
