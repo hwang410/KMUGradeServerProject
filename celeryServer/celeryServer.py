@@ -1,7 +1,10 @@
 import os
 import random
 from celery import Celery
+from celery import task
+from billiard import current_process
 
+MAX_CONTAINER_COUNT = 10
 app = Celery('tasks', broker = 'redis://192.168.0.119:6379')
 
 @app.task
@@ -11,6 +14,20 @@ def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount, lim
                            usingLang, version, courseNum, submitCount)
     random.seed()
 
-    containerName = str(stdNum + random.randrange(100, 999) + problemNum)
-       
-    os.system('docker run --privileged=true -i -t --name ' + containerName + ' --rm=true grade:1.0 python rungrade.py ' + argsList)
+    worker_num = current_process().index + 1
+
+    os.system('docker exec grade_container' + str(worker_num) + ' python rungrade.py ' + argsList) 
+    
+@app.task
+def ServerOn():
+    for i in range(MAX_CONTAINER_COUNT):
+        number = str(i+1)
+        os.system('docker create --privileged -i -t --name grade_container' + number + ' gradeserver:1.0 /bin/bash')
+        os.system('docker start grade_container' + number)
+    
+@app.task
+def ServerOff():
+    for i in range(MAX_CONTAINER_COUNT):
+        number = str(i+1)
+        os.system('docker stop grade_container' + number)
+        os.system('docker rm grade_container' + number)
