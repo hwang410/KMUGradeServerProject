@@ -91,6 +91,7 @@ Mode.prototype.supportsFile = function(filename) {
 };
 var supportedModes = {
     ABAP:        ["abap"],
+    ABC:         ["abc"],
     ActionScript:["as"],
     ADA:         ["ada|adb"],
     Apache_Conf: ["^htaccess|^htgroups|^htpasswd|^conf|htaccess|htgroups|htpasswd"],
@@ -146,6 +147,7 @@ var supportedModes = {
     JSX:         ["jsx"],
     Julia:       ["jl"],
     LaTeX:       ["tex|latex|ltx|bib"],
+    Lean:        ["lean|hlean"],
     LESS:        ["less"],
     Liquid:      ["liquid"],
     Lisp:        ["lisp"],
@@ -206,9 +208,10 @@ var supportedModes = {
     Velocity:    ["vm"],
     Verilog:     ["v|vh|sv|svh"],
     VHDL:        ["vhd|vhdl"],
-    XML:         ["xml|rdf|rss|wsdl|xslt|atom|mathml|mml|xul|xbl"],
+    XML:         ["xml|rdf|rss|wsdl|xslt|atom|mathml|mml|xul|xbl|xaml"],
     XQuery:      ["xq"],
-    YAML:        ["yaml|yml"]
+    YAML:        ["yaml|yml"],
+    Django:      ["html"]
 };
 
 var nameOverrides = {
