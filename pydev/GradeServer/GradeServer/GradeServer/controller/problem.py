@@ -98,32 +98,53 @@ def problem(courseId, problemId, pageNum):
                            join(LanguagesOfCourses, 
                                 and_(Languages.languageIndex == LanguagesOfCourses.languageIndex,
                                 Languages.languageVersion == LanguagesOfCourses.languageVersion)).\
-                                filter(LanguagesOfCourses.courseId == courseId).all()
+                                filter(LanguagesOfCourses.courseId == courseId).\
+                                all()
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
         raise 
     try:
         languageVersion = dao.query(LanguagesOfCourses.languageVersion).\
-                              filter(LanguagesOfCourses.courseId == courseId).all()
+                              filter(LanguagesOfCourses.courseId == courseId).\
+                              all()
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
         raise 
     try:
         languageIndex = dao.query(LanguagesOfCourses.languageIndex).\
-                            filter(LanguagesOfCourses.courseId == courseId).all()
+                            filter(LanguagesOfCourses.courseId == courseId).\
+                            all()
     except Exception as e:
         dao.rollback()
         print 'DB error : ' + str(e)
         raise 
-
-    problemInformation = dao.query(Problems).\
-                             filter(Problems.problemId == problemId).first()
+        
+    try:
+        problemInformation = dao.query(Problems).\
+                             filter(Problems.problemId == problemId).\
+                             first()
+    except Exception as e:
+        dao.rollback()
+        print 'DB error : ' + str(e)
+        raise
+    
+    try:
+        problemName = dao.query(Problems.problemName).\
+                          filter(Problems.problemId == problemId).\
+                          first().\
+                          problemName
+    except Exception as e:
+        dao.rollback()
+        print 'DB error : ' + str(e)
+        raise                 
                              
+    print problemName
     return render_template('/problem.html',
                            courseId = courseId,
                            problemId = problemId,
+                           problemName = problemName,
                            problemInformation = problemInformation,
                            languageName = languageName,
                            languageVersion = languageVersion,
