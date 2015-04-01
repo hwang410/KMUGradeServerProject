@@ -24,6 +24,7 @@ def get_message(key ='unknown'):
                   'deletedComment': '댓글을 삭제 하였습니다!!!',
                   'writtenPost': '게시물을 작성 하였습니다!!!',
                   'modifiedPost': '게시물을 수정 하였습니다!!!',
+                  'modifiedComment': '댓글을 수정 하였습니다!!!',
                   'deletedPost': '게시물을 삭제 하였습니다!!!',
                   
                   'acceptInvitee': '팀에 합류 되었습니다!!!',

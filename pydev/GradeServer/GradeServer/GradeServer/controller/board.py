@@ -392,6 +392,8 @@ def read(articleIndex, error = None):
                     update(dict(boardReplyContent = request.form['modifyComfirmBoardComment' +form[idIndex:]],
                                 boardRepliedDate = datetime.now()))
                
+                flashMsg =get_message('modifiedComment')
+                
                 break
             
             elif 'modifyBoardComment' in form:
