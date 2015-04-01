@@ -657,7 +657,7 @@ def class_add_user():
                     try:
                         if newUser[2] == 'Course Admin':
                             newUser[2] = 'CourseAdministrator'
-                            
+                                
                         # at first insert to 'Members'. Duplicated tuple will be ignored.
                         freshman = Members(memberId = newUser[0], 
                                            password = newUser[0], 
