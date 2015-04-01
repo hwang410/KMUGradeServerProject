@@ -655,6 +655,9 @@ def class_add_user():
                 isExist = dao.query(Members).filter(Members.memberId == newUser[0]).first() 
                 if not isExist:
                     try:
+                        if newUser[2] == 'Course Admin':
+                            newUser[2] = 'CourseAdministrator'
+                            
                         # at first insert to 'Members'. Duplicated tuple will be ignored.
                         freshman = Members(memberId = newUser[0], 
                                            password = newUser[0], 
