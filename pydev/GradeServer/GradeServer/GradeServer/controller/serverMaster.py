@@ -38,7 +38,8 @@ import os
 import subprocess
 
 projectPath = '/mnt/shared'
-problemsPath = 'Problems'
+problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
+problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/ProblemDescriptions' % (projectPath)
 # if there's additional difficulty then change the value 'numberOfDifficulty'
 numberOfDifficulty = 5
 newUsers = []
@@ -267,9 +268,8 @@ def server_manage_problem():
                                                                           
                     # place the difficulty at the left most
                     problemId = difficulty * 10000 + numberOfProblemsOfDifficulty[difficulty - 1]
-                    problemPath = '%s/%s/%s' % (projectPath, 
-                                                problemsPath,
-                                                str(problemId) + '_' + problemName)
+                    problemPath = '%s/%s' % (problemsPath,
+                                             str(problemId) + '_' + problemName)
                     
                     try:
                         newProblem = Problems(problemIndex = nextIndex, 
@@ -314,12 +314,26 @@ def server_manage_problem():
                     # create final goal path
                     if not os.path.exists(problemPath):
                         os.makedirs(problemPath)
+                                       
+                    problemDescriptionPath = '%s/%s_%s' % (problemDescriptionsPath, problemId, problemName)
+                    
+                    if not os.path.exists(problemDescriptionPath):
+                        os.makedirs(problemDescriptionPath)
                         
                     # after all, move the problem into 'Problems' folder
                     try:
                         subprocess.call('mv %s/* %s/' % (tmpPath, problemPath), shell=True)
                     except OSError :
                         error = 'Error has occurred while moving new problem'
+                        return render_template('/server_manage_problem.html', 
+                                               error = error,
+                                               uploadedProblems = [])
+                    
+                    print 'cp %s/%s_%s.pdf %s/' % (problemPath, problemId, problemName, problemDescriptionPath)
+                    try:
+                        subprocess.call('cp %s/%s_%s.pdf %s/' % (problemPath, problemId, problemName, problemDescriptionPath), shell=True)
+                    except:
+                        error = 'Error has been occurred while copying new problem'
                         return render_template('/server_manage_problem.html', 
                                                error = error,
                                                uploadedProblems = [])
