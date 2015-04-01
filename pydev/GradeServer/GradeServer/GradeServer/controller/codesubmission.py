@@ -238,7 +238,7 @@ def upload(courseId, problemId):
         else:
             caseCount = 1
             
-    """Grade.delay(filePath,
+    Grade.delay(filePath,
            problemPath,
            memberId,
            problemId,
@@ -249,7 +249,7 @@ def upload(courseId, problemId):
            usedLanguage,
            usedLanguageVersion,
            courseId,
-           subCount)"""
+           subCount)
            
     return courseId
         
@@ -455,7 +455,7 @@ def code(courseId, problemId):
         else:
             caseCount = 1
             
-    """Grade.delay(filePath,
+    Grade.delay(filePath,
            problemPath,
            memberId,
            problemId,
@@ -466,7 +466,7 @@ def code(courseId, problemId):
            usedLanguage,
            usedLanguageVersion,
            courseId,
-           subCount)"""
+           subCount)
     
     flash('submission success!')
     return redirect(url_for('.problemList',
