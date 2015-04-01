@@ -300,19 +300,12 @@ def user_record(problemId, courseId):
         for raw in submittedFileRecords:
             # Open
             #file = open(raw.filePath + raw.fileName)
-            file = open("/mnt/c.c")
+            file = open("/mnt/aa.c")
             # Read
             data = file.read()
-            fileData.append(data)
             # Close
             file.close()
-        file = open("/mnt/aa.c")
-        # Read
-        data = file.read()
-        fileData.append(data)
-        # Close
-        file.close()
-        submittedFileRecords = ['a.c', 'ab.c']
+            fileData.append(data)
     except Exception:
         submittedFileRecords = []
         fileData = []
