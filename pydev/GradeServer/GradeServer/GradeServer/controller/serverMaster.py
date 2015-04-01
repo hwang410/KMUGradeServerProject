@@ -728,6 +728,9 @@ def server_add_user():
             print newUsers
             for newUser in newUsers:
                 try:
+                    if newUser[2] == 'Course Admin':
+                        newUser[2] = 'CourseAdministrator'
+                            
                     freshman = Members(memberId = newUser[0], 
                                        password = newUser[0], 
                                        memberName = newUser[1], 
