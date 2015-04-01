@@ -377,9 +377,34 @@ def read(articleIndex, error = None):
                     flashMsg =get_message('deletedComment')
                     
                     break 
-    # Commit Modify
-            elif 'modifyBoardComment' in form :
-                print "ABC"
+            # Commit Modify
+            elif 'modifyComfirmBoardComment' in form:
+                
+                idIndex = len('modifyComfirmBoardComment')
+                # remove duplicated read count
+                dao.query(ArticlesOnBoard).\
+                    filter(ArticlesOnBoard.articleIndex == articleIndex).\
+                    update(dict(viewCount = article.viewCount - 1))
+                #update comment
+                dao.query(RepliesOnBoard).\
+                    filter(RepliesOnBoard.articleIndex == articleIndex,
+                           RepliesOnBoard.boardReplyIndex == form[idIndex:]).\
+                    update(dict(boardReplyContent = request.form['modifyComfirmBoardComment' +form[idIndex:]],
+                                boardRepliedDate = datetime.now()))
+               
+                break
+            
+            elif 'modifyBoardComment' in form:
+               
+                idIndex = len('modifyBoardComment')
+
+                return render_template(READ_HTML,
+                                   article = article,
+                                   commentRecords = commentRecords,
+                                   boardReplyIndex = int(form[idIndex:]),
+                                   isLikeds = isLikeds,
+                                   isPostLiked = isPostLiked,
+                                   error = error)
             # 게시물 삭제
             elif form == 'deletePost':
                 deleteCheck = dao.query(ArticlesOnBoard.isDeleted).filter_by(articleIndex=articleIndex).first()
