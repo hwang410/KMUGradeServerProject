@@ -277,28 +277,27 @@ def read(articleIndex, error = None):
                 # 좋아요를 누른적 없을 때
                 if not isPostLiked:
                     
-                    dao.add(update_board_like_count(articleIndex,
-                                                    article.sumOfLikeCount + 1))
+                    update_board_like_count(articleIndex,
+                                            article.sumOfLikeCount + 1)
                     
-                    newLike = LikesOnBoard(articleIndex = articleIndex,
-                                           boardLikerId = session[MEMBER_ID])
-                    dao.add(newLike)
+                    dao.add(LikesOnBoard(articleIndex = articleIndex,
+                                        boardLikerId = session[MEMBER_ID]))
                 # 다시 좋아요 누를 때
                 elif isPostLiked == CANCELLED:
                     
-                    dao.add(update_board_like_count(articleIndex,
-                                                    article.sumOfLikeCount + 1))
-                    dao.add(update_board_liker_cancelled (articleIndex,
-                                                          session[MEMBER_ID],
-                                                          NOT_CANCELLED))
+                    update_board_like_count(articleIndex,
+                                            article.sumOfLikeCount + 1)
+                    update_board_liker_cancelled (articleIndex,
+                                                  session[MEMBER_ID],
+                                                  NOT_CANCELLED)
                 # 좋아요 취소 할 때
                 else:  # if it's already exist then change the value of 'pushedLike'
                     
-                    dao.add(update_board_like_count(articleIndex,
-                                                    article.sumOfLikeCount -1))
-                    dao.add(update_board_liker_cancelled (articleIndex,
-                                                          session[MEMBER_ID],
-                                                          CANCELLED))
+                    update_board_like_count(articleIndex,
+                                            article.sumOfLikeCount -1)
+                    update_board_liker_cancelled (articleIndex,
+                                                  session[MEMBER_ID],
+                                                CANCELLED)
                     
                 # remove duplicated read count
                 dao.query(ArticlesOnBoard).\
@@ -532,18 +531,18 @@ def write(articleIndex, error =None):
   Board Like Count
 '''
 def update_board_like_count(articleIndex, count):
-    return dao.query(ArticlesOnBoard).\
-               filter(ArticlesOnBoard.articleIndex == articleIndex).\
-               update(dict(sumOfLikeCount = count))   
+    dao.query(ArticlesOnBoard).\
+        filter(ArticlesOnBoard.articleIndex == articleIndex).\
+        update(dict(sumOfLikeCount = count))   
                
 '''
 Board LIker Cancelled
 '''
 def update_board_liker_cancelled(articleIndex, likerId, cancelledLike):
-    return dao.query(LikesOnBoard).\
-               filter(LikesOnBoard.articleIndex == articleIndex,
-                      LikesOnBoard.boardLikerId == likerId).\
-               update(dict(cancelledLike = cancelledLike))
+    dao.query(LikesOnBoard).\
+        filter(LikesOnBoard.articleIndex == articleIndex,
+               LikesOnBoard.boardLikerId == likerId).\
+        update(dict(cancelledLike = cancelledLike))
 '''
 게시판 검색
 '''

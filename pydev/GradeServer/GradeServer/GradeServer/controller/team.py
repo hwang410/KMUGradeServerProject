@@ -109,8 +109,8 @@ def team_invitation(teamName, accept, error = None):
         
         # 초대 수락
         if accept == ACCEPT:
-            dao.add(insert_team_member_id(teamName,
-                                          session[MEMBER_ID]))
+            insert_team_member_id(teamName,
+                                  session[MEMBER_ID])
             # Commit Exception
             try:
                 dao.commit()
@@ -205,9 +205,9 @@ def make_team(error = None):
                         # this Commit Succeeded Go Next Step
                         dao.commit()
                                                 # 마스터 정보
-                        dao.add(insert_team_member_id(gTeamName,
+                        insert_team_member_id(gTeamName,
                                               session[MEMBER_ID],
-                                              MASTER))
+                                              MASTER)
                         # this Commit Succeeded Go Next Step
                         try:
                             dao.commit()
@@ -525,16 +525,16 @@ def insert_team_member_id(teamName, teamMemberId, isTeamMaster = NOT_MASTER):
                 filter(RegisteredTeamMembers.teamName == teamName,
                        RegisteredTeamMembers.teamMemberId == teamMemberId).first():
         
-        return (RegisteredTeamMembers(teamName = teamName,
+        dao.add(RegisteredTeamMembers(teamName = teamName,
                                       teamMemberId = teamMemberId,
                                       isTeamMaster = isTeamMaster))
     # else then Update
     else:
-        return dao.query(RegisteredTeamMembers).\
-                filter(RegisteredTeamMembers.teamName == teamName,
-                       RegisteredTeamMembers.teamMemberId == teamMemberId).\
-                update(dict(isDeleted = NOT_DELETED,
-                            isTeamMaster =isTeamMaster)) 
+        dao.query(RegisteredTeamMembers).\
+            filter(RegisteredTeamMembers.teamName == teamName,
+                   RegisteredTeamMembers.teamMemberId == teamMemberId).\
+            update(dict(isDeleted = NOT_DELETED,
+                        isTeamMaster =isTeamMaster)) 
         
 """
 DB Insert InviteeId
