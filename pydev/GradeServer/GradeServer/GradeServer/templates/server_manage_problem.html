@@ -43,10 +43,10 @@
 					<p>Do you really want to delete it?</p>
 				</div>
 				<div class="modal-footer">
-					<form id="delete" method="post">
+					<form id="deleteProblem" method="post">
 						<button class="btn" type="submit">Confirm</button>
 						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-					</form>
+					<!-- In IE, it doesn't send its form values to server if 'form tags' are out of '<form></form>'  -->
 				</div>
 		</div>
 		<!-- no items choosed -->
@@ -77,8 +77,9 @@
 				<td>{{ uploadedProblem.problemId }}
 				<td>{{ uploadedProblem.problemName }}
 				<td>{{ uploadedProblem.solutionCheckType }}
-				<td><label class="checkbox-center"><input class="box-check" name="{{ uploadedProblem.problemId }}" type="checkbox" form="delete" value="{{ uploadedProblem.problemId }}"></label>
+				<td><label class="checkbox-center"><input class="box-check" name="{{ uploadedProblem.problemId }}" type="checkbox" form="deleteProblem" value="{{ uploadedProblem.problemId }}"></label>
 			{% endfor -%}
+			</form> <!-- for IE, we need to cover all 'form tags' into the '<form>' tag between -->
 		</table>
 	</div>
 </div>

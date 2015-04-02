@@ -217,8 +217,9 @@ def class_manage_problem():
                 closeDate = endDate
             
             try:
+                print problemId
                 solutionCheckType = dao.query(Problems).\
-                                        filter_by(problemId = problemId).\
+                                        filter(Problems.problemId == problemId).\
                                         first().\
                                         solutionCheckType
             except:
@@ -395,7 +396,8 @@ def class_manage_user():
                                        department.departmentName])
                 userIndex += 1  
         loopIndex += 1
-        
+    
+    print "rf", request.form
     if request.method == 'POST':
         for form in request.form:
             if 'delete' in form:
@@ -481,7 +483,7 @@ def class_add_user():
                                allDepartments = allDepartments,
                                authorities = authorities,
                                newUsers = newUsers)
-        
+    
     if request.method == 'POST':
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
