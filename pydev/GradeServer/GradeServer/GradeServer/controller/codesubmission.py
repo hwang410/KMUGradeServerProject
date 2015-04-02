@@ -24,6 +24,7 @@ from GradeServer.model.submissions import Submissions
 from GradeServer.model.languages import Languages
 from GradeServer.model.languagesOfCourses import LanguagesOfCourses
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
+from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.GradeServer_config import GradeServerConfig
 from sqlalchemy import and_, func
 from celeryServer import Grade
@@ -83,15 +84,16 @@ def upload(courseId, problemId):
         raise e 
     
     usedLanguageName = request.form['usedLanguageName']
-    
+
     try:
         for file in upload_files:
+            print file
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(tempPath, filename))
-                fileSize = os.stat(tempPath + '/' + filename).st_size
+                fileSize = os.stat(os.path.join(tempPath, filename)).st_size
                 filenames.append(filename)
-                shutil.copy(os.path.join(tempPath, filename), filePath )
+                shutil.copy(os.path.join(tempPath, filename), filePath)
                 
                 if usedLanguageName == 'C':
                     try:
@@ -219,6 +221,7 @@ def upload(courseId, problemId):
         limitedTime = problemsParam[1]
         limitedMemory = problemsParam[2]
         solutionCheckType = problemsParam[3]
+        problemCasesPath = '%s/%s_%s_%s' %(problemPath, problemId, problemName, solutionCheckType)
     except Exception as e:
         print 'DB error : ' + str(e)
         raise e
@@ -231,14 +234,24 @@ def upload(courseId, problemId):
         print 'DB error : ' + str(e)
         raise e
             
-    caseCount = len(glob.glob(problemsParam[0]))/2
-            
+    try:
+        isAllInputCaseInOneFile = dao.query(RegisteredProblems.isAllInputCaseInOneFile).\
+                                      filter(RegisteredProblems.problemId == problemId,
+                                             RegisteredProblems.courseId == courseId).\
+                                      first().\
+                                      isAllInputCaseInOneFile
+    except Exception as e:
+        print 'DB error : ' + str(e)
+        raise e
+    
+    caseCount = len(glob.glob(os.path.join(problemCasesPath, '*.*')))/2
+    
     if caseCount > 1:
-        if departmentIndex == 1:
+        if isAllInputCaseInOneFile == 'MultipleFiles':
             caseCount -= 1
         else:
             caseCount = 1
-                    
+            
     Grade.delay(filePath,
                 problemPath,
                 memberId,
@@ -306,7 +319,7 @@ def code(courseId, pageNum, problemId):
     
     if usedLanguageName == 'C':
         filename = 'test.c'
-        fout = open(tempPath + '/' + filename, 'w')
+        fout = open(os.path.join(tempPath, filename), 'w')
         fout.write(tests)
         fout.close()
         try:
@@ -321,7 +334,7 @@ def code(courseId, pageNum, problemId):
     
     elif usedLanguageName == 'C++':
         filename = 'test.cpp'
-        fout = open(tempPath + '/' + filename, 'w')
+        fout = open(os.path.join(tempPath, filename), 'w')
         fout.write(tests)
         fout.close()
         try:  
@@ -336,7 +349,7 @@ def code(courseId, pageNum, problemId):
     
     elif usedLanguageName == 'JAVA':
         filename = 'test.java'
-        fout = open(tempPath + '/' + filename, 'w')
+        fout = open(os.path.join(tempPath, filename), 'w')
         fout.write(tests)
         fout.close()
         try:
@@ -351,7 +364,7 @@ def code(courseId, pageNum, problemId):
         
     elif usedLanguageName == 'PYTHON':
         filename = 'test.py'
-        fout = open(tempPath + '/' + filename, 'w')
+        fout = open(os.path.join(tempPath, filename), 'w')
         fout.write(tests)
         fout.close()
         try:
@@ -364,7 +377,7 @@ def code(courseId, pageNum, problemId):
             print 'DB error : ' + str(e)
             raise e 
         
-    fileSize = os.stat(tempPath + '/' + filename).st_size
+    fileSize = os.stat(os.path.join(tempPath, filename)).st_size
     
     try:
         submittedFiles = SubmittedFiles(memberId = memberId,
@@ -442,6 +455,7 @@ def code(courseId, pageNum, problemId):
         limitedTime = problemsParam[1]
         limitedMemory = problemsParam[2]
         solutionCheckType = problemsParam[3]
+        problemCasesPath = '%s/%s_%s_%s' %(problemPath, problemId, problemName, solutionCheckType)
     except Exception as e:
         print 'DB error : ' + str(e)
         raise e
@@ -454,10 +468,20 @@ def code(courseId, pageNum, problemId):
         print 'DB error : ' + str(e)
         raise e
     
-    caseCount = len(glob.glob(problemsParam[0]))/2
+    try:
+        isAllInputCaseInOneFile = dao.query(RegisteredProblems.isAllInputCaseInOneFile).\
+                                      filter(RegisteredProblems.problemId == problemId,
+                                             RegisteredProblems.courseId == courseId).\
+                                      first().\
+                                      isAllInputCaseInOneFile
+    except Exception as e:
+        print 'DB error : ' + str(e)
+        raise e
     
+    caseCount = len(glob.glob(os.path.join(problemCasesPath, '*.*')))/2
+            
     if caseCount > 1:
-        if departmentIndex == 1:
+        if isAllInputCaseInOneFile == 'MultipleFiles':
             caseCount -= 1
         else:
             caseCount = 1
