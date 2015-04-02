@@ -79,8 +79,8 @@
 			</a>
 			<!-- Content, WrittenDate -->
 			{% if boardReplyIndex and boardReplyIndex == commentRecords[i].boardReplyIndex %}
-				<input type="textarea" name="modifyComfirmBoardComment{{ boardReplyIndex }}" style="width:90%" value = '{{commentRecords[i].boardReplyContent }}'>
-				<button class="submit">Comfirm</button>
+				<input type="textarea" name="modifyConfirmBoardComment{{ boardReplyIndex }}" style="width:90%" value = '{{commentRecords[i].boardReplyContent }}'>
+				<button class="submit">Confirm</button>
 			{% else %}
 				: {{ commentRecords[i].boardReplyContent }} | {{ commentRecords[i].boardRepliedDate }} |
 				<!-- like button -->
