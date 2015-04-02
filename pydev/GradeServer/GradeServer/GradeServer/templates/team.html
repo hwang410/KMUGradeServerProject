@@ -28,9 +28,9 @@
 				</div>
 				<div class="modal-footer">
 					<a href="{{ url_for ('GradeServer.team_invitation', teamName =teamInvitationRecords[i].teamName, accept ='reject') }}">
-					<button name ="reject">Reject</button></a>
+					<button class="btn" data-dismiss="modal" aria-hidden="true" name ="reject">Reject</button></a>
 					<a href="{{ url_for ('GradeServer.team_invitation', teamName =teamInvitationRecords[i].teamName, accept ='accept') }}">
-					<button name ="accept">Accept</button></a>
+					<button  class="delete btn btn-primary"  name ="accept">Accept</button></a>
 				</div>
 			</div>
 			{% endfor %}

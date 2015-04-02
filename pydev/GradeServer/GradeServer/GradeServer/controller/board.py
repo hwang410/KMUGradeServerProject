@@ -63,26 +63,24 @@ def board(pageNum):
         if request.method == 'POST':
             # 과목 아이디만 가져옴
             try:
-                courseId = request.form['courseId'].split()[0]
+                for form in request.form:
+                    # Keyword Content
+                    if 'keyWord' == form:
+                        keyWord = request.form['keyWord']
+                        # findConditions
+                    else:
+                        filterCondition = form
             except Exception:
-                courseId = None
-                
-            filterCondition = request.form['filterCondition']
-            keyWord = request.form['keyWord']
-            # courseId가 None이 아닐 때 해당 courseId로 필터링
-            if courseId:
-                myCourses = dao.query(myCourses).\
-                                filter(myCourses.c.courseId == courseId).\
-                                subquery()
-                articlesOnBoard = dao.query(articlesOnBoard).\
-                                      filter(articlesOnBoard.c.courseId == courseId).\
-                                      subquery()
+                filterCondition = None
+                keyWord = None
+
             # Like Filterling    
             articlesOnBoard = search_articles(Filters,
                                               articlesOnBoard,
-                                              filterCondition = filterCondition,
+                                              filterCondition = Filters[0] if not filterCondition else filterCondition,
                                               keyWord = keyWord)
-        #과목 목록
+        # Get Method
+                #과목 목록
         try:
             courseList = dao.query(myCourses).\
                              all()
@@ -98,8 +96,6 @@ def board(pageNum):
                             join(articlesOnBoard,
                                  articlesOnBoard.c.courseId == myCourses.c.courseId).\
                             subquery()
-            for raw in dao.query(courseSub).all():
-                print raw.courseName, raw.isNotice, raw.articleIndex
             # 과목 게시글 모음
             try:
                 courses.append(dao.query(get_page_record(dao.query(select_article(courseSub,
@@ -388,7 +384,7 @@ def read(articleIndex, error = None):
                 dao.query(RepliesOnBoard).\
                     filter(RepliesOnBoard.articleIndex == articleIndex,
                            RepliesOnBoard.boardReplyIndex == form[idIndex:]).\
-                    update(dict(boardReplyContent = request.form['modifyConfirmBoardComment' +form[idIndex:]],
+                    update(dict(boardReplyContent = request.form['modifyConfirmBoardComment' + form[idIndex:]],
                                 boardRepliedDate = datetime.now()))
                
                 flashMsg =get_message('modifiedComment')
@@ -546,7 +542,7 @@ def update_board_liker_cancelled(articleIndex, likerId, cancelledLike):
 '''
 게시판 검색
 '''
-def search_articles(Filters, articlesOnBoard, filterCondition ='All', keyWord =''):
+def search_articles(Filters, articlesOnBoard, filterCondition, keyWord =''):
     # condition은 All, Id, Title&Content로 나누어서 검새
         
     if filterCondition == Filters[0]: # Filters[0] is '모두'

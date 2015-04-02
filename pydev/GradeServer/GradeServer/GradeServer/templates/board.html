@@ -4,6 +4,18 @@
 		
 {% extends "main.html" %}
 {%- block body %}
+
+<script>
+	function filterConditions (string){
+                 	
+		var dropDownCondition = document.getElementById("dropDownCondition") ;
+		dropDownCondition.innerHTML = string + "<b class = 'caret'></b>" ;
+		
+		var filterCondition = document.getElementById("filterCondition") ;
+		filterCondition.name = string ;
+     }
+</script>
+            
 <div class="container">
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
@@ -142,83 +154,28 @@
 			{% endfor -%}
 		</div>
 		<!-- end posts -->
-		
-		<!-- search bar -->
-		<form method ="post">
-				<!-- SearchBar // all -->
-				<div id="all" class="tab-pane active" style="text-align:center">
-					<select class="span3" type="text" id="language" name="courseId">
-						<option class ="None" selected ="selected"></option>
-						{%- for course in myCourses %}
-						<option class ={{ course.courseId }}>{{course.courseId }} {{ course.courseName }}</option>
-						{% endfor -%}
-					</select>
-					
-					<div class="btn-group">
-					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Class <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<!--  Class Search Bar -->
-						{% for course in myCourses %}
-						<li style ="padding :10px">{{course.courseId }} {{ course.courseName }}</li>
-						{% endfor %}
-						{% if not myCourses|length %}
-						<li class="disabled"><a tabindex="-1" href="#">None</a></li>
-						{% endif %}
-					</ul>
-					</div>
-					
-					<div class="btn-group">
-						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">All<span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							{% for filter in Filters %}
-							<li><a href="#">{{ filter }}</a></li>
-							{% endfor %}
-						</ul>
-					</div>
-					
-					<div id="content">
-				<ul id="myTab" class="nav nav-tabs" role="tablist">
-	      	<li class="dropdown"><a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown" aria-controls="myTabDrop1-contents">Language - default C<span class="caret"></span></a>
-        		<ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1" id="myTabDrop1-contents">
-          			<li><a href="#dropdown1" tabindex="-1" role="tab" id="dropdown1-tab" data-toggle="tab" aria-controls="dropdown1">C &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a></li>
-          			<li><a href="#dropdown2" tabindex="-1" role="tab" id="dropdown2-tab" data-toggle="tab" aria-controls="dropdown2">CPP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a></li>
-          			<li><a href="#dropdown3" tabindex="-1" role="tab" id="dropdown3-tab" data-toggle="tab" aria-controls="dropdown3">JAVA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a></li>
-          			<li><a href="#dropdown4" tabindex="-1" role="tab" id="dropdown4-tab" data-toggle="tab" aria-controls="dropdown4">PYTHON</a></li>
-        		</ul>
-      		</li>
-    		</ul>
-    		</div>
-					
-			
-	
-	
-					<div class="btn-group">
-						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">All<span class="caret"></span></a>
-						<ul class="dropdown-menu" role="menu" aria-labelledby="filterCondition" id="filterCondition-contents">
-							{% for filter in Filters %}
-							<li><a href="#{{ filter }}" tabindex="-1" role="tab" id="{{ filter }}" data-toggle="tab" aria-controls="{{ filter }}">{{ filter }}</a></li>
-							{% endfor %}
-						</ul>
-						
-						<div id="myTabContent" class="tab-content">
-					    	<div role="tabpanel" class="tab-pane active in" id="{{ filter }}" aria-labelledby="{{ filter }}">
-								
-				        	</div>
-			        	</div>
-					</div>	
-					
-					<select class="span2" type="text" id="language" name="filterCondition">
-						{% for filter in Filters %}
-						<option class ="{{ filter }}">{{ filter }}</option>
-						{% endfor %}
-					</select>
-					<div class="input-append" style="margin-bottom:0px">
-						<input class="span3" name="keyword" type="text" placeholder="Type Keyword">
-						<button name ="findArticles" class="btn" type="submit">Find</button>
-					</div>
-				</div>
-		</form>
-		<!-- end search bar -->
 	</div>
+	
+	<!-- search bar -->
+	<form method ="post">
+			<!-- SearchBar // all -->
+			<div id="all" class="tab-pane active" style="text-align:center">
+				
+				<div class="btn-group">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" id = 'dropDownCondition'>All<span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						{% for filter in Filters %}
+						<li><a onclick = 'filterConditions("{{ filter }}")'>{{ filter }}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+
+				<div class="input-append" style="margin-bottom:0px">
+					<input class="span3" name = 'keyWord' type="text" placeholder="Type Keyword">
+					<button id = 'filterCondition' name = '{{ Filters[0] }}' class="btn" type="submit">Find</button>
+				</div>
+			</div>
+	</form>
+	<!-- end search bar -->
 </div>
 {% endblock -%}
