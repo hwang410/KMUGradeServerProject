@@ -29,7 +29,7 @@ class MakePath(object):
         if self.gradeMethod == 'Solution':
             return self.problemPath + '/' + self.problemName + '_Solution/'
         else:
-            return self.problemPath + '/' + self.problemName + 'Checker/'
+            return self.problemPath + '/' + self.problemName + '_Checker/'
     
     def RunFileName(self):
         if self.usingLang == 'PYTHON':
