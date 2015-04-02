@@ -377,9 +377,9 @@ def read(articleIndex, error = None):
                     
                     break 
             # Commit Modify
-            elif 'modifyComfirmBoardComment' in form:
+            elif 'modifyConfirmBoardComment' in form:
                 
-                idIndex = len('modifyComfirmBoardComment')
+                idIndex = len('modifyConfirmBoardComment')
                 # remove duplicated read count
                 dao.query(ArticlesOnBoard).\
                     filter(ArticlesOnBoard.articleIndex == articleIndex).\
@@ -388,7 +388,7 @@ def read(articleIndex, error = None):
                 dao.query(RepliesOnBoard).\
                     filter(RepliesOnBoard.articleIndex == articleIndex,
                            RepliesOnBoard.boardReplyIndex == form[idIndex:]).\
-                    update(dict(boardReplyContent = request.form['modifyComfirmBoardComment' +form[idIndex:]],
+                    update(dict(boardReplyContent = request.form['modifyConfirmBoardComment' +form[idIndex:]],
                                 boardRepliedDate = datetime.now()))
                
                 flashMsg =get_message('modifiedComment')
