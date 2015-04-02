@@ -340,11 +340,12 @@ function addGroupModal(){
 
 function visibleButton(parent){ 
 	var thisId = parent.id; 
+	alert(thisId);
 	//var target = ;
 	if(thisId == "link-all"){
-		$('#summary').style.display = "none";
+		document.getElementById('summary').style.display = "none";
 	}
 	else{
-		$('#summary').style.display = "";
+		document.getElementById('summary').style.display = "";
 	}
 }
