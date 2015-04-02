@@ -31,7 +31,6 @@ from celeryServer import Grade
 # Initialize the Flask application
 ALLOWED_EXTENSIONS = set(['py', 'java', 'class', 'c', 'cpp', 'h'])
 
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -83,7 +82,6 @@ def upload(courseId, problemId):
         print 'DB error : ' + str(e)
         raise e 
     
-
     usedLanguageName = request.form['usedLanguageName']
     
     try:
@@ -136,7 +134,6 @@ def upload(courseId, problemId):
                         print 'DB error : ' + str(e)
                         raise e
                                                                      
-                              
                 try:
                     submittedFiles = SubmittedFiles(memberId = memberId,
                                                     problemId = problemId,
@@ -197,7 +194,7 @@ def upload(courseId, problemId):
                                   courseId = courseId,
                                   submissionCount = subCountNum,
                                   solutionCheckCount = solCountNum,
-                                  status = 2,
+                                  status = 'Judging',
                                   codeSubmissionDate = datetime.now(),
                                   sumOfSubmittedFileSize = sumOfSubmittedFileSize,
                                   usedLanguage = usedLanguage,
@@ -422,7 +419,7 @@ def code(courseId, pageNum, problemId):
                                   courseId = courseId,
                                   submissionCount = subCountNum,
                                   solutionCheckCount = solCountNum,
-                                  status = 2,
+                                  status = 'Judging',
                                   codeSubmissionDate = datetime.now(),
                                   sumOfSubmittedFileSize = fileSize,
                                   usedLanguage = usedLanguage,
@@ -461,23 +458,24 @@ def code(courseId, pageNum, problemId):
     
     if caseCount > 1:
         if departmentIndex == 1:
-           caseCount -= 1
+            caseCount -= 1
         else:
             caseCount = 1
             
     Grade.delay(filePath,
-           problemPath,
-           memberId,
-           problemId,
-           solutionCheckType,
-           caseCount,
-           limitedTime,
-           limitedMemory,
-           usedLanguage,
-           usedLanguageVersion,
-           courseId,
-           subCount)
+                problemPath,
+                memberId,
+                problemId,
+                solutionCheckType,
+                caseCount,
+                limitedTime,
+                limitedMemory,
+                usedLanguage,
+                usedLanguageVersion,
+                courseId,
+                subCount)
     
     flash('submission success!')
     return redirect(url_for('.problemList',
-                            courseId = courseId, pageNum = pageNum))
+                            courseId = courseId,
+                            pageNum = pageNum))
