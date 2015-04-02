@@ -30,14 +30,14 @@
         		<ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1" id="myTabDrop1-contents">
         		{% for name in languageName %}
         			{% if name.languageName == "C++" %}
-          		<li><a href="#Cpp" role="tab" data-toggle="tab" aria-controls="Cpp"> {{name.languageName}}
+          		<li><a href="#Cpp" role="tab" data-toggle="tab" aria-controls="Cpp"> {{ name.languageName }}
           		{% if languageVersion[loop.index0].languageVersion != "0" %}
-          			{{languageVersion[loop.index0].languageVersion}}
+          			{{ languageVersion[loop.index0].languageVersion }}
           		{% endif %} </a></li>
           		{% else %}
-          		<li><a href="#{{name.languageName}}" role="tab" data-toggle="tab" aria-controls="{{name.languageName}}"> {{name.languageName}}
+          		<li><a href="#{{name.languageName}}" role="tab" data-toggle="tab" aria-controls="{{ name.languageName }}"> {{ name.languageName }}
           		{% if languageVersion[loop.index0].languageVersion != "0" %}
-          			{{languageVersion[loop.index0].languageVersion}}
+          			{{ languageVersion[loop.index0].languageVersion }}
           		{% endif %} </a></li>
           		{% endif %}
           	{% endfor %}
@@ -50,23 +50,22 @@
     			{% if name.languageName == "C++" %}
 		    	<div role="tabpanel" class="tab-pane active" id="Cpp">
 		    	{% else %}
-		    	<div role="tabpanel" class="tab-pane active" id="{{name.languageName}}">
+		    	<div role="tabpanel" class="tab-pane active" id="{{ name.languageName }}">
 		    	{% endif %}
 		    {% else %}
 		    {% if name.languageName == "C++" %}
 		    	<div role="tabpanel" class="tab-pane" id="Cpp">
 		    	{% else %}
-		    	<div role="tabpanel" class="tab-pane" id="{{name.languageName}}">
+		    	<div role="tabpanel" class="tab-pane" id="{{ name.languageName }}">
 		    	{% endif %}
 		    {% endif %}
 						<div>
 						{% if name.languageName == "C++" %}
 		    			<form action='/problem/{{courseId }}/{{ problemId }}/upload' id='my-dropzoneCpp' class='dropzone' enctype="multipart/form-data">
-		    					    	<input type="hidden" name="usedLanguageName" value="{{name.languageName}}">
 		    		{% else %}
-		    			<form action='/problem/{{courseId }}/{{ problemId }}/upload' id='my-dropzone{{name.languageName}}' class='dropzone' enctype="multipart/form-data">
-		    					    	<input type="hidden" name="usedLanguageName" value="{{name.languageName}}">
+		    			<form action='/problem/{{courseId }}/{{ problemId }}/upload' id='my-dropzone{{ name.languageName }}' class='dropzone' enctype="multipart/form-data">
 		    		{% endif %}
+		    		<input type="hidden" name="usedLanguageName" value="{{ name.languageName }}">
 								<div class='fallback'>
 									<input name='file' type='file' multiple />
 								</div>
@@ -84,11 +83,11 @@
 				<div> language:   
 					<select type = "text" id="language" name="language" onchange="selectLanguage(this)">
 						{% for name in languageName %}
-							<option value = "{{languageIndex[loop.index0].languageIndex}}">  {{name.languageName}} 
+							<option value = "{{ name.languageName }}"> {{ name.languageName }}
 							{% if languageVersion[loop.index0].languageVersion != "0" %} 
-								{{languageVersion[loop.index0].languageVersion}}
-							{% endif %} </option>
-							<input type="hidden" name="usedLanguageName" value="{{name.languageName}}">
+								{{ languageVersion[loop.index0].languageVersion }} </option>
+							{% else %} </option>
+							{% endif %} 
 						{% endfor %}
 					</select>
 					&nbsp; &nbsp; &nbsp; &nbsp; Theme :

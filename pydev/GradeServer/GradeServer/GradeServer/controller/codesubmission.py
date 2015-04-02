@@ -304,11 +304,8 @@ def code(courseId, pageNum, problemId):
     tests = request.form['copycode']
     unicode(tests)
     tests = tests.replace('\r\n', '\n')
-    print 'BBBBBBBBBBBBBBBBBBBB'
-    usedLanguageName = request.form['usedLanguageName']
-    print usedLanguageName
-    if usedLanguageName == ' C':
-        print usedLanguageName, 'AAAAAAAAAAAAAAAAAAAAAAAAAA'
+    usedLanguageName = request.form['language']
+
     
     if usedLanguageName == 'C':
         filename = 'test.c'
