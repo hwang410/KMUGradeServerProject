@@ -65,7 +65,7 @@ def upload(courseId, problemId):
     upload_files = request.files.getlist('file[]')
     filenames = []
     sumOfSubmittedFileSize = 0
-    usedLanguage = 1
+    usedLanguage = 0
     usedLanguageVersion = 0
     
     if not os.path.exists(tempPath):
@@ -83,9 +83,8 @@ def upload(courseId, problemId):
         print 'DB error : ' + str(e)
         raise e 
     
-    print 'AAAAAAAAAAAAAAA'
-    asdf = ['myTabDrop1'].selectedValue
-    print 'AAAAAAAAAAAAAAA', asdf
+
+    usedLanguageName = request.form['usedLanguageName']
     
     try:
         for file in upload_files:
@@ -96,7 +95,7 @@ def upload(courseId, problemId):
                 filenames.append(filename)
                 shutil.copy(os.path.join(tempPath, filename), filePath )
                 
-                if filename.rsplit('.', 1)[1] == 'c':
+                if usedLanguageName == 'C':
                     try:
                         usedLanguage = dao.query(Languages.languageIndex).\
                                            filter(Languages.languageName == 'C').\
@@ -106,7 +105,7 @@ def upload(courseId, problemId):
                         dao.rollback()
                         print 'DB error : ' + str(e)
                         raise e 
-                elif filename.rsplit('.', 1)[1] == 'cpp':
+                elif usedLanguageName == 'C++':
                     try:
                         usedLanguage = dao.query(Languages.languageIndex).\
                                            filter(Languages.languageName == 'C++').\
@@ -116,7 +115,7 @@ def upload(courseId, problemId):
                         dao.rollback()
                     print 'DB error : ' + str(e)
                     raise e                                                                    
-                elif filename.rsplit('.', 1)[1] == 'java':
+                elif usedLanguageName == 'JAVA':
                     try:
                         usedLanguage = dao.query(Languages.languageIndex).\
                                            filter(Languages.languageName == 'JAVA').\
@@ -126,7 +125,7 @@ def upload(courseId, problemId):
                         dao.rollback()
                         print 'DB error : ' + str(e)
                         raise e
-                elif filename.rsplit('.', 1)[1] == 'py':
+                elif usedLanguageName == 'PYTHON':
                     try:
                         usedLanguage = dao.query(Languages.languageIndex).\
                                            filter(Languages.languageName == 'PYTHON').\
@@ -208,7 +207,7 @@ def upload(courseId, problemId):
     except Exception as e:
         print 'DB error : ' + str(e)
         raise e
-          
+            
     flash('submission success!')
     
     try:
@@ -216,9 +215,9 @@ def upload(courseId, problemId):
                                   Problems.limitedTime,
                                   Problems.limitedMemory,
                                   Problems.solutionCheckType).\
-                            filter(Problems.problemId == problemId).\
-                            first()
-                            
+                                  filter(Problems.problemId == problemId).\
+                                  first()
+                                      
         problemPath = problemsParam[0]
         limitedTime = problemsParam[1]
         limitedMemory = problemsParam[2]
@@ -234,28 +233,28 @@ def upload(courseId, problemId):
     except Exception as e:
         print 'DB error : ' + str(e)
         raise e
-    
+            
     caseCount = len(glob.glob(problemsParam[0]))/2
-    
+            
     if caseCount > 1:
         if departmentIndex == 1:
-           caseCount -= 1
+            caseCount -= 1
         else:
             caseCount = 1
-            
+                    
     Grade.delay(filePath,
-           problemPath,
-           memberId,
-           problemId,
-           solutionCheckType,
-           caseCount,
-           limitedTime,
-           limitedMemory,
-           usedLanguage,
-           usedLanguageVersion,
-           courseId,
-           subCount)
-           
+                problemPath,
+                memberId,
+                problemId,
+                solutionCheckType,
+                caseCount,
+                limitedTime,
+                limitedMemory,
+                usedLanguage,
+                usedLanguageVersion,
+                courseId,
+                subCount)
+               
     return courseId
         
 @GradeServer.route('/problem/<courseId>/page<pageNum>/<problemId>/codesubmission', methods = ['POST'])
@@ -263,7 +262,7 @@ def upload(courseId, problemId):
 def code(courseId, pageNum, problemId):
     memberId = session['memberId']
     fileIndex = 1
-    usedLanguage = 1
+    usedLanguage = 0
     usedLanguageVersion = 0
     try:
         courseName = dao.query(RegisteredCourses.courseName).\
@@ -305,9 +304,13 @@ def code(courseId, pageNum, problemId):
     tests = request.form['copycode']
     unicode(tests)
     tests = tests.replace('\r\n', '\n')
-    num = request.form['language']
-
-    if num == '1':
+    print 'BBBBBBBBBBBBBBBBBBBB'
+    usedLanguageName = request.form['usedLanguageName']
+    print usedLanguageName
+    if usedLanguageName == ' C':
+        print usedLanguageName, 'AAAAAAAAAAAAAAAAAAAAAAAAAA'
+    
+    if usedLanguageName == 'C':
         filename = 'test.c'
         fout = open(tempPath + '/' + filename, 'w')
         fout.write(tests)
@@ -322,7 +325,7 @@ def code(courseId, pageNum, problemId):
             print 'DB error : ' + str(e)
             raise e 
     
-    elif num == '2':
+    elif usedLanguageName == 'C++':
         filename = 'test.cpp'
         fout = open(tempPath + '/' + filename, 'w')
         fout.write(tests)
@@ -337,7 +340,7 @@ def code(courseId, pageNum, problemId):
             print 'DB error : ' + str(e)
             raise e 
     
-    elif num == '3':
+    elif usedLanguageName == 'JAVA':
         filename = 'test.java'
         fout = open(tempPath + '/' + filename, 'w')
         fout.write(tests)
@@ -352,7 +355,7 @@ def code(courseId, pageNum, problemId):
             print 'DB error : ' + str(e)
             raise e 
         
-    elif num == '4':
+    elif usedLanguageName == 'PYTHON':
         filename = 'test.py'
         fout = open(tempPath + '/' + filename, 'w')
         fout.write(tests)

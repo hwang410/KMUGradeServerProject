@@ -30,12 +30,12 @@
         		<ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1" id="myTabDrop1-contents">
         		{% for name in languageName %}
         			{% if name.languageName == "C++" %}
-          		<li><a href="#Cpp" role="tab" data-toggle="tab" aria-controls="Cpp"> {{name.languageName}} 
+          		<li><a href="#Cpp" role="tab" data-toggle="tab" aria-controls="Cpp"> {{name.languageName}}
           		{% if languageVersion[loop.index0].languageVersion != "0" %}
           			{{languageVersion[loop.index0].languageVersion}}
           		{% endif %} </a></li>
           		{% else %}
-          		<li><a href="#{{name.languageName}}" role="tab" data-toggle="tab" aria-controls="{{name.languageName}}"> {{name.languageName}} 
+          		<li><a href="#{{name.languageName}}" role="tab" data-toggle="tab" aria-controls="{{name.languageName}}"> {{name.languageName}}
           		{% if languageVersion[loop.index0].languageVersion != "0" %}
           			{{languageVersion[loop.index0].languageVersion}}
           		{% endif %} </a></li>
@@ -62,8 +62,10 @@
 						<div>
 						{% if name.languageName == "C++" %}
 		    			<form action='/problem/{{courseId }}/{{ problemId }}/upload' id='my-dropzoneCpp' class='dropzone' enctype="multipart/form-data">
+		    					    	<input type="hidden" name="usedLanguageName" value="{{name.languageName}}">
 		    		{% else %}
 		    			<form action='/problem/{{courseId }}/{{ problemId }}/upload' id='my-dropzone{{name.languageName}}' class='dropzone' enctype="multipart/form-data">
+		    					    	<input type="hidden" name="usedLanguageName" value="{{name.languageName}}">
 		    		{% endif %}
 								<div class='fallback'>
 									<input name='file' type='file' multiple />
@@ -86,6 +88,7 @@
 							{% if languageVersion[loop.index0].languageVersion != "0" %} 
 								{{languageVersion[loop.index0].languageVersion}}
 							{% endif %} </option>
+							<input type="hidden" name="usedLanguageName" value="{{name.languageName}}">
 						{% endfor %}
 					</select>
 					&nbsp; &nbsp; &nbsp; &nbsp; Theme :
