@@ -3,9 +3,12 @@ import glob
 import math
 import time
 import runThread
+import ptrace
+import resource
 from subprocess import call
 
 LIMIT_TIME_MULTIPLE = 0.0011
+RUN_COMMAND_LIST =[]
 
 class EvaluateTools():
     def __init__(self, usingLang, limitTime, answerPath, version, gradeMethod, runFileName, problemName, caseCount):
@@ -26,6 +29,13 @@ class EvaluateTools():
         except Exception as e:
             print e
             return 'error', 0
+        
+#         pid = os.fork()
+#         
+#         if pid == 0:
+#             self.RunProgram()
+#         else:
+#             result, res = self.WatchRunProgram(pid)
         
         # make execution command
         command = self.MakeCommand()
@@ -82,14 +92,32 @@ class EvaluateTools():
         # make execution command
         if self.usingLang == 'PYTHON':
             if self.version == '2.7':
+                RUN_COMMAND_LIST.append('/usr/bin/python')
+                RUN_COMMAND_LIST.append('/usr/bin/python')
+                RUN_COMMAND_LIST.append(self.runFileName + '.py')
+                RUN_COMMAND_LIST.append('1>output.txt')
+                RUN_COMMAND_LIST.append('2>core.1')
                 return 'time (python ' + self.runFileName + '.py 1>output.txt 2>core.1) 2>time.txt'
             elif self.version == '3.4':
+                RUN_COMMAND_LIST.append('/usr/local/bin/python3')
+                RUN_COMMAND_LIST.append('/usr/local/bin/python3')
+                RUN_COMMAND_LIST.append(self.runFileName + '.py')
+                RUN_COMMAND_LIST.append('1>output.txt')
+                RUN_COMMAND_LIST.append('2>core.1')
                 return 'time (python3 ' + self.runFileName + '.py 1>output.txt 2>core.1) 2>time.txt'
         
         elif self.usingLang == 'C' or self.usingLang == 'C++':
+            RUN_COMMAND_LIST.append('./main')
+            RUN_COMMAND_LIST.append('./main')
+            RUN_COMMAND_LIST.append('1>output.txt')
             return 'ulimit -c unlimited; time (./main 1>output.txt) 2>time.txt'
         
         elif self.usingLang == 'JAVA':
+            RUN_COMMAND_LIST.append('/usr/bin/java')
+            RUN_COMMAND_LIST.append('/usr/in/java')
+            RUN_COMMAND_LIST.append(self.runFileName)
+            RUN_COMMAND_LIST.append('1>output.txt')
+            RUN_COMMAND_LIST.append('2>core.1')
             return 'time (java ' + self.runFileName + ' 1>output.txt 2>core.1) 2>time.txt'
         
     def Solution(self):
@@ -150,3 +178,43 @@ class EvaluateTools():
         rf.close()
         
         return int(score)
+    
+    def RunProgram(self):
+        rlimTime = int(self.limitTime / 1000) + 1
+        corefileSize = 1 << 200
+        os.nice(19)
+        resource.setrlimit(resource.RLIMIT_CORE, (corefileSize,corefileSize))
+        resource.setrlimit(resource.RLIMIT_CPU, (rlimTime,rlimTime))
+        resource.setrlimit(resource.RLIMIT_AS, (2,1)) #dfasdf
+        ptrace.traceme()
+        
+        if self.usingLang == 'PYTHON' or self.usingLang == 'JAVA':
+            os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1], RUN_COMMAND_LIST[2], RUN_COMMAND_LIST[3], RUN_COMMAND_LIST[4])
+        elif self.usingLang == 'C' or self.usingLang =='C++':
+            os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1], RUN_COMMAND_LIST[2])
+            
+    def WatchRunProgram(self, pid):
+        usingMem = 0
+        
+        while True:
+            wpid, status, res = os.wait4(pid,0)
+    
+            if os.WIFEXITED(status):
+                return 'ok', res
+                
+            elif os.WIFSIGNALED(status):
+                return 'time over', res
+            else:
+                procFile = open('/proc/' + str(pid) + '/status', 'r')
+                fileLines = procFile.readlines()
+                
+                for i in range(10,20):
+                    index = fileLines[i].find()
+                    if index != -1:
+                        words = fileLines[i].split()
+                        temp = int(words[index])
+                
+                if temp > usingMem:
+                    usingMem = temp
+                
+                ptrace.syscall(pid, 0)

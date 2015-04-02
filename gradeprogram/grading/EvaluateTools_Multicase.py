@@ -15,7 +15,7 @@ class EvaluateTools_multicase(EvaluateTools):
             # input.txt file copy
             try:
                 call('input.txt', shell = True) # ...ing....
-                call('cp ' + self.answerPath + self.problemName + '_case' + str(i) + '.in input.txt', shell = True) # ...ing...
+                call('cp ' + self.answerPath + self.problemName + '_case' + str(i) + '_input.in input.txt', shell = True) # ...ing...
             except Exception as e:
                 print e
                 return 'error'
@@ -23,7 +23,7 @@ class EvaluateTools_multicase(EvaluateTools):
             # program run
             call(command, shell = True)
             
-            answerFile = open(self.answerPath + self.problemName + '_case' + str(i) + '.out', 'r') # answer output open
+            answerFile = open(self.answerPath + self.problemName + '_case' + str(i) + '_output.out', 'r') # answer output open
             stdOutput = open('output.txt', 'r') # student output open
             
             answer = answerFile.read()
@@ -54,7 +54,7 @@ class EvaluateTools_multicase(EvaluateTools):
             # input.txt file copy
             try:
                 call('input.txt', shell = True) # ...ing....
-                call(self.answerPath + self.problemName + '_case' + str(i) + '.in input.txt', shell = True) # ...ing...
+                call(self.answerPath + self.problemName + '_case' + str(i) + '_input.in input.txt', shell = True) # ...ing...
             except Exception as e:
                 print e
                 return 'error'
@@ -78,20 +78,34 @@ class EvaluateTools_multicase(EvaluateTools):
         else:
             return int( ((self.caseCount - count) * 100) / self.caseCount )
         
-        def MakeCaseList(_list):
-            wf = open(self.filePath + 'caselist.txt', 'w')
-            size = len(_list)
+    def MakeCaseList(self, _list):
+        wf = open(self.filePath + 'caselist.txt', 'w')
+        size = len(_list)
             
-            wf.wrtie(str(size))
+        wf.wrtie(str(size))
             
-            for i in size:
-                rf = open(self.answerPath + self.problemName + '_case' + str(_list[i]) + '.in', 'r')
-                case = rf.readlines()
-                rf.close()
+        for i in size:
+            rf = open(self.answerPath + self.problemName + '_case' + str(_list[i]) + '.in', 'r')
+            case = rf.readlines()
+            rf.close()
                 
-                if case[-1].find('\n'):
-                    case[-1] = case[-1] + '\n'
+            if case[-1].find('\n'):
+                case[-1] = case[-1] + '\n'
                 
-                wf.write(case)
+            wf.write(case)
                 
-            wf.close()
+        wf.close()
+            
+    def MakeCommand(self):
+        # make execution command
+        if self.usingLang == 'PYTHON':
+            if self.version == '2.7':
+                return 'python ' + self.runFileName + '.py 1>output.txt 2>core.1'
+            elif self.version == '3.4':
+                return 'python3 ' + self.runFileName + '.py 1>output.txt 2>core.1'
+        
+        elif self.usingLang == 'C' or self.usingLang == 'C++':
+            return 'ulimit -c unlimited; ./main 1>output.txt'
+        
+        elif self.usingLang == 'JAVA':
+            return 'java ' + self.runFileName + ' 1>output.txt 2>core.1'
