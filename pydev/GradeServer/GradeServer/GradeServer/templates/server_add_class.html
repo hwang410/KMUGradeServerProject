@@ -21,6 +21,7 @@ $(function() {
 </script>
 <div class="container">
 	<div>
+	<form id="addCourse" method="post">
 		<h3>Manage Class</h3>
 		<h4>Class Name : 
 			<select class="input-large span2" id="courseId" name="courseId" type="text" form="addCourse">
@@ -82,7 +83,7 @@ $(function() {
 		<h4>End Date : 
 			<input class="datepicker input-large" id="endDateOfCourse" name="endDateOfCourse" type="date" data-date-format="yyyy-mm-dd" autocomplete="off" form="addCourse" placeholder="click and choose" value="{%- if endDateOfCourse %}{{ endDateOfCourse }}{% endif -%}">
 		</h4>
-		<form id="addCourse" method="post">
+		
 			<button class="btn" type="submit">Done</button>
 		</form>
 	</div>

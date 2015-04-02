@@ -204,7 +204,9 @@ def server_manage_problem():
     error = None
     
     if request.method == 'POST':
+        print "inside post", request.form
         for form in request.form:
+            print "form", form
             if form == 'upload':
                 files = request.files.getlist("files")
                 if not list(files)[0].filename:
@@ -339,7 +341,9 @@ def server_manage_problem():
                                                uploadedProblems = [])
                     
             else:
+                print "inside of Delete"
                 try:
+                    print int(form)
                     dao.query(Problems).\
                         filter(Problems.problemId == int(form)).\
                         update(dict(isDeleted = 'Deleted'))

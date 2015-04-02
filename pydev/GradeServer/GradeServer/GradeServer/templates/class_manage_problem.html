@@ -157,7 +157,7 @@ $(function() {
 			<div class="modal-body">
 				<p>If you don't choose open/close date, then the dates will be same with start/end date<br>
 				MF : Each test case is in each file</p>
-				<div style="text-align:right"><button class="btn" type="button" id="addline_problem">Add line</button></div>
+				<div style="text-align:right"><button class="btn" type="button" id=addline_problem>Add line</button></div>
 				<table class="table table-bordered" id='problems' style="margin-top:10px">
 					<thead>
 						<tr>
@@ -169,6 +169,7 @@ $(function() {
 							<td>Open Date
 							<td>Close Date
 					<tbody id="addProblemForm">
+					<form id="addProblem" method="post">
 					<tr>
 						<!--
 						<td><input class="input-ularge" id="search-courses1" name="courseId" type="text" form="addProblem" placeholder="course name"></div>
@@ -194,7 +195,7 @@ $(function() {
 				</table>
 			</div>
 			<div class="modal-footer">
-				<form id="addProblem" method="post">
+				
 					<button class="btn" name="add" type="submit">Done</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetAddProblemForm">Close</button>
 				</form>
@@ -256,7 +257,7 @@ $(function() {
 				<form method="post" id="deleteProblem">
 					<button class="btn" type="submit">Save changes</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-				</form>
+				
 			</div>
 		</div>
 		<!-- no items choiced -->
@@ -277,63 +278,60 @@ $(function() {
 		<div class="tab-content">
 			<div class="tab-pane active" id="all">
 				<table class="table">
-					<thead>
-						<tr>
-							<td>Course Id
-							<td>Class Name
-							<td>Problem Name
-							<td><abbr title="Number Of each input/output Files">NOF</abbr>
-							<td>Start Date
-							<td>End Date
-							<td>Open Date
-							<td>Close Date
-							<td>Check
-					<tbody>
-						{% for registeredProblem, registeredCourse, problem in ownProblems %}
-						<tr>
-							<td>{{ registeredProblem.courseId }}
-							<td>{{ registeredCourse.courseName }}
-							<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ problem.problemName }}</a>
-							<td ondblclick="modifySelector(this.id)" id="isAllInputCaseInOneFile_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}">{{ registeredProblem.isAllInputCaseInOneFile }}
-							<td ondblclick="modifySelector(this.id)" id="startDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}">{{ registeredProblem.startDateOfSubmission }}
-							<td ondblclick="modifySelector(this.id)" id="endDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}">{{ registeredProblem.endDateOfSubmission }}
-							<td ondblclick="modifySelector(this.id)" id="openDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}">{{ registeredProblem.openDate }}
-							<td ondblclick="modifySelector(this.id)" id="closeDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}">{{ registeredProblem.closeDate }}
-							<td><label class="checkbox-center"><input type="checkbox" name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}" class="box-check" form="deleteProblem"></label>
-						<div id="isAllInputCaseInOneFile_{{registeredProblem.courseId}}_{{registeredProblem.problemId}}"></div>
-						{% endfor %}
+					<tr>
+						<td>Course Id
+						<td>Class Name
+						<td>Problem Name
+						<td><abbr title="Number Of each input/output Files">NOF</abbr>
+						<td>Start Date
+						<td>End Date
+						<td>Open Date
+						<td>Close Date
+						<td>Check
+					{% for registeredProblem, registeredCourse, problem in ownProblems %}
+					<tr>
+						<td>{{ registeredProblem.courseId }}
+						<td>{{ registeredCourse.courseName }}
+						<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ problem.problemName }}</a>
+						<td ondblclick="modifySelector(this.id)" id="isAllInputCaseInOneFile_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}">{{ registeredProblem.isAllInputCaseInOneFile }}
+						<td ondblclick="modifySelector(this.id)" id="startDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}">{{ registeredProblem.startDateOfSubmission }}
+						<td ondblclick="modifySelector(this.id)" id="endDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}">{{ registeredProblem.endDateOfSubmission }}
+						<td ondblclick="modifySelector(this.id)" id="openDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}">{{ registeredProblem.openDate }}
+						<td ondblclick="modifySelector(this.id)" id="closeDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}">{{ registeredProblem.closeDate }}
+						<td><label class="checkbox-center"><input type="checkbox" name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}" class="box-check" form="deleteProblem"></label>
+					<div id="isAllInputCaseInOneFile_{{registeredProblem.courseId}}_{{registeredProblem.problemId}}"></div>
+					{% endfor %}
+					</form>
 				</table>
 			</div>
 			{% for course in ownCourses %}
 			<div class="tab-pane" id="{{ course.courseId }}">
 				<table class="table">
-					<thead>
+					<tr>
+						<td>Course Id
+						<td>Class Name
+						<td>Problem Name
+						<td><abbr title="Number Of each input/output Files">NOF</abbr>
+						<td>Start Date
+						<td>End Date
+						<td>Open Date
+						<td>Close Date
+						<td>Check
+					{% for registeredProblem, registeredCourse, problem in ownProblems %}
+						{% if course.courseId == registeredProblem.courseId %}
 						<tr>
-							<td>Course Id
-							<td>Class Name
-							<td>Problem Name
-							<td><abbr title="Number Of each input/output Files">NOF</abbr>
-							<td>Start Date
-							<td>End Date
-							<td>Open Date
-							<td>Close Date
-							<td>Check
-					<tbody>
-						{% for registeredProblem, registeredCourse, problem in ownProblems %}
-							{% if course.courseId == registeredProblem.courseId %}
-							<tr>
-								<td>{{ registeredProblem.courseId }}
-								<td>{{ registeredCourse.courseName }}
-								<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ problem.problemName }}</a>
-								<td id="isAllInputCaseInOneFileTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.isAllInputCaseInOneFile }}
-								<td id="startDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.startDateOfSubmission }}
-								<td id="endDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.endDateOfSubmission }}
-								<td id="openDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.openDate }}
-								<td id="closeDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.closeDate }}
-								<td><label class="checkbox-center"><input class="box-check" name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}" type="checkbox" form="deleteProblem"></label>
-							<div id="isAllInputCaseInOneFileTab_{{registeredProblem.courseId}}_{{registeredProblem.problemId}}"></div>
-							{% endif %}
-						{% endfor %}
+							<td>{{ registeredProblem.courseId }}
+							<td>{{ registeredCourse.courseName }}
+							<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ problem.problemName }}</a>
+							<td id="isAllInputCaseInOneFileTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.isAllInputCaseInOneFile }}
+							<td id="startDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.startDateOfSubmission }}
+							<td id="endDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.endDateOfSubmission }}
+							<td id="openDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.openDate }}
+							<td id="closeDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.closeDate }}
+							<td><label class="checkbox-center"><input class="box-check" name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}" type="checkbox" form="deleteProblem"></label>
+						<div id="isAllInputCaseInOneFileTab_{{registeredProblem.courseId}}_{{registeredProblem.problemId}}"></div>
+						{% endif %}
+					{% endfor %}
 				</table>
 			</div>
 			{% endfor %}

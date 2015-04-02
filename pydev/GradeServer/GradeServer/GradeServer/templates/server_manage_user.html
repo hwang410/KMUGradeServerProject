@@ -27,7 +27,7 @@
 				<form id="deleteConfirm" method="post">
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 					<button class="btn btn-primary" type="submit">Confirm</button>
-				</form>
+				
 			</div>
 		</div>
 		<!-- no items choiced -->
@@ -78,6 +78,7 @@
 					<td>{{ user.lastAccessDate }}
 					<td><label class="checkbox-center"><input class="box-check" name="{{ user.memberId }}" type="checkbox" form="deleteConfirm"></label>
 				{% endfor -%}
+				</form>
 		</table>
 	</div>
 </div>

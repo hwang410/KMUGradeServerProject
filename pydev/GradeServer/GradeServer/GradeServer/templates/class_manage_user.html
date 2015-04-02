@@ -23,7 +23,7 @@
 				<form id="deleteUser" method="post">
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 					<button class="btn" type="submit">Done</button>
-				</form>
+				
 			</div>
 		</div>
 		<!-- no items choiced -->
@@ -66,6 +66,7 @@
 						{% endfor -%}
 					<td><label class="checkbox-center"><input class="box-check" name="delete_{{ eachUser[0] }}_{{ eachUser[1] }}" type="checkbox" form="deleteUser"></label>
 				{% endfor -%}
+				</form>
 		</table>
 	</div>
 </div>
