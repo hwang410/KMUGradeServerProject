@@ -29,7 +29,7 @@ from sqlalchemy import and_, func
 from celeryServer import Grade
 
 # Initialize the Flask application
-ALLOWED_EXTENSIONS = set(['py', 'java', 'class', 'c', 'cpp', 'h', 'jar'])
+ALLOWED_EXTENSIONS = set(['py', 'java', 'class', 'c', 'cpp', 'h'])
 
 
 def allowed_file(filename):
@@ -82,6 +82,10 @@ def upload(courseId, problemId):
         dao.rollback()
         print 'DB error : ' + str(e)
         raise e 
+    
+    print 'AAAAAAAAAAAAAAA'
+    asdf = ['myTabDrop1'].selectedValue
+    print 'AAAAAAAAAAAAAAA', asdf
     
     try:
         for file in upload_files:
@@ -194,6 +198,7 @@ def upload(courseId, problemId):
                                   courseId = courseId,
                                   submissionCount = subCountNum,
                                   solutionCheckCount = solCountNum,
+                                  status = 2,
                                   codeSubmissionDate = datetime.now(),
                                   sumOfSubmittedFileSize = sumOfSubmittedFileSize,
                                   usedLanguage = usedLanguage,
@@ -253,10 +258,9 @@ def upload(courseId, problemId):
            
     return courseId
         
-@GradeServer.route('/problem/<courseId>/<problemId>/codesubmission', methods = ['POST'])
+@GradeServer.route('/problem/<courseId>/page<pageNum>/<problemId>/codesubmission', methods = ['POST'])
 @login_required
-def code(courseId, problemId):
-    
+def code(courseId, pageNum, problemId):
     memberId = session['memberId']
     fileIndex = 1
     usedLanguage = 1
@@ -270,6 +274,7 @@ def code(courseId, problemId):
         dao.rollback()
         print 'DB error : ' + str(e)
         raise e
+    
     try:
         problemName = dao.query(Problems.problemName).\
                           filter(Problems.problemId == problemId).\
@@ -279,8 +284,13 @@ def code(courseId, problemId):
         dao.rollback()
         print 'DB error : ' + str(e)
         raise e
+    
+    tempPath = '/mnt/shared/Temp/%s/%s_%s/%s_%s' %(memberId, courseId, courseName, problemId, problemName)
     filePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s' %(courseId, courseName, problemId, problemName, memberId)
     
+    if not os.path.exists(tempPath):
+        os.makedirs(tempPath)
+        
     try:
         dao.query(SubmittedFiles).\
             filter(and_(SubmittedFiles.memberId == memberId,
@@ -292,16 +302,14 @@ def code(courseId, problemId):
         dao.rollback()
         print 'DB error : ' + str(e)
         raise e 
-    
     tests = request.form['copycode']
     unicode(tests)
     tests = tests.replace('\r\n', '\n')
-
     num = request.form['language']
 
     if num == '1':
         filename = 'test.c'
-        fout = open(filePath + '/' + filename, 'w')
+        fout = open(tempPath + '/' + filename, 'w')
         fout.write(tests)
         fout.close()
         try:
@@ -316,10 +324,10 @@ def code(courseId, problemId):
     
     elif num == '2':
         filename = 'test.cpp'
-        fout = open(filePath + '/' + filename, 'w')
+        fout = open(tempPath + '/' + filename, 'w')
         fout.write(tests)
         fout.close()
-        try:
+        try:  
             usedLanguage = dao.query(Languages.languageIndex).\
                                filter(Languages.languageName == 'C++').\
                                first().\
@@ -331,7 +339,7 @@ def code(courseId, problemId):
     
     elif num == '3':
         filename = 'test.java'
-        fout = open(filePath + '/' + filename, 'w')
+        fout = open(tempPath + '/' + filename, 'w')
         fout.write(tests)
         fout.close()
         try:
@@ -346,7 +354,7 @@ def code(courseId, problemId):
         
     elif num == '4':
         filename = 'test.py'
-        fout = open(filePath + '/' + filename, 'w')
+        fout = open(tempPath + '/' + filename, 'w')
         fout.write(tests)
         fout.close()
         try:
@@ -359,7 +367,7 @@ def code(courseId, problemId):
             print 'DB error : ' + str(e)
             raise e 
         
-    fileSize = os.stat(filePath + '/' + filename).st_size
+    fileSize = os.stat(tempPath + '/' + filename).st_size
     
     try:
         submittedFiles = SubmittedFiles(memberId = memberId,
@@ -398,10 +406,11 @@ def code(courseId, problemId):
         subCountNum = 1
         
     try:
-        solCount = dao.query(func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
+        solCount = dao.query(Submissions.solutionCheckCount).\
                        filter(Submissions.memberId == memberId,
-                                    Submissions.courseId == courseId,
-                                    Submissions.problemId == problemId).\
+                              Submissions.courseId == courseId,
+                              Submissions.problemId == problemId,
+                              Submissions.submissionCount == subCount.submissionCount).\
                        first()
         solCountNum = solCount.solutionCheckCount
     except:
@@ -413,6 +422,7 @@ def code(courseId, problemId):
                                   courseId = courseId,
                                   submissionCount = subCountNum,
                                   solutionCheckCount = solCountNum,
+                                  status = 2,
                                   codeSubmissionDate = datetime.now(),
                                   sumOfSubmittedFileSize = fileSize,
                                   usedLanguage = usedLanguage,
@@ -470,4 +480,4 @@ def code(courseId, problemId):
     
     flash('submission success!')
     return redirect(url_for('.problemList',
-                            courseId = courseId))
+                            courseId = courseId, pageNum = pageNum))
