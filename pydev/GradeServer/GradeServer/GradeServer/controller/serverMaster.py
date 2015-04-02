@@ -294,7 +294,7 @@ def server_manage_problem():
                                            problemName, 
                                            solutionCheckType))
                     try:
-                        subprocess.call('rename "s/\.*/%s_/" *' % (problemId), shell=True)
+                        subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
                     except OSError:
                         error = 'Error has occurred while renaming a folder'
                         return render_template('/server_manage_problem.html', 
@@ -304,7 +304,7 @@ def server_manage_problem():
                     # change problems information files name
                     os.chdir('%s/' % (tmpPath))
                     try:
-                        subprocess.call('rename "s/\.*/%s_/" *' % (problemId), shell=True)
+                        subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
                     except OSError:
                         error = 'Error has occured while renaming a folder'
                         return render_template('/server_manage_problem.html', 
