@@ -340,7 +340,6 @@ function addGroupModal(){
 
 function visibleButton(parent){ 
 	var thisId = parent.id; 
-	alert(thisId);
 	//var target = ;
 	if(thisId == "link-all"){
 		document.getElementById('summary').style.display = "none";
