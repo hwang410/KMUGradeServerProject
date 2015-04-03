@@ -26,6 +26,7 @@ from GradeServer.model.languagesOfCourses import LanguagesOfCourses
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.GradeServer_config import GradeServerConfig
+from GradeServer.utils.utilMessages import unknown_error
 from sqlalchemy import and_, func
 from celeryServer import Grade
 
@@ -35,7 +36,7 @@ ALLOWED_EXTENSIONS = set(['py', 'java', 'class', 'c', 'cpp', 'h'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@GradeServer.route('/problem/<courseId>/<problemId>/upload', methods = ['POST'])
+@GradeServer.route('/problem_<courseId>_<problemId>', methods = ['POST'])
 @login_required
 def upload(courseId, problemId):
     memberId = session['memberId']
@@ -46,18 +47,14 @@ def upload(courseId, problemId):
                          first().\
                          courseName
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise e
+        unknown_error("DB 에러입니다")
     try:
         problemName = dao.query(Problems.problemName).\
                           filter(Problems.problemId == problemId).\
                           first().\
                           problemName
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise e
+        unknown_error("DB 에러입니다")
     
     tempPath = '/mnt/shared/Temp/%s/%s_%s/%s_%s' %(memberId, courseId, courseName, problemId, problemName)
     filePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s' %(courseId, courseName, problemId, problemName, memberId)
@@ -79,9 +76,7 @@ def upload(courseId, problemId):
             delete()
         dao.commit()
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise e 
+        unknown_error("DB 에러입니다")
     
     usedLanguageName = request.form['usedLanguageName']
 
@@ -102,9 +97,7 @@ def upload(courseId, problemId):
                                            first().\
                                            languageIndex
                     except Exception as e:
-                        dao.rollback()
-                        print 'DB error : ' + str(e)
-                        raise e 
+                        unknown_error("DB 에러입니다")
                 elif usedLanguageName == 'C++':
                     try:
                         usedLanguage = dao.query(Languages.languageIndex).\
@@ -112,9 +105,7 @@ def upload(courseId, problemId):
                                            first().\
                                            languageIndex
                     except Exception as e:
-                        dao.rollback()
-                    print 'DB error : ' + str(e)
-                    raise e                                                                    
+                        unknown_error("DB 에러입니다")                                                                  
                 elif usedLanguageName == 'JAVA':
                     try:
                         usedLanguage = dao.query(Languages.languageIndex).\
@@ -122,9 +113,7 @@ def upload(courseId, problemId):
                                            first().\
                                            languageIndex
                     except Exception as e:
-                        dao.rollback()
-                        print 'DB error : ' + str(e)
-                        raise e
+                        unknown_error("DB 에러입니다")
                 elif usedLanguageName == 'PYTHON':
                     try:
                         usedLanguage = dao.query(Languages.languageIndex).\
@@ -132,9 +121,7 @@ def upload(courseId, problemId):
                                            first().\
                                            languageIndex
                     except Exception as e:
-                        dao.rollback()
-                        print 'DB error : ' + str(e)
-                        raise e
+                        unknown_error("DB 에러입니다")
                                                                      
                 try:
                     submittedFiles = SubmittedFiles(memberId = memberId,
@@ -148,8 +135,7 @@ def upload(courseId, problemId):
                     dao.commit()
                 except Exception as e:
                     dao.rollback()
-                    print 'DB error : ' + str(e)
-                    raise e            
+                    unknown_error("DB 에러입니다")            
                 fileIndex += 1
                 sumOfSubmittedFileSize += fileSize
     except:
@@ -165,9 +151,7 @@ def upload(courseId, problemId):
                                   first().\
                                   languageVersion
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise e
+        unknown_error("DB 에러입니다")
 
     try:
         subCount = dao.query(func.max(Submissions.submissionCount).label ('submissionCount')).\
@@ -204,8 +188,8 @@ def upload(courseId, problemId):
         dao.add(submissions)
         dao.commit()
     except Exception as e:
-        print 'DB error : ' + str(e)
-        raise e
+        dao.rollback()
+        unknown_error("DB 에러입니다")
             
     flash('submission success!')
     
@@ -223,17 +207,14 @@ def upload(courseId, problemId):
         solutionCheckType = problemsParam[3]
         problemCasesPath = '%s/%s_%s_%s' %(problemPath, problemId, problemName, solutionCheckType)
     except Exception as e:
-        print 'DB error : ' + str(e)
-        raise e
+        unknown_error("DB 에러입니다")
     try:
         departmentIndex = dao.query(DepartmentsDetailsOfMembers.departmentIndex).\
                               filter(DepartmentsDetailsOfMembers.memberId == memberId).\
                               first().\
                               departmentIndex
     except Exception as e:
-        print 'DB error : ' + str(e)
-        raise e
-            
+        unknown_error("DB 에러입니다")
     try:
         isAllInputCaseInOneFile = dao.query(RegisteredProblems.isAllInputCaseInOneFile).\
                                       filter(RegisteredProblems.problemId == problemId,
@@ -241,8 +222,7 @@ def upload(courseId, problemId):
                                       first().\
                                       isAllInputCaseInOneFile
     except Exception as e:
-        print 'DB error : ' + str(e)
-        raise e
+        unknown_error("DB 에러입니다")
     
     caseCount = len(glob.glob(os.path.join(problemCasesPath, '*.*')))/2
     
@@ -267,7 +247,7 @@ def upload(courseId, problemId):
                
     return courseId
         
-@GradeServer.route('/problem/<courseId>/page<pageNum>/<problemId>/codesubmission', methods = ['POST'])
+@GradeServer.route('/problem_<courseId>_page<pageNum>_<problemId>', methods = ['POST'])
 @login_required
 def code(courseId, pageNum, problemId):
     memberId = session['memberId']
@@ -280,9 +260,7 @@ def code(courseId, pageNum, problemId):
                          first().\
                          courseName
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise e
+        print unknown_error("DB 에러입니다")
     
     try:
         problemName = dao.query(Problems.problemName).\
@@ -290,9 +268,7 @@ def code(courseId, pageNum, problemId):
                           first().\
                           problemName
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise e
+        print unknown_error("DB 에러입니다")
     
     tempPath = '/mnt/shared/Temp/%s/%s_%s/%s_%s' %(memberId, courseId, courseName, problemId, problemName)
     filePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s' %(courseId, courseName, problemId, problemName, memberId)
@@ -309,8 +285,7 @@ def code(courseId, pageNum, problemId):
         dao.commit()
     except Exception as e:
         dao.rollback()
-        print 'DB error : ' + str(e)
-        raise e 
+        unknown_error("DB 에러입니다")
     tests = request.form['copycode']
     unicode(tests)
     tests = tests.replace('\r\n', '\n')
@@ -328,9 +303,7 @@ def code(courseId, pageNum, problemId):
                                first().\
                                languageIndex
         except Exception as e:
-            dao.rollback()
-            print 'DB error : ' + str(e)
-            raise e 
+            unknown_error("DB 에러입니다")
     
     elif usedLanguageName == 'C++':
         filename = 'test.cpp'
@@ -343,9 +316,7 @@ def code(courseId, pageNum, problemId):
                                first().\
                                languageIndex
         except Exception as e:
-            dao.rollback()
-            print 'DB error : ' + str(e)
-            raise e 
+            unknown_error("DB 에러입니다")
     
     elif usedLanguageName == 'JAVA':
         filename = 'test.java'
@@ -358,9 +329,7 @@ def code(courseId, pageNum, problemId):
                                first().\
                                languageIndex
         except Exception as e:
-            dao.rollback()
-            print 'DB error : ' + str(e)
-            raise e 
+            unknown_error("DB 에러입니다")
         
     elif usedLanguageName == 'PYTHON':
         filename = 'test.py'
@@ -373,9 +342,7 @@ def code(courseId, pageNum, problemId):
                                first().\
                                languageIndex
         except Exception as e:
-            dao.rollback()
-            print 'DB error : ' + str(e)
-            raise e 
+            unknown_error("DB 에러입니다")
         
     fileSize = os.stat(os.path.join(tempPath, filename)).st_size
     
@@ -391,8 +358,7 @@ def code(courseId, pageNum, problemId):
         dao.commit()                
     except Exception as e:            
         dao.rollback()
-        print 'DB error : ' + str(e)
-        raise e
+        unknown_error("DB 에러입니다")
     
     try:
         usedLanguageVersion = dao.query(LanguagesOfCourses.languageVersion).\
@@ -401,9 +367,7 @@ def code(courseId, pageNum, problemId):
                                   first().\
                                   languageVersion
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise e   
+        unknown_error("DB 에러입니다") 
     
     try:
         subCount = dao.query(func.max(Submissions.submissionCount).label('submissionCount')).\
@@ -440,8 +404,8 @@ def code(courseId, pageNum, problemId):
         dao.add(submissions)
         dao.commit()
     except Exception as e:
-        print 'DB error : ' + str(e)
-        raise e
+        dao.rollback()
+        unknown_error("DB 에러입니다")
     
     try:
         problemsParam = dao.query(Problems.problemPath,
@@ -457,16 +421,14 @@ def code(courseId, pageNum, problemId):
         solutionCheckType = problemsParam[3]
         problemCasesPath = '%s/%s_%s_%s' %(problemPath, problemId, problemName, solutionCheckType)
     except Exception as e:
-        print 'DB error : ' + str(e)
-        raise e
+        unknown_error("DB 에러입니다")
     try:
         departmentIndex = dao.query(DepartmentsDetailsOfMembers.departmentIndex).\
                               filter(DepartmentsDetailsOfMembers.memberId == memberId).\
                               first().\
                               departmentIndex
     except Exception as e:
-        print 'DB error : ' + str(e)
-        raise e
+        unknown_error("DB 에러입니다")
     
     try:
         isAllInputCaseInOneFile = dao.query(RegisteredProblems.isAllInputCaseInOneFile).\
@@ -475,8 +437,7 @@ def code(courseId, pageNum, problemId):
                                       first().\
                                       isAllInputCaseInOneFile
     except Exception as e:
-        print 'DB error : ' + str(e)
-        raise e
+        unknown_error("DB 에러입니다")
     
     caseCount = len(glob.glob(os.path.join(problemCasesPath, '*.*')))/2
             
