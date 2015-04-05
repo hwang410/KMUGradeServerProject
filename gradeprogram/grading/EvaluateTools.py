@@ -1,19 +1,17 @@
 import os
 import glob
-import math
 import time
-import runThread
 import ptrace
 import resource
 from subprocess import call
 
-LIMIT_TIME_MULTIPLE = 0.0011
-RUN_COMMAND_LIST =[]
+RUN_COMMAND_LIST = []
 
 class EvaluateTools():
-    def __init__(self, usingLang, limitTime, answerPath, version, gradeMethod, runFileName, problemName, caseCount):
+    def __init__(self, usingLang, limitTime, limitMemory, answerPath, version, gradeMethod, runFileName, problemName, caseCount):
         self.usingLang = usingLang
         self.limitTime = limitTime
+        self.limitMemory = limitMemory
         self.answerPath = answerPath
         self.version = version
         self.gradeMethod = gradeMethod
@@ -30,41 +28,26 @@ class EvaluateTools():
             print e
             return 'error', 0
         
-#         pid = os.fork()
-#         
-#         if pid == 0:
-#             self.RunProgram()
-#         else:
-#             result, res = self.WatchRunProgram(pid)
-        
         # make execution command
-        command = self.MakeCommand()
+        self.MakeCommand()
+                
+        pid = os.fork()
+         
+        if pid == 0:
+            self.RunProgram()
+        else:
+            result, time, usingMem = self.WatchRunProgram(pid)
+        print time
+        userTime = int(time * 1000)
         
-        runTh = runThread.runThread(command, self.runFileName)
+        if result == 'time over':
+            return 'time over', userTime, usingMem
         
-        runTh.start()   # thread run -> program run
-        
-        runTh.join(float(self.limitTime) * LIMIT_TIME_MULTIPLE)
-        
-        if runTh.isAlive() == True: # if thread is alive
-            runTh.shutdown()
-            time.sleep(0.07)
-        
-        tsize = os.path.getsize('time.txt')
+        elif result == 'runtime':
+            return 'runtime', 0, 0
 
-        if tsize > 0:   # if program is terminated normally -> get user time
-            fp = open('time.txt', 'r')
-            lines = fp.readlines()
-            fp.close()
-            
-            for line in lines:
-                if line.find('user') != -1:
-                    words = line.split()
-                    runTime = int( math.ceil(float(words[1][0] * 60) + float(words[1][2:-1]) * 1000) )
-                    break;
-                    
-        else:       # if program is abnormally terminated.
-            return 'time over', self.limitTime
+        if userTime > self.limitTime:
+            return 'time over', userTime, usingMem
         
         coreSize = 0
         coreList = glob.glob('core.[0-9]*')
@@ -72,21 +55,18 @@ class EvaluateTools():
         if len(coreList) > 0:
             coreSize = os.path.getsize(coreList[0])
         
-        if runTime > 100:    # time over -> need modify
-            return 'time over', runTime
-        
-        elif coreSize == 0:  # if not exist core file -> evaluate output
+        if coreSize == 0:  # if not exist core file -> evaluate output
             if self.gradeMethod == 'Solution':   # solution
                 success = self.Solution()
             else:   # checker
                 success = self.Checker()
-            return success, runTime
+            return success, userTime, usingMem
         
         elif coreSize > 0: # runtime error.
-            return 'runtime', 0
+            return 'runtime', 0, 0
         
         else:   # server error
-            return 'error', 0
+            return 'error', 0, 0
         
     def MakeCommand(self):
         # make execution command
@@ -95,30 +75,20 @@ class EvaluateTools():
                 RUN_COMMAND_LIST.append('/usr/bin/python')
                 RUN_COMMAND_LIST.append('/usr/bin/python')
                 RUN_COMMAND_LIST.append(self.runFileName + '.py')
-                RUN_COMMAND_LIST.append('1>output.txt')
-                RUN_COMMAND_LIST.append('2>core.1')
-                return 'time (python ' + self.runFileName + '.py 1>output.txt 2>core.1) 2>time.txt'
+                
             elif self.version == '3.4':
                 RUN_COMMAND_LIST.append('/usr/local/bin/python3')
                 RUN_COMMAND_LIST.append('/usr/local/bin/python3')
                 RUN_COMMAND_LIST.append(self.runFileName + '.py')
-                RUN_COMMAND_LIST.append('1>output.txt')
-                RUN_COMMAND_LIST.append('2>core.1')
-                return 'time (python3 ' + self.runFileName + '.py 1>output.txt 2>core.1) 2>time.txt'
-        
+                
         elif self.usingLang == 'C' or self.usingLang == 'C++':
             RUN_COMMAND_LIST.append('./main')
             RUN_COMMAND_LIST.append('./main')
-            RUN_COMMAND_LIST.append('1>output.txt')
-            return 'ulimit -c unlimited; time (./main 1>output.txt) 2>time.txt'
-        
+            
         elif self.usingLang == 'JAVA':
             RUN_COMMAND_LIST.append('/usr/bin/java')
-            RUN_COMMAND_LIST.append('/usr/in/java')
+            RUN_COMMAND_LIST.append('/usr/bin/java')
             RUN_COMMAND_LIST.append(self.runFileName)
-            RUN_COMMAND_LIST.append('1>output.txt')
-            RUN_COMMAND_LIST.append('2>core.1')
-            return 'time (java ' + self.runFileName + ' 1>output.txt 2>core.1) 2>time.txt'
         
     def Solution(self):
         # user output file each line compare with answer file each line.
@@ -180,39 +150,47 @@ class EvaluateTools():
         return int(score)
     
     def RunProgram(self):
-        rlimTime = int(self.limitTime / 1000) + 1
-        corefileSize = 1 << 200
         os.nice(19)
+        
+        fd1 = os.open('output.txt', os.O_RDWR|os.O_CREAT)
+        os.dup2(fd1,1)
+        
+        rlimTime = int(self.limitTime / 1000) + 1
+        corefileSize = 1 << 20
         resource.setrlimit(resource.RLIMIT_CORE, (corefileSize,corefileSize))
         resource.setrlimit(resource.RLIMIT_CPU, (rlimTime,rlimTime))
-        resource.setrlimit(resource.RLIMIT_AS, (2,1)) #dfasdf
         ptrace.traceme()
         
         if self.usingLang == 'PYTHON' or self.usingLang == 'JAVA':
-            os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1], RUN_COMMAND_LIST[2], RUN_COMMAND_LIST[3], RUN_COMMAND_LIST[4])
-        elif self.usingLang == 'C' or self.usingLang =='C++':
             os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1], RUN_COMMAND_LIST[2])
+        elif self.usingLang == 'C' or self.usingLang =='C++':
+            os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1])
             
     def WatchRunProgram(self, pid):
         usingMem = 0
+        temp = 0
         
         while True:
             wpid, status, res = os.wait4(pid,0)
     
             if os.WIFEXITED(status):
-                return 'ok', res
+                return 'ok', res[0], usingMem
+            
+            exitCode = os.WEXITSTATUS(status)
+            if exitCode != 0 or exitCode != 5 or exitCode != 17:
+                return 'runtime', 0, 0 
                 
             elif os.WIFSIGNALED(status):
-                return 'time over', res
+                return 'time over', res[0], usingMem
             else:
                 procFile = open('/proc/' + str(pid) + '/status', 'r')
                 fileLines = procFile.readlines()
-                
+
                 for i in range(10,20):
-                    index = fileLines[i].find()
+                    index = fileLines[i].find('VmRSS')
                     if index != -1:
                         words = fileLines[i].split()
-                        temp = int(words[index])
+                        temp = int(words[index+1])
                 
                 if temp > usingMem:
                     usingMem = temp

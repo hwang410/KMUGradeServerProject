@@ -18,7 +18,7 @@ if __name__ == '__main__':
         from grading import InterfaceGrade
         
         #os.mkdir('temp')
-        #os.chdir('temp')
+        os.chdir('temp')
         
         grade = InterfaceGrade.InterfaceGrade(args)
         result, stdNum, problemNum, courseNum, submitCount = grade.Compile()
@@ -56,15 +56,16 @@ if __name__ == '__main__':
             print '...compile server error...'
         
         else:
-            result, runTime = grade.Evaluation()
-            print result, runTime
+            result, runTime, usingMem = grade.Evaluation()
+            print result, runTime, usingMem
             
             if result == 100:
                 # update database 'solved'
                 try:
                     dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
                                         submissionCount = submitCount).update(dict(status = 3, score = 100, runTime = runTime,\
-                                                                                        usedMemory = 0, solutionCheckCount = Submissions.solutionCheckCount+1))
+                                                                                   usedMemory = usingMem,\
+                                                                                   solutionCheckCount = Submissions.solutionCheckCount+1))
                     
                     dao.query(SubmittedRecordsOfProblems).filter_by(problemId = problemNum, courseId = courseNum).\
                             update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,\
@@ -83,7 +84,8 @@ if __name__ == '__main__':
                 try:
                     dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
                                         submissionCount = submitCount).update(dict(status = 4, score = 0, runTime = runTime,\
-                                                                                        usedMemory = 0, solutionCheckCount = Submissions.solutionCheckCount+1))
+                                                                                        usedMemory = usingMem,\
+                                                                                        solutionCheckCount = Submissions.solutionCheckCount+1))
                     
                     dao.query(SubmittedRecordsOfProblems).filter_by(problemId = problemNum, courseId = courseNum).\
                             update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,\
@@ -102,7 +104,8 @@ if __name__ == '__main__':
                 try:
                     dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
                                         submissionCount = submitCount).update(dict(status = 7, score = 0, runTime = runTime,\
-                                                                                        usedMemory = 0, solutionCheckCount = Submissions.solutionCheckCount+1))
+                                                                                        usedMemory = usingMem,\
+                                                                                        solutionCheckCount = Submissions.solutionCheckCount+1))
                     
                     dao.query(SubmittedRecordsOfProblems).filter_by(problemId = problemNum, courseId = courseNum).\
                             update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,\
@@ -121,7 +124,8 @@ if __name__ == '__main__':
                 try:
                     dao.query(Submissions).filter_by(memberId = stdNum, problemId = problemNum, courseId = courseNum,\
                                         submissionCount = submitCount).update(dict(status = 5, score = result, runTime = runTime,\
-                                                                                        usedMemory = 0, solutionCheckCount = Submissions.solutionCheckCount+1))
+                                                                                        usedMemory = usingMem,\
+                                                                                        solutionCheckCount = Submissions.solutionCheckCount+1))
                     
                     dao.query(SubmittedRecordsOfProblems).filter_by(problemId = problemNum, courseId = courseNum).\
                             update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,\
