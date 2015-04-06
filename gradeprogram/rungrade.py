@@ -17,8 +17,8 @@ if __name__ == '__main__':
         from DB.submittedRecordsOfProblems import SubmittedRecordsOfProblems
         from grading import InterfaceGrade
         
-        #os.mkdir('temp')
         os.chdir('temp')
+        os.system('rm -r *')
         
         grade = InterfaceGrade.InterfaceGrade(args)
         result, stdNum, problemNum, courseNum, submitCount = grade.Compile()
