@@ -6,15 +6,18 @@
 			<li class="active"><a id="college" data-toggle="tab" href="#colleges">College</a>
 			<li><a id="department" data-toggle="tab" href="#departments">Department</a></li>
 			<div style="text-align:right">
-				<a class="btn" id="addModal" data-toggle="modal" href="#collegeModal" rol="button">Add</a>
+				<a class="btn" id="addModal" data-toggle="modal" href="#collegeModal"
+					 rol="button">Add</a>
 			</div>	
 		</ul>
 		<!-- ///// College Modal ///// -->
 		<!-- ///// Add case ///// -->
 		<div class="modal hide fade" id="collegeModal" 
-				 tabindex="-1" role="dialog" aria-labelledby="addCollegeModalLabel" aria-hidden="true">
+				 tabindex="-1" role="dialog" aria-labelledby="addCollegeModalLabel"
+				 aria-hidden="true">
 			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal" type="button"
+								aria-hidden="true">x</button>
 				<h3 id="addCollegeModalLabel">Add College</h3>
 			</div>
 			<div class="modal-body">
@@ -31,14 +34,17 @@
 					<tbody id="addCollegeForm">
 					<tr>
 						<td>
-							<input class="input-medium" name="collegeCode1" type="text" placeholder="Optional">
+							<input class="input-medium" name="collegeCode1" type="text"
+										 placeholder="Optional">
 						<td>
-							<input class="input-medium" name="collegeName1" type="text" placeholder="College Name">
+							<input class="input-medium" name="collegeName1" type="text"
+										 placeholder="College Name">
 				</table>
 			</div>
 			<div class="modal-footer">
 				<button class="btn" name="addCollege" type="submit">Done</button>
-				<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetAddCollegeForm">Close</button>
+				<button class="btn" id="resetAddCollegeForm"
+								data-dismiss="modal" aria-hidden="true">Close</button>
 </form>
 			</div>
 		</div>
@@ -46,9 +52,11 @@
 		<!-- ///// Department Modal ///// -->
 		<!-- ///// Add case ///// -->
 		<div class="modal hide fade" id="departmentModal"
-				 tabindex="-1" role="dialog" aria-labelledby="addDepartmentModalLabel" aria-hidden="true">
+				 tabindex="-1" role="dialog" aria-labelledby="addDepartmentModalLabel"
+				 aria-hidden="true">
 			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal"
+								type="button" aria-hidden="true">x</button>
 				<h3 id="addDepartmentModalLabel">Add Department</h3>
 			</div>
 			<div class="modal-body">
@@ -64,13 +72,16 @@
 							<td>Department Name
 					<tbody id="addDepartmentForm">
 					<tr>
-						<td><input class="input-medium" name="departmentCode1" type="text" placeholder="Optional">
-						<td><input class="input-medium" name="departmentName1" type="text" placeholder="Department Name">
+						<td><input class="input-medium" name="departmentCode1"
+											 type="text" placeholder="Optional">
+						<td><input class="input-medium" name="departmentName1"
+											 type="text" placeholder="Department Name">
 				</table>
 			</div>
 			<div class="modal-footer">
 				<button class="btn" name="addDepartment" type="submit">Done</button>
-				<button class="btn" id="resetAddDepartmentForm" data-dismiss="modal" aria-hidden="true">Close</button>
+				<button class="btn" id="resetAddDepartmentForm"
+								data-dismiss="modal" aria-hidden="true">Close</button>
 </form>
 			</div>
 		</div>
@@ -86,7 +97,7 @@
 							<td>IsAbolished
 							<td>Check
 					<tbody>
-<form method="post" id="deleteCollege">
+<form method="post">
 					{%- for college in allColleges %}
 						<tr>
 							<td>{{ loop.index }}
@@ -94,33 +105,42 @@
 							<td>{{ college.collegeName }}
 							<td>{{ college.isAbolished }}
 							<td>
-								<input class="college-box-check" name="college{{ college.collegeIndex }}"
-											 type="checkbox" form="deleteCollege">
+								<input class="college-box-check"
+											 name="college{{ college.collegeIndex }}"
+											 type="checkbox">
 					{% endfor -%}
 				</table>
 			</div>
 			<!-- ///// College Modal ///// -->
 			<!-- ///// Delete case ///// -->
 			<div class="modal hide fade" id="deleteCollegeModal"
-					 role="dialog" aria-labelledby="deleteCollegeModalLabel" aria-hidden="true" tabindex="-1">
+					 role="dialog" aria-labelledby="deleteCollegeModalLabel"
+					 aria-hidden="true" tabindex="-1">
 				<div class="modal-header">
-					<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
+					<button class="close" type="button"
+									data-dismiss="modal" aria-hidden="true">x</button>
 					<h3 id="deleteCollegeModalLabel">Delete College</h3>
 				</div>
 				<div class="modal-body">
 					<p>Do you really want to delete it?</p>
 				</div>
 				<div class="modal-footer">
-						<button class="btn" name="deleteCollege" type="submit">Save changes</button>
-						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button class="btn" name="deleteCollege" type="submit">
+							Save changes
+						</button>
+						<button class="btn" data-dismiss="modal" aria-hidden="true">
+							Close
+						</button>
 </form>
 				</div>
 			</div>
 			<!-- no items choiced -->
 			<div class="modal hide fade" id="deleteNoCollegeItem"
-					 role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
+					 role="dialog" aria-labelledby="deleteModalLabel"
+					 aria-hidden="true" tabindex="-1">
 				<div class="modal-header">
-					<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
+					<button class="close" type="button" data-dismiss="modal"
+									aria-hidden="true">x</button>
 					<h3 id="deleteModalLabel">Delete College</h3>
 				</div>
 				<div class="modal-body">
@@ -149,8 +169,9 @@
 							<td>{{ department.departmentName }}
 							<td>{{ department.isAbolished }}
 							<td>
-								<input class="department-box-check" name="department{{ department.departmentIndex }}"
-									  	 type="checkbox" form="deleteDepartment">
+								<input class="department-box-check"
+											 name="department{{ department.departmentIndex }}"
+									  	 type="checkbox">
 					{% endfor -%}
 				</table>
 			</div>
@@ -158,9 +179,11 @@
 	</div>
 	<!-- ///// Delete case ///// -->
 	<div class="modal hide fade" id="deleteDepartmentModal"
-			 role="dialog" aria-labelledby="deleteDepartmentModalLabel" aria-hidden="true" tabindex="-1">
+			 role="dialog" aria-labelledby="deleteDepartmentModalLabel"
+			 aria-hidden="true" tabindex="-1">
 		<div class="modal-header">
-			<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
+			<button class="close" type="button"
+							data-dismiss="modal" aria-hidden="true">x</button>
 			<h3 id="deleteDepartmentModalLabel">Delete Department</h3>
 		</div>
 		<div class="modal-body">
@@ -174,9 +197,11 @@
 	</div>
 	<!-- no items choiced -->
 	<div class="modal hide fade" id="deleteNoDepartmentItem"
-			 role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
+			 role="dialog" aria-labelledby="deleteModalLabel"
+			 aria-hidden="true" tabindex="-1">
 		<div class="modal-header">
-			<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
+			<button class="close" type="button" data-dismiss="modal"
+							aria-hidden="true">x</button>
 			<h3 id="deleteModalLabel">Delete Department</h3>
 		</div>
 		<div class="modal-body">
@@ -189,7 +214,8 @@
 	<!-- ***** end Department Modal ***** -->
 
 	<div id="deleteButton" style="text-align:right">
-		<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal('college')"> Delete </a>
+		<a class="btn" data-toggle="modal" role="button"
+			 onclick="showingDeleteModal('college')"> Delete </a>
 	</div>
 </div>
 <script>
