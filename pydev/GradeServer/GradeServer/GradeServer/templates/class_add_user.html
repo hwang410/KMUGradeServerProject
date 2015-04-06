@@ -49,11 +49,11 @@ $(function() {
 				index = selectedItem.options[selectedItem.selectedIndex].index + 1;
 			}
 	    if(i < 1){
-				uploadObj += "<select id='" + keys[i] + numOfRow + "' " +
-											       "name='" + keys[i] + numOfRow + "' " +
-													   "value='" + $("#" + keys[i] + "1").val() + "' " +
-													   "form='addIndivisualUser' " +
-													   "style='width:115px'>";
+				uploadObj += "<select id='" + keys[i] + numOfRow +
+											      "'name='" + keys[i] + numOfRow +
+													  "'value='" + $("#" + keys[i] + "1").val() +
+													  "'form='addIndivisualUser" +
+													  "'style='width:115px'>";
 				{%- for ownCourse in ownCourses %}
 				uploadObj += "<option";
 				if(index == "{{ loop.index }}"){
@@ -64,21 +64,21 @@ $(function() {
 				uploadObj += "</select>";
 			}
 			else if(i < 3){
-				uploadObj += "<input class='input-" + formsize[i] + "' " +
-														"id='" + keys[i] + numOfRow + "' " +
-														"name='" + keys[i] + "' " +
-														"type='text' " +
-														"autocomplete='off' " +
-														"placeholder='" + placeholders[i] + "' " +
-														"value='" + $("#" + keys[i] + "1").val() + "' " +
-														"form='addIndivisualUser'>";			
+				uploadObj += "<input class='input-" + formsize[i] +
+													 "'id='" + keys[i] + numOfRow +
+													 "'name='" + keys[i] +
+													 "'type='text'" +
+													 "'autocomplete='off'" +
+													 "'placeholder='" + placeholders[i] +
+													 "'value='" + $("#" + keys[i] + "1").val() +
+													 "'form='addIndivisualUser'>";			
 			}
 			else{
-	    	uploadObj += "<select class='input-" + formsize[i] + "' " +
-	    											 "id='" + keys[i] + numOfRow + "' " +
-											       "name='" + keys[i] + numOfRow + "' " +
-													   "value='" + $("#" + keys[i] + "1").val() + "' " +
-													   "form='addIndivisualUser'>";
+	    	uploadObj += "<select class='input-" + formsize[i] +
+	    											"'id='" + keys[i] + numOfRow +
+											      "'name='" + keys[i] + numOfRow +
+													  "'value='" + $("#" + keys[i] + "1").val() +
+													  "'form='addIndivisualUser'>";
 				switch(i){
 					case 3:
 						{%- for college in allColleges %}
@@ -128,34 +128,34 @@ $(function() {
 	});
 
   $("#resetIndivisualUserForm").bind('click',function(){
-    var uploadObj = '<td>' +
-		    							'<select id="courseId1" name="courseId1" form="addIndivisualUser" style="width:115px">' +
-											  '{%- for ownCourse in ownCourses %}' +
-											  '<option> {{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>' +
-											  '{% endfor -%}' +
-										  '</select>' +
-										'<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">' +
-										'<td><input class="input-mini formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">' +
-										'<td>' +
-											'<select class="input-medium" id="college1" name="college1" form="addIndivisualUser">' +
-												'{%- for college in allColleges %}' +
-												'<option> {{ college.collegeIndex }} {{ college.collegeName }} </option>' +
-												'{% endfor -%}' +
-											'</select>' +
-										'<td>' +
-											'<select class="input-medium" id="department1" name="department1" form="addIndivisualUser">' +
-												'{%- for department in allDepartments %}' +
-												'<option> {{ department.departmentIndex }} {{ department.departmentName }} </option>' +
-												'{% endfor -%}' +
-											'</select>' +
-										'<td>' +
-											'<select class="input-medium" id="authority1" name="authority1" form="addIndivisualUser">' +
-												'{%- for authority in authorities %}' +
-												'<option> {{ authority }} </option>' +
-												'{% endfor -%}' +
-											'</select>';
-	  document.getElementById("indivisualUserForm").innerHTML = uploadObj;
-
+    document.getElementById("indivisualUserForm").innerHTML = 
+    	'<td>' +
+				'<select id="courseId1" name="courseId1" form="addIndivisualUser" style="width:115px">' +
+				  '{%- for ownCourse in ownCourses %}' +
+				  '<option> {{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>' +
+				  '{% endfor -%}' +
+			  '</select>' +
+			'<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">' +
+			'<td><input class="input-mini formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">' +
+			'<td>' +
+				'<select class="input-medium" id="college1" name="college1" form="addIndivisualUser">' +
+					'{%- for college in allColleges %}' +
+					'<option> {{ college.collegeIndex }} {{ college.collegeName }} </option>' +
+					'{% endfor -%}' +
+				'</select>' +
+			'<td>' +
+				'<select class="input-medium" id="department1" name="department1" form="addIndivisualUser">' +
+					'{%- for department in allDepartments %}' +
+					'<option> {{ department.departmentIndex }} {{ department.departmentName }} </option>' +
+					'{% endfor -%}' +
+				'</select>' +
+			'<td>' +
+				'<select class="input-medium" id="authority1" name="authority1" form="addIndivisualUser">' +
+					'{%- for authority in authorities %}' +
+					'<option> {{ authority }} </option>' +
+					'{% endfor -%}' +
+				'</select>';
+	  
 	  $("#userId1").autocomplete({
 	  	lookup: allUsers,
 	  	onSelect: function(suggestion){
@@ -231,10 +231,9 @@ $(function() {
 				</table>
 			</div>
 			<div class="modal-footer">
-				
-					<button class="btn" name="addIndivisualUser" type="submit">Done</button>
-					<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetIndivisualUserForm">Close</button>
-				</form>
+				<button class="btn" name="addIndivisualUser" type="submit">Done</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetIndivisualUserForm">Close</button>
+					</form>
 			</div>
 		</div>
 
@@ -289,30 +288,30 @@ $(function() {
 		</div>
 		<!-- ///// end hidden modal pop ///// -->
 		<form method="post">
-			<table class="table table-bordered" style="margin-top:10px">
-				<thead>
-					<tr>
-						<td>Index
-						<td>User Id
-						<td>User Name
-						<td>Authority
-						<td>College
-						<td>Department
-						<td>Check
-				<tbody>
-					<script> index = 0; </script>
-					{%- for newUser in newUsers %}
-					<tr>
-						<td><script> document.write(++index); </script>
-						<td>{{ newUser[0] }}
-						<td>{{ newUser[1] }}
-						<td>{% if newUser[2]=="User" %}Student{% else %}{{ newUser[2] }}{% endif %}
-						<td>{{ newUser[4] }}
-						<td>{{ newUser[6] }}
-						<td><label class="checkbox-center"><input class="box-check" name="{{ newUser[0] }}" type="checkbox" form="delete" value="{{ newUser[0] }}"></label>
-					{% endfor -%}
-			</table>
-			<a href="{{ url_for('GradeServer.server_add_user') }}"><button class="btn" name="addUser" type="submit">Done</button></a>
+		<table class="table table-bordered" style="margin-top:10px">
+			<thead>
+				<tr>
+					<td>Index
+					<td>User Id
+					<td>User Name
+					<td>Authority
+					<td>College
+					<td>Department
+					<td>Check
+			<tbody>
+				<script> index = 0; </script>
+				{%- for newUser in newUsers %}
+				<tr>
+					<td><script> document.write(++index); </script>
+					<td>{{ newUser[0] }}
+					<td>{{ newUser[1] }}
+					<td>{% if newUser[2]=="User" %}Student{% else %}{{ newUser[2] }}{% endif %}
+					<td>{{ newUser[4] }}
+					<td>{{ newUser[6] }}
+					<td><label class="checkbox-center"><input class="box-check" name="{{ newUser[0] }}" type="checkbox" form="delete" value="{{ newUser[0] }}"></label>
+				{% endfor -%}
+		</table>
+		<a href="{{ url_for('GradeServer.server_add_user') }}"><button class="btn" name="addUser" type="submit">Done</button></a>
 		</form>
 	</div>
 </div>
