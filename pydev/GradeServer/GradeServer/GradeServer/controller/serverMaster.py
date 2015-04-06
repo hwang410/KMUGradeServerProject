@@ -73,28 +73,34 @@ def server_manage_collegedepartment():
         isNewCollege = False
         isNewDepartment = False
         for form in request.form:
+            print "form!!!", form
+            print "value !!!", request.form[form]
             if 'addCollege' in request.form:
-                value, index = re.findall('\d+|\D+', form)
-                index = int(index)
-                data = request.form[form]
                 isNewCollege = True
-                if form == 'collegeCode':
-                    code = request.form[form]
-                elif form == 'collegeName':
-                    name = request.form[form]
+                
+                if 'collegeCode' in form:
+                    data, index = re.findall('\d+|\D+', form)
+                    index = int(index)
+                    data = request.form[form]
+                    code = data
+                elif 'collegeName'in form:
+                    data, index = re.findall('\d+|\D+', form)
+                    index = int(index)
+                    data = request.form[form]
+                    name = data
             elif 'addDepartment' in request.form:
-                value, index = re.findall('\d+|\D+', form)
-                index = int(index)
-                data = request.form[form]
                 isNewDepartment = True
-                if form == 'departmentCode':
+                if 'departmentCode' in form:
+                    data, index = re.findall('\d+|\D+', form)
+                    index = int(index)
+                    data = request.form[form]
                     code = request.form[form]
-                elif form == 'departmentName':
-                    name = request.form[form]
+                elif 'departmentName' in form:
+                    data, index = re.findall('\d+|\D+', form)
+                    index = int(index)
+                    data = request.form[form]
+                    name = data
             elif 'deleteCollege' in request.form:
-                value, index = re.findall('\d+|\D+', form)
-                index = int(index)
-                data = request.form[form]
                 if 'college' in form:
                     try:
                         collegeIndex = re.findall('\d+|\D+', form)[1]
@@ -109,9 +115,6 @@ def server_manage_collegedepartment():
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
             elif 'deleteDepartment' in request.form:
-                value, index = re.findall('\d+|\D+', form)
-                index = int(index)
-                data = request.form[form]
                 if 'department' in form:
                     try:
                         departmentIndex = re.findall('\d+|\D+', form)[1]
