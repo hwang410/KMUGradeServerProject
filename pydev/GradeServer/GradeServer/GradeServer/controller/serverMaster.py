@@ -43,10 +43,13 @@ problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/P
 # if there's additional difficulty then change the value 'numberOfDifficulty'
 numberOfDifficulty = 5
 newUsers = []
+newColleges = []
+newDepartments = []
 
 @GradeServer.route('/master/manage_collegedepartment', methods = ['GET', 'POST'])
 @login_required
 def server_manage_collegedepartment():
+    global newColleges, newDepartments
     error = None
     try:
         allColleges = dao.query(Colleges).\
@@ -68,38 +71,33 @@ def server_manage_collegedepartment():
                                allDepartments = [])
     
     if request.method == 'POST':
-        code = ''
-        name = ''
         isNewCollege = False
         isNewDepartment = False
+        numberOfColleges = (len(request.form) - 1) / 2
+        newCollege = [['' for i in range(2)] for j in range(numberOfColleges + 1)]
+        numberOfDepartments = (len(request.form) - 1) / 2
+        newDepartment = [['' for i in range(2)] for j in range(numberOfDepartments + 1)]
         for form in request.form:
-            print "form!!!", form
-            print "value !!!", request.form[form]
             if 'addCollege' in request.form:
                 isNewCollege = True
-                
-                if 'collegeCode' in form:
-                    data, index = re.findall('\d+|\D+', form)
+                if form != 'addCollege':
+                    value, index = re.findall('\d+|\D+', form)
                     index = int(index)
                     data = request.form[form]
-                    code = data
-                elif 'collegeName'in form:
-                    data, index = re.findall('\d+|\D+', form)
-                    index = int(index)
-                    data = request.form[form]
-                    name = data
+                    if value == 'collegeCode':
+                        newCollege[index-1][0] = data
+                    elif value == 'collegeName':
+                        newCollege[index-1][1] = data
             elif 'addDepartment' in request.form:
                 isNewDepartment = True
-                if 'departmentCode' in form:
-                    data, index = re.findall('\d+|\D+', form)
+                if form != 'addDepartment':
+                    value, index = re.findall('\d+|\D+', form)
                     index = int(index)
                     data = request.form[form]
-                    code = request.form[form]
-                elif 'departmentName' in form:
-                    data, index = re.findall('\d+|\D+', form)
-                    index = int(index)
-                    data = request.form[form]
-                    name = data
+                    if value == 'departmentCode':
+                        newDepartment[index-1][0] = data
+                    elif value == 'departmentName':
+                        newDepartment[index-1][1] = data
             elif 'deleteCollege' in request.form:
                 if 'college' in form:
                     try:
@@ -128,32 +126,45 @@ def server_manage_collegedepartment():
                                                error=error,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
+                        
         if isNewCollege:
-            try:
-                newCollege = Colleges(collegeCode = code,
-                                      collegeName = name)
-                dao.add(newCollege)
-                dao.commit()
-            except:
-                error = 'Error has been occurred while making new college'
-                dao.rollback()
-                return render_template('/server_manage_collegedepartment.html', 
-                                       error=error,
-                                       allColleges = allColleges,
-                                       allDepartments = allDepartments)
+            for index in range(numberOfColleges):
+                newColleges.append(newCollege[index])
+        elif isNewDepartment:
+            for index in range(numberOfDepartments):
+                newDepartments.append(newDepartment[index])
+                
+        if isNewCollege:
+            for newPart in newColleges:
+                try:
+                    newCollege = Colleges(collegeCode = newPart[0],
+                                          collegeName = newPart[1])
+                    dao.add(newCollege)
+                    dao.commit()
+                except:
+                    error = 'Error has been occurred while making new college'
+                    dao.rollback()
+                    return render_template('/server_manage_collegedepartment.html', 
+                                           error=error,
+                                           allColleges = allColleges,
+                                           allDepartments = allDepartments)
+            newColleges = []
+            
         if isNewDepartment:
-            try:
-                newDepartment = Departments(departmentCode = code,
-                                            departmentName = name)
-                dao.add(newDepartment)
-                dao.commit()
-            except:
-                error = 'Error has been occurred while making new department'
-                dao.rollback()
-                return render_template('/server_manage_collegedepartment.html', 
-                                       error=error,
-                                       allColleges = allColleges,
-                                       allDepartments = allDepartments)
+            for newPart in newDepartments:
+                try:
+                    newDepartment = Departments(departmentCode = newPart[0],
+                                                departmentName = newPart[1])
+                    dao.add(newDepartment)
+                    dao.commit()
+                except:
+                    error = 'Error has been occurred while making new department'
+                    dao.rollback()
+                    return render_template('/server_manage_collegedepartment.html', 
+                                           error=error,
+                                           allColleges = allColleges,
+                                           allDepartments = allDepartments)
+            newDepartments = []
             
         return redirect(url_for('.server_manage_collegedepartment'))
         
@@ -219,9 +230,7 @@ def server_manage_problem():
     error = None
     
     if request.method == 'POST':
-        print "inside post", request.form
         for form in request.form:
-            print "form", form
             if form == 'upload':
                 files = request.files.getlist("files")
                 if not list(files)[0].filename:
@@ -311,6 +320,7 @@ def server_manage_problem():
                                            problemName, 
                                            solutionCheckType))
                     try:
+                        problemId = problemId.replace(' ', '')
                         subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
                     except OSError:
                         error = 'Error has occurred while renaming a folder'
@@ -535,6 +545,8 @@ def server_add_class():
                                        languages = allLanguages)
                 
             # create course folder in 'CurrentCourses' folder
+            courseName = courseName.replace(' ', '')
+            print courseName
             problemPath = "%s/CurrentCourses/%s_%s" % (projectPath, newCourseNum, courseName)
             if not os.path.exists(problemPath):
                 os.makedirs(problemPath)
