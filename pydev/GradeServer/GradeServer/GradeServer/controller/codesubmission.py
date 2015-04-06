@@ -28,7 +28,7 @@ from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.GradeServer_config import GradeServerConfig
 from GradeServer.utils.utilMessages import unknown_error
 from sqlalchemy import and_, func
-from celeryServer import Grade
+from GradeServer.celeryServer import Grade
 
 # Initialize the Flask application
 ALLOWED_EXTENSIONS = set(['py', 'java', 'class', 'c', 'cpp', 'h'])
@@ -240,10 +240,10 @@ def upload(courseId, problemId):
                 caseCount,
                 limitedTime,
                 limitedMemory,
-                usedLanguage,
+                usedLanguageName,
                 usedLanguageVersion,
                 courseId,
-                subCount)
+                subCountNum)
                
     return courseId
         
@@ -455,10 +455,10 @@ def code(courseId, pageNum, problemId):
                 caseCount,
                 limitedTime,
                 limitedMemory,
-                usedLanguage,
+                usedLanguageName,
                 usedLanguageVersion,
                 courseId,
-                subCount)
+                subCountNum)
     
     flash('submission success!')
     return redirect(url_for('.problemList',
