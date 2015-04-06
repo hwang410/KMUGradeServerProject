@@ -2,8 +2,6 @@
 
 import math 
 
-from database import dao
-
 
 """
 페이징에 필요한 정보들을 구하는 모듈
