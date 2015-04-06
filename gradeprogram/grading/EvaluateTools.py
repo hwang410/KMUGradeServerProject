@@ -154,6 +154,9 @@ class EvaluateTools():
         
         fd1 = os.open('output.txt', os.O_RDWR|os.O_CREAT)
         os.dup2(fd1,1)
+        if self.usingLang == 'JAVA' or self.usingLang == 'PYTHON':
+            fd2 = os.open('core.1', os.O_RDWR|os.O_CREAT)
+            os.dup2(fd2,2)
         
         rlimTime = int(self.limitTime / 1000) + 1
         corefileSize = 1 << 20
