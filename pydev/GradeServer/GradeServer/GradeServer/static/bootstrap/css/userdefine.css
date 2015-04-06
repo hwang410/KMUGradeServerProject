@@ -290,3 +290,7 @@ thead{
 .autocomplete-suggestions{
 	width:auto; 
 }
+
+#pdf {
+	z-index: 1;
+}
