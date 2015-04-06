@@ -15,11 +15,12 @@ def get_page_pointed(pageNum, count, BLOCK = 6, LIST = 15):
     block = (pageNum - 1) / BLOCK
     startPage = block + 1
     endPage = block + BLOCK 
-    allPage = int(math.ceil(count / LIST))
+    allPage = int(math.ceil(count / float(LIST)))
     #Minimum Page
     if endPage > allPage:
         endPage = allPage
         
+    print pageNum, startList, endList, startPage, endPage, allPage
     return {'BLOCK': BLOCK,
             'pageNum': pageNum,
             'startList': startList,
@@ -35,5 +36,4 @@ Page Number Case Record
 def get_page_record(recordsSub, pageNum, LIST = 15):
 
     return recordsSub.slice((pageNum - 1) * LIST,
-                            LIST).\
-                      subquery()
+                            pageNum * LIST)
