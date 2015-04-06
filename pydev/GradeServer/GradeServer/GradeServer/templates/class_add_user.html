@@ -8,7 +8,8 @@
 $(function() {
   var allUsers = [
   	{%- for user in allUsers %}
-  	{ value: "{{ user.memberId }} {{ user.memberName }}", data: "{{ user.memberId }} {{ user.memberName }}" },
+  	{ value: "{{ user.memberId }} {{ user.memberName }}", 
+  		data: "{{ user.memberId }} {{ user.memberName }}" },
   	{% endfor -%}
   	{ value: "", data: "" }
   ];
@@ -135,8 +136,12 @@ $(function() {
 				  '<option> {{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>' +
 				  '{% endfor -%}' +
 			  '</select>' +
-			'<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">' +
-			'<td><input class="input-mini formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">' +
+			'<td>' +
+				'<input class="input-small formLine1" id="userId1" name="userId1"' +
+							 'type="text" form="addIndivisualUser" placeholder="ID" value="">' +
+			'<td>' +
+				'<input class="input-mini formLine1" id="username1" name="username1"' +
+							 'type="text" form="addIndivisualUser" placeholder="Name" value="">' +
 			'<td>' +
 				'<select class="input-medium" id="college1" name="college1" form="addIndivisualUser">' +
 					'{%- for college in allColleges %}' +
@@ -181,7 +186,9 @@ $(function() {
 
 		<!-- hidden modal pop -->
 		<!-- ///// Add indivisual ///// -->
-		<div class="modal hide fade" id="addUserModal" aria-labelledby="addUserModalLabel" aria-hidden="false" role="dialog" tabindex="-1" style="width:900px;margin-left:-450px">
+		<div class="modal hide fade" id="addUserModal"
+				 aria-labelledby="addUserModalLabel" aria-hidden="false" role="dialog"
+				 tabindex="-1" style="width:900px;margin-left:-450px">
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 				<h3 id="addUserModalLabel">Add User</h3>
@@ -200,7 +207,7 @@ $(function() {
 							<td>Department
 							<td>Authority
 					<tbody id="indivisualUserForm">
-					<form id="addIndivisualUser" method="post">
+<form id="addIndivisualUser" method="post">
 						<tr>
 							<td>
 								<select id="courseId1" name="courseId1" form="addIndivisualUser" style="width:115px">
@@ -208,8 +215,12 @@ $(function() {
 									<option> {{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>
 									{% endfor -%}
 								</select>
-							<td><input class="input-small formLine1" id="userId1" name="userId1" type="text" form="addIndivisualUser" placeholder="ID" value="">
-							<td><input class="input-mini formLine1" id="username1" name="username1" type="text" form="addIndivisualUser" placeholder="Name" value="">
+							<td>
+								<input class="input-small formLine1" id="userId1" name="userId1"
+											 type="text" form="addIndivisualUser" placeholder="ID" value="">
+							<td>
+								<input class="input-mini formLine1" id="username1" name="username1"
+											 type="text" form="addIndivisualUser" placeholder="Name" value="">
 							<td>
 								<select class="input-medium" id="college1" name="college1" form="addIndivisualUser">
 									{%- for college in allColleges %}
@@ -233,13 +244,14 @@ $(function() {
 			<div class="modal-footer">
 				<button class="btn" name="addIndivisualUser" type="submit">Done</button>
 				<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetIndivisualUserForm">Close</button>
-					</form>
+</form>
 			</div>
 		</div>
 
 		<!-- ///// add group ///// -->
-		<div class="modal hide fade" id="addGroupModal" aria-labelledby="addGroupModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
-			<form method="post" enctype="multipart/form-data">
+		<div class="modal hide fade" id="addGroupModal"
+				 aria-labelledby="addGroupModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+<form method="post" enctype="multipart/form-data">
 				<div class="modal-header">
 					<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 					<h3 id="addGroupModalLabel">Add User</h3>
@@ -253,12 +265,13 @@ $(function() {
 					<button class="btn" name="addUserGroup" type="submit">Done</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 				</div>
-			</form>
+</form>
 		</div>
 
 		<!-- ///// Delete case /////
 				if any item choiced -->
-		<div class="modal hide fade" id="deleteModal" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+		<div class="modal hide fade" id="deleteModal"
+				 aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete User</h3>
@@ -274,7 +287,8 @@ $(function() {
 			</div>
 		</div>
 		<!-- no items choiced -->
-		<div class="modal hide fade" id="deleteNoItem" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+		<div class="modal hide fade" id="deleteNoItem"
+				 aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete User</h3>
@@ -287,7 +301,6 @@ $(function() {
 			</div>
 		</div>
 		<!-- ///// end hidden modal pop ///// -->
-		<form method="post">
 		<table class="table table-bordered" style="margin-top:10px">
 			<thead>
 				<tr>
@@ -299,6 +312,7 @@ $(function() {
 					<td>Department
 					<td>Check
 			<tbody>
+<form method="post">
 				<script> index = 0; </script>
 				{%- for newUser in newUsers %}
 				<tr>
@@ -308,11 +322,17 @@ $(function() {
 					<td>{% if newUser[2]=="User" %}Student{% else %}{{ newUser[2] }}{% endif %}
 					<td>{{ newUser[4] }}
 					<td>{{ newUser[6] }}
-					<td><label class="checkbox-center"><input class="box-check" name="{{ newUser[0] }}" type="checkbox" form="delete" value="{{ newUser[0] }}"></label>
+					<td>
+						<label class="checkbox-center">
+							<input class="box-check" name="{{ newUser[0] }}"
+										 type="checkbox" form="delete" value="{{ newUser[0] }}">
+						</label>
 				{% endfor -%}
 		</table>
-		<a href="{{ url_for('GradeServer.server_add_user') }}"><button class="btn" name="addUser" type="submit">Done</button></a>
-		</form>
+		<a href="{{ url_for('GradeServer.server_add_user') }}">
+			<button class="btn" name="addUser" type="submit">Done</button>
+		</a>
+</form>
 	</div>
 </div>
 {% endblock -%}
