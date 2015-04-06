@@ -12,6 +12,7 @@
 		</ul>
 		<!-- ///// College Modal ///// -->
 		<!-- ///// Add case ///// -->
+	<form method="post">
 		<div class="modal hide fade" id="collegeModal" 
 				 tabindex="-1" role="dialog" aria-labelledby="addCollegeModalLabel"
 				 aria-hidden="true">
@@ -27,17 +28,16 @@
 				</div>
 				<table class="table table-bordered" id='Colleges' style="margin-top:10px">
 					<thead>
-<form method="post">
 						<tr>
 							<td>College Code
 							<td>College Name
 					<tbody id="addCollegeForm">
 					<tr>
 						<td>
-							<input class="input-medium" name="collegeCode1" type="text"
+							<input class="input-medium" id="collegeCode1" name="collegeCode1" type="text"
 										 placeholder="Optional">
 						<td>
-							<input class="input-medium" name="collegeName1" type="text"
+							<input class="input-medium" id="collegeName1" name="collegeName1" type="text"
 										 placeholder="College Name">
 				</table>
 			</div>
@@ -45,12 +45,13 @@
 				<button class="btn" name="addCollege" type="submit">Done</button>
 				<button class="btn" id="resetAddCollegeForm"
 								data-dismiss="modal" aria-hidden="true">Close</button>
-</form>
 			</div>
 		</div>
+	</form>
 		<!-- ///// end college modal ///// -->
 		<!-- ///// Department Modal ///// -->
 		<!-- ///// Add case ///// -->
+	<form method="post">
 		<div class="modal hide fade" id="departmentModal"
 				 tabindex="-1" role="dialog" aria-labelledby="addDepartmentModalLabel"
 				 aria-hidden="true">
@@ -66,11 +67,11 @@
 				</div>
 				<table class="table table-bordered" id='Departments' style="margin-top:10px">
 					<thead>
-<form method="post">
 						<tr>
 							<td>Department Code
 							<td>Department Name
 					<tbody id="addDepartmentForm">
+
 					<tr>
 						<td><input class="input-medium" name="departmentCode1"
 											 type="text" placeholder="Optional">
@@ -82,13 +83,14 @@
 				<button class="btn" name="addDepartment" type="submit">Done</button>
 				<button class="btn" id="resetAddDepartmentForm"
 								data-dismiss="modal" aria-hidden="true">Close</button>
-</form>
 			</div>
 		</div>
+	</form>
 
 <!-- ///// end department modal ///// -->
 		<div class="tab-content">
 			<div class="tab-pane active" id="colleges">
+			<form method="post">
 				<table class="table">
 					<thead>
 						<tr>
@@ -98,7 +100,6 @@
 							<td>IsAbolished
 							<td>Check
 					<tbody>
-<form method="post">
 					{%- for college in allColleges %}
 						<tr>
 							<td>{{ loop.index }}
@@ -132,7 +133,6 @@
 						<button class="btn" data-dismiss="modal" aria-hidden="true">
 							Close
 						</button>
-</form>
 				</div>
 			</div>
 			<!-- no items choiced -->
@@ -150,9 +150,12 @@
 				<div class="modal-footer">
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 				</div>
+				</form>	
 			</div>
+		
 			<!-- ***** end College Modal ***** -->
 			<div class="tab-pane" id="departments">
+			<form method="post">
 				<table class="table">
 					<thead>
 						<tr>
@@ -162,7 +165,6 @@
 							<td>IsAbolished
 							<td>Check
 					<tbody>
-<form method="post">
 					{%- for department in allDepartments %}
 						<tr>
 							<td>{{ loop.index }}
@@ -193,8 +195,8 @@
 		<div class="modal-footer">
 			<button class="btn" name="deleteDepartment" type="submit">Save changes</button>
 			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-</form>
 		</div>
+		</form>
 	</div>
 	<!-- no items choiced -->
 	<div class="modal hide fade" id="deleteNoDepartmentItem"
@@ -212,6 +214,7 @@
 			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 		</div>
 	</div>
+	
 	<!-- ***** end Department Modal ***** -->
 
 	<div id="deleteButton" style="text-align:right">
@@ -227,11 +230,12 @@ $('a[data-toggle="tab"]').on('shown', function(e){
 	var newinnerhtml = '';
 	if(id == 'department'){
 		for(var i=0;i<innerhtml.length;i++){
-			if(innerhtml[i] == ">"){
-				newinnerhtml += innerhtml[i] + " Delete </a>";
-			}
-			else if(innerhtml[i].indexOf('onclick') > -1){
+			if(innerhtml[i].indexOf('onclick') > -1){
 				newinnerhtml += "onclick=\"showingDeleteModal('department')\"";
+			}
+			else if(innerhtml[i].indexOf('>') > -1){
+				newinnerhtml += '> Delete </a>';
+				break;
 			}
 			else{
 				newinnerhtml += innerhtml[i] + ' ';
@@ -240,11 +244,12 @@ $('a[data-toggle="tab"]').on('shown', function(e){
 	}
 	else{
 		for(var i=0;i<innerhtml.length;i++){
-			if(innerhtml[i] == ">"){
-				newinnerhtml += innerhtml[i] + " Delete </a>";
-			}
-			else if(innerhtml[i].indexOf('onclick') > -1){
+			if(innerhtml[i].indexOf('onclick') > -1){
 				newinnerhtml += "onclick=\"showingDeleteModal('college')\"";
+			}
+			else if(innerhtml[i].indexOf('>') > -1){
+				newinnerhtml += '> Delete </a>';
+				break;
 			}
 			else{
 				newinnerhtml += innerhtml[i] + ' ';
@@ -273,9 +278,10 @@ $("#addline_college").bind("click", function(){
 			"<tr>" +
 				"<td>" +
 					"<input class='input-medium" + 
-								"'name='" + keys[0] + i +
+								"'id='" + keys[i] + numOfRow +
+								"'name='" + keys[i] + numOfRow +
 								"'type='text" +
-								"'placeholder='" + placeholders[0] +
+								"'placeholder='" + placeholders[i] +
 								"'values='" + $("#" + keys[i] + "1").val() +
 								"'>";
 	}
@@ -318,9 +324,9 @@ $("#addline_department").bind("click", function(){
 			"<tr>" +
 				"<td>" +
 					"<input class='input-medium" + 
-								"'name='" + keys[0] + i +
+								"'name='" + keys[i] + numOfRow +
 								"'type='text" +
-								"'placeholder='" + placeholders[0] +
+								"'placeholder='" + placeholders[i] +
 								"'values='" + $("#" + keys[i] + "1").val() +
 								"'>";
 	}
