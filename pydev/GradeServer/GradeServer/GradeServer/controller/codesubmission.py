@@ -232,11 +232,11 @@ def upload(courseId, problemId):
         else:
             caseCount = 1
             
-    Grade.delay(filePath,
-                problemPath,
-                memberId,
-                problemId,
-                solutionCheckType,
+    Grade.delay(str(filePath),
+                str(problemPath),
+                str(memberId),
+                str(problemId),
+                str(solutionCheckType),
                 caseCount,
                 limitedTime,
                 limitedMemory,
@@ -447,11 +447,11 @@ def code(courseId, pageNum, problemId):
         else:
             caseCount = 1
             
-    Grade.delay(filePath,
-                problemPath,
-                memberId,
-                problemId,
-                solutionCheckType,
+    Grade.delay(str(filePath),
+                str(problemPath),
+                str(memberId),
+                str(problemId),
+                str(solutionCheckType),
                 caseCount,
                 limitedTime,
                 limitedMemory,
