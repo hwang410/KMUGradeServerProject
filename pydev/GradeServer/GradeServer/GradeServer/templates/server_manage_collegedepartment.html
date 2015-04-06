@@ -11,24 +11,29 @@
 		</ul>
 		<!-- ///// College Modal ///// -->
 		<!-- ///// Add case ///// -->
-		<div class="modal hide fade" id="collegeModal" tabindex="-1" role="dialog" aria-labelledby="addCollegeModalLabel" aria-hidden="true">
+		<div class="modal hide fade" id="collegeModal" 
+				 tabindex="-1" role="dialog" aria-labelledby="addCollegeModalLabel" aria-hidden="true">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 				<h3 id="addCollegeModalLabel">Add College</h3>
 			</div>
 			<div class="modal-body">
 				<p></p>
-				<div style="text-align:right"><button class="btn" type="button" id="addline_college">Add line</button></div>
+				<div style="text-align:right">
+					<button class="btn" type="button" id="addline_college">Add line</button>
+				</div>
 				<table class="table table-bordered" id='Colleges' style="margin-top:10px">
 					<thead>
-<form id="addCollege" method="post">
+<form method="post">
 						<tr>
 							<td>College Code
 							<td>College Name
 					<tbody id="addCollegeForm">
 					<tr>
-						<td><input class="input-medium" name="collegeCode" type="text" form="addCollege" placeholder="Optional"></div>
-						<td><input class="input-medium" name="collegeName" type="text" form="addCollege" placeholder="College Name"></div>
+						<td>
+							<input class="input-medium" name="collegeCode1" type="text" placeholder="Optional">
+						<td>
+							<input class="input-medium" name="collegeName1" type="text" placeholder="College Name">
 				</table>
 			</div>
 			<div class="modal-footer">
@@ -40,29 +45,32 @@
 		<!-- ///// end college modal ///// -->
 		<!-- ///// Department Modal ///// -->
 		<!-- ///// Add case ///// -->
-		<div class="modal hide fade" id="departmentModal" tabindex="-1" role="dialog" aria-labelledby="addDepartmentModalLabel" aria-hidden="true">
+		<div class="modal hide fade" id="departmentModal"
+				 tabindex="-1" role="dialog" aria-labelledby="addDepartmentModalLabel" aria-hidden="true">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 				<h3 id="addDepartmentModalLabel">Add Department</h3>
 			</div>
 			<div class="modal-body">
 				<p></p>
-				<div style="text-align:right"><button class="btn" type="button" id="addline_department">Add line</button></div>
+				<div style="text-align:right">
+					<button class="btn" type="button" id="addline_department">Add line</button>
+				</div>
 				<table class="table table-bordered" id='Departments' style="margin-top:10px">
 					<thead>
-<form id="addDepartment" method="post">
+<form method="post">
 						<tr>
 							<td>Department Code
 							<td>Department Name
 					<tbody id="addDepartmentForm">
 					<tr>
-						<td><input class="input-medium" name="departmentCode" type="text" form="addDepartment" placeholder="Optional"></div>
-						<td><input class="input-medium" name="departmentName" type="text" form="addDepartment" placeholder="Department Name"></div>
+						<td><input class="input-medium" name="departmentCode1" type="text" placeholder="Optional">
+						<td><input class="input-medium" name="departmentName1" type="text" placeholder="Department Name">
 				</table>
 			</div>
 			<div class="modal-footer">
 				<button class="btn" name="addDepartment" type="submit">Done</button>
-				<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetAddDepartmentForm">Close</button>
+				<button class="btn" id="resetAddDepartmentForm" data-dismiss="modal" aria-hidden="true">Close</button>
 </form>
 			</div>
 		</div>
@@ -85,13 +93,16 @@
 							<td>{{ college.collegeCode }}
 							<td>{{ college.collegeName }}
 							<td>{{ college.isAbolished }}
-							<td><input class="college-box-check" name="college{{ college.collegeIndex }}" type="checkbox" form="deleteCollege">
+							<td>
+								<input class="college-box-check" name="college{{ college.collegeIndex }}"
+											 type="checkbox" form="deleteCollege">
 					{% endfor -%}
 				</table>
 			</div>
 			<!-- ///// College Modal ///// -->
 			<!-- ///// Delete case ///// -->
-			<div class="modal hide fade" id="deleteCollegeModal" role="dialog" aria-labelledby="deleteCollegeModalLabel" aria-hidden="true" tabindex="-1">
+			<div class="modal hide fade" id="deleteCollegeModal"
+					 role="dialog" aria-labelledby="deleteCollegeModalLabel" aria-hidden="true" tabindex="-1">
 				<div class="modal-header">
 					<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 					<h3 id="deleteCollegeModalLabel">Delete College</h3>
@@ -106,7 +117,8 @@
 				</div>
 			</div>
 			<!-- no items choiced -->
-			<div class="modal hide fade" id="deleteNoCollegeItem" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
+			<div class="modal hide fade" id="deleteNoCollegeItem"
+					 role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
 				<div class="modal-header">
 					<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 					<h3 id="deleteModalLabel">Delete College</h3>
@@ -129,21 +141,24 @@
 							<td>IsAbolished
 							<td>Check
 					<tbody>
-<form method="post" id="deleteDepartment">
+<form method="post">
 					{%- for department in allDepartments %}
 						<tr>
 							<td>{{ loop.index }}
 							<td>{{ department.departmentCode }}
 							<td>{{ department.departmentName }}
 							<td>{{ department.isAbolished }}
-							<td><input class="department-box-check" name="department{{ department.departmentIndex }}" type="checkbox" form="deleteDepartment">
+							<td>
+								<input class="department-box-check" name="department{{ department.departmentIndex }}"
+									  	 type="checkbox" form="deleteDepartment">
 					{% endfor -%}
 				</table>
 			</div>
 		</div>
 	</div>
 	<!-- ///// Delete case ///// -->
-	<div class="modal hide fade" id="deleteDepartmentModal" role="dialog" aria-labelledby="deleteDepartmentModalLabel" aria-hidden="true" tabindex="-1">
+	<div class="modal hide fade" id="deleteDepartmentModal"
+			 role="dialog" aria-labelledby="deleteDepartmentModalLabel" aria-hidden="true" tabindex="-1">
 		<div class="modal-header">
 			<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 			<h3 id="deleteDepartmentModalLabel">Delete Department</h3>
@@ -158,7 +173,8 @@
 		</div>
 	</div>
 	<!-- no items choiced -->
-	<div class="modal hide fade" id="deleteNoDepartmentItem" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
+	<div class="modal hide fade" id="deleteNoDepartmentItem"
+			 role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
 		<div class="modal-header">
 			<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 			<h3 id="deleteModalLabel">Delete Department</h3>
@@ -204,5 +220,96 @@ $('a[data-toggle="tab"]').on('shown', function(e){
 	}
 	document.getElementById('deleteButton').innerHTML = newinnerhtml;
 })
+</script>
+<script>
+$("#addline_college").bind("click", function(){
+	var targetTable = document.getElementById("Colleges");
+	var numOfRow = targetTable.rows.length;
+
+	reset_values = function(){
+		$("#collegeCode1").val();
+		$("#collegeName1").val();
+	}
+
+	var newRow = targetTable.insertRow(1);
+
+	var keys = ['collegeCode', 'collegeName'];
+	var placeholders = ['Optional', 'College Name'];
+	for(var i=0;i<targetTable.rows[0].cells.length;i++){
+		newRow.insertCell(i).innerHTML = 
+			"<tr>" +
+				"<td>" +
+					"<input class='input-medium" + 
+								"'name='" + keys[0] + i +
+								"'type='text" +
+								"'placeholder='" + placeholders[0] +
+								"'values='" + $("#" + keys[i] + "1").val() +
+								"'>";
+	}
+	reset_values();
+});
+$("#resetAddCollegeForm").bind("click", function(){
+	var keys = ['collegeCode', 'collegeName'];
+	var placeholders = ['Optional', 'College Name'];
+	document.getElementById("addCollegeForm").innerHTML = 
+		"<tr>" +
+			"<td>" +
+				"<input class='input-medium" + 
+							"'name='" + keys[0] + "1" +
+							"'type='text" +
+							"'placeholder='" + placeholders[0] +
+							"'>" +
+			"<td>" +
+				"<input class='input-medium" + 
+							"'name='" + keys[1] + "1" +
+							"'type='text" +
+							"'placeholder='" + placeholders[1] +
+							"'>";
+});
+
+$("#addline_department").bind("click", function(){
+	var targetTable = document.getElementById("Departments");
+	var numOfRow = targetTable.rows.length;
+
+	reset_values = function(){
+		$("#departmentCode1").val();
+		$("#departmentName1").val();
+	}
+
+	var newRow = targetTable.insertRow(1);
+
+	var keys = ['departmentCode', 'departmentName'];
+	var placeholders = ['Optional', 'Department Name'];
+	for(var i=0;i<targetTable.rows[0].cells.length;i++){
+		newRow.insertCell(i).innerHTML = 
+			"<tr>" +
+				"<td>" +
+					"<input class='input-medium" + 
+								"'name='" + keys[0] + i +
+								"'type='text" +
+								"'placeholder='" + placeholders[0] +
+								"'values='" + $("#" + keys[i] + "1").val() +
+								"'>";
+	}
+	reset_values();
+});
+$("#resetAddDepartmentForm").bind("click", function(){
+	var keys = ['departmentCode', 'departmentName'];
+	var placeholders = ['Optional', 'Department Name'];
+	document.getElementById("addDepartmentForm").innerHTML = 
+		"<tr>" +
+			"<td>" +
+				"<input class='input-medium" + 
+							"'name='" + keys[0] + "1" +
+							"'type='text" +
+							"'placeholder='" + placeholders[0] +
+							"'>" +
+			"<td>" +
+				"<input class='input-medium" + 
+							"'name='" + keys[1] + "1" +
+							"'type='text" +
+							"'placeholder='" + placeholders[1] +
+							"'>";
+});
 </script>
 {% endblock -%}

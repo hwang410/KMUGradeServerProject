@@ -12,127 +12,138 @@ $(function() {
         });
     }
 });
-$(function() {
-	 $("#addline_problem").bind('click',function(){
-		  var targetTable = document.getElementById('problems');
-		  var numOfRow = targetTable.rows.length;
-			
-			var selectedItem = document.getElementById("courseId1");
-			var index = selectedItem.options[selectedItem.selectedIndex].index + 1;
-
-		  reset_val = function(){
-		    $("#courseId1").val("");
-		    $("#problemId1").val("");
-		    $("#multipleFiles1").attr("checked",false);
-		    $("#startDate1").val("");
-		    $("#openDate1").val("");
-		    $("#endDate1").val("");
-		    $("#closeDate1").val("");
-		  }
+$(function(){
+	$("#addline_problem").bind('click',function(){
+	  var targetTable = document.getElementById('problems');
+	  var numOfRow = targetTable.rows.length;
 		
-		  var newRow = targetTable.insertRow(2);
-		  var uploadObj;
-		  var keys = ['courseId', 'problemId', 'multipleFiles', 'startDate', 'endDate', 'openDate', 'closeDate'];
-		  var placeholders = ['course name', 'problem name', '', 'click', 'click', 'click', 'click'];
-		  var formsize = ['', '', 'checkbox-center','datepicker input-usmall', 'datepicker input-usmall', 'datepicker input-usmall', 'datepicker input-usmall'];
+		var selectedItem = document.getElementById("courseId1");
+		var index = selectedItem.options[selectedItem.selectedIndex].index + 1;
 
-		  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
-		  	uploadObj = "<tr>";
-		    if(i < 2){
-					uploadObj += "<td>" +
-											   "<select id='" + keys[i] + numOfRow + "' " +
-													       "name='" + keys[i] + "' " +
-															   "value='" + $("#" + keys[i] + "1").val() + "' " +
-															   "form='addProblem'>";
-					if(i == 0){
-						{%- for ownCourse in ownCourses %}
-						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
-							uploadObj += " selected";
-						}
-						uploadObj += ">{{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>";
-						{% endfor -%}
+	  reset_val = function(){
+	    $("#courseId1").val("");
+	    $("#problemId1").val("");
+	    $("#multipleFiles1").attr("checked",false);
+	    $("#startDate1").val("");
+	    $("#openDate1").val("");
+	    $("#endDate1").val("");
+	    $("#closeDate1").val("");
+	  }
+		
+	  var newRow = targetTable.insertRow(2);
+	  var uploadObj;
+	  var keys = ['courseId', 'problemId', 'multipleFiles', 'startDate', 'endDate', 'openDate', 'closeDate'];
+	  var placeholders = ['course name', 'problem name', '', 'click', 'click', 'click', 'click'];
+	  var formsize = ['', '', 'checkbox-center','datepicker input-usmall', 
+	  								'datepicker input-usmall', 'datepicker input-usmall', 'datepicker input-usmall'];
+
+	  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
+	  	uploadObj = "<tr>";
+	    if(i < 2){
+				uploadObj += "<td>" +
+										   "<select id='" + keys[i] + numOfRow +
+												      "'name='" + keys[i] +
+														  "'value='" + $("#" + keys[i] + "1").val() +
+														  "'form='addProblem'>";
+				if(i == 0){
+					{%- for ownCourse in ownCourses %}
+					uploadObj += "<option";
+					if(index == "{{ loop.index }}"){
+						uploadObj += " selected";
 					}
-					else{
-						{%- for problem in allProblems %}
-						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
-							uploadObj += " selected";
-						}
-						uploadObj += ">{{ problem.problemId }} {{ problem.problemName }} </option>";
-						{% endfor -%}
+					uploadObj += ">{{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>";
+					{% endfor -%}
+				}
+				else{
+					{%- for problem in allProblems %}
+					uploadObj += "<option";
+					if(index == "{{ loop.index }}"){
+						uploadObj += " selected";
 					}
-					uploadObj += "</select>";
-		    }
-		    else if(i == 2){
-		    	var val_mf = document.getElementById('multipleFiles1')
-		    	uploadObj += "<td>";
-		    	if(val_mf.checked == true){
-			    	uploadObj += "<label class='" + formsize[i] + "'>" +
-										       "<input class='box-check' " +
-															 	  "id='" + keys[i] + numOfRow + "' " +
-															 	  "name='" + keys[i] + "' " +
-															 	  "type='checkbox' " +
-															 	  "checked=true>" +
-											   "</label>";
-		    	}
-		    	else{
-		    		uploadObj += "<label class='" + formsize[i] +"'>" +
-										  	   "<input class='box-check' " +
-															 	  "id='" + keys[i] + numOfRow +"' " +
-													 		 	  "name='" + keys[i] + "' " +
-													 		 	  "type='checkbox'>" +
-												 "</label>";
-		    	}
-		    }
-		    else {
-		    	uploadObj += "<td>" +
-									       "<input class='" + formsize[i] + "' " +
-							 								  "id='" + keys[i] + numOfRow + "' " +
-															  "name='" + keys[i] + "' " +
-															  "type='date' " +
-															  "data-date-format='yyyy-mm-dd' " +
-															  "autocomplete='off' " +
-															  "placeholder='" + placeholders[i] + "' " +
-															  "value='" + $("#" + keys[i] + "1").val() + "' " +
-															  "form='addProblem'>";
-		    }
-		    newRow.insertCell(i).innerHTML = uploadObj;
-	 	 	}
-	    if (!Modernizr.inputtypes['date']) {
-	        $('input[type=date]').datepicker({
-	            dateFormat: 'yy-mm-dd'
-	        });
+					uploadObj += ">{{ problem.problemId }} {{ problem.problemName }} </option>";
+					{% endfor -%}
+				}
+				uploadObj += "</select>";
 	    }
-		  reset_val();
-		});
-	 	$("#resetAddProblemForm").bind('click',function(){
-			document.getElementById("addProblemForm").innerHTML = 
-				'<td>' +
-					'<select id="courseId1" name="courseId" form="addProblem">' +
-						'{%- for ownCourse in ownCourses %}' +
-						'<option> {{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>' +
-						'{% endfor -%}' +
-						'</select>' +
-				'<td>' +
-					'<select id="problemId1" name="problemId" form="addProblem">' +
-						'{%- for problem in allProblems %}' +
-						'<option> {{ problem.problemId }} {{ problem.problemName }} </option>' +
-						'{% endfor -%}' +
+	    else if(i == 2){
+	    	var val_mf = document.getElementById('multipleFiles1')
+	    	uploadObj += "<td>";
+	    	if(val_mf.checked == true){
+		    	uploadObj += "<label class='" + formsize[i] + "'>" +
+									       "<input class='box-check'" +
+														 	 "'id='" + keys[i] + numOfRow +
+														 	 "'name='" + keys[i] +
+														 	 "'type='checkbox'" +
+														 	 "'checked=true>" +
+										   "</label>";
+	    	}
+	    	else{
+	    		uploadObj += "<label class='" + formsize[i] +"'>" +
+									  	   "<input class='box-check'" +
+														   "'id='" + keys[i] + numOfRow +
+												 		 	 "'name='" + keys[i] +
+												 		 	 "'type='checkbox'>" +
+											 "</label>";
+	    	}
+	    }
+	    else {
+	    	uploadObj += "<td>" +
+								       "<input class='" + formsize[i] +
+						 								 "'id='" + keys[i] + numOfRow +
+														 "'name='" + keys[i] +
+														 "'type='date'" +
+														 "'data-date-format='yyyy-mm-dd'" +
+														 "'autocomplete='off'" +
+														 "'placeholder='" + placeholders[i] +
+														 "'value='" + $("#" + keys[i] + "1").val() +
+														 "'form='addProblem'>";
+	    }
+	    newRow.insertCell(i).innerHTML = uploadObj;
+ 	 	}
+    if (!Modernizr.inputtypes['date']) {
+      $('input[type=date]').datepicker({
+        dateFormat: 'yy-mm-dd'
+      });
+    }
+	  reset_val();
+	});
+ 	$("#resetAddProblemForm").bind('click',function(){
+		document.getElementById("addProblemForm").innerHTML = 
+			'<td>' +
+				'<select id="courseId1" name="courseId" form="addProblem">' +
+					'{%- for ownCourse in ownCourses %}' +
+					'<option> {{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>' +
+					'{% endfor -%}' +
 					'</select>' +
-				'<td><label class="checkbox-center"><input class="box-check" name="multipleFiles" id="multipleFiles1" type="checkbox"></label>' +
-				'<td><input class="datepicker input-usmall" id="startDate1" name="startDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
-				'<td><input class="datepicker input-usmall" id="endDate1" name="endDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
-				'<td><input class="datepicker input-usmall" id="openDate1" name="openDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
-				'<td><input class="datepicker input-usmall" id="closeDate1" name="closeDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' ;
-					
-			if (!Modernizr.inputtypes['date']) {
-		        $('input[type=date]').datepicker({
-		            dateFormat: 'yy-mm-dd'
-		        });
-		    }
-	 	});
-	
+			'<td>' +
+				'<select id="problemId1" name="problemId" form="addProblem">' +
+					'{%- for problem in allProblems %}' +
+					'<option> {{ problem.problemId }} {{ problem.problemName }} </option>' +
+					'{% endfor -%}' +
+				'</select>' +
+			'<td>' + 
+				'<label class="checkbox-center">' +
+					'<input class="box-check" name="multipleFiles" id="multipleFiles1" type="checkbox">' +
+				'</label>' +
+			'<td>' +
+				'<input class="datepicker input-usmall" id="startDate1" name="startDate"' +
+							 'data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
+			'<td>' +
+				'<input class="datepicker input-usmall" id="endDate1" name="endDate"' +
+							 'data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
+			'<td>' +
+				'<input class="datepicker input-usmall" id="openDate1" name="openDate"' +
+							 'data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' +
+			'<td>' +
+				'<input class="datepicker input-usmall" id="closeDate1" name="closeDate"' +
+							 'data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">' ;
+				
+		if (!Modernizr.inputtypes['date']) {
+      $('input[type=date]').datepicker({
+        dateFormat: 'yy-mm-dd'
+      });
+    }
+ 	});
 });
 </script>
 <div class="container">
@@ -140,7 +151,10 @@ $(function() {
 		<ul class="nav nav-tabs">
 			<li class="active"><a id="link-all" data-toggle="tab" href="#all">all</a>
 			{% for course in ownCourses %}
-			<li><a data-toggle="tab" href="#{{ course.courseId }}" onclick="visibleButton(this)">{{ course.courseId }}{{ course.courseName }}</a>
+			<li>
+				<a data-toggle="tab" href="#{{ course.courseId }}" onclick="visibleButton(this)">
+					{{ course.courseId }}{{ course.courseName }}
+				</a>
 			{% endfor %}</li> <!-- without li closing tag, div tag is recognized as a part of the second tag -->
 			<div style="text-align:right">
 				<a class="btn" data-toggle="modal" href="#addProblemModal" rol="button">Add</a>
@@ -148,7 +162,8 @@ $(function() {
 		</ul>
 		<!-- hidden modal pop -->
 		<!-- ///// Add case ///// -->
-		<div class="modal hide fade" id="addProblemModal" tabindex="-1" role="dialog" aria-labelledby="addProblemModalLabel" aria-hidden="true">
+		<div class="modal hide fade" id="addProblemModal" 
+				 tabindex="-1" role="dialog" aria-labelledby="addProblemModalLabel" aria-hidden="true">
 			{%- if modalError %}<div class="modalError"> {{ modalError }}</div>{% endif -%}
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
@@ -171,10 +186,6 @@ $(function() {
 					<tbody id="addProblemForm">
 					<form id="addProblem" method="post">
 					<tr>
-						<!--
-						<td><input class="input-ularge" id="search-courses1" name="courseId" type="text" form="addProblem" placeholder="course name"></div>
-						<td><input class="input-ularge" id="search-problems1" name="problemId" type="text" form="addProblem" placeholder="problem name"></div>
-						-->
 						<td>
 							<select id="courseId1" name="courseId" form="addProblem">
 								{%- for ownCourse in ownCourses %}
@@ -187,15 +198,21 @@ $(function() {
 								<option> {{ problem.problemId }} {{ problem.problemName }} </option>
 								{% endfor -%}
 							</select>
-						<td><label class="checkbox-center"><input class="box-check" name="multipleFiles" id="multipleFiles1" type="checkbox"></label>
-						<td><input class="datepicker input-usmall" id="startDate1" name="startDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">
-						<td><input class="datepicker input-usmall" id="endDate1" name="endDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">
-						<td><input class="datepicker input-usmall" id="openDate1" name="openDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">
-						<td><input class="datepicker input-usmall" id="closeDate1" name="closeDate" data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">
+						<td>
+							<label class="checkbox-center">
+								<input class="box-check" name="multipleFiles" id="multipleFiles1" type="checkbox">
+							</label>
+						<td><input class="datepicker input-usmall" id="startDate1" name="startDate"
+											 data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">
+						<td><input class="datepicker input-usmall" id="endDate1" name="endDate"
+											 data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">
+						<td><input class="datepicker input-usmall" id="openDate1" name="openDate"
+											 data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">
+						<td><input class="datepicker input-usmall" id="closeDate1" name="closeDate"
+											 data-date-format="yyyy-mm-dd" type="date" form="addProblem" autocomplete="off" placeholder="click">
 				</table>
 			</div>
 			<div class="modal-footer">
-				
 					<button class="btn" name="add" type="submit">Done</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true" id="resetAddProblemForm">Close</button>
 				</form>
@@ -203,7 +220,8 @@ $(function() {
 		</div>
 
 		<!-- ///// Edit case ///// -->
-		<div class="modal hide fade" id="editModal" role="dialog" aria-labelledby="editProblemModalLabel" aria-hidden="true" tabindex="-1">
+		<div class="modal hide fade" id="editModal" 
+				 role="dialog" aria-labelledby="editProblemModalLabel" aria-hidden="true" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 				<h3 id="editProblemModalLabel">Edit Problem</h3>
@@ -221,8 +239,10 @@ $(function() {
 						<tr>
 							<td>"Course Id"
 							<td>"Problem Name"
-							<td><input class="datepicker input-small" id="beginDate" name="beginDate" type="date" data-date-format="yyyy-mm-dd" autocomplete="off" placeholder="click and choose">
-							<td><input class="datepicker input-small" id="beginDate" name="beginDate" type="date" data-date-format="yyyy-mm-dd" autocomplete="off" placeholder="click and choose">
+							<td><input class="datepicker input-small" id="beginDate" name="beginDate" 
+												 type="date" data-date-format="yyyy-mm-dd" autocomplete="off" placeholder="click and choose">
+							<td><input class="datepicker input-small" id="beginDate" name="beginDate"
+												 type="date" data-date-format="yyyy-mm-dd" autocomplete="off" placeholder="click and choose">
 				</table>
 			</div>
 			<div class="modal-footer">
@@ -231,7 +251,8 @@ $(function() {
 			</div>
 		</div>
 		<!-- no items choiced -->
-		<div class="modal hide fade" id="editNoItem" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
+		<div class="modal hide fade" id="editNoItem"
+				 role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Edit Problem</h3>
@@ -245,7 +266,8 @@ $(function() {
 		</div>
 
 		<!-- ///// Delete case ///// -->
-		<div class="modal hide fade" id="deleteModal" role="dialog" aria-labelledby="deleteProblemModalLabel" aria-hidden="true" tabindex="-1">
+		<div class="modal hide fade" id="deleteModal"
+				 role="dialog" aria-labelledby="deleteProblemModalLabel" aria-hidden="true" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 				<h3 id="deleteProblemModalLabel">Delete Problem</h3>
@@ -257,11 +279,11 @@ $(function() {
 				<form method="post" id="deleteProblem">
 					<button class="btn" type="submit">Save changes</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-				
 			</div>
 		</div>
 		<!-- no items choiced -->
-		<div class="modal hide fade" id="deleteNoItem" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
+		<div class="modal hide fade" id="deleteNoItem"
+				 role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete Problem</h3>
@@ -292,13 +314,32 @@ $(function() {
 					<tr>
 						<td>{{ registeredProblem.courseId }}
 						<td>{{ registeredCourse.courseName }}
-						<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ problem.problemName }}</a>
-						<td ondblclick="modifySelector(this.id)" id="isAllInputCaseInOneFile_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}">{{ registeredProblem.isAllInputCaseInOneFile }}
-						<td ondblclick="modifySelector(this.id)" id="startDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}">{{ registeredProblem.startDateOfSubmission }}
-						<td ondblclick="modifySelector(this.id)" id="endDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}">{{ registeredProblem.endDateOfSubmission }}
-						<td ondblclick="modifySelector(this.id)" id="openDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}">{{ registeredProblem.openDate }}
-						<td ondblclick="modifySelector(this.id)" id="closeDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}">{{ registeredProblem.closeDate }}
-						<td><label class="checkbox-center"><input type="checkbox" name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}" class="box-check" form="deleteProblem"></label>
+						<td>
+							<a href="{{ url_for('GradeServer.class_user_submit') }}">
+								{{ problem.problemName }}
+							</a>
+						<td id="isAllInputCaseInOneFile_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}"
+								ondblclick="modifySelector(this.id)">
+								{{ registeredProblem.isAllInputCaseInOneFile }}
+						<td id="startDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}"
+								ondblclick="modifySelector(this.id)">
+								{{ registeredProblem.startDateOfSubmission }}
+						<td id="endDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}"
+								ondblclick="modifySelector(this.id)">
+								{{ registeredProblem.endDateOfSubmission }}
+						<td id="openDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}"
+								ondblclick="modifySelector(this.id)">
+								{{ registeredProblem.openDate }}
+						<td id="closeDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}"
+								ondblclick="modifySelector(this.id)">
+								{{ registeredProblem.closeDate }}
+						<td>
+							<label class="checkbox-center">
+								<input type="checkbox"
+											 name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}"
+											 class="box-check"
+											 form="deleteProblem">
+							</label>
 					<div id="isAllInputCaseInOneFile_{{registeredProblem.courseId}}_{{registeredProblem.problemId}}"></div>
 					{% endfor %}
 					</form>
@@ -322,13 +363,31 @@ $(function() {
 						<tr>
 							<td>{{ registeredProblem.courseId }}
 							<td>{{ registeredCourse.courseName }}
-							<td><a href="{{ url_for('GradeServer.class_user_submit') }}">{{ problem.problemName }}</a>
-							<td id="isAllInputCaseInOneFileTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.isAllInputCaseInOneFile }}
-							<td id="startDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.startDateOfSubmission }}
-							<td id="endDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.endDateOfSubmission }}
-							<td id="openDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.openDate }}
-							<td id="closeDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}" ondblclick="modifySelector(this.id)">{{ registeredProblem.closeDate }}
-							<td><label class="checkbox-center"><input class="box-check" name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}" type="checkbox" form="deleteProblem"></label>
+							<td>
+								<a href="{{ url_for('GradeServer.class_user_submit') }}">
+									{{ problem.problemName }}
+								</a>
+							<td id="isAllInputCaseInOneFileTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}"
+									ondblclick="modifySelector(this.id)">
+									{{ registeredProblem.isAllInputCaseInOneFile }}
+							<td id="startDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}"
+									ondblclick="modifySelector(this.id)">
+									{{ registeredProblem.startDateOfSubmission }}
+							<td id="endDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}"
+									ondblclick="modifySelector(this.id)">
+									{{ registeredProblem.endDateOfSubmission }}
+							<td id="openDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}"
+									ondblclick="modifySelector(this.id)">
+									{{ registeredProblem.openDate }}
+							<td id="closeDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}"
+									ondblclick="modifySelector(this.id)">
+									{{ registeredProblem.closeDate }}
+							<td>
+								<label class="checkbox-center">
+									<input class="box-check" 
+												 name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}"
+												 type="checkbox"
+												 form="deleteProblem"></label>
 						<div id="isAllInputCaseInOneFileTab_{{registeredProblem.courseId}}_{{registeredProblem.problemId}}"></div>
 						{% endif %}
 					{% endfor %}
@@ -359,18 +418,24 @@ $(function() {
 					else{
 						$targetValue = document.getElementById(target).innerHTML = "OneFile";
 					}
-					document.getElementById(target.split("_")[0] + '_' + target.split("_")[1] + '_' + target.split("_")[2]).innerHTML = '<input id="' + target + '" type="hidden" name="edit_' + target + '" form="editProblem" value="' + $targetValue + '">';
+					document.getElementById(target.split("_")[0] + '_' + 
+																	target.split("_")[1] + '_' + 
+																	target.split("_")[2]).innerHTML = "<input id='" + target + 
+																																					"'type='hidden'" +
+																																					"'name='edit_'" + target +
+																																					"'form='editProblem'" +
+																																					"'value='" + $targetValue + "'>";
 				}
 				// about dates
 				else{
-					document.getElementById(target).innerHTML = '<input class="datepicker input-usmall" ' +
-																														 'id="' + target + '" ' +
-																														 'name="edit_' + target + '" ' +
-																														 'data-date-format="yyyy-mm-dd" ' +
-																														 'type="date" ' +
-																														 'value="' + $targetValue + '" ' +
-																														 'autocomplete="off" form="editProblem" ' +
-																														 'placeholder="click" onmousedown="datepicker();">';
+					document.getElementById(target).innerHTML = "<input class='datepicker input-usmall'" +
+																														"'id='" + target +
+																														"'name='edit_" + target +
+																														"'data-date-format='yyyy-mm-dd'" +
+																														"'type='date'" +
+																														"'value='" + $targetValue +
+																														"'autocomplete='off' form='editProblem'" +
+																														"'placeholder='click' onmousedown='datepicker();'>";
 				}
 			}
 			function datepicker() {
@@ -413,7 +478,8 @@ $(function() {
 					<li><a href="#">Problem Name</a>
 				</ul>
 			</div>
-			<input class="span3" id="prependedDropdownButton" name="keyword"  type="text" placeholder="Type keyword"><button class="btn" type="submit">Find</button>
+			<input class="span3" id="prependedDropdownButton" name="keyword"
+						 type="text" placeholder="Type keyword"><button class="btn" type="submit">Find</button>
 		</div>
 	</div>
 </div>
