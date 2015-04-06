@@ -85,7 +85,8 @@
 </form>
 			</div>
 		</div>
-		<!-- ///// end department modal ///// -->
+
+<!-- ///// end department modal ///// -->
 		<div class="tab-content">
 			<div class="tab-pane active" id="colleges">
 				<table class="table">
@@ -226,8 +227,11 @@ $('a[data-toggle="tab"]').on('shown', function(e){
 	var newinnerhtml = '';
 	if(id == 'department'){
 		for(var i=0;i<innerhtml.length;i++){
-			if(innerhtml[i].indexOf('onclick') > -1){
-				newinnerhtml += "onclick=\"showingDeleteModal('department')\"> ";
+			if(innerhtml[i] == ">"){
+				newinnerhtml += innerhtml[i] + " Delete </a>";
+			}
+			else if(innerhtml[i].indexOf('onclick') > -1){
+				newinnerhtml += "onclick=\"showingDeleteModal('department')\"";
 			}
 			else{
 				newinnerhtml += innerhtml[i] + ' ';
@@ -236,8 +240,11 @@ $('a[data-toggle="tab"]').on('shown', function(e){
 	}
 	else{
 		for(var i=0;i<innerhtml.length;i++){
-			if(innerhtml[i].indexOf('onclick') > -1){
-				newinnerhtml += "onclick=\"showingDeleteModal('college')\"> ";
+			if(innerhtml[i] == ">"){
+				newinnerhtml += innerhtml[i] + " Delete </a>";
+			}
+			else if(innerhtml[i].indexOf('onclick') > -1){
+				newinnerhtml += "onclick=\"showingDeleteModal('college')\"";
 			}
 			else{
 				newinnerhtml += innerhtml[i] + ' ';
