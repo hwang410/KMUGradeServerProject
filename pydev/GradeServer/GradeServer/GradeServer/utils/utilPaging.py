@@ -21,8 +21,8 @@ def get_page_pointed(pageNum, count, BLOCK = BLOCK, LIST = LIST):
     if endPage > allPage:
         endPage = allPage
         
-    print pageNum, startList, endList, startPage, endPage, allPage
-    return {'BLOCK': BLOCK,
+    return {'LIST': LIST,
+            'BLOCK': BLOCK,
             'pageNum': pageNum,
             'startList': startList,
             'endList': endList,
