@@ -1,4 +1,5 @@
 import os
+import time
 from celery import Celery
 from billiard import current_process
 
@@ -24,6 +25,8 @@ def ServerOn():
     	os.system('sudo docker exec grade_container' + number +' mount -t nfs 192.168.0.133:/mnt/shared /mnt/shared')
 @app.task(name = 'task.ServerOff')
 def ServerOff():
+    time.sleep(5)
+    
     for i in range(MAX_CONTAINER_COUNT):
         number = str(i+1)
         os.system('sudo docker stop grade_container' + number)
