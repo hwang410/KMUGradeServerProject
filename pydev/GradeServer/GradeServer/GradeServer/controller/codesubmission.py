@@ -58,15 +58,17 @@ def upload(courseId, problemId):
     
     tempPath = '/mnt/shared/Temp/%s/%s_%s/%s_%s' %(memberId, courseId, courseName, problemId, problemName)
     filePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s' %(courseId, courseName, problemId, problemName, memberId)
-    
+    nonSpaceTempPath = tempPath.replace(' ', '')
+    nonSpaceFilePath = filePath.replace(' ', '')
+
     upload_files = request.files.getlist('file[]')
     filenames = []
     sumOfSubmittedFileSize = 0
     usedLanguage = 0
     usedLanguageVersion = 0
     
-    if not os.path.exists(tempPath):
-        os.makedirs(tempPath)
+    if not os.path.exists(nonSpaceTempPath):
+        os.makedirs(nonSpaceTempPath)
     
     try:
         dao.query(SubmittedFiles).\
@@ -85,10 +87,10 @@ def upload(courseId, problemId):
             print file
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(tempPath, filename))
-                fileSize = os.stat(os.path.join(tempPath, filename)).st_size
+                file.save(os.path.join(nonSpaceTempPath, filename))
+                fileSize = os.stat(os.path.join(nonSpaceTempPath, filename)).st_size
                 filenames.append(filename)
-                shutil.copy(os.path.join(tempPath, filename), filePath)
+                shutil.copy(os.path.join(nonSpaceTempPath, filename), nonSpaceFilePath)
                 
                 if usedLanguageName == 'C':
                     try:
@@ -139,10 +141,10 @@ def upload(courseId, problemId):
                 fileIndex += 1
                 sumOfSubmittedFileSize += fileSize
     except:
-        for filename in glob.glob(os.path.join(tempPath, '*.*')):
+        for filename in glob.glob(os.path.join(nonSpaceTempPath, '*.*')):
             os.remove(filename)
-        for filename in glob.glob(os.path.join(filePath, '*.*')):
-            shutil.copy(filename, tempPath)
+        for filename in glob.glob(os.path.join(nonSpaceFilePath, '*.*')):
+            shutil.copy(filename, nonSpaceTempPath)
         
     try:
         usedLanguageVersion = dao.query(LanguagesOfCourses.languageVersion).\
@@ -232,7 +234,7 @@ def upload(courseId, problemId):
         else:
             caseCount = 1
             
-    Grade.delay(str(filePath),
+    Grade.delay(str(nonSpaceFilePath),
                 str(problemPath),
                 str(memberId),
                 str(problemId),
@@ -272,9 +274,11 @@ def code(courseId, pageNum, problemId):
     
     tempPath = '/mnt/shared/Temp/%s/%s_%s/%s_%s' %(memberId, courseId, courseName, problemId, problemName)
     filePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s' %(courseId, courseName, problemId, problemName, memberId)
+    nonSpaceTempPath = tempPath.replace(' ', '')
+    nonSpaceFilePath = filePath.replace(' ', '')
     
-    if not os.path.exists(tempPath):
-        os.makedirs(tempPath)
+    if not os.path.exists(nonSpaceTempPath):
+        os.makedirs(nonSpaceTempPath)
         
     try:
         dao.query(SubmittedFiles).\
@@ -294,7 +298,7 @@ def code(courseId, pageNum, problemId):
     
     if usedLanguageName == 'C':
         filename = 'test.c'
-        fout = open(os.path.join(tempPath, filename), 'w')
+        fout = open(os.path.join(nonSpaceTempPath, filename), 'w')
         fout.write(tests)
         fout.close()
         try:
@@ -307,7 +311,7 @@ def code(courseId, pageNum, problemId):
     
     elif usedLanguageName == 'C++':
         filename = 'test.cpp'
-        fout = open(os.path.join(tempPath, filename), 'w')
+        fout = open(os.path.join(nonSpaceTempPath, filename), 'w')
         fout.write(tests)
         fout.close()
         try:  
@@ -320,7 +324,7 @@ def code(courseId, pageNum, problemId):
     
     elif usedLanguageName == 'JAVA':
         filename = 'test.java'
-        fout = open(os.path.join(tempPath, filename), 'w')
+        fout = open(os.path.join(nonSpaceTempPath, filename), 'w')
         fout.write(tests)
         fout.close()
         try:
@@ -333,7 +337,7 @@ def code(courseId, pageNum, problemId):
         
     elif usedLanguageName == 'PYTHON':
         filename = 'test.py'
-        fout = open(os.path.join(tempPath, filename), 'w')
+        fout = open(os.path.join(nonSpaceTempPath, filename), 'w')
         fout.write(tests)
         fout.close()
         try:
@@ -344,7 +348,7 @@ def code(courseId, pageNum, problemId):
         except Exception as e:
             unknown_error("DB 에러입니다")
         
-    fileSize = os.stat(os.path.join(tempPath, filename)).st_size
+    fileSize = os.stat(os.path.join(nonSpaceTempPath, filename)).st_size
     
     try:
         submittedFiles = SubmittedFiles(memberId = memberId,
@@ -447,7 +451,7 @@ def code(courseId, pageNum, problemId):
         else:
             caseCount = 1
             
-    Grade.delay(str(filePath),
+    Grade.delay(str(nonSpaceFilePath),
                 str(problemPath),
                 str(memberId),
                 str(problemId),
