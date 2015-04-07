@@ -13,7 +13,7 @@ def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount, lim
 
     worker_num = current_process().index + 1
 
-    os.system('sudo docker exec grade_container' + str(worker_num) + ' python rungrade.py ' + argsList) 
+    os.system('sudo docker exec grade_container' + str(worker_num) + ' python /gradeprogram/rungrade.py ' + argsList) 
     
 @app.task(name = 'task.ServerOn')
 def ServerOn():
