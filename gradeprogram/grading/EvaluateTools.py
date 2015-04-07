@@ -23,7 +23,7 @@ class EvaluateTools():
         # copy input data
         try:
             if self.caseCount == 1:
-                call('cp ' + self.answerPath + self.problemName + '_total_inputs.in input.txt', shell = True)
+                call('cp ' + self.answerPath + self.problemName + '_cases_total_inputs.in input.txt', shell = True)
         except Exception as e:
             print e
             return 'error', 0
@@ -93,7 +93,7 @@ class EvaluateTools():
     def Solution(self):
         # user output file each line compare with answer file each line.
         try:
-            answerFile = open(self.answerPath + self.problemName + '_total_outputs.out', 'r')
+            answerFile = open(self.answerPath + self.problemName + '_cases_total_outputs.out', 'r')
         except Exception as e:
             print e
             return 'error'
