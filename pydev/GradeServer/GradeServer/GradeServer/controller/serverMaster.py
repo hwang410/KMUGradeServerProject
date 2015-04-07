@@ -245,10 +245,8 @@ def server_manage_problem():
                     nextIndex = 0
 
                 numberOfProblemsOfDifficulty = [0] * numberOfDifficulty
-                print numberOfProblemsOfDifficulty
                 
                 for difficulty in range(numberOfDifficulty):
-                    print difficulty
                     difficultyOfProblem = str(difficulty + 1)
                     try:
                         numberOfProblemsOfDifficulty[difficulty] = dao.query(Problems.problemId).\
@@ -262,14 +260,12 @@ def server_manage_problem():
                 # read each uploaded file(zip)
                 for fileData in files:
                     tmpPath = '%s/tmp' % projectPath
-                    
                     # unzip file
                     with zipfile.ZipFile(fileData, 'r') as z:
                         z.extractall(tmpPath)
-                        
+                    
                     # splitting by .(dot) or _(under bar)
                     problemName = re.split('_|\.', os.listdir(tmpPath)[0])[0]
-                    problemName = problemName.replace(' ', '')
                     problemInformationPath = '%s/%s.txt' % (tmpPath, problemName)
                     problemInformation = open(problemInformationPath, 'r').read()
                     nextIndex += 1
@@ -279,6 +275,7 @@ def server_manage_problem():
                     solutionCheckType = 0
                     limitedTime = 0
                     limitedMemory = 0
+
                     # reslice and make information from 'key=value'
                     for eachInformation in problemInformation:
                         key, value = eachInformation.split('=')
@@ -293,11 +290,12 @@ def server_manage_problem():
                         elif key == 'LimitedMemory':
                             limitedMemory = int(value)
                     numberOfProblemsOfDifficulty[difficulty - 1] += 1
-                                                                          
+                             
                     # place the difficulty at the left most
                     problemId = difficulty * 10000 + numberOfProblemsOfDifficulty[difficulty - 1]
                     problemPath = '%s/%s' % (problemsPath,
-                                             str(problemId) + '_' + problemName)
+                                             str(problemId) + '_' + problemName.replace(' ', ''))
+
                     try:
                         newProblem = Problems(problemIndex = nextIndex, 
                                               problemId = problemId, 
@@ -314,10 +312,21 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error,
                                                uploadedProblems = [])
+
                     # rename new problem folder
                     os.chdir('%s/%s_%s' % (tmpPath, 
                                            problemName, 
                                            solutionCheckType))
+
+                    # remove space on file/directory names
+                    try:
+                        subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
+                    except OSError:
+                        error = 'Error has occurred while removing space of folder name'
+                        return render_template('/server_manage_problem.html', 
+                                               error = error,
+                                               uploadedProblems = [])
+
                     try:
                         subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
                     except OSError:
@@ -325,9 +334,19 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error,
                                                uploadedProblems = [])
-                        
+                    
                     # change problems information files name
                     os.chdir('%s/' % (tmpPath))
+
+                    # remove space on file/directory names
+                    try:
+                        subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
+                    except OSError:
+                        error = 'Error has occurred while removing space of folder name'
+                        return render_template('/server_manage_problem.html', 
+                                               error = error,
+                                               uploadedProblems = [])
+                    
                     try:
                         subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
                     except OSError:
@@ -335,16 +354,16 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error,
                                                uploadedProblems = [])
-                    
+                        
                     # create final goal path
                     if not os.path.exists(problemPath):
                         os.makedirs(problemPath)
-                                       
-                    problemDescriptionPath = '%s/%s_%s' % (problemDescriptionsPath, problemId, problemName)
                     
+                    problemName = problemName.replace(' ', '')
+                    problemDescriptionPath = '%s/%s_%s' % (problemDescriptionsPath, problemId, problemName)
                     if not os.path.exists(problemDescriptionPath):
                         os.makedirs(problemDescriptionPath)
-                        
+
                     # after all, move the problem into 'Problems' folder
                     try:
                         subprocess.call('mv %s/* %s/' % (tmpPath, problemPath), shell=True)
@@ -354,7 +373,6 @@ def server_manage_problem():
                                                error = error,
                                                uploadedProblems = [])
                     
-                    print 'cp %s/%s_%s.pdf %s/' % (problemPath, problemId, problemName, problemDescriptionPath)
                     try:
                         subprocess.call('cp %s/%s_%s.pdf %s/' % (problemPath, problemId, problemName, problemDescriptionPath), shell=True)
                     except:
@@ -364,9 +382,7 @@ def server_manage_problem():
                                                uploadedProblems = [])
                     
             else:
-                print "inside of Delete"
                 try:
-                    print int(form)
                     dao.query(Problems).\
                         filter(Problems.problemId == int(form)).\
                         update(dict(isDeleted = 'Deleted'))
@@ -508,8 +524,6 @@ def server_add_class():
             for existCourse in existCoursesNum:
                 # if the course is already registered, then make another subclass
                 if existCourse[0][:8] == newCourseNum:
-                    print existCourse[0][:8]
-                    
                     NumberOfCurrentSubCourse = dao.query(func.count(RegisteredCourses.courseId).label('num')).\
                                                    filter(RegisteredCourses.courseId.like(newCourseNum+'__')).\
                                                first().\
@@ -551,7 +565,6 @@ def server_add_class():
             
             for language in languages:
                 languageIndex, languageVersion = language
-                print languageIndex, languageVersion
                 try:
                     newCourseLanguage = LanguagesOfCourses(courseId = newCourseNum, 
                                                            languageIndex = int(languageIndex), 
@@ -754,7 +767,6 @@ def server_add_user():
                         newUsers.append(newUser)
                         
         elif 'addUser' in request.form:
-            print newUsers
             for newUser in newUsers:
                 try:
                     if newUser[2] == 'Course Admin':
@@ -792,7 +804,6 @@ def server_add_user():
             # each target user id
             for targetUser in targetUserIdToDelete:
                 index = 0
-                #print targetUser
                 # each new user id
                 for newUser in newUsers:
                     # if target id and new user id are same
