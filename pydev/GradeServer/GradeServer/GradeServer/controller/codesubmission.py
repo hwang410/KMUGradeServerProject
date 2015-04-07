@@ -84,7 +84,6 @@ def upload(courseId, problemId):
 
     try:
         for file in upload_files:
-            print file
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(nonSpaceTempPath, filename))
