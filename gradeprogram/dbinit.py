@@ -13,5 +13,5 @@
 def databaseInit():
     # 데이터베이스 처리 
     from database import DBManager
-    DBManager.init("mysql+mysqlconnector://root:rhflwma@192.168.0.122/GradeServer_DB", False)    
+    DBManager.init("mysql+mysqlconnector://root:dkfrhflwma@192.168.0.133/GradeServer_DB", False)    
     DBManager.init_db()
