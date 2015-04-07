@@ -76,29 +76,33 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 						<table class="problem_list table table-bordered">
 							<thead>
 								<tr>
-									<td>Rank</td>
-									<td>Member Id</td>
-									<td><a href = '{{ url_for("GradeServer.record", 
+									<td style ='vertical-align: middle'>Rank</td>
+									<td style ='vertical-align: middle'>Member Id</td>
+									<td style ='vertical-align: middle'><a href = '{{ url_for("GradeServer.record", 
 																						courseId = courseId, 
 																						problemId = problemInformationRecords.problemId, 
 																						sortCondition = "runTime") }}'>Run Time</a></td>
-									<td><a href = '{{ url_for("GradeServer.record", 
+									<td style ='vertical-align: middle'><a href = '{{ url_for("GradeServer.record", 
 																						courseId = courseId, 
 																						problemId = problemInformationRecords.problemId, 
 																						sortCondition = "codeLength") }}'>Code Length</td>
-									<td><a href = '{{ url_for("GradeServer.record", 
+									<td style ='vertical-align: middle'><a href = '{{ url_for("GradeServer.record", 
 																						courseId = courseId, 
 																						problemId = problemInformationRecords.problemId, 
 																						sortCondition = "submissionDate") }}'>Sumission Date</td>
 								</tr>
 							</thead>
-							{% for i in range(0, problemSolvedUserRecords|length) %}
+							{% for problemSolvedUserRecord in problemSolvedUserRecords %}
 							<tr>
-								<td>{{ i + 1 }}</td>
-								<td><a href='{{ url_for("GradeServer.user_record", problemId = problemInformationRecords.problemId, courseId = courseId) }}'>{{ problemSolvedUserRecords[i].memberId }}</a></td>
-								<td>{{ problemSolvedUserRecords[i].runTime }} ms</td>
-								<td>{{ problemSolvedUserRecords[i].sumOfSubmittedFileSize }} Byte</td>
-								<td>{{ problemSolvedUserRecords[i].codeSubmissionDate }}</td>
+								<td style ='vertical-align: middle'>{{ loop.index }}</td>
+								<td style ='vertical-align: middle'>
+									<a href='{{ url_for("GradeServer.user_record", problemId = problemInformationRecords.problemId, courseId = courseId) }}'>
+									{{ problemSolvedUserRecord.memberId }}
+									</a>
+								</td>
+								<td style ='vertical-align: middle'>{{ problemSolvedUserRecord.runTime }} ms</td>
+								<td style ='vertical-align: middle'>{{ problemSolvedUserRecord.sumOfSubmittedFileSize }} Byte</td>
+								<td style ='vertical-align: middle'>{{ problemSolvedUserRecord.codeSubmissionDate }}</td>
 							</tr>
 							{% endfor %}
 						</table>
