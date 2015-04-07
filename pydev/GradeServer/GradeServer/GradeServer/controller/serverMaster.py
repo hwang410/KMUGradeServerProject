@@ -266,6 +266,7 @@ def server_manage_problem():
                     
                     # splitting by .(dot) or _(under bar)
                     problemName = re.split('_|\.', os.listdir(tmpPath)[0])[0]
+                    print problemName
                     problemInformationPath = '%s/%s.txt' % (tmpPath, problemName)
                     problemInformation = open(problemInformationPath, 'r').read()
                     nextIndex += 1
