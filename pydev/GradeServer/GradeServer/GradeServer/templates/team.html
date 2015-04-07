@@ -42,9 +42,9 @@
 			<tbody>
 			{%- for teamRecord in teamRecords %}
 				<tr>
-					<td><a href="{{ url_for('GradeServer.team_information', teamName =teamRecord.teamName) }}">{{ teamRecord.teamName }}</a></td>
-					<td>{{ teamRecord.teamMasterId }}</td>
-					<td>{{ teamRecord.teamMemberCount }}</td>
+					<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.team_information', teamName =teamRecord.teamName) }}">{{ teamRecord.teamName }}</a></td>
+					<td style ='vertical-align: middle'>{{ teamRecord.teamMasterId }}</td>
+					<td style ='vertical-align: middle'>{{ teamRecord.teamMemberCount }}</td>
 			 	</tr>
 			{% endfor -%}
 			</tbody>

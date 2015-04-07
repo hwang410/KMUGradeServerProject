@@ -2,6 +2,7 @@
 
 
 from flask import render_template, request
+from sqlalchemy import func
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
@@ -50,7 +51,7 @@ def rank(sortCondition, pageNum, error =None):
         
         # records count
         try:
-            count = dao.query(submissions.c.memberId.label('count')).\
+            count = dao.query(func.count(submissions.c.memberId).label('count')).\
                         first().\
                         count
         except Exception:

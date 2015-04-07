@@ -14,49 +14,58 @@
 				<td>Num</td><td>Title</td><td>Score</td><td>Status</td><td>Due Date</td><td>Count</td><td>Record</td>
 			</tr>
 		</thead>
-		{% for i in range(0, pages['endList'] - pages['startList']) %}
+		{% for problemListRecord in problemListRecords %}
 		<tr>
 			<td style ='vertical-align: middle'>
-				{{ (pages['endList'] - pages['startList']) - i }}
+				{{ (problemListRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST']}}
 			</td>
 			<td style ='vertical-align: middle'>
-				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecords[i].problemId, pageNum = pages['pageNum']) }}">
-					{{ problemListRecords[i].problemName }}
+				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecord.problemId, pageNum = pages['pageNum']) }}">
+					{{ problemListRecord.problemName }}
 				</a>
 			</td>
 			<td style ='vertical-align: middle'>
-				{% if problemListRecords[i].score %}{{ problemListRecords[i].score }}{% else %}0{% endif %}
+				{% if problemListRecord.score %}{{ problemListRecord.score }}{% else %}0{% endif %}
 			</td>
 			<td style ='vertical-align: middle'>
-				{% if problemListRecords[i].status %}{{ problemListRecords[i].status }}{% else %}Never Submitted{% endif %}
+				{% if problemListRecord.status %}{{ problemListRecord.status }}{% else %}Never Submitted{% endif %}
 			</td>
 			<td style ='vertical-align: middle'>
-				{{ problemListRecords[i].startDateOfSubmission }}<br>~{{ problemListRecords[i].endDateOfSubmission }}
+				{{ problemListRecord.startDateOfSubmission }}<br>~{{ problemListRecord.endDateOfSubmission }}
 			</td>
 			<td style ='vertical-align: middle'>
-				{% if problemListRecords[i].solutionCheckCount %}{{ problemListRecords[i].solutionCheckCount }}{% else %}0{% endif %}
+				{% if problemListRecord.solutionCheckCount %}{{ problemListRecord.solutionCheckCount }}{% else %}0{% endif %}
 			</td>
 			<td style ='vertical-align: middle'>
-				<a href="{{ url_for('GradeServer.record', courseId = courseRecords.courseId, problemId = problemListRecords[i].problemId, sortCondition = 'runTime') }}" onclick="setLegend()">
+				<a href="{{ url_for('GradeServer.record', courseId = courseRecords.courseId, problemId = problemListRecord.problemId, sortCondition = 'runTime') }}" onclick="setLegend()">
 					Problem Record
 				</a>
 			</td>
 		</tr>
 		{% endfor %}
 	</table>
+	
 	<!-- Paging -->
 	<div class="pagination pagination-centered">
 		<ul>
 			{%- if pages['pageNum'] > pages['BLOCK'] %}
-			<li><a href="{{ url_for ('GradeServer.board', pageNum = pages['startPage'] -1) }}">Prev</a></li>
+			<li><a href="{{ url_for ('GradeServer.problemList', courseId = courseRecords.courseId, pageNum = pages['pageNum'] - 1) }}"><</a></li>
 			{% endif -%}
 			
 			{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
-			<li><a href="{{ url_for ('GradeServer.board', pageNum = i) }}">{{ i }}</a></li>
+			<li>
+				{% if pages['pageNum'] == i %}
+				<a style ='background-color:gray'>
+				{% else %}
+				<a href="{{ url_for ('GradeServer.problemList', courseId = courseRecords.courseId, pageNum = i) }}">
+				{% endif %}
+				{{ i }}
+				</a>
+			</li>
 			{% endfor -%}
 			
 			{%- if pages['endPage'] < pages['allPage'] %}
-			<li><a href="{{ url_for ('GradeServer.board', pageNum =pages['endPage'] +1) }}">Next</a></li>
+			<li><a href="{{ url_for ('GradeServer.problemList', courseId = courseRecords.courseId, pageNum =pages['pageNum'] + 1) }}">></a></li>
 			{% endif -%}
 		</ul>
 	</div>
