@@ -19,6 +19,7 @@ from GradeServer.model.submittedRecordsOfProblems import SubmittedRecordsOfProbl
 from GradeServer.model.languages import Languages
 from GradeServer.model.languagesOfCourses import LanguagesOfCourses
 from itertools import count
+from GradeServer.utils.utilMessages import unknown_error
 
 
 @GradeServer.route('/problemList/<courseId>/page<pageNum>')
@@ -109,39 +110,34 @@ def problem(courseId, problemId, pageNum):
                                 filter(LanguagesOfCourses.courseId == courseId).\
                                 all()
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise 
+        unknown_error("DB 에러입니다")
     try:
         languageVersion = dao.query(LanguagesOfCourses.languageVersion).\
                               filter(LanguagesOfCourses.courseId == courseId).\
                               all()
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise 
+        unknown_error("DB 에러입니다") 
     try:
         languageIndex = dao.query(LanguagesOfCourses.languageIndex).\
                             filter(LanguagesOfCourses.courseId == courseId).\
                             all()
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise 
+        unknown_error("DB 에러입니다")
         
     try:
         problemInformation = dao.query(Problems).\
                              filter(Problems.problemId == problemId).\
                              first()
     except Exception as e:
-        dao.rollback()
-        print 'DB error : ' + str(e)
-        raise        
+        unknown_error("DB 에러입니다")       
+    
+    problemName = problemInformation.problemName.replace(' ', '')
     
     return render_template('/problem.html',
                            courseId = courseId,
                            problemId = problemId,
                            problemInformation = problemInformation,
+                           problemName = problemName,
                            languageName = languageName,
                            languageVersion = languageVersion,
                            languageIndex = languageIndex,
