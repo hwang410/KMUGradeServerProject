@@ -58,7 +58,8 @@ def sign_in():
                 password = request.form['password']
                 
                 try :
-                    check = dao.query(select_match_member(memberId)).first ()
+                    check = dao.query(select_match_member(memberId).subquery()).\
+                                first ()
                     #Checking Success
                     if check.password == password:#check_password_hash (password, check.password)
                         flash(get_message('login'))
@@ -67,19 +68,19 @@ def sign_in():
                         session[AUTHORITY] = list(check.authority)
                         session[LAST_ACCESS_DATE] = datetime.now()
                         
-                        ownCourses = select_accept_courses()
+                        ownCourses = select_accept_courses().subquery()
                         # Get My Accept Courses
                         try:
                             session[OWN_CURRENT_COURSES] = dao.query(ownCourses).\
                                                                filter(ownCourses.c.endDateOfCourse >= datetime.now()).\
-                                                               all ()
+                                                               all()
                         except Exception:
                             session[OWN_CURRENT_COURSES] = []
                         
                         try:
                             session[OWN_PAST_COURSES] = dao.query(ownCourses).\
                                                             filter(ownCourses.c.endDateOfCourse < datetime.now()).\
-                                                            all ()
+                                                            all()
                         except Exception:
                             session[OWN_PAST_COURSES] = []
                                     
@@ -102,7 +103,7 @@ def sign_in():
                 Log.error(str(e))
    
     return render_template(MAIN_HTML,
-                           notices = select_notices(),
+                           notices = select_notices().subquery(),
                            topCoderId = select_top_coder(),
                            error = error)
 

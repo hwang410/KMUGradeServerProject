@@ -2,11 +2,12 @@
 
 import math 
 
+from GradeServer.utils.utils import BLOCK, LIST
 
 """
 페이징에 필요한 정보들을 구하는 모듈
 """
-def get_page_pointed(pageNum, count, BLOCK = 6, LIST = 5):
+def get_page_pointed(pageNum, count, BLOCK = BLOCK, LIST = LIST):
     
     #Show List
     startList = (pageNum - 1) * LIST
@@ -33,7 +34,7 @@ def get_page_pointed(pageNum, count, BLOCK = 6, LIST = 5):
 '''
 Page Number Case Record
 '''
-def get_page_record(recordsSub, pageNum, LIST = 5):
+def get_page_record(recordsSub, pageNum, LIST = LIST):
         
     return recordsSub.slice((pageNum - 1) * LIST,
                             pageNum * LIST)

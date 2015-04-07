@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
+# Integer
+NOTICE_LIST = 5
+BLOCK = 6
+LIST = 5
+
+
 # String
 SERVER_ADMINISTRATOR = 'ServerAdministrator' 
 COURSE_ADMINISTRATOR = 'CourseAdministrator'
