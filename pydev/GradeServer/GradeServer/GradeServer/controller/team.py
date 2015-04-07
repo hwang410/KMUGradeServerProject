@@ -158,7 +158,8 @@ def make_team(error = None):
         global gTeamMembersId, gTeamName, gTeamDescription
                 # 자동 완성을 위한 모든 유저기록
         try :
-            memberRecords = dao.query(select_all_user()).all()
+            memberRecords = dao.query(select_all_user().subquery()).\
+                                all()
         except Exception:
             memberRecords = []
             
@@ -187,7 +188,7 @@ def make_team(error = None):
                                                error = '팀 명'  + get_message('fillData'))
                                         # 중복 팀명 확인
                     try:
-                        if dao.query(check_team_name(gTeamName)).\
+                        if dao.query(check_team_name(gTeamName).subquery()).\
                                first().\
                                isDeleted == NOT_DELETED:
                             # don't Exception
@@ -332,7 +333,8 @@ def team_manage(teamName, error = None):
         global gTeamMembersId, gTeamName, gTeamDescription
         try:
             # 자동 완성을 위한 모든 유저기록
-            memberRecords = dao.query(select_all_user()).all()
+            memberRecords = dao.query(select_all_user().subqeury()).\
+                                all()
         except Exception:
             memberRecords = []
         # 팀 정보
@@ -381,7 +383,9 @@ def team_manage(teamName, error = None):
                     # 팀과 팀 멤버 변경은 동시에 업데이트
                     # Update Team
                                         # 중복 팀명 확인
-                    if gTeamName != teamName and not dao.query(check_team_name(gTeamName)).first():
+                    if gTeamName != teamName and\
+                       not dao.query(check_team_name(gTeamName).subquery()).\
+                               first():
                         dao.query(Teams).\
                             filter(Teams.teamName == teamName).\
                             update(dict(teamName = gTeamName,
@@ -390,7 +394,8 @@ def team_manage(teamName, error = None):
                     # Update TeamMembers
                     index = 0
                     for raw in teamMemberRecords:
-                        if index < len(gTeamMembersId) and raw.teamMemberId == gTeamMembersId[index].teamMemberId:
+                        if index < len(gTeamMembersId) and\
+                           raw.teamMemberId == gTeamMembersId[index].teamMemberId:
                             index += 1
                         # 삭제 팀원 적용
                         else:
@@ -477,7 +482,7 @@ Check TeamName
 """
 def check_team_name(teamName):
     return dao.query(Teams).\
-                filter(Teams.teamName == teamName).subquery()
+               filter(Teams.teamName == teamName)
     
     
 """
@@ -487,7 +492,9 @@ def check_invitee_member(inviteeId, teamName = None):
         # 인풋 폼안에 아이디가 있을 때
     if inviteeId:
         # 존재 하는 사용자 인지 확인
-        if not dao.query(select_match_member(inviteeId)).first():
+        if not dao.query(select_match_member(inviteeId).subquery()).\
+                   first():
+            
             return get_message('notExists')
         # 자가 자신 초대 방지
         elif inviteeId == session[MEMBER_ID]:
@@ -505,16 +512,20 @@ def check_invitee_member(inviteeId, teamName = None):
         else:
                         # 초대 중복 방지
             if dao.query(TeamInvitations).\
-                    filter(TeamInvitations.teamName == teamName,
+                   filter(TeamInvitations.teamName == teamName,
                               TeamInvitations.inviteeId == inviteeId,
-                              TeamInvitations.isDeleted == NOT_DELETED).first():
+                              TeamInvitations.isDeleted == NOT_DELETED).\
+                   first():
+                
                 return get_message('alreadyExists')
             
                         # 팀원 초대 방지
             elif dao.query(RegisteredTeamMembers.teamMemberId).\
-                        filter(RegisteredTeamMembers.teamName == teamName,
-                               RegisteredTeamMembers.teamMemberId == inviteeId,
-                               RegisteredTeamMembers.isDeleted == NOT_DELETED).first():
+                     filter(RegisteredTeamMembers.teamName == teamName,
+                            RegisteredTeamMembers.teamMemberId == inviteeId,
+                            RegisteredTeamMembers.isDeleted == NOT_DELETED).\
+                     first():
+                
                 return get_message('notTeamMemberInvitee')
                         # 조건에 충족 될 때
             else:    
@@ -531,8 +542,9 @@ def check_invitee_member(inviteeId, teamName = None):
 def insert_team_member_id(teamName, teamMemberId, isTeamMaster = NOT_MASTER):
     # if not exist Records then Insert
     if not dao.query(RegisteredTeamMembers).\
-                filter(RegisteredTeamMembers.teamName == teamName,
-                       RegisteredTeamMembers.teamMemberId == teamMemberId).first():
+               filter(RegisteredTeamMembers.teamName == teamName,
+                      RegisteredTeamMembers.teamMemberId == teamMemberId).\
+               first():
         
         dao.add(RegisteredTeamMembers(teamName = teamName,
                                       teamMemberId = teamMemberId,
@@ -553,8 +565,9 @@ def insert_invitee_id(teamName, inviteeId):
     # Update or Insert
     # if not exist then Insert
     if not dao.query(TeamInvitations).\
-                filter(TeamInvitations.teamName == teamName,
-                       TeamInvitations.inviteeId == inviteeId).first():
+               filter(TeamInvitations.teamName == teamName,
+                      TeamInvitations.inviteeId == inviteeId).\
+               first():
         newInvitee = TeamInvitations(teamName = teamName,
                                      inviteeId = inviteeId)
         dao.add(newInvitee)

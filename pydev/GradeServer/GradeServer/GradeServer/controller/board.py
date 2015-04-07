@@ -57,7 +57,7 @@ def board(pageNum):
                               filter(ArticlesOnBoard.isDeleted == NOT_DELETED).\
                               subquery()
         # 허용 과목 탐색
-        myCourses = select_accept_courses()
+        myCourses = select_accept_courses().subquery()
         
         # POST
         if request.method == 'POST':
@@ -448,9 +448,10 @@ def write(articleIndex, error =None):
     try:
         # 수강  과목 정보
         try:
-            myCourses =dao.query(select_accept_courses()).all()
+            myCourses = dao.query(select_accept_courses().subquery()).\
+                           all()
         except Exception:
-            myCourses =[]
+            myCourses = []
             
         # 수정 할 글 정보
         try:

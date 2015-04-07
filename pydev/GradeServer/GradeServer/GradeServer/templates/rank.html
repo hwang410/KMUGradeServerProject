@@ -49,15 +49,15 @@ $(function() {
 	<div class="pagination pagination-centered">
 		<ul>
 			{%- if pages['pageNum'] > pages['BLOCK'] %}
-			<li><a href="{{ url_for ('GradeServer.rank', pageNum =pages['startPage'] -1) }}">Prev</a></li>
+			<li><a href="{{ url_for ('GradeServer.rank', memberId =session['memberId'], sortCondition = sortCondition, pageNum =pages['pageNum'] - 1) }}"><</a></li>
 			{% endif -%}
 			
 			{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
-			<li><a href="{{ url_for ('GradeServer.rank', pageNum =i) }}">{{ i }}</a></li>
+			<li><a href="{{ url_for ('GradeServer.rank', memberId =session['memberId'], sortCondition = sortCondition, pageNum =i) }}">{{ i }}</a></li>
 			{% endfor -%}
 			
 			{%- if pages['endPage'] < pages ['allPage'] %}
-			<li><a href="{{ url_for ('GradeServer.rank', pageNum =pages['endPage'] +1) }}">Next</a></li>
+			<li><a href="{{ url_for ('GradeServer.rank', memberId =session['memberId'], sortCondition = sortCondition, pageNum =pages['pageNum'] + 1) }}">></a></li>
 			{% endif -%}
 		</ul>
 	</div>
