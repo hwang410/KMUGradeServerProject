@@ -166,7 +166,7 @@ def submit():
     """
     return render_template('/result.html')
 
-@GradeServer.route('/record/<courseId>/<problemId>?<sortCondition>')
+@GradeServer.route('/record/<courseId>/<problemId>-<sortCondition>')
 @login_required
 def record(courseId, problemId, sortCondition = RUN_TIME):
     """
@@ -246,7 +246,7 @@ def record(courseId, problemId, sortCondition = RUN_TIME):
         # Sort Submission Date
         elif sortCondition == SUBMISSION_DATE:
             problemSolvedUserRecords = dao.query(problemSolvedUserRecords).\
-                                           order_by(problemSolvedUserRecords.c.codeSubmissionDate.asc()).\
+                                           order_by(problemSolvedUserRecords.c.codeSubmissionDate.desc()).\
                                            all()
         # Sort Code Length
         if sortCondition == CODE_LENGTH:

@@ -103,7 +103,7 @@ def sign_in():
                 Log.error(str(e))
    
     return render_template(MAIN_HTML,
-                           notices = select_notices().subquery(),
+                           notices = select_notices(),
                            topCoderId = select_top_coder(),
                            error = error)
 
