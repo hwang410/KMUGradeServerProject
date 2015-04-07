@@ -6,7 +6,7 @@ from flask import render_template, redirect, url_for, session, request, flash
 from sqlalchemy import func
 
 from GradeServer.utils.loginRequired import login_required
-from GradeServer.utils.utilPaging import get_page_pointed
+from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utilQuery import select_all_user, select_match_member
 from GradeServer.utils.utils import *
@@ -38,7 +38,8 @@ def team(pageNum = 1, error = None):
             # 초대 목록
             teamInvitationRecords = dao.query(TeamInvitations.teamName).\
                                         filter(TeamInvitations.inviteeId == session[MEMBER_ID],
-                                                  TeamInvitations.isDeleted == NOT_DELETED).all()
+                                                  TeamInvitations.isDeleted == NOT_DELETED).\
+                                        all()
         except Exception:
             # None Type Exception
             teamInvitationRecords = []
@@ -46,39 +47,45 @@ def team(pageNum = 1, error = None):
         # 내가 속한 팀 정보
         teamNames = dao.query(RegisteredTeamMembers.teamName).\
                         filter(RegisteredTeamMembers.teamMemberId == session[MEMBER_ID],
-                               RegisteredTeamMembers.isDeleted == NOT_DELETED).subquery()
+                               RegisteredTeamMembers.isDeleted == NOT_DELETED).\
+                        subquery()
         try:
-            count = dao.query(func.count(teamNames.c.teamName).label("count")).first().count
+            count = dao.query(func.count(teamNames.c.teamName).label("count")).\
+                        first().\
+                        count
         except Exception:
             count = 0
             
         # 내가 속한 팀 인원 수
         teamMemberCounts = dao.query(RegisteredTeamMembers.teamName,
                                      func.count(RegisteredTeamMembers.teamMemberId).label("teamMemberCount")).\
-                                join(teamNames,
-                                     RegisteredTeamMembers.teamName == teamNames.c.teamName).\
-                                filter(RegisteredTeamMembers.isDeleted == NOT_DELETED).\
-                                group_by(RegisteredTeamMembers.teamName).subquery()
+                               join(teamNames,
+                                    RegisteredTeamMembers.teamName == teamNames.c.teamName).\
+                               filter(RegisteredTeamMembers.isDeleted == NOT_DELETED).\
+                               group_by(RegisteredTeamMembers.teamName).\
+                               subquery()
                             
         # 내가 속한 팀장
         teamMasters = dao.query(RegisteredTeamMembers.teamName,
                                 RegisteredTeamMembers.teamMemberId.label("teamMasterId")).\
-                            join(teamNames,
-                                 RegisteredTeamMembers.teamName == teamNames.c.teamName).\
-                            filter(RegisteredTeamMembers.isTeamMaster == MASTER,
-                                   RegisteredTeamMembers.isDeleted == NOT_DELETED).\
-                            group_by(RegisteredTeamMembers.teamName).\
-                            subquery()
+                          join(teamNames,
+                               RegisteredTeamMembers.teamName == teamNames.c.teamName).\
+                          filter(RegisteredTeamMembers.isTeamMaster == MASTER,
+                                 RegisteredTeamMembers.isDeleted == NOT_DELETED).\
+                          group_by(RegisteredTeamMembers.teamName).\
+                          subquery()
     
         # NonType Exception
         try:
-            teamRecords = dao.query(teamMasters.c.teamName,
-                                    teamMasters.c.teamMasterId,
-                                    teamMemberCounts.c.teamMemberCount).\
-                                join(teamMemberCounts,
-                                     teamMasters.c.teamName == teamMemberCounts.c.teamName).\
-                                order_by(teamMasters.c.teamName.asc()).\
-                                all()
+            # order and get record
+            teamRecords = get_page_record(dao.query(teamMasters.c.teamName,
+                                                    teamMasters.c.teamMasterId,
+                                                    teamMemberCounts.c.teamMemberCount).\
+                                              join(teamMemberCounts,
+                                                   teamMasters.c.teamName == teamMemberCounts.c.teamName).\
+                                              order_by(teamMasters.c.teamName.asc()),
+                                          int(pageNum)).\
+                          all()
         except Exception:
             # None Type Error
             teamRecords =[]
@@ -180,7 +187,9 @@ def make_team(error = None):
                                                error = '팀 명'  + get_message('fillData'))
                                         # 중복 팀명 확인
                     try:
-                        if dao.query(check_team_name(gTeamName)).first().isDeleted == NOT_DELETED:
+                        if dao.query(check_team_name(gTeamName)).\
+                               first().\
+                               isDeleted == NOT_DELETED:
                             # don't Exception
                             return render_template(MAKE_TEAM_HTML,
                                                    memberRecords = memberRecords,
