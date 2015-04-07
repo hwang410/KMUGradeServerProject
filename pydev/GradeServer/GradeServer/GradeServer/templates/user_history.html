@@ -81,15 +81,15 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Submit Date</a></td>
 								</tr>
 							</thead>
-							{%- for i in range (0, pages['endList'] - pages['startList']) %}
+							{%- for submissionRecord in submissionRecords %}
 							<tr>
-								<td style ='vertical-align: middle'>{{ submissionRecords[i].problemName }}</td>
-								<td style ='vertical-align: middle'>{{ submissionRecords[i].status }}</td>
-								<td style ='vertical-align: middle'>{{ submissionRecords[i].score }}</td>
-								<td style ='vertical-align: middle'>{{ submissionRecords[i].runTime }} ms</td>
-								<td style ='vertical-align: middle'>{{ submissionRecords[i].sumOfSubmittedFileSize }} Byte</td>
-								<td style ='vertical-align: middle'>{{ submissionRecords[i].languageName }}</td>
-								<td style ='vertical-align: middle'>{{ submissionRecords[i].codeSubmissionDate }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecord.problemName }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecord.status }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecord.score }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecord.runTime }} ms</td>
+								<td style ='vertical-align: middle'>{{ submissionRecord.sumOfSubmittedFileSize }} Byte</td>
+								<td style ='vertical-align: middle'>{{ submissionRecord.languageName }}</td>
+								<td style ='vertical-align: middle'>{{ submissionRecord.codeSubmissionDate }}</td>
 							</tr>
 							{% endfor -%}
 						</table>
@@ -99,12 +99,23 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 					<div class="pagination pagination-centered">
 						<ul>
 							{%- if pages['pageNum'] > pages['BLOCK'] %}
-							<li><a href="{{ url_for ('GradeServer.user_history', pageNum =pages['startPage'] -1) }}">Prev</a></li> {% endif -%} 
-							{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
-							<li><a href="{{ url_for ('GradeServer.user_history', pageNum =i) }}">{{ i }}</a></li>
+							<li><a href="{{ url_for ('GradeServer.user_history', memberId =session['memberId'], sortCondition = sortCondition, pageNum = pages['pageNum'] - 1) }}"><</a></li>
+							{% endif -%} 
+							
+							{%- for i in range (pages['startPage'], pages['endPage'] + 1) %}
+							<li>
+								{% if pages['pageNum'] == i %}
+								<a style ='background-color:gray'>
+								{% else %}
+								<a href="{{ url_for ('GradeServer.user_history', memberId =session['memberId'], sortCondition = sortCondition, pageNum = i) }}">
+								{% endif %}
+								{{ i }}
+								</a>
+							</li>
 							{% endfor -%}
+							
 							{%- if pages['endPage'] < pages ['allPage'] %}
-							<li><a href="{{ url_for ('GradeServer.user_history', pageNum =pages['endPage'] +1) }}">Next</a></li>
+							<li><a href="{{ url_for ('GradeServer.user_history', memberId =session['memberId'], sortCondition = sortCondition, pageNum = pages['pageNum'] + 1) }}">></a></li>
 							{% endif -%}
 						</ul>
 					</div>

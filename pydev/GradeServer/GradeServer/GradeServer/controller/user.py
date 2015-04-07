@@ -124,32 +124,34 @@ def user_history(memberId, sortCondition, pageNum):
                                     subquery()
                 # 제출날짜순 정렬
             if sortCondition == SUBMISSION_DATE:
-                submissionRecords = dao.query(get_page_record(dao.query(submissionRecords).\
-                                                                  order_by(submissionRecords.c.codeSubmissionDate.desc()),
-                                                              int(pageNum))).\
-                                        all()
+                submissionRecords = get_page_record(dao.query(submissionRecords).\
+                                                        order_by(submissionRecords.c.codeSubmissionDate.desc()),
+                                                    int(pageNum)).\
+                                    all()
             # 실행 시간 순 정렬
             elif sortCondition == RUN_TIME:
-                submissionRecords = dao.query(get_page_record(dao.query(submissionRecords).\
-                                                                  order_by(submissionRecords.c.runTime.asc()),
-                                                              int(pageNum))).\
-                                        all()
+                submissionRecords = get_page_record(dao.query(submissionRecords).\
+                                                        order_by(submissionRecords.c.runTime.asc()),
+                                                    int(pageNum)).\
+                                    all()
             # 코드 길이별 정렬
             else: # elif sortCondition == CODE_LENGTH:
-                submissionRecords = dao.query(get_page_record(dao.query(submissionRecords).\
-                                                                  order_by(submissionRecords.c.sumOfSubmittedFileSize.asc()),
-                                                              int(pageNum))).\
-                                        all()
+                submissionRecords = get_page_record(dao.query(submissionRecords).\
+                                                        order_by(submissionRecords.c.sumOfSubmittedFileSize.asc()),
+                                                    int(pageNum)).\
+                                    all()
         except Exception:
             #None Type Exception
             submissionRecords = []
-
+       
         return render_template(USER_HISTORY_HTML,
                                memberId = memberId,
+                               sortCondition = sortCondition,
                                submissionRecords = submissionRecords,
                                chartSubmissionDescriptions = chartSubmissionDescriptions,
                                chartSubmissionRecords = chartSubmissionRecords,
-                               pages = get_page_pointed(int(pageNum), count))
+                               pages = get_page_pointed(int(pageNum),
+                                                        count))
     except Exception:
         # Unknow Error
         return unknown_error()
