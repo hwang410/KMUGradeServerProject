@@ -1,6 +1,6 @@
 *.pyc
-/ProblemDescriptions
-/Problems
-/tmp
-/CurrentCourses
-/Temp
+ProblemDescriptions/
+Problems/
+tmp/
+CurrentCourses/
+Temp/
