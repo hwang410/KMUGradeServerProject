@@ -268,8 +268,8 @@ def class_manage_problem():
                            ownCourses = ownCourses, 
                            ownProblems = ownProblems)
                 
-            courseName = request.form['courseId'][10:]
-            problemName = request.form['problemId'][5:]
+            courseName = request.form['courseId'][10:].replace(' ', '')
+            problemName = request.form['problemId'][5:].replace(' ', '')
             print "okok"
             problemPath = '%s/%s/%s_%s/%s_%s' % (projectPath, 
                                                  coursesPath,
@@ -742,9 +742,9 @@ def class_add_user():
                     userFolderPath = '%s/%s/%s_%s/%s_%s/%s' % (projectPath,
                                                                coursesPath,
                                                                registeredProblem.courseId, 
-                                                               registeredCourse.courseName, 
+                                                               registeredCourse.courseName.replace(' ', ''), 
                                                                registeredProblem.problemId, 
-                                                               problem.problemName, 
+                                                               problem.problemName.replace(' ', ''), 
                                                                newMemberId)
                     print userFolderPath
                     if not os.path.exists(userFolderPath):
