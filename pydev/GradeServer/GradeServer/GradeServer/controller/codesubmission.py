@@ -131,7 +131,7 @@ def upload(courseId, problemId):
                                                     courseId = courseId,
                                                     fileIndex = fileIndex,
                                                     fileName = filename,
-                                                    filePath = filePath,
+                                                    filePath = nonSpaceFilePath,
                                                     fileSize = fileSize)                
                     dao.add(submittedFiles)
                     dao.commit()
@@ -356,7 +356,7 @@ def code(courseId, pageNum, problemId):
                                         courseId = courseId,
                                         fileIndex = fileIndex,
                                         fileName = filename,
-                                        filePath = filePath,
+                                        filePath = nonSpaceFilePath,
                                         fileSize = fileSize)                
         dao.add(submittedFiles)
         dao.commit()                
