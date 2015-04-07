@@ -232,6 +232,7 @@ def server_manage_problem():
     if request.method == 'POST':
         for form in request.form:
             if form == 'upload':
+
                 files = request.files.getlist("files")
                 if not list(files)[0].filename:
                     error = 'Uploading file error'
@@ -242,9 +243,12 @@ def server_manage_problem():
                                     count()
                 except:
                     nextIndex = 0
-                
+
                 numberOfProblemsOfDifficulty = [0] * numberOfDifficulty
+                print numberOfProblemsOfDifficulty
+                
                 for difficulty in range(numberOfDifficulty):
+                    print difficulty
                     difficultyOfProblem = str(difficulty + 1)
                     try:
                         numberOfProblemsOfDifficulty[difficulty] = dao.query(Problems.problemId).\
@@ -255,7 +259,6 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error,
                                                uploadedProblems = [])
-                        
                 # read each uploaded file(zip)
                 for fileData in files:
                     tmpPath = '%s/tmp' % projectPath
@@ -266,6 +269,7 @@ def server_manage_problem():
                         
                     # splitting by .(dot) or _(under bar)
                     problemName = re.split('_|\.', os.listdir(tmpPath)[0])[0]
+                    problemName = problemName.replace(' ', '')
                     problemInformationPath = '%s/%s.txt' % (tmpPath, problemName)
                     problemInformation = open(problemInformationPath, 'r').read()
                     nextIndex += 1
@@ -275,7 +279,6 @@ def server_manage_problem():
                     solutionCheckType = 0
                     limitedTime = 0
                     limitedMemory = 0
-                    
                     # reslice and make information from 'key=value'
                     for eachInformation in problemInformation:
                         key, value = eachInformation.split('=')
@@ -289,14 +292,12 @@ def server_manage_problem():
                             limitedTime = int(value)
                         elif key == 'LimitedMemory':
                             limitedMemory = int(value)
-                            
                     numberOfProblemsOfDifficulty[difficulty - 1] += 1
                                                                           
                     # place the difficulty at the left most
                     problemId = difficulty * 10000 + numberOfProblemsOfDifficulty[difficulty - 1]
                     problemPath = '%s/%s' % (problemsPath,
                                              str(problemId) + '_' + problemName)
-                    
                     try:
                         newProblem = Problems(problemIndex = nextIndex, 
                                               problemId = problemId, 
@@ -305,7 +306,6 @@ def server_manage_problem():
                                               limitedTime = limitedTime,
                                               limitedMemory = limitedMemory, 
                                               problemPath = problemPath)
-                        
                         dao.add(newProblem)
                         dao.commit()
                     except:
@@ -314,13 +314,11 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error,
                                                uploadedProblems = [])
-                        
                     # rename new problem folder
                     os.chdir('%s/%s_%s' % (tmpPath, 
                                            problemName, 
                                            solutionCheckType))
                     try:
-                        problemId = problemId.replace(' ', '')
                         subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
                     except OSError:
                         error = 'Error has occurred while renaming a folder'
@@ -483,6 +481,7 @@ def server_add_class():
         startDateOfCourse = request.form['startDateOfCourse']
         endDateOfCourse = request.form['endDateOfCourse']
         courseIndex, courseName = request.form['courseId'].split(' ', 1)
+        
         for form in request.form:
             if 'languageIndex' in form:
                 languages.append(request.form[form].split('_'))
@@ -546,7 +545,6 @@ def server_add_class():
                 
             # create course folder in 'CurrentCourses' folder
             courseName = courseName.replace(' ', '')
-            print courseName
             problemPath = "%s/CurrentCourses/%s_%s" % (projectPath, newCourseNum, courseName)
             if not os.path.exists(problemPath):
                 os.makedirs(problemPath)
