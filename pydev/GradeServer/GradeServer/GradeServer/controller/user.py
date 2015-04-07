@@ -38,7 +38,7 @@ def close_db_session(exception = None):
 """
 로그인한 유저가 제출 했던 모든기록
 """
-@GradeServer.route('/user_history/<memberId>/<sortCondition>?page<pageNum>')
+@GradeServer.route('/user_history/<memberId>-<sortCondition>/page<pageNum>')
 @login_required
 def user_history(memberId, sortCondition, pageNum):
 
