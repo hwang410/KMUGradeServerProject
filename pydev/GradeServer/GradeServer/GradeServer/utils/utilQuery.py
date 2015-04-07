@@ -88,7 +88,7 @@ def select_rank(submissions, sortCondition = RATE):
                                       Members.comment).\
                                 join(Members,
                                      Members.memberId == submissions.c.memberId).\
-                                order_by(submissions.c.solvedRate.desc())
+                                order_by(submissions.c.solvedRate.asc())
     else: #if sortCondition == SOLVED_PROBLEM
         rankMemberRecords = dao.query(submissions,
                                       Members.comment).\

@@ -34,14 +34,14 @@ $(function() {
 				<td><a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum =1) }}">Rate</a></td>
 			</tr>
 		</thead>
-		{%- for i in range (0, pages['endList'] - pages['startList']) %}
+		{%- for rankMemberRecord in rankMemberRecords %}
 		<tr>
-			<td>{{ i +1 }}</td>
-			<td><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submittedDate', pageNum =1) }}">{{ rankMemberRecords[i].memberId }}</a></td>
-			<td>{{ rankMemberRecords[i].comment }}</td>
-			<td>{{ rankMemberRecords[i].solvedCount }}</td>
-			<td>{{ rankMemberRecords[i].submissionCount }}</td>
-			<td>{{ rankMemberRecords[i].solvedRate }}%</td>
+			<td>{{ loop.index + (pages['pageNum'] - 1) * page['LIST'] }}</td>
+			<td><a href="{{ url_for('GradeServer.user_history', sortCondition ='submittedDate', pageNum =1) }}">{{ rankMemberRecord.memberId }}</a></td>
+			<td>{{ rankMemberRecord.comment }}</td>
+			<td>{{ rankMemberRecord.solvedCount }}</td>
+			<td>{{ rankMemberRecord.submissionCount }}</td>
+			<td>{{ rankMemberRecord.solvedRate }}%</td>
 		</tr>
 		{% endfor -%}
 	</table>
@@ -49,15 +49,23 @@ $(function() {
 	<div class="pagination pagination-centered">
 		<ul>
 			{%- if pages['pageNum'] > pages['BLOCK'] %}
-			<li><a href="{{ url_for ('GradeServer.rank', memberId =session['memberId'], sortCondition = sortCondition, pageNum =pages['pageNum'] - 1) }}"><</a></li>
+			<li><a href="{{ url_for ('GradeServer.rank', sortCondition = sortCondition, pageNum =pages['pageNum'] - 1) }}"><</a></li>
 			{% endif -%}
 			
 			{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
-			<li><a href="{{ url_for ('GradeServer.rank', memberId =session['memberId'], sortCondition = sortCondition, pageNum =i) }}">{{ i }}</a></li>
+			<li>
+				{% if pages['pageNum'] == i %}
+				<a style ='background-color:gray'>
+				{% else %}
+				<a href="{{ url_for ('GradeServer.rank', sortCondition = sortCondition, pageNum = i) }}">
+				{% endif %}
+				{{ i }}
+				</a>
+			</li>
 			{% endfor -%}
 			
 			{%- if pages['endPage'] < pages ['allPage'] %}
-			<li><a href="{{ url_for ('GradeServer.rank', memberId =session['memberId'], sortCondition = sortCondition, pageNum =pages['pageNum'] + 1) }}">></a></li>
+			<li><a href="{{ url_for ('GradeServer.rank', sortCondition = sortCondition, pageNum =pages['pageNum'] + 1) }}">></a></li>
 			{% endif -%}
 		</ul>
 	</div>
