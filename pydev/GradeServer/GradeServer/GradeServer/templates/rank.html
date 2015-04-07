@@ -26,22 +26,22 @@ $(function() {
 	<table class="table">
 		<thead>
 			<tr>
-				<td>Ranking</td>
-				<td>User Id</td>
-				<td>Comment</td>
-				<td><a href="{{ url_for('GradeServer.rank', sortCondition ='solvedProblem', pageNum =1) }}">Solved Problem</a></td>
-				<td>Count</td>
-				<td><a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum =1) }}">Rate</a></td>
+				<td style ='vertical-align: middle'>Ranking</td>
+				<td style ='vertical-align: middle'>User Id</td>
+				<td style ='vertical-align: middle'>Comment</td>
+				<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.rank', sortCondition ='solvedProblem', pageNum =1) }}">Solved Problem</a></td>
+				<td style ='vertical-align: middle'>Count</td>
+				<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum =1) }}">Rate</a></td>
 			</tr>
 		</thead>
 		{%- for rankMemberRecord in rankMemberRecords %}
 		<tr>
-			<td>{{ loop.index + (pages['pageNum'] - 1) * page['LIST'] }}</td>
-			<td><a href="{{ url_for('GradeServer.user_history', sortCondition ='submittedDate', pageNum =1) }}">{{ rankMemberRecord.memberId }}</a></td>
-			<td>{{ rankMemberRecord.comment }}</td>
-			<td>{{ rankMemberRecord.solvedCount }}</td>
-			<td>{{ rankMemberRecord.submissionCount }}</td>
-			<td>{{ rankMemberRecord.solvedRate }}%</td>
+			<td style ='vertical-align: middle'>{{ loop.index + (pages['pageNum'] - 1) * page['LIST'] }}</td>
+			<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', sortCondition ='submittedDate', pageNum =1) }}">{{ rankMemberRecord.memberId }}</a></td>
+			<td style ='vertical-align: middle'>{{ rankMemberRecord.comment }}</td>
+			<td style ='vertical-align: middle'>{{ rankMemberRecord.solvedCount }}</td>
+			<td style ='vertical-align: middle'>{{ rankMemberRecord.submissionCount }}</td>
+			<td style ='vertical-align: middle'>{{ rankMemberRecord.solvedRate }}%</td>
 		</tr>
 		{% endfor -%}
 	</table>

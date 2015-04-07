@@ -18,6 +18,7 @@ from GradeServer.model.submittedFiles import SubmittedFiles
 from GradeServer.model.submittedRecordsOfProblems import SubmittedRecordsOfProblems
 from GradeServer.model.languages import Languages
 from GradeServer.model.languagesOfCourses import LanguagesOfCourses
+from itertools import count
 
 
 @GradeServer.route('/problemList/<courseId>/page<pageNum>')
@@ -57,16 +58,23 @@ def problemList(courseId, pageNum):
                    join(problems,
                         Problems.problemId == problems.c.problemId).\
                    subquery()
+    # Get ProblemList Count
+    try:
+        count = dao.query(func.count(problems.c.problemName).label('count')).\
+                    first().\
+                    count
+    except Exception:
+        count = 0
     # Get ProblemListRecords
     try:
-        problemListRecords = dao.query(get_page_record(dao.query(problems,
-                                                                 submissions.c.score,
-                                                                 submissions.c.status,
-                                                                 submissions.c.solutionCheckCount).\
-                                                           outerjoin(submissions,
-                                                                     problems.c.problemId == submissions.c.problemId).\
-                                                           order_by(problems.c.startDateOfSubmission.desc()),
-                                                       int(pageNum))).\
+        problemListRecords = get_page_record(dao.query(problems,
+                                                       submissions.c.score,
+                                                       submissions.c.status,
+                                                       submissions.c.solutionCheckCount).\
+                                                 outerjoin(submissions,
+                                                           problems.c.problemId == submissions.c.problemId).\
+                                                 order_by(problems.c.startDateOfSubmission.desc()),
+                                           int(pageNum)).\
                                  all()
     except Exception:
         problemListRecords = []
@@ -79,12 +87,12 @@ def problemList(courseId, pageNum):
                             first()
     except:
         courseRecords = []
-
+    
     return render_template('/problem_list.html',
                            courseRecords = courseRecords,
                            problemListRecords = problemListRecords,
                            pages = get_page_pointed(int(pageNum),
-                                                    len(problemListRecords)))
+                                                   count))
 
 @GradeServer.route('/problem/<courseId>/<problemId>?page<pageNum>')
 @login_required
@@ -305,11 +313,10 @@ def user_record(problemId, courseId):
                                           SubmittedFiles.problemId == problemId,
                                           SubmittedFiles.courseId == courseId).\
                                    all()
-        fileData =[]
+        fileData = []
         for raw in submittedFileRecords:
             # Open
-            #file = open(raw.filePath + raw.fileName)
-            file = open("/mnt/aa.c")
+            file = open(raw.filePath + raw.fileName)
             # Read
             data = file.read()
             # Close
