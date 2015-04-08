@@ -222,18 +222,25 @@ def record(courseId, problemId, sortCondition = RUN_TIME):
         problemInformationRecords = []
     # Problem Solved Users
     try:
-        problemSolvedUserRecords =dao.query(Submissions.memberId,
-                                            Submissions.runTime,
-                                            Submissions.sumOfSubmittedFileSize,
-                                            Submissions.codeSubmissionDate,
-                                            Submissions.usedMemory).\
-                                      filter(Submissions.problemId == problemId,
-                                             Submissions.courseId == courseId,
-                                             Submissions.status == SOLVED).\
-                                      group_by(Submissions.memberId,
-                                               Submissions.problemId,
-                                               Submissions.courseId).\
-                                      subquery()
+        lastProblemSubmissionCounts = dao.query(Submissions.memberId,
+                                                Submissions.problemId,
+                                                Submissions.courseId,
+                                                func.max(Submissions.solutionCheckCount).label('lastSolutionCheckCount')).\
+                                          group_by(Submissions.memberId,
+                                                   Submissions.problemId,
+                                                   Submissions.courseId).\
+                                          subquery()
+        problemSolvedUserRecords = dao.query(Submissions.memberId,
+                                             Submissions.runTime,
+                                             Submissions.sumOfSubmittedFileSize,
+                                             Submissions.codeSubmissionDate,
+                                             Submissions.usedMemory).\
+                                       join(lastProblemSubmissionCounts,
+                                            Submissions.memberId == lastProblemSubmissionCounts.c.memberId,
+                                            Submissions.problemId == lastProblemSubmissionCounts.c.problemId,
+                                            Submissions.courseId == lastProblemSubmissionCounts.c.courseId).\
+                                       filter(Submissions.status == SOLVED).\
+                                       subquery()
         # Sort Run Time
         if sortCondition == RUN_TIME:
             problemSolvedUserRecords = dao.query(problemSolvedUserRecords).\

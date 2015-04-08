@@ -45,8 +45,10 @@ def rank(sortCondition, pageNum, error =None):
                                             Submissions.status).\
                                       group_by(Submissions.memberId,
                                                Submissions.problemId,
-                                               Submissions.courseId).subquery(),
-                                  sortCondition)
+                                               Submissions.courseId).\
+                                      subquery(),
+                                  sortCondition).\
+                      subquery()
         
         
         # records count
