@@ -92,6 +92,7 @@ def rank(sortCondition, pageNum, error =None):
         except Exception:
             rankMemberRecords = []
             
+        print "AAAA", count, len(rankMemberRecords)
         return render_template(RANK_HTML,
                                sortCondition =  sortCondition,
                                memberRecords = memberRecords,
