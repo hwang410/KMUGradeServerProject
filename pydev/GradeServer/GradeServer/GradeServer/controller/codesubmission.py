@@ -69,7 +69,9 @@ def upload(courseId, problemId):
     
     if not os.path.exists(nonSpaceTempPath):
         os.makedirs(nonSpaceTempPath)
-    
+    else:
+        for filename in glob.glob(os.path.join(nonSpaceTempPath, '*.*')):
+            os.remove(filename)
     try:
         dao.query(SubmittedFiles).\
             filter(and_(SubmittedFiles.memberId == memberId,
@@ -89,7 +91,6 @@ def upload(courseId, problemId):
                 file.save(os.path.join(nonSpaceTempPath, filename))
                 fileSize = os.stat(os.path.join(nonSpaceTempPath, filename)).st_size
                 filenames.append(filename)
-                shutil.copy(os.path.join(nonSpaceTempPath, filename), nonSpaceFilePath)
                 
                 if usedLanguageName == 'C':
                     try:
@@ -142,8 +143,17 @@ def upload(courseId, problemId):
     except:
         for filename in glob.glob(os.path.join(nonSpaceTempPath, '*.*')):
             os.remove(filename)
-        for filename in glob.glob(os.path.join(nonSpaceFilePath, '*.*')):
-            shutil.copy(filename, nonSpaceTempPath)
+        if len(glob.glob(os.path.join(nonSpaceFilePath, '*.*'))) > 0:
+            for filename in glob.glob(os.path.join(nonSpaceFilePath, '*.*')):
+                shutil.copy(filename, nonSpaceTempPath)
+        else:
+            unknown_error("서버 오류입니다. 다시 제출해 주세요.")
+         
+    for filename in glob.glob(os.path.join(nonSpaceFilePath, '*.*')):
+        os.remove(filename)
+            
+    for filename in glob.glob(os.path.join(nonSpaceTempPath, '*.*')):
+        shutil.copy(os.path.join(nonSpaceTempPath, filename), nonSpaceFilePath)
         
     try:
         usedLanguageVersion = dao.query(LanguagesOfCourses.languageVersion).\
@@ -278,7 +288,9 @@ def code(courseId, pageNum, problemId):
     
     if not os.path.exists(nonSpaceTempPath):
         os.makedirs(nonSpaceTempPath)
-        
+    else:
+        for filename in glob.glob(os.path.join(nonSpaceTempPath, '*.*')):
+            os.remove(filename)
     try:
         dao.query(SubmittedFiles).\
             filter(and_(SubmittedFiles.memberId == memberId,
@@ -346,8 +358,12 @@ def code(courseId, pageNum, problemId):
                                languageIndex
         except Exception as e:
             unknown_error("DB 에러입니다")
-        
+    
     fileSize = os.stat(os.path.join(nonSpaceTempPath, filename)).st_size
+    for filename in glob.glob(os.path.join(nonSpaceFilePath, '*.*')):
+        os.remove(filename)
+    for filename in glob.glob(os.path.join(nonSpaceTempPath, '*.*')):
+        shutil.copy(os.path.join(nonSpaceTempPath, filename), nonSpaceFilePath)
     
     try:
         submittedFiles = SubmittedFiles(memberId = memberId,
