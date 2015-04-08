@@ -98,17 +98,14 @@ def board(pageNum):
                             subquery()
             # 과목 게시글 모음
             try:
-                courses.append(dao.query(get_page_record(dao.query(select_article(courseSub,
-                                                                                  NOT_NOTICE)),
-                                                        int(pageNum))).\
+                courses.append(dao.query(select_article(courseSub,
+                                                        NOT_NOTICE)).\
                                    all())
             except Exception:
                 courses.append([])
             try:
-                courseNotices.append(dao.query(get_page_record(dao.query(select_article(courseSub,
-                                                                                        NOTICE)),
-                                                               int(pageNum),
-                                                               LIST = 5)).\
+                courseNotices.append(dao.query(select_article(courseSub,
+                                                              NOTICE)).\
                                          all())
             except Exception:
                 courseNotices.append([])
@@ -124,18 +121,15 @@ def board(pageNum):
                         subquery()
         # All 과목 게시글
         try:
-            articles = dao.query(get_page_record(dao.query(select_article(courseSub,
-                                                                          NOT_NOTICE)),
-                                                 int(pageNum))).\
+            articles = dao.query(select_article(courseSub,
+                                                NOT_NOTICE)).\
                            all()
         except Exception:
             articles = []
         # All 과목 공지글    
         try:    
-            articleNotices = dao.query(get_page_record(dao.query(select_article(courseSub,
-                                                                                NOTICE)),
-                                                       int(pageNum),
-                                                       LIST = 5)).\
+            articleNotices = dao.query(select_article(courseSub,
+                                                                                NOTICE)).\
                                  all()
         except Exception:
             articleNotices = []
