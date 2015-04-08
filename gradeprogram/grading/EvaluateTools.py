@@ -180,7 +180,7 @@ class EvaluateTools():
                 return 'ok', res[0], usingMem
             
             exitCode = os.WEXITSTATUS(status)
-            if exitCode != 0 or exitCode != 5 or exitCode != 17:
+            if exitCode != 0 and exitCode != 5 and exitCode != 17:
                 return 'runtime', 0, 0 
                 
             elif os.WIFSIGNALED(status):
@@ -189,7 +189,7 @@ class EvaluateTools():
                 procFile = open('/proc/' + str(pid) + '/status', 'r')
                 fileLines = procFile.readlines()
 
-                for i in range(10,20):
+                for i in range(15,20):
                     index = fileLines[i].find('VmRSS')
                     if index != -1:
                         words = fileLines[i].split()
