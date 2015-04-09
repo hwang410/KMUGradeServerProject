@@ -83,4 +83,4 @@ class CompileTools(object):
             return 'g++ ' + self.filePath + '*.cpp -o main -lm -Wall 2>error.err'
         
         elif self.usingLang == 'JAVA':
-            return 'javac -d ./temp -sourcepath ' + self.filePath + '*.java 2>error.err'
+            return 'javac -d ./ ' + self.filePath + '*.java 2>error.err'
