@@ -338,7 +338,6 @@ def code(courseId, pageNum, problemId):
         className = re.search('public class (.*)', tests)
         className.group(1)
         filename = '%s.java' %(className.group(1))
-        print filename
         fout = open(os.path.join(nonSpaceTempPath, filename), 'w')
         fout.write(tests)
         fout.close()
