@@ -4,6 +4,7 @@ import os
 import sys
 import shutil
 import glob
+import re
 
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, \
 send_file, make_response, current_app, session, flash
@@ -334,7 +335,10 @@ def code(courseId, pageNum, problemId):
             unknown_error("DB 에러입니다")
     
     elif usedLanguageName == 'JAVA':
-        filename = 'test.java'
+        className = re.search('public class (.*)', tests)
+        className.group(1)
+        filename = '%s.java' %(className.group(1))
+        print filename
         fout = open(os.path.join(nonSpaceTempPath, filename), 'w')
         fout.write(tests)
         fout.close()
