@@ -20,9 +20,9 @@ class MakePath(object):
         self.problemName = self.ProblemName()
         
         # make execution file name
+        self.filePath = self.filePath + '/'
         self.runFileName = self.RunFileName()
         
-        self.filePath = self.filePath + '/'
         self.answerPath = self.AnswerPath()
     
     def AnswerPath(self):
