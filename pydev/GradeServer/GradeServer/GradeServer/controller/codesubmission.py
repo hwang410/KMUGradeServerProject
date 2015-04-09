@@ -251,9 +251,9 @@ def upload(courseId, problemId):
                 caseCount,
                 limitedTime,
                 limitedMemory,
-                usedLanguageName,
-                usedLanguageVersion,
-                courseId,
+                str(usedLanguageName),
+                str(usedLanguageVersion),
+                str(courseId),
                 subCountNum)
                
     return courseId
@@ -474,9 +474,9 @@ def code(courseId, pageNum, problemId):
                 caseCount,
                 limitedTime,
                 limitedMemory,
-                usedLanguageName,
-                usedLanguageVersion,
-                courseId,
+                str(usedLanguageName),
+                str(usedLanguageVersion),
+                str(courseId),
                 subCountNum)
     
     flash('submission success!')
