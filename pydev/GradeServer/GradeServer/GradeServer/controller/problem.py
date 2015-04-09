@@ -132,7 +132,7 @@ def problem(courseId, problemId, pageNum):
         unknown_error("DB 에러입니다")       
     
     problemName = problemInformation.problemName.replace(' ', '')
-    
+    browserName = request.user_agent.browser
     return render_template('/problem.html',
                            courseId = courseId,
                            problemId = problemId,
@@ -141,7 +141,8 @@ def problem(courseId, problemId, pageNum):
                            languageName = languageName,
                            languageVersion = languageVersion,
                            languageIndex = languageIndex,
-                           pageNum = pageNum)
+                           pageNum = pageNum,
+                           browserName = browserName)
 
 """
     in the main page, it uses methods so 
