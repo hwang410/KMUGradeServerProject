@@ -30,6 +30,7 @@ from GradeServer.model.colleges import Colleges
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.model.departments import Departments
 from GradeServer.model.courses import Courses
+from GradeServer.model.departmentsOfColleges import DepartmentsOfColleges
 from GradeServer.model.problems import Problems
 
 import re
@@ -61,8 +62,14 @@ def server_manage_collegedepartment():
                                allColleges = [],
                                allDepartments = [])
     try:    
-        allDepartments = dao.query(Departments).\
-                             all()
+        allDepartments = (dao.query(DepartmentsOfColleges,
+                                    Colleges,
+                                    Departments).\
+                              join(Colleges,
+                                   Colleges.collegeIndex == DepartmentsOfColleges.collegeIndex).\
+                              join(Departments,
+                                   Departments.departmentIndex == DepartmentsOfColleges.departmentIndex)).\
+                         all()
     except:
         error = 'Error has been occurred while searching departments'
         return render_template('/server_manage_collegedepartment.html', 
@@ -76,7 +83,7 @@ def server_manage_collegedepartment():
         numberOfColleges = (len(request.form) - 1) / 2
         newCollege = [['' for i in range(2)] for j in range(numberOfColleges + 1)]
         numberOfDepartments = (len(request.form) - 1) / 2
-        newDepartment = [['' for i in range(2)] for j in range(numberOfDepartments + 1)]
+        newDepartment = [['' for i in range(3)] for j in range(numberOfDepartments + 1)]
         for form in request.form:
             if 'addCollege' in request.form:
                 isNewCollege = True
@@ -98,6 +105,8 @@ def server_manage_collegedepartment():
                         newDepartment[index-1][0] = data
                     elif value == 'departmentName':
                         newDepartment[index-1][1] = data
+                    elif value == 'collegeIndex':
+                        newDepartment[index-1][2] = data.split()[0]
             elif 'deleteCollege' in request.form:
                 if 'college' in form:
                     try:
@@ -151,6 +160,7 @@ def server_manage_collegedepartment():
             newColleges = []
             
         if isNewDepartment:
+            newDepartment = []
             for newPart in newDepartments:
                 try:
                     newDepartment = Departments(departmentCode = newPart[0],
@@ -164,6 +174,21 @@ def server_manage_collegedepartment():
                                            error=error,
                                            allColleges = allColleges,
                                            allDepartments = allDepartments)
+                try:
+                    index = dao.query(func.max(Departments.departmentIndex)).scalar()
+                    print "index ", newPart[2], index
+                    relationToCollege = DepartmentsOfColleges(collegeIndex = newPart[2],
+                                                              departmentIndex = index)
+                    dao.add(relationToCollege)
+                    dao.commit()
+                except:
+                    error = 'Error has been occurred while making new ralation of department'  
+                    dao.rollback()
+                    return render_template('/server_manage_collegedepartment.html', 
+                                           error=error,
+                                           allColleges = allColleges,
+                                           allDepartments = allDepartments)
+                    
             newDepartments = []
             
         return redirect(url_for('.server_manage_collegedepartment'))

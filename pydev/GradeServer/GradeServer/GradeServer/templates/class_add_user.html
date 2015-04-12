@@ -8,6 +8,7 @@
 $(function() {
   var allUsers = [
   	{%- for user in allUsers %}
+  	{%- ifz}
   	{ value: "{{ user.memberId }} {{ user.memberName }}", 
   		data: "{{ user.memberId }} {{ user.memberName }}" },
   	{% endfor -%}

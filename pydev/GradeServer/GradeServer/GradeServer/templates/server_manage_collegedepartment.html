@@ -68,11 +68,20 @@
 				<table class="table table-bordered" id='Departments' style="margin-top:10px">
 					<thead>
 						<tr>
+							<td>College
 							<td>Department Code
 							<td>Department Name
 					<tbody id="addDepartmentForm">
 
 					<tr>
+						<td>
+							<select id="collegeIndex1" name="collegeIndex1" style="width:115px">
+				                  {%- for college in allColleges %}
+				                  <option>
+				                    {{ college.collegeIndex }} {{ college.collegeName }}
+				                  </option>
+				                  {% endfor -%}
+				                </select>
 						<td><input class="input-medium" name="departmentCode1"
 											 type="text" placeholder="Optional">
 						<td><input class="input-medium" name="departmentName1"
@@ -160,21 +169,23 @@
 					<thead>
 						<tr>
 							<td>Index
+							<td>College
 							<td>Code
 							<td>Name
 							<td>IsAbolished
 							<td>Check
 					<tbody>
-					{%- for department in allDepartments %}
+					{%- for relation, college, department in allDepartments %}
 						<tr>
 							<td>{{ loop.index }}
+							<td>{{ college.collegeName }}
 							<td>{{ department.departmentCode }}
 							<td>{{ department.departmentName }}
 							<td>{{ department.isAbolished }}
 							<td>
 								<input class="department-box-check"
-											 name="department{{ department.departmentIndex }}"
-									  	 type="checkbox">
+										name="department{{ department.departmentIndex }}"
+									  	type="checkbox">
 					{% endfor -%}
 				</table>
 			</div>
