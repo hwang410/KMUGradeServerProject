@@ -3,8 +3,8 @@
 <div class="container">
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
-			<li class="active"><a id="college" data-toggle="tab" href="#colleges">College</a>
-			<li><a id="department" data-toggle="tab" href="#departments">Department</a></li>
+			<li id="collegeTab"><a id="college" data-toggle="tab" href="#colleges">College</a>
+			<li id="departmentTab"><a id="department" data-toggle="tab" href="#departments">Department</a></li>
 			<div style="text-align:right">
 				<a class="btn" id="addModal" data-toggle="modal" href="#collegeModal"
 					 rol="button">Add</a>
@@ -98,7 +98,7 @@
 
 <!-- ///// end department modal ///// -->
 		<div class="tab-content">
-			<div class="tab-pane active" id="colleges">
+			<div class="tab-pane" id="colleges">
 			<form method="post">
 				<table class="table">
 					<thead>
@@ -117,8 +117,8 @@
 							<td>{{ college.isAbolished }}
 							<td>
 								<input class="college-box-check"
-											 name="college{{ college.collegeIndex }}"
-											 type="checkbox">
+									     name="college{{ college.collegeIndex }}"
+									     type="checkbox">
 					{% endfor -%}
 				</table>
 			</div>
@@ -161,8 +161,8 @@
 				</div>
 				</form>	
 			</div>
-		
 			<!-- ***** end College Modal ***** -->
+
 			<div class="tab-pane" id="departments">
 			<form method="post">
 				<table class="table">
@@ -234,6 +234,16 @@
 	</div>
 </div>
 <script>
+var currentTab = "{{ currentTab }}";
+document.getElementById(currentTab).className = "tab-pane active";
+if(currentTab.indexOf("college") != -1){
+	currentTab = "collegeTab";
+}
+else{
+	currentTab = "departmentTab";
+}
+document.getElementById(currentTab).className = "active";
+
 $('a[data-toggle="tab"]').on('shown', function(e){
 	var id = $(e.target).attr('id');
 	document.getElementById('addModal').href = "#" + id + "Modal";
