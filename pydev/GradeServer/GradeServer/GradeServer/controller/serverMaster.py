@@ -47,11 +47,20 @@ newUsers = []
 newColleges = []
 newDepartments = []
 
+currentTab = 'colleges'
+
 @GradeServer.route('/master/manage_collegedepartment', methods = ['GET', 'POST'])
 @login_required
 def server_manage_collegedepartment():
     global newColleges, newDepartments
+    global currentTab
+
+    # moved from other page, then show 'college' tab
+    if request.referrer.rsplit('/', 1)[1] != "manage_collegedepartment":
+        currentTab = 'colleges'
+        
     error = None
+    
     try:
         allColleges = dao.query(Colleges).\
                           all()
@@ -115,7 +124,7 @@ def server_manage_collegedepartment():
                         dao.delete(target)
                         dao.commit()
                     except:
-                        error = 'Error has been occurred while searching colleges'
+                        error = 'Delete all departments before this work'
                         dao.rollback()
                         return render_template('/server_manage_collegedepartment.html', 
                                                error=error,
@@ -125,6 +134,10 @@ def server_manage_collegedepartment():
                 if 'department' in form:
                     try:
                         departmentIndex = re.findall('\d+|\D+', form)[1]
+                        print departmentIndex
+                        target = dao.query(DepartmentsOfColleges).filter(DepartmentsOfColleges.departmentIndex == departmentIndex).first()
+                        dao.delete(target)
+                        dao.commit()
                         target = dao.query(Departments).filter(Departments.departmentIndex == departmentIndex).first()
                         dao.delete(target)
                         dao.commit()
@@ -159,6 +172,7 @@ def server_manage_collegedepartment():
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
             newColleges = []
+            currentTab = 'colleges'
             
         if isNewDepartment:
             newDepartment = []
@@ -191,11 +205,13 @@ def server_manage_collegedepartment():
                                                allDepartments = allDepartments)
                         
             newDepartments = []
+            currentTab = 'departments'
             
         return redirect(url_for('.server_manage_collegedepartment'))
-        
+    print currentTab
     return render_template('/server_manage_collegedepartment.html', 
                            error=error,
+                           currentTab = currentTab,
                            allColleges = allColleges,
                            allDepartments = allDepartments)
         
