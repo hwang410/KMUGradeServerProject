@@ -240,10 +240,10 @@ $(function() {
 								</select>
 							<td>
 								<input class="input-small formLine1" id="userId1" name="userId1"
-											 type="text" placeholder="ID" value="">
+										type="text" placeholder="ID" value="">
 							<td>
 								<input class="input-mini formLine1" id="username1" name="username1"
-											 type="text" placeholder="Name" value="">
+										type="text" placeholder="Name" value="">
 							<td>
 								<select class="input-medium" id="college1" name="college1">
 									{%- for college in allColleges %}
@@ -254,11 +254,6 @@ $(function() {
 								</select>
 							<td>
 								<select class="input-medium" id="department1" name="department1">
-									{%- for department in allDepartments %}
-									<option> 
-										{{ department.departmentIndex }} {{ department.departmentName }}
-									</option>
-									{% endfor -%}
 								</select>
 							<td>
 								<select class="input-medium" id="authority1" name="authority1">

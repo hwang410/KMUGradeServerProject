@@ -515,7 +515,7 @@ def server_add_class():
                                       all()
     except:
          error = 'Error has been occurred while searching course administrators'
-                          
+                        
     if request.method == 'POST':
         courseAdministrator = request.form['courseAdministrator']
         semester = request.form['semester'] 
@@ -640,11 +640,17 @@ def server_add_user():
                                allDepartments = [],
                                authorities = authorities,
                                newUsers = newUsers)
-    try:
-        allDepartments = dao.query(Departments).\
-                             all()
+    try:    
+        allDepartments = (dao.query(DepartmentsOfColleges,
+                                    Colleges,
+                                    Departments).\
+                              join(Colleges,
+                                   Colleges.collegeIndex == DepartmentsOfColleges.collegeIndex).\
+                              join(Departments,
+                                   Departments.departmentIndex == DepartmentsOfColleges.departmentIndex)).\
+                         all()
     except:
-        error = 'Error has been occurred while searching all departments'
+        error = 'Error has been occurred while searching departments'
         return render_template('/class_add_user.html', 
                                error = error, 
                                allColleges = allColleges,
@@ -838,7 +844,9 @@ def server_add_user():
                         break
                     index += 1
                                
-        
+    
+    for a, b, c in allDepartments:
+        print c.departmentIndex,c.departmentName
     return render_template('/server_add_user.html', 
                            error = error, 
                            allColleges = allColleges,
