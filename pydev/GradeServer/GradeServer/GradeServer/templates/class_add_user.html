@@ -1,378 +1,395 @@
 <!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
-		
+    fill every "here" sign using jinja2 template
+    /////////////////////////////////////////// -->
+    
 {%- extends "main.html" -%}
 {%- block body %}
 <script>
 $(function() {
   var allUsers = [
-  	{%- for user in allUsers %}
-  	{ value: "{{ user.memberId }} {{ user.memberName }}", 
-  		data: "{{ user.memberId }} {{ user.memberName }}" },
-  	{% endfor -%}
-  	{ value: "", data: "" }
-  ];
-  $("#userId1").autocomplete({
-  	lookup: allUsers,
-  	onSelect: function(suggestion){
-  		var userId = suggestion.data.split(" ")[0];
-  		var userName = suggestion.data.split(" ")[1];
-  		var userIdx = this.id.match(/(\d+)/g);
-  		document.getElementById(this.id).value = userId;
-  		document.getElementById("username"+userIdx).value = userName;
-  	}
-  });
+    {%- for user in allUsers %}
+    {%- if user.memberId != session['memberId'] %}
+    { value: "{{ user.memberId }} {{ user.memberName }}", 
+      data: "{{ user.memberId }} {{ user.memberName }}" },
+    {% endif -%}
+    {% endfor -%}
+    { value: "", data: "" }
+    ];
+   $("#userId1").autocomplete({
+      lookup: allUsers,
+      onSelect: function(suggestion){
+        var userId = suggestion.data.split(" ")[0];
+        var userName = suggestion.data.split(" ")[1];
+        var userIdx = this.id.match(/(\d+)/g);
+        document.getElementById(this.id).value = userId;
+        document.getElementById("username"+userIdx).value = userName;
+      }
+    });
   
   $("#addline").bind('click',function(){
-	  var targetTable = document.getElementById('indivisual');
-	  var numOfRow = targetTable.rows.length;
+    var targetTable = document.getElementById('indivisual');
+    var numOfRow = targetTable.rows.length;
 
-	  reset_val = function(){
-	    $("#courseId1").val("");
-	    $("#userId1").val("");
-	    $("#username1").val("");
-	    $("#authority1").val("");
-	    $("#college1").val("");
-	    $("#department1").val("");
-	  }
+    reset_val = function(){
+      $("#courseId1").val("");
+      $("#userId1").val("");
+      $("#username1").val("");
+      $("#authority1").val("");
+      $("#college1").val("");
+      $("#department1").val("");
+    }
 
-	  var newRow = targetTable.insertRow(2);
-	  var keys = ['courseId', 'userId', 'username', 
-	  						'college', 'department', 'authority'];
-	  var placeholders = ['Course Id', 'ID', 'Name', 
-	  										'College', 'Department', 'Authority'];
-	  var formsize = ['', 'small', 'mini', 'medium', 'medium', 'medium'];
+    var newRow = targetTable.insertRow(2);
+    var keys = ['courseId', 'userId', 'username', 
+                    'college', 'department', 'authority'];
+    var placeholders = ['Course Id', 'ID', 'Name', 
+                               'College', 'Department', 'Authority'];
+    var formsize = ['', 'small', 'mini', 'medium', 'medium', 'medium'];
 
-	  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
-	  	var uploadObj = "<td>";
-	  	var selectedItme, index; 
-	  	if(i != 1 && i != 2){
-		  	selectedItem = document.getElementById(keys[i]+"1");
-				index = selectedItem.options[selectedItem.selectedIndex].index + 1;
-			}
-	    if(i < 1){
-				uploadObj += "<select id='" + keys[i] + numOfRow +
-											      "'name='" + keys[i] + numOfRow +
-													  "'value='" + $("#" + keys[i] + "1").val() +
-													  "'style='width:115px'>";
-				{%- for ownCourse in ownCourses %}
-				uploadObj += "<option";
-				if(index == "{{ loop.index }}"){
-					uploadObj += " selected";
-				}
-				uploadObj += ">{{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>";
-				{% endfor -%}
-				uploadObj += "</select>";
-			}
-			else if(i < 3){
-				uploadObj += "<input class='input-" + formsize[i] +
-													 "'id='" + keys[i] + numOfRow +
-													 "'name='" + keys[i] +
-													 "'type='text'" +
-													 "'autocomplete='off'" +
-													 "'placeholder='" + placeholders[i] +
-													 "'value='" + $("#" + keys[i] + "1").val() +
-													 ">";			
-			}
-			else{
-	    	uploadObj += "<select class='input-" + formsize[i] +
-	    											"'id='" + keys[i] + numOfRow +
-											      "'name='" + keys[i] + numOfRow +
-													  "'value='" + $("#" + keys[i] + "1").val() +
-													  ">";
-				switch(i){
-					case 3:
-						{%- for college in allColleges %}
-						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
-							uploadObj += " selected";
-						}
-						uploadObj += 
-							">{{ college.collegeIndex }} {{ college.collegeName }}" +
-							"</option>";
-						{% endfor -%}
-						break;
-					case 4:
-						{%- for department in allDepartments %}
-						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
-							uploadObj += " selected";
-						}
-						uploadObj += 
-							">{{ department.departmentIndex }} {{ department.departmentName }}" +
-							"</option>";
-						{% endfor -%}
-						break;
-					case 5:
-						{%- for authority in authorities %}
-						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
-							uploadObj += " selected";
-						}
-						uploadObj += ">{{ authority }} </option>";
-						{% endfor -%}
-						break;
-				}
-				uploadObj += "</select>";
-			}
-	    newRow.insertCell(i).innerHTML = uploadObj;
-	  }
+    for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
+      var uploadObj = "<td>";
+      var selectedItme, index; 
+      if(i != 1 && i != 2){
+        selectedItem = document.getElementById(keys[i]+"1");
+        index = selectedItem.options[selectedItem.selectedIndex].index + 1;
+      }
+      if(i < 1){
+        uploadObj += "<select id='" + keys[i] + numOfRow +
+                                    "'name='" + keys[i] + numOfRow +
+                                    "'value='" + $("#" + keys[i] + "1").val() +
+                                    "'style='width:115px'>";
+        {%- for ownCourse in ownCourses %}
+        uploadObj += "<option";
+        if(index == "{{ loop.index }}"){
+          uploadObj += " selected";
+        }
+        uploadObj += ">{{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>";
+        {% endfor -%}
+        uploadObj += "</select>";
+      }
+      else if(i < 3){
+        uploadObj += "<input class='input-" + formsize[i] +
+                                   "'id='" + keys[i] + numOfRow +
+                                   "'name='" + keys[i] +
+                                   "'type='text'" +
+                                   "'autocomplete='off'" +
+                                   "'placeholder='" + placeholders[i] +
+                                   "'value='" + $("#" + keys[i] + "1").val() +
+                                   ">";      
+      }
+      else{
+        uploadObj += "<select class='input-" + formsize[i] +
+                                    "'id='" + keys[i] + numOfRow +
+                                    "'name='" + keys[i] + numOfRow +
+                                    "'value='" + $("#" + keys[i] + "1").val() +
+                                    ">";
+        switch(i){
+          case 3:
+            {%- for college in allColleges %}
+            uploadObj += "<option";
+            if(index == "{{ loop.index }}"){
+              uploadObj += " selected";
+            }
+            uploadObj += 
+              ">{{ college.collegeIndex }} {{ college.collegeName }}" +
+              "</option>";
+            {% endfor -%}
+            break;
+          case 4:
+            {%- for department in allDepartments %}
+            uploadObj += "<option";
+            if(index == "{{ loop.index }}"){
+              uploadObj += " selected";
+            }
+            uploadObj += 
+              ">{{ department.departmentIndex }} {{ department.departmentName }}" +
+              "</option>";
+            {% endfor -%}
+            break;
+          case 5:
+            {%- for authority in authorities %}
+            uploadObj += "<option";
+            if(index == "{{ loop.index }}"){
+              uploadObj += " selected";
+            }
+            uploadObj += ">{{ authority }} </option>";
+            {% endfor -%}
+            break;
+        }
+        uploadObj += "</select>";
+      }
+      newRow.insertCell(i).innerHTML = uploadObj;
+    }
 
-	  $("#userId"+numOfRow).autocomplete({
-	  	lookup: allUsers,
-	  	onSelect: function(suggestion){
-	  		var userId = suggestion.data.split(" ")[0];
-	  		var userName = suggestion.data.split(" ")[1];
-	  		var userIdx = this.id.match(/(\d+)/g);
-	  		document.getElementById(this.id).value = userId;
-	  		document.getElementById("username"+userIdx).value = userName;
-	  	}
-	  });
+    $("#userId"+numOfRow).autocomplete({
+      lookup: allUsers,
+      onSelect: function(suggestion){
+        var userId = suggestion.data.split(" ")[0];
+        var userName = suggestion.data.split(" ")[1];
+        var userIdx = this.id.match(/(\d+)/g);
+        document.getElementById(this.id).value = userId;
+        document.getElementById("username"+userIdx).value = userName;
+      }
+    });
 
-	  reset_val();
-	});
+    reset_val();
+  });
 
   $("#resetIndivisualUserForm").bind('click',function(){
     document.getElementById("indivisualUserForm").innerHTML = 
-    	'<td>' +
-				'<select id="courseId1" name="courseId1" style="width:115px">' +
-				  '{%- for ownCourse in ownCourses %}' +
-				  '<option>' +
-				  '{{ ownCourse.courseId }} {{ ownCourse.courseName }}' +
-				  '</option>' +
-				  '{% endfor -%}' +
-			  '</select>' +
-			'<td>' +
-				'<input class="input-small formLine1" id="userId1" name="userId1"' +
-							 'type="text" placeholder="ID" value="">' +
-			'<td>' +
-				'<input class="input-mini formLine1" id="username1" name="username1"' +
-							 'type="text" placeholder="Name" value="">' +
-			'<td>' +
-				'<select class="input-medium" id="college1" name="college1">' +
-					'{%- for college in allColleges %}' +
-					'<option>' +
-					'{{ college.collegeIndex }} {{ college.collegeName }}' +
-					'</option>' +
-					'{% endfor -%}' +
-				'</select>' +
-			'<td>' +
-				'<select class="input-medium" id="department1" name="department1">' +
-					'{%- for department in allDepartments %}' +
-					'<option>' +
-					'{{ department.departmentIndex }} {{ department.departmentName }}' +
-					'</option>' +
-					'{% endfor -%}' +
-				'</select>' +
-			'<td>' +
-				'<select class="input-medium" id="authority1" name="authority1">' +
-					'{%- for authority in authorities %}' +
-					'<option> {{ authority }} </option>' +
-					'{% endfor -%}' +
-				'</select>';
-	  
-	  $("#userId1").autocomplete({
-	  	lookup: allUsers,
-	  	onSelect: function(suggestion){
-	  		var userId = suggestion.data.split(" ")[0];
-	  		var userName = suggestion.data.split(" ")[1];
-	  		var userIdx = this.id.match(/(\d+)/g);
-	  		document.getElementById(this.id).value = userId;
-	  		document.getElementById("username"+userIdx).value = userName;
-	  	}
-	  });
-	});
+      '<td>' +
+        '<select id="courseId1" name="courseId1" style="width:115px">' +
+          '{%- for ownCourse in ownCourses %}' +
+          '<option>' +
+          '{{ ownCourse.courseId }} {{ ownCourse.courseName }}' +
+          '</option>' +
+          '{% endfor -%}' +
+        '</select>' +
+      '<td>' +
+        '<input class="input-small formLine1" id="userId1" name="userId1"' +
+               'type="text" placeholder="ID" value="">' +
+      '<td>' +
+        '<input class="input-mini formLine1" id="username1" name="username1"' +
+               'type="text" placeholder="Name" value="">' +
+      '<td>' +
+        '<select class="input-medium" id="college1" name="college1">' +
+          '{%- for college in allColleges %}' +
+          '<option>' +
+          '{{ college.collegeIndex }} {{ college.collegeName }}' +
+          '</option>' +
+          '{% endfor -%}' +
+        '</select>' +
+      '<td>' +
+        '<select class="input-medium" id="department1" name="department1">' +
+          '{%- for department in allDepartments %}' +
+          '<option>' +
+          '{{ department.departmentIndex }} {{ department.departmentName }}' +
+          '</option>' +
+          '{% endfor -%}' +
+        '</select>' +
+      '<td>' +
+        '<select class="input-medium" id="authority1" name="authority1">' +
+          '{%- for authority in authorities %}' +
+          '<option> {{ authority }} </option>' +
+          '{% endfor -%}' +
+        '</select>';
+    
+    $("#userId1").autocomplete({
+      lookup: allUsers,
+      onSelect: function(suggestion){
+        var userId = suggestion.data.split(" ")[0];
+        var userName = suggestion.data.split(" ")[1];
+        var userIdx = this.id.match(/(\d+)/g);
+        document.getElementById(this.id).value = userId;
+        document.getElementById("username"+userIdx).value = userName;
+      }
+    });
+  });
 });
+
+var colleges = [
+	{%- for college in allColleges %}
+	{display: "{{ college.collegeIndex }} {{ college.collegeName }}",
+	 value: "{{ college.collegeIndex }} {{ college.collegeName }}"}
+	{% endfor -%}
+	{display: "", value: ""}
+];
+var departments = [
+	{%- for department in allDepartments %}
+	{display: "{{ department.departmentIndex }} {{ deparmtent.departmentName }}",
+	 value: "{{ department.departmentIndex }} {{ department.departmentName }}"}
+	{% endfor -%}
+	{display: "", value: ""}
+];
 </script>
 <div class="container">
-	<div>
-		<h3>Add User</h3>
-		<!-- if any button is checked, then showing modal pop -->
-		<div style="text-align:right">
-			<a class="btn" href="#addUserModal" data-toggle="modal" role="button">
-				Indivisual
-			</a>
-			<a class="btn" href="#addGroupModal" data-toggle="modal" role="button">
-				Group
-			</a>
-			<a class="btn" data-toggle="modal" role="button"
-				 onclick="showingDeleteModal()">
-				Delete
-			</a>
-		</div>
+  <div>
+    <h3>Add User</h3>
+    <!-- if any button is checked, then showing modal pop -->
+    <div style="text-align:right">
+      <a class="btn" href="#addUserModal" data-toggle="modal" role="button">
+        Indivisual
+      </a>
+      <a class="btn" href="#addGroupModal" data-toggle="modal" role="button">
+        Group
+      </a>
+      <a class="btn" data-toggle="modal" role="button"
+         onclick="showingDeleteModal()">
+        Delete
+      </a>
+    </div>
 
-		<!-- hidden modal pop -->
-		<!-- ///// Add indivisual ///// -->
-		<div class="modal hide fade" id="addUserModal"
-				 aria-labelledby="addUserModalLabel" aria-hidden="false" role="dialog"
-				 tabindex="-1" style="width:900px;margin-left:-450px">
-			<div class="modal-header">
-				<button class="close" type="button"
-								data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="addUserModalLabel">Add User</h3>
-			</div>
-			<div class="modal-body">
-				<div style="text-align:right">
-					<button class="btn" id="addline" type="button" >Add line</button>
-				</div>
-				<table class="table table-bordered" id="indivisual"
-							 style="margin-top:10px">
-					<thead>
-						<tr>
-							<td>Course ID
-							<td>User ID
-							<td>Name
-							<td>College
-							<td>Department
-							<td>Authority
-					<tbody id="indivisualUserForm">
+    <!-- hidden modal pop -->
+    <!-- ///// Add indivisual ///// -->
+    <div class="modal hide fade" id="addUserModal"
+         aria-labelledby="addUserModalLabel" aria-hidden="false" role="dialog"
+         tabindex="-1" style="width:900px;margin-left:-450px">
+      <div class="modal-header">
+        <button class="close" type="button"
+                data-dismiss="modal" aria-hidden="true">x</button>
+        <h3 id="addUserModalLabel">Add User</h3>
+      </div>
+      <div class="modal-body">
+        <div style="text-align:right">
+          <button class="btn" id="addline" type="button" >Add line</button>
+        </div>
+        <table class="table table-bordered" id="indivisual"
+               style="margin-top:10px">
+          <thead>
+            <tr>
+              <td>Course ID
+              <td>User ID
+              <td>Name
+              <td>College
+              <td>Department
+              <td>Authority
+          <tbody id="indivisualUserForm">
 <form id="addIndivisualUser" method="post">
-						<tr>
-							<td>
-								<select id="courseId1" name="courseId1" style="width:115px">
-									{%- for ownCourse in ownCourses %}
-									<option>
-										{{ ownCourse.courseId }} {{ ownCourse.courseName }}
-									</option>
-									{% endfor -%}
-								</select>
-							<td>
-								<input class="input-small formLine1" id="userId1" name="userId1"
-											 type="text" placeholder="ID" value="">
-							<td>
-								<input class="input-mini formLine1" id="username1" name="username1"
-											 type="text" placeholder="Name" value="">
-							<td>
-								<select class="input-medium" id="college1" name="college1">
-									{%- for college in allColleges %}
-									<option> 
-										{{ college.collegeIndex }} {{ college.collegeName }}
-									</option>
-									{% endfor -%}
-								</select>
-							<td>
-								<select class="input-medium" id="department1" name="department1">
-									{%- for department in allDepartments %}
-									<option> 
-										{{ department.departmentIndex }} {{ department.departmentName }}
-									</option>
-									{% endfor -%}
-								</select>
-							<td>
-								<select class="input-medium" id="authority1" name="authority1">
-									{%- for authority in authorities %}
-									<option> {{ authority }} </option>
-									{% endfor -%}
-								</select>
-				</table>
-			</div>
-			<div class="modal-footer">
-				<button class="btn" name="addIndivisualUser" type="submit">Done</button>
-				<button class="btn" id="resetIndivisualUserForm"
-								data-dismiss="modal" aria-hidden="true">Close</button>
+            <tr>
+              <td>
+                <select id="courseId1" name="courseId1" style="width:115px">
+                  {%- for ownCourse in ownCourses %}
+                  <option>
+                    {{ ownCourse.courseId }} {{ ownCourse.courseName }}
+                  </option>
+                  {% endfor -%}
+                </select>
+              <td>
+                <input class="input-small formLine1" id="userId1" name="userId1"
+                       type="text" placeholder="ID" value="">
+              <td>
+                <input class="input-mini formLine1" id="username1" name="username1"
+                       type="text" placeholder="Name" value="">
+              <td>
+                <select class="input-medium" id="college1" name="college1">
+                  {%- for college in allColleges %}
+                  <option> 
+                    {{ college.collegeIndex }} {{ college.collegeName }}
+                  </option>
+                  {% endfor -%}
+                </select>
+              <td>
+                <select class="input-medium" id="department1" name="department1">
+                  {%- for department in allDepartments %}
+                  <option> 
+                    {{ department.departmentIndex }} {{ department.departmentName }}
+                  </option>
+                  {% endfor -%}
+                </select>
+              <td>
+                <select class="input-medium" id="authority1" name="authority1">
+                  {%- for authority in authorities %}
+                  <option> {{ authority }} </option>
+                  {% endfor -%}
+                </select>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" name="addIndivisualUser" type="submit">Done</button>
+        <button class="btn" id="resetIndivisualUserForm"
+                data-dismiss="modal" aria-hidden="true">Close</button>
 </form>
-			</div>
-		</div>
+      </div>
+    </div>
 
-		<!-- ///// add group ///// -->
-		<div class="modal hide fade" id="addGroupModal"
-				 aria-labelledby="addGroupModalLabel" aria-hidden="true"
-				 role="dialog" tabindex="-1">
+    <!-- ///// add group ///// -->
+    <div class="modal hide fade" id="addGroupModal"
+         aria-labelledby="addGroupModalLabel" aria-hidden="true"
+         role="dialog" tabindex="-1">
 <form method="post" enctype="multipart/form-data">
-				<div class="modal-header">
-					<button class="close" data-dismiss="modal"
-									type="button" aria-hidden="true">x</button>
-					<h3 id="addGroupModalLabel">Add User</h3>
-				</div>
-				<div class="modal-body">
-					<p>default authority is "User(student)"</p>
-					Manual : userId="userid", username="username", college="college Index", department="department Index"<br>
-					File(*.txt) : <input type="file" name="files" multiple>
-				</div>
-				<div class="modal-footer">
-					<button class="btn" name="addUserGroup" type="submit">
-						Done
-					</button>
-					<button class="btn" data-dismiss="modal" aria-hidden="true">
-						Close
-					</button>
-				</div>
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal"
+                  type="button" aria-hidden="true">x</button>
+          <h3 id="addGroupModalLabel">Add User</h3>
+        </div>
+        <div class="modal-body">
+          <p>default authority is "User(student)"</p>
+          Manual : userId="userid", username="username", college="college Index", department="department Index"<br>
+          File(*.txt) : <input type="file" name="files" multiple>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" name="addUserGroup" type="submit">
+            Done
+          </button>
+          <button class="btn" data-dismiss="modal" aria-hidden="true">
+            Close
+          </button>
+        </div>
 </form>
-		</div>
-		<table class="table table-bordered" style="margin-top:10px">
-			<thead>
-				<tr>
-					<td>Index
-					<td>User Id
-					<td>User Name
-					<td>Authority
-					<td>College
-					<td>Department
-					<td>Check
-			<tbody>
+    </div>
+    <table class="table table-bordered" style="margin-top:10px">
+      <thead>
+        <tr>
+          <td>Index
+          <td>User Id
+          <td>User Name
+          <td>Authority
+          <td>College
+          <td>Department
+          <td>Check
+      <tbody>
 <form method="post">
-				<script> index = 0; </script>
-				{%- for newUser in newUsers %}
-				<tr>
-					<td><script> document.write(++index); </script>
-					<td>{{ newUser[0] }}
-					<td>{{ newUser[1] }}
-					<td>{% if newUser[2]=="User" %}Student{% else %}{{ newUser[2] }}{% endif %}
-					<td>{{ newUser[4] }}
-					<td>{{ newUser[6] }}
-					<td>
-						<label class="checkbox-center">
-							<input class="box-check" name="{{ newUser[0] }}"
-										 type="checkbox" value="{{ newUser[0] }}">
-						</label>
-				{% endfor -%}
-		</table>
-		<a href="{{ url_for('GradeServer.server_add_user') }}">
-			<button class="btn" name="addUser" type="submit">Done</button>
-		</a>
-	</div>
-	<!-- ///// Delete case /////
-				if any item choiced -->
-		<div class="modal hide fade" id="deleteModal"
-				 aria-labelledby="deleteModalLabel" aria-hidden="true"
-				 role="dialog" tabindex="-1">
-			<div class="modal-header">
-				<button class="close" data-dismiss="modal"
-								type="button" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">Delete User</h3>
-			</div>
-			<div class="modal-body">
-				<p>Do you really want to delete it?</p>
-			</div>
-			<div class="modal-footer">
-					<button class="btn" name="deleteUser" type="submit">
-						Confirm
-					</button>
-					<button class="btn" data-dismiss="modal" aria-hidden="true">
-						Close
-					</button>
+        <script> index = 0; </script>
+        {%- for newUser in newUsers %}
+        <tr>
+          <td><script> document.write(++index); </script>
+          <td>{{ newUser[0] }}
+          <td>{{ newUser[1] }}
+          <td>{% if newUser[2]=="User" %}Student{% else %}{{ newUser[2] }}{% endif %}
+          <td>{{ newUser[4] }}
+          <td>{{ newUser[6] }}
+          <td>
+            <label class="checkbox-center">
+              <input class="box-check" name="{{ newUser[0] }}"
+                     type="checkbox" value="{{ newUser[0] }}">
+            </label>
+        {% endfor -%}
+    </table>
+    <a href="{{ url_for('GradeServer.server_add_user') }}">
+      <button class="btn" name="addUser" type="submit">Done</button>
+    </a>
+  </div>
+  <!-- ///// Delete case /////
+        if any item choiced -->
+    <div class="modal hide fade" id="deleteModal"
+         aria-labelledby="deleteModalLabel" aria-hidden="true"
+         role="dialog" tabindex="-1">
+      <div class="modal-header">
+        <button class="close" data-dismiss="modal"
+                type="button" aria-hidden="true">x</button>
+        <h3 id="deleteModalLabel">Delete User</h3>
+      </div>
+      <div class="modal-body">
+        <p>Do you really want to delete it?</p>
+      </div>
+      <div class="modal-footer">
+          <button class="btn" name="deleteUser" type="submit">
+            Confirm
+          </button>
+          <button class="btn" data-dismiss="modal" aria-hidden="true">
+            Close
+          </button>
 </form>
-			</div>
-		</div>
-		<!-- no items choiced -->
-		<div class="modal hide fade" id="deleteNoItem"
-				 aria-labelledby="deleteModalLabel" aria-hidden="true"
-				 role="dialog" tabindex="-1">
-			<div class="modal-header">
-				<button class="close" type="button"
-								data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">Delete User</h3>
-			</div>
-			<div class="modal-body">
-				<p>No items choiced</p>
-			</div>
-			<div class="modal-footer">
-				<button class="btn" data-dismiss="modal" aria-hidden="true">
-					Close
-				</button>
-			</div>
-		</div>
-		<!-- ///// end hidden modal pop ///// -->
+      </div>
+    </div>
+    <!-- no items choiced -->
+    <div class="modal hide fade" id="deleteNoItem"
+         aria-labelledby="deleteModalLabel" aria-hidden="true"
+         role="dialog" tabindex="-1">
+      <div class="modal-header">
+        <button class="close" type="button"
+                data-dismiss="modal" aria-hidden="true">x</button>
+        <h3 id="deleteModalLabel">Delete User</h3>
+      </div>
+      <div class="modal-body">
+        <p>No items choiced</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">
+          Close
+        </button>
+      </div>
+    </div>
+    <!-- ///// end hidden modal pop ///// -->
 </div>
 {% endblock -%}

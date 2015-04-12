@@ -445,7 +445,7 @@ def class_add_user():
         allUsers = dao.query(Members).\
                        filter(or_(Members.authority == "User",
                                   Members.authority == "CourseAdministrator")).\
-                       all()
+                       subquery()
     except:
         error = 'Error has been occurred while searching all users'
         return render_template('/class_add_user.html', 
@@ -456,6 +456,7 @@ def class_add_user():
                                allDepartments = [],
                                authorities = authorities,
                                newUsers = newUsers)
+    
     
     try:
         allColleges = dao.query(Colleges).\
@@ -737,7 +738,8 @@ def class_add_user():
                                                RegisteredCourses.courseId == RegisteredProblems.courseId).\
                                           filter(RegisteredProblems.courseId == targetCourseId)).\
                                      all()
-                                                             
+                """
+                # user folder creation                                             
                 for registeredProblem, problem, registeredCourse in registeredProblems:
                     userFolderPath = '%s/%s/%s_%s/%s_%s/%s' % (projectPath,
                                                                coursesPath,
@@ -751,7 +753,7 @@ def class_add_user():
                         os.makedirs(userFolderPath)                 
                         
                 ## creation end
-            
+                """
             newUsers = [] # initialize add user list
             return redirect(url_for('.class_manage_user'))
             
