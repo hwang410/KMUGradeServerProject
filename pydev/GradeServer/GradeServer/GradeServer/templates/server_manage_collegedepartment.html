@@ -301,20 +301,17 @@ $("#addline_college").bind("click", function(){
 $("#resetAddCollegeForm").bind("click", function(){
 	var keys = ['collegeCode', 'collegeName'];
 	var placeholders = ['Optional', 'College Name'];
-	document.getElementById("addCollegeForm").innerHTML = 
-		"<tr>" +
-			"<td>" +
-				"<input class='input-medium" + 
-							"'name='" + keys[0] + "1" +
-							"'type='text" +
-							"'placeholder='" + placeholders[0] +
-							"'>" +
-			"<td>" +
-				"<input class='input-medium" + 
-							"'name='" + keys[1] + "1" +
-							"'type='text" +
-							"'placeholder='" + placeholders[1] +
-							"'>";
+	var newInnerHTML = "";
+	for(var i=0;i<2;i++){
+		newInnerHTML += "<tr>" +
+								"<td>" +
+									"<input class='input-medium" + 
+										    "'name='" + keys[i] + "1" +
+										    "'type='text" +
+										    "'placeholder='" + placeholders[i] +
+										    "'>";
+	}
+	document.getElementById("addCollegeForm").innerHTML = newInnerHTML;
 });
 
 $("#addline_department").bind("click", function(){
@@ -328,18 +325,32 @@ $("#addline_department").bind("click", function(){
 
 	var newRow = targetTable.insertRow(1);
 
-	var keys = ['departmentCode', 'departmentName'];
-	var placeholders = ['Optional', 'Department Name'];
+	var keys = ['collegeIndex', 'departmentCode', 'departmentName'];
+	var placeholders = ['', 'Optional', 'Department Name'];
+
 	for(var i=0;i<targetTable.rows[0].cells.length;i++){
-		newRow.insertCell(i).innerHTML = 
-			"<tr>" +
-				"<td>" +
-					"<input class='input-medium" + 
+		var newCell = "<tr><td>";
+		if(i == 0){
+			newCell = "<select id='" + keys[i] + numOfRow +
 								"'name='" + keys[i] + numOfRow +
-								"'type='text" +
-								"'placeholder='" + placeholders[i] +
-								"'values='" + $("#" + keys[i] + "1").val() +
-								"'>";
+								"'style='width:115px'>" +
+			               	{%- for college in allColleges %}
+			               	"<option>" +
+			                    	"{{ college.collegeIndex }} {{ college.collegeName }}" +
+			                  	"</option>" +
+			                  	{% endfor -%}
+			               "</select>";
+		}	
+		else{
+			newCell += "<input class='input-medium" + 
+						        "'name='" + keys[i] + numOfRow +
+						        "'type='text" +
+						        "'placeholder='" + placeholders[i] +
+						        "'values='" + $("#" + keys[i] + "1").val() +
+						        "'>";
+		}
+		newRow.insertCell(i).innerHTML = newCell;
+					
 	}
 	reset_values();
 });
@@ -349,17 +360,25 @@ $("#resetAddDepartmentForm").bind("click", function(){
 	document.getElementById("addDepartmentForm").innerHTML = 
 		"<tr>" +
 			"<td>" +
-				"<input class='input-medium" + 
-							"'name='" + keys[0] + "1" +
-							"'type='text" +
-							"'placeholder='" + placeholders[0] +
-							"'>" +
+				"<select id='collegeIndex1' name='collegeIndex1' style='width:115px'>" +
+	               	{%- for college in allColleges %}
+	                  	"<option>" +
+	                    	"{{ college.collegeIndex }} {{ college.collegeName }}" +
+	                  	"</option>" +
+	                  	{% endfor -%}
+	               "</select>" +
 			"<td>" +
 				"<input class='input-medium" + 
-							"'name='" + keys[1] + "1" +
-							"'type='text" +
-							"'placeholder='" + placeholders[1] +
-							"'>";
+					    "'name='" + keys[0] + "1" +
+					    "'type='text" +
+					    "'placeholder='" + placeholders[0] +
+					    "'>" +
+			"<td>" +
+				"<input class='input-medium" + 
+					    "'name='" + keys[1] + "1" +
+					    "'type='text" +
+					    "'placeholder='" + placeholders[1] +
+					    "'>";
 });
 </script>
 {% endblock -%}

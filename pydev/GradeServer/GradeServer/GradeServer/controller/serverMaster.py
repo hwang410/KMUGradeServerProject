@@ -9,7 +9,7 @@
 
 """
 
-from flask import request, render_template, url_for, redirect, session
+from flask import request, render_template, url_for, redirect, session, flash
 from sqlalchemy import func, and_
 from datetime import datetime
 
@@ -145,50 +145,51 @@ def server_manage_collegedepartment():
                 
         if isNewCollege:
             for newPart in newColleges:
-                try:
-                    newCollege = Colleges(collegeCode = newPart[0],
-                                          collegeName = newPart[1])
-                    dao.add(newCollege)
-                    dao.commit()
-                except:
-                    error = 'Error has been occurred while making new college'
-                    dao.rollback()
-                    return render_template('/server_manage_collegedepartment.html', 
-                                           error=error,
-                                           allColleges = allColleges,
-                                           allDepartments = allDepartments)
+                if newPart[1]:
+                    try:
+                        newCollege = Colleges(collegeCode = newPart[0],
+                                              collegeName = newPart[1])
+                        dao.add(newCollege)
+                        dao.commit()
+                    except:
+                        error = 'Error has been occurred while making new college'
+                        dao.rollback()
+                        return render_template('/server_manage_collegedepartment.html', 
+                                               error=error,
+                                               allColleges = allColleges,
+                                               allDepartments = allDepartments)
             newColleges = []
             
         if isNewDepartment:
             newDepartment = []
             for newPart in newDepartments:
-                try:
-                    newDepartment = Departments(departmentCode = newPart[0],
-                                                departmentName = newPart[1])
-                    dao.add(newDepartment)
-                    dao.commit()
-                except:
-                    error = 'Error has been occurred while making new department'
-                    dao.rollback()
-                    return render_template('/server_manage_collegedepartment.html', 
-                                           error=error,
-                                           allColleges = allColleges,
-                                           allDepartments = allDepartments)
-                try:
-                    index = dao.query(func.max(Departments.departmentIndex)).scalar()
-                    print "index ", newPart[2], index
-                    relationToCollege = DepartmentsOfColleges(collegeIndex = newPart[2],
-                                                              departmentIndex = index)
-                    dao.add(relationToCollege)
-                    dao.commit()
-                except:
-                    error = 'Error has been occurred while making new ralation of department'  
-                    dao.rollback()
-                    return render_template('/server_manage_collegedepartment.html', 
-                                           error=error,
-                                           allColleges = allColleges,
-                                           allDepartments = allDepartments)
-                    
+                if newPart[1]:
+                    try:
+                        newDepartment = Departments(departmentCode = newPart[0],
+                                                    departmentName = newPart[1])
+                        dao.add(newDepartment)
+                        dao.commit()
+                    except:
+                        error = 'Error has been occurred while making new department'
+                        dao.rollback()
+                        return render_template('/server_manage_collegedepartment.html', 
+                                               error=error,
+                                               allColleges = allColleges,
+                                               allDepartments = allDepartments)
+                    try:
+                        index = dao.query(func.max(Departments.departmentIndex)).scalar()
+                        relationToCollege = DepartmentsOfColleges(collegeIndex = newPart[2],
+                                                                  departmentIndex = index)
+                        dao.add(relationToCollege)
+                        dao.commit()
+                    except:
+                        error = 'Error has been occurred while making new relation of department'  
+                        dao.rollback()
+                        return render_template('/server_manage_collegedepartment.html', 
+                                               error=error,
+                                               allColleges = allColleges,
+                                               allDepartments = allDepartments)
+                        
             newDepartments = []
             
         return redirect(url_for('.server_manage_collegedepartment'))
@@ -291,7 +292,6 @@ def server_manage_problem():
                     
                     # splitting by .(dot) or _(under bar)
                     problemName = re.split('_|\.', os.listdir(tmpPath)[0])[0]
-                    print problemName
                     problemInformationPath = '%s/%s.txt' % (tmpPath, problemName)
                     problemInformation = open(problemInformationPath, 'r').read()
                     nextIndex += 1
@@ -812,7 +812,7 @@ def server_add_user():
                     dao.add(freshman)
                     dao.commit()
                 except:
-                    dao.rollback()
+                    error = "There are few members already registered. "
                 
                 try:
                     departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[0], 
@@ -821,9 +821,14 @@ def server_add_user():
                     dao.add(departmentInformation)
                     dao.commit()
                 except:
-                    dao.rollback()
+                    if not error:
+                        error = ""
+                    error += "Duplicated information is already exist"
                     
             newUsers = [] # initialize add user list
+            if error:
+                return redirect(url_for('.server_add_user'))
+            
             return redirect(url_for('.server_manage_user'))
             
         elif 'deleteUser' in request.form:
@@ -844,9 +849,6 @@ def server_add_user():
                         break
                     index += 1
                                
-    
-    for a, b, c in allDepartments:
-        print c.departmentIndex,c.departmentName
     return render_template('/server_add_user.html', 
                            error = error, 
                            allColleges = allColleges,
