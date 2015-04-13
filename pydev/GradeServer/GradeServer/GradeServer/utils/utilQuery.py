@@ -60,14 +60,32 @@ def select_accept_courses():
     return myCourses
 
 '''
+Submissions to Last Submitted
+'''
+def submissions_last_submitted():
+    
+    return dao.query(Submissions.memberId,
+                     Submissions.problemId,
+                     Submissions.courseId,
+                     func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
+               group_by(Submissions.memberId,
+                        Submissions.problemId,
+                        Submissions.courseId)
+                                                   
+                                                   
+'''
  DB Select basic rank
  '''
-def select_rank(submissions, sortCondition = RATE):
+def select_rank(submissions):
     #Get SubmitCount
     submissionCount = dao.query(submissions.c.memberId,
-                                func.sum(submissions.c.solutionCheckCount).label('submissionCount')).\
-                          group_by(submissions.c.memberId).\
+                                func.sum(submissions.c.solutionCheckCount).label('sumOfSolutionCheckCount')).\
+                                group_by(submissions.c.memberId).\
                           subquery()
+    for rw in dao.query(submissions).all():
+        print rw.memberId, rw.solutionCheckCount
+    for rw in dao.query(submissionCount).all():
+        print rw.memberId, rw.sumOfSolutionCheckCount
     #Get Solved Count
     status = dao.query(submissions.c.memberId,
                        func.count(submissions.c.status).label('solvedCount')).\
@@ -79,8 +97,15 @@ def select_rank(submissions, sortCondition = RATE):
                             status.c.solvedCount,
                             (status.c.solvedCount / submissionCount.c.submissionCount * 100).label('solvedRate')).\
                       join(status,
-                           submissionCount.c.memberId == status.c.memberId).\
-                      subquery()
+                           submissionCount.c.memberId == status.c.memberId)
+    
+    return submissions
+
+
+'''
+Submissions Sorting Condtion
+'''
+def submissions_sorted(submissions, sortCondition = RATE):
     #Get Comment
     # rate 정렬
     if sortCondition == RATE:

@@ -36,8 +36,8 @@ $(function() {
 		</thead>
 		{%- for rankMemberRecord in rankMemberRecords %}
 		<tr>
-			<td style ='vertical-align: middle'>{{ loop.index + (pages['pageNum'] - 1) * page['LIST'] }}</td>
-			<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', sortCondition ='submittedDate', pageNum =1) }}">{{ rankMemberRecord.memberId }}</a></td>
+			<td style ='vertical-align: middle'>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
+			<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">{{ rankMemberRecord.memberId }}</a></td>
 			<td style ='vertical-align: middle'>{{ rankMemberRecord.comment }}</td>
 			<td style ='vertical-align: middle'>{{ rankMemberRecord.solvedCount }}</td>
 			<td style ='vertical-align: middle'>{{ rankMemberRecord.submissionCount }}</td>
