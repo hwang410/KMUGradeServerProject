@@ -15,13 +15,12 @@ from sqlalchemy.dialects.mysql import VARCHAR, INTEGER
 
 from GradeServer.model import Base
 from GradeServer.model.members import Members
-from GradeServer.model.colleges import Colleges
-from GradeServer.model.departments import Departments
+from GradeServer.model.departmentsOfColleges import DepartmentsOfColleges
 
 class DepartmentsDetailsOfMembers(Base) :
     
     __tablename__ ='DepartmentsDetailsOfMembers'
     
     memberId =Column (VARCHAR (20), ForeignKey (Members.memberId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
-    collegeIndex =Column (INTEGER (unsigned =True), ForeignKey (Colleges.collegeIndex, onupdate ="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable =False)
-    departmentIndex =Column (INTEGER (unsigned =True), ForeignKey (Departments.departmentIndex, onupdate="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable =False)
+    collegeIndex =Column (INTEGER (unsigned =True), ForeignKey (DepartmentsOfColleges.collegeIndex, onupdate ="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable =False)
+    departmentIndex =Column (INTEGER (unsigned =True), ForeignKey (DepartmentsOfColleges.departmentIndex, onupdate="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable =False)
