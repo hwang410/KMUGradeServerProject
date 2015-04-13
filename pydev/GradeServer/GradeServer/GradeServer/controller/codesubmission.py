@@ -67,7 +67,9 @@ def upload(courseId, problemId):
     sumOfSubmittedFileSize = 0
     usedLanguage = 0
     usedLanguageVersion = 0
-    
+
+    if not os.path.exists(nonSpaceFilePath):
+        os.makedirs(nonSpaceFilePath)
     if not os.path.exists(nonSpaceTempPath):
         os.makedirs(nonSpaceTempPath)
     else:
@@ -147,8 +149,7 @@ def upload(courseId, problemId):
         if len(glob.glob(os.path.join(nonSpaceFilePath, '*.*'))) > 0:
             for filename in glob.glob(os.path.join(nonSpaceFilePath, '*.*')):
                 shutil.copy(filename, nonSpaceTempPath)
-        else:
-            unknown_error("서버 오류입니다. 다시 제출해 주세요.")
+        unknown_error("서버 오류입니다. 다시 제출해 주세요.")
          
     for filename in glob.glob(os.path.join(nonSpaceFilePath, '*.*')):
         os.remove(filename)
@@ -286,7 +287,8 @@ def code(courseId, pageNum, problemId):
     filePath = '/mnt/shared/CurrentCourses/%s_%s/%s_%s/%s' %(courseId, courseName, problemId, problemName, memberId)
     nonSpaceTempPath = tempPath.replace(' ', '')
     nonSpaceFilePath = filePath.replace(' ', '')
-    
+    if not os.path.exists(nonSpaceFilePath):
+        os.makedirs(nonSpaceFilePath)
     if not os.path.exists(nonSpaceTempPath):
         os.makedirs(nonSpaceTempPath)
     else:
@@ -335,7 +337,7 @@ def code(courseId, pageNum, problemId):
             unknown_error("DB 에러입니다")
     
     elif usedLanguageName == 'JAVA':
-        className = re.search('public class (.*)', tests)
+        className = re.search(r'public\s+class\s+(\S+)', tests)
         className.group(1)
         filename = '%s.java' %(className.group(1))
         fout = open(os.path.join(nonSpaceTempPath, filename), 'w')
