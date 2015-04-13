@@ -6,6 +6,7 @@ from sqlalchemy import func
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
+from GradeServer.utils.utilQuery import sum_of_solved_problem_count
 from GradeServer.utils.utils import *
 
 from GradeServer.database import dao
@@ -52,7 +53,8 @@ def user_history(memberId, sortCondition, pageNum):
                     first().\
                     sumOfSubmissionCount  
         # 모든 제출 정보
-        submissions = dao.query(Submissions.problemId,
+        submissions = dao.query(Submissions.memberId,
+                                Submissions.problemId,
                                 Submissions.courseId, 
                                 Submissions.status,
                                 Submissions.score,
@@ -66,41 +68,39 @@ def user_history(memberId, sortCondition, pageNum):
                                 Submissions.usedLanguage == Languages.languageIndex).\
                           subquery()
         # 중복 제거푼 문제숫
-        sumOfSolvedProblemCount = dao.query(submissions).\
-                                      group_by(submissions.c.problemId,
-                                               submissions.c.courseId).\
-                                      subquery()
-                                      
-        sumOfSolvedProblemCount = dao.query(func.count(sumOfSolvedProblemCount.c.problemId).label('sumOfSolvedProblemCount')).\
-                                      filter(sumOfSolvedProblemCount.c.status == SOLVED).\
-                                      subquery()
+        sumOfSolvedProblemCount = sum_of_solved_problem_count(dao.query(submissions).\
+                                                                  filter(submissions.c.status == SOLVED).\
+                                                                  group_by(submissions.c.problemId,
+                                                                           submissions.c.courseId).\
+                                                                  subquery()).\
+                                  subquery()
         # 모든 맞춘 횟수
-        sumOfSolvedCount = dao.query(func.count(submissions.c.problemId).label('sumOfSolvedCount')).\
+        sumOfSolvedCount = dao.query(func.count(submissions.c.memberId).label('sumOfSolvedCount')).\
                                filter(submissions.c.status == SOLVED).\
                                subquery()
         # 틀린 횟수
-        sumOfWrongAnswerCount = dao.query(func.count(submissions.c.problemId).label('sumOfWrongAnswerCount')).\
+        sumOfWrongAnswerCount = dao.query(func.count(submissions.c.memberId).label('sumOfWrongAnswerCount')).\
                                     filter(submissions.c.status == WRONG_ANSWER).\
                                     subquery()
         # 타임 오버 횟수
-        sumOfTimeOverCount = dao.query(func.count(submissions.c.problemId).label('sumOfTimeOverCount')).\
+        sumOfTimeOverCount = dao.query(func.count(submissions.c.memberId).label('sumOfTimeOverCount')).\
                                  filter(submissions.c.status == TIME_OVER).\
                                  subquery()
         # 컴파일 에러 횟수
-        sumOfCompileErrorCount = dao.query(func.count(submissions.c.problemId).label('sumOfCompileErrorCount')).\
+        sumOfCompileErrorCount = dao.query(func.count(submissions.c.memberId).label('sumOfCompileErrorCount')).\
                                      filter(submissions.c.status == COMPILE_ERROR).\
                                      subquery()
         # 런타임 에러 횟수
-        sumOfRunTimeErrorCount = dao.query(func.count(submissions.c.problemId).label('sumOfRunTimeErrorCount')).\
+        sumOfRunTimeErrorCount = dao.query(func.count(submissions.c.memberId).label('sumOfRunTimeErrorCount')).\
                                      filter(submissions.c.status == RUN_TIME_ERROR).\
                                      subquery()
         # 서버 에러 횟수
-        sumOfServerErrorCount = dao.query(func.count(submissions.c.problemId).label('sumOfServerErrorCount')).\
+        sumOfServerErrorCount = dao.query(func.count(submissions.c.memberId).label('sumOfServerErrorCount')).\
                                     filter(submissions.c.status == SERVER_ERROR).\
                                     subquery()
         try:
                         # 차트 정보
-            chartSubmissionRecords = dao.query(sumOfSolvedProblemCount,
+            chartSubmissionRecords = dao.query(sumOfSolvedProblemCount.c.sumOfSolvedProblemCount,
                                                sumOfSubmissionCount,
                                                sumOfSolvedCount,
                                                sumOfWrongAnswerCount,

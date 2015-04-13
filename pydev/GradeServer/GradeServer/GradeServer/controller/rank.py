@@ -40,31 +40,8 @@ def rank(sortCondition, pageNum, error =None):
         except Exception:
             memberRecords = []
             
-        lastSubmissions = submissions_last_submitted().subquery()
-        for raw in dao.query(Submissions.memberId,
-                                            Submissions.problemId,
-                                            Submissions.courseId,
-                                            Submissions.solutionCheckCount,
-                                            Submissions.status).\
-                                      join(lastSubmissions,
-                                           and_(Submissions.memberId == lastSubmissions.c.memberId,
-                                           Submissions.problemId == lastSubmissions.c.problemId,
-                                           Submissions.courseId == lastSubmissions.c.courseId)).\
-                                      all():
-            print raw.memberId, raw.problemId, raw.courseId, raw.solutionCheckCount, raw.status
-
-        submissions = select_rank(dao.query(Submissions.memberId,
-                                            Submissions.problemId,
-                                            Submissions.courseId,
-                                            Submissions.solutionCheckCount,
-                                            Submissions.status).\
-                                      join(lastSubmissions,
-                                           and_(Submissions.memberId == lastSubmissions.c.memberId,
-                                                Submissions.problemId == lastSubmissions.c.problemId,
-                                                Submissions.courseId == lastSubmissions.c.courseId,
-                                                Submissions.solutionCheckCount == lastSubmissions.c.solutionCheckCount)).\
-                                      subquery()).\
-                      subquery()
+        # Last Submission Max Count
+        submissions = select_rank(submissions_last_submitted().subquery()).subquery()
         
         
         # records count
@@ -82,8 +59,9 @@ def rank(sortCondition, pageNum, error =None):
         # Find MemberId 뷰 호출
         if request.method == 'POST':
                         # 순차 탐색으로 찾아야 함
-            for i in range(pages['allPage'] + 1):
-                rankSub = get_page_record(submissions,
+            for i in range(1, pages['allPage'] + 1):
+                print i
+                rankSub = get_page_record(dao.query(submissions),
                                           i).\
                                   subquery()
                 # finding MemberId in Pages

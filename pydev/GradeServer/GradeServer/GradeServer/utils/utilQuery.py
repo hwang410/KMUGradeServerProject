@@ -65,39 +65,54 @@ Submissions to Last Submitted
 def submissions_last_submitted():
     
     return dao.query(Submissions.memberId,
-                     Submissions.problemId,
                      Submissions.courseId,
+                     Submissions.problemId,
                      func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
                group_by(Submissions.memberId,
                         Submissions.problemId,
                         Submissions.courseId)
                                                    
-                                                   
+           
+''' 
+Submissions Duplication Solved Exception
+'''
+def sum_of_solved_problem_count(submissions):
+    
+    return dao.query(submissions.c.memberId,
+                     func.count(submissions.c.memberId).label('sumOfSolvedProblemCount')).\
+               filter(submissions.c.status == SOLVED)
+                            
+                            
+                                          
 '''
  DB Select basic rank
  '''
 def select_rank(submissions):
-    #Get SubmitCount
+    # # Total Submission Count (Rank Page Server Error Exception)
     submissionCount = dao.query(submissions.c.memberId,
-                                func.sum(submissions.c.solutionCheckCount).label('sumOfSolutionCheckCount')).\
-                                group_by(submissions.c.memberId).\
+                                func.sum(submissions.c.solutionCheckCount).label('sumOfSubmissionCounts')).\
+                          group_by(submissions.c.memberId).\
                           subquery()
-    for rw in dao.query(submissions).all():
-        print rw.memberId, rw.solutionCheckCount
-    for rw in dao.query(submissionCount).all():
-        print rw.memberId, rw.sumOfSolutionCheckCount
-    #Get Solved Count
-    status = dao.query(submissions.c.memberId,
-                       func.count(submissions.c.status).label('solvedCount')).\
-                 filter(submissions.c.status == SOLVED).\
-                 group_by(submissions.c.memberId).subquery()
+        # 중복 제거푼 문제숫
+    sumOfSolvedProblemCount = sum_of_solved_problem_count(dao.query(Submissions.problemId,
+                                                                    Submissions.courseId,
+                                                                    Submissions.status,
+                                                                    submissionCount).\
+                                                              filter(Submissions.status == SOLVED).\
+                                                              join(submissionCount,
+                                                                   Submissions.memberId == submissionCount.c.memberId).\
+                                                              group_by(Submissions.memberId,
+                                                                       Submissions.problemId,
+                                                                       Submissions.courseId).\
+                                                              subquery()).\
+                                  subquery()
     #SubmitCount and SolvedCount Join
     submissions = dao.query(submissionCount.c.memberId,
-                            submissionCount.c.submissionCount,
-                            status.c.solvedCount,
-                            (status.c.solvedCount / submissionCount.c.submissionCount * 100).label('solvedRate')).\
-                      join(status,
-                           submissionCount.c.memberId == status.c.memberId)
+                            submissionCount.c.sumOfSubmissionCounts,
+                            sumOfSolvedProblemCount.c.sumOfSolvedProblemCount,
+                            (sumOfSolvedProblemCount.c.sumOfSolvedProblemCount / submissionCount.c.sumOfSubmissionCounts * 100).label('solvedRate')).\
+                      join(sumOfSolvedProblemCount,
+                           submissionCount.c.memberId == sumOfSolvedProblemCount.c.memberId)
     
     return submissions
 
