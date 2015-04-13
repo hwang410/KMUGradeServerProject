@@ -724,36 +724,7 @@ def class_add_user():
                         dao.commit()
                     except:
                         dao.rollback()
-                        
-                ## create user folder 
-                newMemberId = newUser[0]
-                targetCourseId = newUser[7].split()[0]
                 
-                registeredProblems = (dao.query(RegisteredProblems, 
-                                                Problems, 
-                                                RegisteredCourses).\
-                                          join(Problems, 
-                                               Problems.problemId == RegisteredProblems.problemId).\
-                                          join(RegisteredCourses,
-                                               RegisteredCourses.courseId == RegisteredProblems.courseId).\
-                                          filter(RegisteredProblems.courseId == targetCourseId)).\
-                                     all()
-                """
-                # user folder creation                                             
-                for registeredProblem, problem, registeredCourse in registeredProblems:
-                    userFolderPath = '%s/%s/%s_%s/%s_%s/%s' % (projectPath,
-                                                               coursesPath,
-                                                               registeredProblem.courseId, 
-                                                               registeredCourse.courseName.replace(' ', ''), 
-                                                               registeredProblem.problemId, 
-                                                               problem.problemName.replace(' ', ''), 
-                                                               newMemberId)
-                    print userFolderPath
-                    if not os.path.exists(userFolderPath):
-                        os.makedirs(userFolderPath)                 
-                        
-                ## creation end
-                """
             newUsers = [] # initialize add user list
             return redirect(url_for('.class_manage_user'))
             

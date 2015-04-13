@@ -685,6 +685,7 @@ def server_add_user():
                     value, index = re.findall('\d+|\D+', form)
                     index = int(index)
                     data = request.form[form]
+                    print "va:", value, "id:",index, "dt:",data
                     if value == 'userId':
                         newUser[index - 1][0] = data
                     elif value == 'username':
@@ -692,7 +693,7 @@ def server_add_user():
                     elif value == 'authority':
                         newUser[index - 1][2] = data
                     elif value == 'college':
-                        newUser[index - 1][3] = data.split()[0]
+                        newUser[index - 1][3] = data.split()[0]    
                         try:
                             newUser[index - 1][4] = dao.query(Colleges).\
                                                         filter(Colleges.collegeIndex == newUser[index - 1][3]).\
@@ -705,7 +706,7 @@ def server_add_user():
                                                    allColleges = allColleges,
                                                    allDepartments = allDepartments,
                                                    authorities = authorities,
-                                                   newUsers = newUsers)
+                                                   newUsers = newUsers)               
                     elif value == 'department':
                         newUser[index - 1][5] = data.split()[0]
                         try:
@@ -721,6 +722,8 @@ def server_add_user():
                                                    allDepartments = allDepartments,
                                                    authorities = authorities,
                                                    newUsers = newUsers)
+                        
+                        
                     
             for index in range(numberOfUsers):
                 newUsers.append(newUser[index])
@@ -751,6 +754,7 @@ def server_add_user():
                                     
                                 elif key == 'college':
                                     newUser[3] = value
+                                    print "col :", value
                                     try:
                                         newUser[4] = dao.query(Colleges).\
                                                          filter(Colleges.collegeIndex == value).\
@@ -767,6 +771,7 @@ def server_add_user():
                                         
                                 elif key == 'department':
                                     newUser[5] = value
+                                    print "dep :", value
                                     try:
                                         newUser[6] = dao.query(Departments).\
                                                          filter(Departments.departmentIndex == value).\
@@ -816,6 +821,7 @@ def server_add_user():
                         
         elif 'addUser' in request.form:
             for newUser in newUsers:
+                print newUser
                 try:
                     if newUser[2] == 'Course Admin':
                         newUser[2] = 'CourseAdministrator'

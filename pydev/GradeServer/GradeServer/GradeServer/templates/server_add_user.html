@@ -7,127 +7,142 @@
 <script>
 $(function() {
 	$("#addline").bind('click',function(){
-	  var targetTable = document.getElementById('indivisual');
-	  var numOfRow = targetTable.rows.length;
+		var targetTable = document.getElementById('indivisual');
+		var numOfRow = targetTable.rows.length;
 
-	  reset_val = function(){
-	    $("#userId1").val("");
-	    $("#username1").val("");
-	    $("#authority1").val("");
-	    $("#college1").val("");
-	    $("#department1").val("");
-	  }
+		reset_val = function(){
+			$("#userId1").val("");
+			$("#username1").val("");
+			$("#authority1").val("");
+			$("#college1").val("");
+			$("#department1").val("");
+		}
 
-	  var newRow = targetTable.insertRow(2);
-	  var uploadObj;
-	  var keys = ['userId', 'username', 'college', 'department', 'authority'];
-	  var placeholders = ['ID', 'Name', 'College', 'Department', 'Authority'];
-	  var formsize = ['small', 'mini', 'medium', 'medium', 'medium'];
+		var newRow = targetTable.insertRow(2);
+		var keys = ['userId', 'username', 'college', 'department', 'authority'];
+		var placeholders = ['ID', 'Name', 'College', 'Department', 'Authority'];
+		var formsize = ['small', 'mini', 'medium', 'medium', 'medium'];
+		var uploadObj;
 
-	  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
-	  	uploadObj = "<td>";
-	  	if(i < 2){
-	    	uploadObj += "<input class = 'input-" + formsize[i] + " formLine1' " +
-													  "id = '" + keys[i] + numOfRow + "' " +
-													  "name = '" + keys[i] + numOfRow + "' " +
-													  "type='text' form='addIndivisualUser' " +
-													  "placeholder = '" + placeholders[i] + "' " +
-													  "value = '" + $("#" + keys[i] + "1").val() +"' >";
-	    }
-	    else{
-	    	uploadObj += "<select class='input-" + formsize[i] + "' " +
-	    											 "id='" + keys[i] + numOfRow + "' " +
-											       "name='" + keys[i] + numOfRow + "' " +
-													   "value='" + $("#" + keys[i] + "1").val() + "' " +
-													   "form='addIndivisualUser'>";
-	    	switch(i){
-	    		case 2:
-	    			{%- for college in allColleges %}
+		for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
+		  	uploadObj = "<td>";
+		  	if(i < 2){
+			    	uploadObj += "<input class = 'input-" + formsize[i] + " formLine1' " +
+									    "id = '" + keys[i] + numOfRow + "' " +
+									    "name = '" + keys[i] + numOfRow + "' " +
+									    "type='text' form='addIndivisualUser' " +
+									    "placeholder = '" + placeholders[i] + "' " +
+									    "value = '" + $("#" + keys[i] + "1").val() +"' >";
+		    }
+		    else{
+			    	uploadObj += "<select class='input-" + formsize[i] + "' " +
+										 "id='" + keys[i] + numOfRow + "' " +
+										 "name='" + keys[i] + numOfRow + "' " +
+										 "value='" + $("#" + keys[i] + "1").val() + "' " +
+										 "form='addIndivisualUser'>";
+			    	switch(i){
+			    		case 2:
+			    			var index = $("#" + keys[i] + "1 option:selected").text().match(/(\d+)/g);
+			    			if(index == null){
+			    				uploadObj += "<option> select college </option>";
+			    			}
+			    			{%- for college in allColleges %}
 						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
+						if(index == "{{ college.collegeIndex }}"){
 							uploadObj += " selected";
 						}
 						uploadObj += ">{{ college.collegeIndex }} {{ college.collegeName }} </option>";
 						{% endfor -%}
-	    			break;
-	    		case 3:
-	    			{%- for department in allDepartments %}
+			    			break;
+			    		case 3:
+			    			var collegeIndex = $("#" + keys[i-1] + "1 option:selected").text().match(/(\d+)/g);
+			    			var departmentIndex = $("#" + keys[i] + "1 option:selected").text().match(/(\d+)/g);
+			    			{%- for relation, collegeInfo, departmentInfo in allDepartments %}
+			    				if("{{ relation.collegeIndex }}" == collegeIndex){
+								uploadObj += "<option";
+								if(departmentIndex == "{{ departmentInfo.departmentIndex }}"){
+									uploadObj += " selected";
+								}
+								uploadObj += 
+									">{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}" +
+									"</option>";
+							}
+						{% endfor -%}	
+			    			break;
+			    		case 4:
+			    			var value = $("#" + keys[i] + "1").val();
+			    			{%- for authority in authorities %}
 						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
-							uploadObj += " selected";
-						}
-						uploadObj += ">{{ department.departmentIndex }} {{ department.departmentName }} </option>";
-						{% endfor -%}
-	    			break;
-	    		case 4:
-	    			{%- for authority in authorities %}
-						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
+						if(value == "{{ authority }}"){
 							uploadObj += " selected";
 						}
 						uploadObj += ">{{ authority }} </option>";
 						{% endfor -%}
-	    			break;
-	    	}
-	    }
-	    newRow.insertCell(i).innerHTML = uploadObj;
-	  }
+			    			break;
+			    	}
+		    }
+		    newRow.insertCell(i).innerHTML = uploadObj;
+		}
 
-	  reset_val();
+		$("#college"+numOfRow).bind("click", function(){
+			LineOnClickController(numOfRow);
+		});
+
+		reset_val();
+		var initialOptions = "<option> select college </option>" +
+						   	   "{%- for college in allColleges %}" +
+							   "<option>" +
+						   	   "{{ college.collegeIndex }} {{ college.collegeName }}" +
+						   	   "</option>" +
+						   	   "{% endfor -%}";
+		document.getElementById("college1").innerHTML = initialOptions;
+		document.getElementById("department1").innerHTML = "";
 	});
-  $("#resetIndivisualUserForm").bind('click',function(){
+
+	$("#resetIndivisualUserForm").bind('click',function(){
 		var keys = ['userId', 'username', 'college', 'department', 'authority'];
-	  var placeholders = ['ID', 'Name', 'College', 'Department', 'Authority'];
-	  var formsize = ['small', 'mini', 'medium', 'medium', 'medium'];
-	  var uploadObj = "<td>";
-	  
-	  for(var i = 0; i < keys.length; i++){  
-	  	if(i < 2){
-		    uploadObj += "<input class = 'input-" + formsize[i] + " formLine1' " +
-    												"id = '" + keys[i] + "1' " +
-    												"name = '" + keys[i] + "1' " +
-    												"type='text' form='addIndivisualUser' " +
-    												"placeholder = '" + placeholders[i] + "' " +
-    												"value = ''>";
+		var placeholders = ['ID', 'Name', 'College', 'Department', 'Authority'];
+		var formsize = ['small', 'mini', 'medium', 'medium', 'medium'];
+		var uploadObj = "<tr>";
+
+		for(var i = 0; i < keys.length; i++){  
+			uploadObj += "<td>"
+		  	if(i < 2){
+			    uploadObj += "<input class ='input-" + formsize[i] + " formLine1' " +
+												"id = '" + keys[i] + "1' " +
+												"name = '" + keys[i] + "1' " +
+												"type='text' form='addIndivisualUser' " +
+												"placeholder = '" + placeholders[i] + "' " +
+												"value = ''>";
 			}
 			else{
 				uploadObj += "<select class='input-" + formsize[i] + "' " +
-	    											 "id='" + keys[i] + numOfRow + "' " +
-											       "name='" + keys[i] + numOfRow + "' " +
-													   "value='" + $("#" + keys[i] + "1").val() + "' " +
-													   "form='addIndivisualUser'>";
+	    											 "id='" + keys[i] + "1' " +
+											      "name='" + keys[i] + "1' " +
+												 "value='" + $("#" + keys[i] + "1").val() + "'>";
 				switch(i){
-	    		case 2:
-	    			{%- for college in allColleges %}
-						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
-							uploadObj += " selected";
-						}
-						uploadObj += ">{{ college.collegeIndex }} {{ college.collegeName }} </option>";
+			    		case 2:
+			    			uploadObj += "<option> select college </option>";
+			    			{%- for college in allColleges %}
+						uploadObj += "<option>{{ college.collegeIndex }} {{ college.collegeName }} </option>";
 						{% endfor -%}
-	    			break;
-	    		case 3:
-	    			{%- for department in allDepartments %}
-						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
-							uploadObj += " selected";
-						}
-						uploadObj += ">{{ department.departmentIndex }} {{ department.departmentName }} </option>";
+			    			break;
+			    		case 3:
+			    			break;
+			    		case 4:
+			    			{%- for authority in authorities %}
+						uploadObj += "<option>{{ authority }} </option>";
 						{% endfor -%}
-	    			break;
-	    		case 4:
-	    			{%- for authority in authorities %}
-						uploadObj += "<option";
-						if(index == "{{ loop.index }}"){
-							uploadObj += " selected";
-						}
-						uploadObj += ">{{ authority }} </option>";
-						{% endfor -%}
-	    			break;
-	    	}
+			    			break;
+	    			}
 			}
-	  }
-	  document.getElementById("indivisualUserForm").innerHTML = uploadObj;
+		}
+
+	  	document.getElementById("indivisualUserForm").innerHTML = uploadObj;
+
+	  	$("#college1").bind("click", function(){
+	  		LineOnClickController(1);
+	  	});
 	});
 });
 </script>
@@ -136,9 +151,15 @@ $(function() {
 		<h3>Add User</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
-			<a class="btn" href="#addUserModal" data-toggle="modal" role="button">Indivisual</a>
-			<a class="btn" href="#addGroupModal" data-toggle="modal" role="button">Group</a>
-			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">Delete</a>
+			<a class="btn" href="#addUserModal" data-toggle="modal" role="button">
+				Indivisual
+			</a>
+			<a class="btn" href="#addGroupModal" data-toggle="modal" role="button">
+				Group
+			</a>
+			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">
+				Delete
+			</a>
 		</div>
 
 		<!-- hidden modal pop -->
@@ -147,11 +168,15 @@ $(function() {
 			  aria-labelledby="addUserModalLabel" aria-hidden="true"
 			  role="dialog" tabindex="-1" style="width:800px;margin-left:-400px">
 			<div class="modal-header">
-				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
+				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">
+				x
+				</button>
 				<h3 id="addUserModalLabel">Add User</h3>
 			</div>
 			<div class="modal-body">
-				<div style="text-align:right"><button class="btn" type="button" id="addline">Add line</button></div>
+				<div style="text-align:right">
+					<button class="btn" type="button" id="addline">Add line</button>
+				</div>
 				<!--  leeyoungchan  add table id(indivisual') -->
 				<table class="table table-bordered" id="indivisual" style="margin-top:10px">
 					<thead>
@@ -171,19 +196,21 @@ $(function() {
 								<input class="input-mini formLine1" id="username1" name="username1"
 										type="text" form="addIndivisualUser" placeholder="Name" value="">
 							<td>
-								<select class="input-medium" id="college1" name="college1" form="addIndivisualUser">
+								<select class="input-medium" id="college1" name="college1"
+										 form="addIndivisualUser">
 									<option> select college </option>
 									{%- for college in allColleges %}
-									<option value="{{ college.collegeIndex }}"> 
-									{{ college.collegeIndex }} {{ college.collegeName }} 
+									<option >{{ college.collegeIndex }} {{ college.collegeName }} 
 									</option>
 									{% endfor -%}
 								</select>
 							<td>
-								<select class="input-medium" id="department1" name="department1" form="addIndivisualUser">
+								<select class="input-medium" id="department1" name="department1"
+										 form="addIndivisualUser">
 								</select>
 							<td>
-								<select class="input-medium" id="authority1" name="authority1" form="addIndivisualUser">
+								<select class="input-medium" id="authority1" name="authority1"
+										 form="addIndivisualUser">
 									{%- for authority in authorities %}
 									<option> {{ authority }} </option>
 									{% endfor -%}
@@ -269,7 +296,9 @@ $(function() {
 						<td><script> document.write(++index); </script>
 						<td>{{ newUser[0] }}
 						<td>{{ newUser[1] }}
-						<td>{% if newUser[2]=="User" %} Student {% else %} {{ newUser[2] }} {% endif %}
+						<td>{% if newUser[2]=="User" %} Student 
+							  {% else %} {{ newUser[2] }} 
+							  {% endif %}
 						<td>{{ newUser[4] }}
 						<td>{{ newUser[6] }}
 						<td>
@@ -286,19 +315,46 @@ $(function() {
 	</div>
 </div>
 <script>
-$("#college1").change(function(){
-	var parent = $(this).val();
-	{%- for college in allColleges %}
-	if(parent == "{{ college.collegeIndex }}"){
-		document.getElementById("department1").innerHTML = "";
-		{%- for relation, collegeInfo, departmentInfo in allDepartments %}
-			{%- if relation.collegeIndex == college.collegeIndex %}
-			document.getElementById("department1").innerHTML += 
-				"<option>{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}</option>";
-			{% endif -%}
+// For the first line of Add Indivisual User
+$("#college1").bind("click", function(){
+	LineOnClickController(1);
+})
+function LineOnClickController(idx){
+	$("#college"+idx).change(function(){
+		var parent = $("#college"+idx+" option:selected").text().match(/(\d+)/g);
+
+		var initialOptions = document.getElementById("college"+idx).innerHTML;
+		if(initialOptions.indexOf("select college") != -1){
+			var OptionsWithoutDefault = 
+				initialOptions.replace("<option> select college </option>", "");
+			OptionsWithoutDefault = OptionsWithoutDefault.replace(/\t/g, "");
+			OptionsWithoutDefault = OptionsWithoutDefault.split(' ');
+			var newOptions = "";
+			for(var i=0;i<OptionsWithoutDefault.length;i++){
+				if(OptionsWithoutDefault[i].indexOf( "<option>"+parent ) != -1){
+					newOptions += "<option selected>" + parent + ' ';
+				}
+				else{
+					newOptions += OptionsWithoutDefault[i] + ' ';
+				}
+			}
+			document.getElementById("college"+idx).innerHTML = newOptions;
+		}
+
+		{%- for college in allColleges %}
+		if(parent == "{{ college.collegeIndex }}"){
+			document.getElementById("department"+idx).innerHTML = "";
+			{%- for relation, collegeInfo, departmentInfo in allDepartments %}
+				{%- if relation.collegeIndex == college.collegeIndex %}
+				document.getElementById("department"+idx).innerHTML += 
+					"<option>" +
+					"{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}" +
+					"</option>";
+				{% endif -%}
+			{% endfor -%}
+		}
 		{% endfor -%}
-	}
-	{% endfor -%}
-});
+	});
+}
 </script>
 {% endblock -%}
