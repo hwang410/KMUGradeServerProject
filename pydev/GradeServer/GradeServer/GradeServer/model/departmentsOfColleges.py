@@ -21,5 +21,5 @@ class DepartmentsOfColleges(Base) :
     
     __tablename__ ='DepartmentsOfColleges'
     
-    collegeIndex =Column (INTEGER (unsigned =True), ForeignKey (Colleges.collegeIndex, onupdate ="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable =False)
-    departmentIndex =Column (INTEGER (unsigned =True), ForeignKey (Departments.departmentIndex, onupdate="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable =False)
+    collegeIndex =Column (INTEGER (unsigned =True), ForeignKey (Colleges.collegeIndex, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
+    departmentIndex =Column (INTEGER (unsigned =True), ForeignKey (Departments.departmentIndex, onupdate="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
