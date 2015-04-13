@@ -2,11 +2,11 @@
 
 
 from flask import render_template, request
-from sqlalchemy import func
+from sqlalchemy import func, and_
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
-from GradeServer.utils.utilQuery import select_all_user, select_rank
+from GradeServer.utils.utilQuery import select_all_user, select_rank, submissions_sorted, submissions_last_submitted
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utils import *
 
@@ -35,19 +35,35 @@ def rank(sortCondition, pageNum, error =None):
     try:
         try:
             # Auto Complete MemberIds
-            memberRecords = dao.query(select_all_user().subquery()).\
-                                all()
+            memberRecords = select_all_user().\
+                            all()
         except Exception:
             memberRecords = []
             
-        submissions = select_rank(dao.query(Submissions.memberId,
+        lastSubmissions = submissions_last_submitted().subquery()
+        for raw in dao.query(Submissions.memberId,
+                                            Submissions.problemId,
+                                            Submissions.courseId,
                                             Submissions.solutionCheckCount,
                                             Submissions.status).\
-                                      group_by(Submissions.memberId,
-                                               Submissions.problemId,
-                                               Submissions.courseId).\
-                                      subquery(),
-                                  sortCondition).\
+                                      join(lastSubmissions,
+                                           and_(Submissions.memberId == lastSubmissions.c.memberId,
+                                           Submissions.problemId == lastSubmissions.c.problemId,
+                                           Submissions.courseId == lastSubmissions.c.courseId)).\
+                                      all():
+            print raw.memberId, raw.problemId, raw.courseId, raw.solutionCheckCount, raw.status
+
+        submissions = select_rank(dao.query(Submissions.memberId,
+                                            Submissions.problemId,
+                                            Submissions.courseId,
+                                            Submissions.solutionCheckCount,
+                                            Submissions.status).\
+                                      join(lastSubmissions,
+                                           and_(Submissions.memberId == lastSubmissions.c.memberId,
+                                                Submissions.problemId == lastSubmissions.c.problemId,
+                                                Submissions.courseId == lastSubmissions.c.courseId,
+                                                Submissions.solutionCheckCount == lastSubmissions.c.solutionCheckCount)).\
+                                      subquery()).\
                       subquery()
         
         
@@ -88,13 +104,13 @@ def rank(sortCondition, pageNum, error =None):
        
                 # 랭크 정보
         try:
-            rankMemberRecords = get_page_record(submissions,
+            rankMemberRecords = get_page_record(submissions_sorted(submissions,
+                                                                   sortCondition),
                                                 int(pageNum)).\
                                 all()
         except Exception:
             rankMemberRecords = []
             
-        print "AAAA", count, len(rankMemberRecords)
         return render_template(RANK_HTML,
                                sortCondition =  sortCondition,
                                memberRecords = memberRecords,
