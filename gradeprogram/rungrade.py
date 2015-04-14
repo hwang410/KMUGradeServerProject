@@ -1,9 +1,9 @@
 import sys
-from dbinit import databaseInit
+from dbinit import DatabaseInit
 
 if __name__ == '__main__':
     # databate initialization
-    databaseInit()
+    DatabaseInit()
     
     # save system args for list
     args = sys.argv

@@ -17,21 +17,21 @@ class MakePath(object):
         self.submitCount = int(args[12])
         
         # catch problemName
-        self.problemName = self.ProblemName()
+        self.problemName = self.MakeProblemName()
         
         # make execution file name
         self.filePath = self.filePath + '/'
-        self.runFileName = self.RunFileName()
+        self.runFileName = self.MakeRunFileName()
         
-        self.answerPath = self.AnswerPath()
+        self.answerPath = self.MakeAnswerPath()
     
-    def AnswerPath(self):
+    def MakeAnswerPath(self):
         if self.gradeMethod == 'Solution':
             return self.problemPath + '/' + self.problemName + '_Solution/'
         else:
             return self.problemPath + '/' + self.problemName + '_Checker/'
     
-    def RunFileName(self):
+    def MakeRunFileName(self):
         if self.usingLang == 'PYTHON':
             fileList = glob.glob(self.filePath + '*.py')
         elif self.usingLang == 'JAVA':
@@ -45,5 +45,5 @@ class MakePath(object):
             name = fileList[0].split('/')[-1]
             return name.split('.')[0]
         
-    def ProblemName(self):
+    def MakeProblemName(self):
         return self.problemPath.split('/')[-1]

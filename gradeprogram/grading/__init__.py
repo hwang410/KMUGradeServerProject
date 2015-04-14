@@ -1,1 +1,1 @@
-__all__ = ['CompileTools', 'EvaluateTools_Multicase', 'EvaluateTools', 'InterfaceGrade', 'MakePath', 'runThread']
+__all__ = ['CompileTools', 'EvaluateTools_Multicase', 'EvaluateTools', 'InterfaceGrade', 'MakePath']
