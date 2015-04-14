@@ -675,6 +675,7 @@ def server_add_user():
                                newUsers = newUsers)
         
     if request.method == 'POST':
+        print request.form
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
             numberOfUsers = (len(request.form) - 1) / 5
@@ -693,7 +694,7 @@ def server_add_user():
                     elif value == 'authority':
                         newUser[index - 1][2] = data
                     elif value == 'college':
-                        newUser[index - 1][3] = data.split()[0]    
+                        newUser[index - 1][3] = data.split()[0]
                         try:
                             newUser[index - 1][4] = dao.query(Colleges).\
                                                         filter(Colleges.collegeIndex == newUser[index - 1][3]).\
