@@ -202,10 +202,6 @@ td.span {
 	background-color: gray;
 }
 
-#editor {
-	width: 100%;
-}
-
 thead{
 	font-weight:bold;
 }
@@ -289,8 +285,4 @@ thead{
 
 .autocomplete-suggestions{
 	width:auto; 
-}
-
-#pdf {
-	z-index: 1;
 }

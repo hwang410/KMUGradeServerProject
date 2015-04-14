@@ -12,9 +12,11 @@
 		<h4 class="problem_constraints">Time Limit : {{ problemInformation.limitedTime }} ms| Memory Limit : {{ problemInformation.limitedMemory }} MB</h4>
 		<div class="container">"Problem Contents"</div>
 	</div>
-	{% if browserName != msie %}
+	{% if browserName != 'msie' %}
+	<div id="pdf">
 	<object type="application/pdf" data="/static/ProblemDescriptions/{{ problemId }}_{{ problemName }}/{{ problemId }}_{{ problemName }}.pdf" width="1000" height="1300">
 		</object>
+	</div>
 	{% endif %}
 </div>
 <!-- source code space -->
@@ -104,7 +106,7 @@
 						<option value = "12"> tomorrow </option>
 					</select>
 				</div>
-					<div id="editor"></div>
+					<pre id="editor"></pre>
 					<div class=actions><button class="btn" type="submit">submit code</div>
 					<textarea name="copycode" id="copycode" style="display:none;"></textarea>
 				</form>
