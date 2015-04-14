@@ -134,7 +134,6 @@ def server_manage_collegedepartment():
                 if 'department' in form:
                     try:
                         departmentIndex = re.findall('\d+|\D+', form)[1]
-                        print departmentIndex
                         target = dao.query(DepartmentsOfColleges).filter(DepartmentsOfColleges.departmentIndex == departmentIndex).first()
                         dao.delete(target)
                         dao.commit()
@@ -208,7 +207,7 @@ def server_manage_collegedepartment():
             currentTab = 'departments'
             
         return redirect(url_for('.server_manage_collegedepartment'))
-    print currentTab
+    
     return render_template('/server_manage_collegedepartment.html', 
                            error=error,
                            currentTab = currentTab,
@@ -675,18 +674,18 @@ def server_add_user():
                                newUsers = newUsers)
         
     if request.method == 'POST':
-        print request.form
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
             numberOfUsers = (len(request.form) - 1) / 5
-            newUser = [['' for i in range(8)] for j in range(numberOfUsers + 1)]
+            newUser = [['' for i in range(7)] for j in range(numberOfUsers + 1)]
             
             for form in request.form:
                 if form != 'addIndivisualUser':
                     value, index = re.findall('\d+|\D+', form)
                     index = int(index)
                     data = request.form[form]
-                    print "va:", value, "id:",index, "dt:",data
+                    if not data or data == "select college":
+                        continue
                     if value == 'userId':
                         newUser[index - 1][0] = data
                     elif value == 'username':
@@ -725,9 +724,15 @@ def server_add_user():
                                                    newUsers = newUsers)
                         
                         
-                    
-            for index in range(numberOfUsers):
-                newUsers.append(newUser[index])
+            for index in range(numberOfUsers+1):
+                valid = True
+                # check for empty row
+                for col in range(7):
+                    if newUser[index][col] == "":
+                        valid = False
+                        break
+                if valid:
+                    newUsers.append(newUser[index])
                 
         elif 'addUserGroup' in request.form:
             files = request.files.getlist('files')
@@ -755,7 +760,6 @@ def server_add_user():
                                     
                                 elif key == 'college':
                                     newUser[3] = value
-                                    print "col :", value
                                     try:
                                         newUser[4] = dao.query(Colleges).\
                                                          filter(Colleges.collegeIndex == value).\
@@ -772,7 +776,6 @@ def server_add_user():
                                         
                                 elif key == 'department':
                                     newUser[5] = value
-                                    print "dep :", value
                                     try:
                                         newUser[6] = dao.query(Departments).\
                                                          filter(Departments.departmentIndex == value).\
@@ -822,7 +825,6 @@ def server_add_user():
                         
         elif 'addUser' in request.form:
             for newUser in newUsers:
-                print newUser
                 try:
                     if newUser[2] == 'Course Admin':
                         newUser[2] = 'CourseAdministrator'
