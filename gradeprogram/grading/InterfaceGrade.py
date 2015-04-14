@@ -22,7 +22,7 @@ class InterfaceGrade(object):
             success, runTime, usingMem = evaluation.Execution()
         
         else:   # if many testcases 
-            evaluation = EvaluateTools_Multicase.EvaluateTools_multicase(self.path.usingLang, self.path.limitTime, self.path.limitMemory,\
+            evaluation = EvaluateTools_Multicase.EvaluateTools_Multicase(self.path.usingLang, self.path.limitTime, self.path.limitMemory,\
                                                                          self.path.answerPath, self.path.version, self.path.gradeMethod,\
                                                                          self.path.caseCount, self.path.runFileName, self.path.problemName,\
                                                                          self.path.filePath)
