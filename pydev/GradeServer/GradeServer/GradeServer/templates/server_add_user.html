@@ -333,13 +333,9 @@ function LineOnClickController(IdxOfRow){
 			OptionsWithoutDefault = OptionsWithoutDefault.split(' ');
 			var newOptions = "";
 			for(var i=0;i<OptionsWithoutDefault.length;i++){
-				if(OptionsWithoutDefault[i].indexOf("<option>"+index) != -1){
-					if(OptionsWithoutDefault[i+1].indexOf(name) != -1){
+				if(OptionsWithoutDefault[i].indexOf("<option>"+index) != -1 && 
+				   OptionsWithoutDefault[i+1].indexOf(name) != -1){
 						newOptions += "<option selected>" + index + ' ';
-					}
-					else{
-						newOptions += OptionsWithoutDefault[i] + ' ';
-					}
 				}
 				else{
 					newOptions += OptionsWithoutDefault[i] + ' ';
