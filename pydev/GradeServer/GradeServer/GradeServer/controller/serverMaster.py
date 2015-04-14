@@ -214,7 +214,6 @@ def server_manage_collegedepartment():
                            allColleges = allColleges,
                            allDepartments = allDepartments)
         
-        
 @GradeServer.route('/master/manage_class', methods = ['GET', 'POST'])
 @login_required
 def server_manage_class():
@@ -262,6 +261,183 @@ def server_manage_class():
                            error = error, 
                            courses = courses, 
                            languagesOfCourse = languagesOfCourse)
+    
+@GradeServer.route('/master/add_class', methods = ['GET', 'POST'])
+@login_required
+def server_add_class():
+    global projectPath
+    error = None
+    courseAdministrator = ''
+    semester = 1
+    courseDescription = ''
+    startDateOfCourse = ''
+    endDateOfCourse = ''
+    courseIndex = ''
+    courseName = ''
+    languages = []
+    
+    try:
+        allCourses = dao.query(Courses).\
+                         all()
+    except:
+        error = 'Error has been occurred while searching courses'
+    
+    try:
+        allLanguages = dao.query(Languages).\
+                           all()
+    except:
+        error = 'Error has been occurred while searching languages'
+    
+    try:               
+        allCourseAdministrators = dao.query(Members).\
+                                      filter(Members.authority=="CourseAdministrator").\
+                                      all()
+    except:
+         error = 'Error has been occurred while searching course administrators'
+                        
+    if request.method == 'POST':
+        courseAdministrator = request.form['courseAdministrator']
+        semester = request.form['semester'] 
+        courseDescription = request.form['courseDescription']
+        startDateOfCourse = request.form['startDateOfCourse']
+        endDateOfCourse = request.form['endDateOfCourse']
+        courseIndex, courseName = request.form['courseId'].split(' ', 1)
+        
+        for form in request.form:
+            if 'languageIndex' in form:
+                languages.append(request.form[form].split('_'))
+                
+        if not courseIndex:
+            error = 'You have to choose a class name'
+        elif not courseAdministrator:
+            error = 'You have to enter a manager'
+        elif not semester:
+            error = 'You have to choose a semester'
+        elif not languages:
+            error = 'You have to choose at least one language'
+        elif not courseDescription:
+            error = 'You have to enter a class description'
+        elif not startDateOfCourse:
+            error = 'You have to choose a start date'
+        elif not endDateOfCourse:
+            error = 'You have to choose a end date'
+        else:
+            startDate = datetime.strptime(startDateOfCourse, "%Y-%m-%d").date()
+            endDate = datetime.strptime(endDateOfCourse, "%Y-%m-%d").date()
+            if startDate > endDate:
+                error = "Start date should be earlier than end date"
+                return render_template('/server_add_class.html', 
+                                       error = error,
+                                       courseAdministrator = courseAdministrator,
+                                       semester = semester,
+                                       courseDescription = courseDescription,
+                                       startDateOfCourse = "",
+                                       endDateOfCourse = "",
+                                       courseIndex = courseIndex,
+                                       courseName = courseName,
+                                       choosedLanguages = languages,
+                                       courses = allCourses, 
+                                       languages = allLanguages,
+                                       allCourseAdministrators = allCourseAdministrators)
+            
+            try:
+                dao.query(Members).\
+                    filter(and_(Members.authority == "CourseAdministrator",
+                                Members.memberId == courseAdministrator.split()[0])).\
+                    first().memberId
+            except:
+                error = "%s is not registered as a course administrator" % (courseAdministrator.split()[0])
+                return render_template('/server_add_class.html', 
+                                       error = error,
+                                       courseAdministrator = courseAdministrator,
+                                       semester = semester,
+                                       courseDescription = courseDescription,
+                                       startDateOfCourse = startDateOfCourse,
+                                       endDateOfCourse = endDateOfCourse,
+                                       courseIndex = courseIndex,
+                                       courseName = courseName,
+                                       choosedLanguages = languages,
+                                       courses = allCourses, 
+                                       languages = allLanguages,
+                                       allCourseAdministrators = allCourseAdministrators)
+                
+            existCoursesNum = dao.query(RegisteredCourses.courseId).\
+                                  all()
+            newCourseNum = '%s%s%03d' % (startDateOfCourse[:4], semester, int(courseIndex)) # yyyys
+            isNewCourse = True
+            for existCourse in existCoursesNum:
+                # if the course is already registered, then make another subclass
+                if existCourse[0][:8] == newCourseNum:
+                    NumberOfCurrentSubCourse = dao.query(func.count(RegisteredCourses.courseId).label('num')).\
+                                                   filter(RegisteredCourses.courseId.like(newCourseNum+'__')).\
+                                               first().\
+                                               num
+                    """
+                    수정할것!!count 사용해서
+                    func.count().label
+                    """
+                    newCourseNum = '%s%02d' % (existCourse[0][:8], 
+                                               NumberOfCurrentSubCourse + 1) # yyyysccc
+                    isNewCourse = False
+                    break
+                
+            # new class case
+            if isNewCourse:
+                newCourseNum = '%s01' % (newCourseNum)
+            try:
+                newCourse = RegisteredCourses(courseId = newCourseNum, 
+                                              courseName = courseName, 
+                                              courseDescription = courseDescription,
+                                              startDateOfCourse = startDateOfCourse, 
+                                              endDateOfCourse = endDateOfCourse, 
+                                              courseAdministratorId = courseAdministrator.split(' ')[0])    
+                dao.add(newCourse)
+                dao.commit()
+            except:
+                dao.rollback()
+                error = 'Creation course failed'
+                return render_template('/server_add_class.html', 
+                                       error = error,
+                                       courses = allCourses, 
+                                       languages = allLanguages)
+                
+            # create course folder in 'CurrentCourses' folder
+            courseName = courseName.replace(' ', '')
+            problemPath = "%s/CurrentCourses/%s_%s" % (projectPath, newCourseNum, courseName)
+            if not os.path.exists(problemPath):
+                os.makedirs(problemPath)
+            
+            for language in languages:
+                languageIndex, languageVersion = language
+                try:
+                    newCourseLanguage = LanguagesOfCourses(courseId = newCourseNum, 
+                                                           languageIndex = int(languageIndex), 
+                                                           languageVersion = languageVersion)
+                    dao.add(newCourseLanguage)
+                    dao.commit()
+                except:
+                    dao.rollback()
+                    error = 'Course language error'
+                    return render_template('/server_add_class.html', 
+                                           error = error,
+                                           courses = allCourses, 
+                                           languages = allLanguages)
+                    
+            return redirect(url_for('.server_manage_class'))
+
+    return render_template('/server_add_class.html', 
+                           error = error,
+                           courseAdministrator = courseAdministrator,
+                           semester = semester,
+                           courseDescription = courseDescription,
+                           startDateOfCourse = startDateOfCourse,
+                           endDateOfCourse = endDateOfCourse,
+                           courseIndex = courseIndex,
+                           courseName = courseName,
+                           choosedLanguages = languages,
+                           courses = allCourses, 
+                           languages = allLanguages,
+                           allCourseAdministrators = allCourseAdministrators)
     
 @GradeServer.route('/master/manage_problem', methods=['GET', 'POST'])
 @login_required
@@ -498,143 +674,7 @@ def server_manage_user():
                            users = users, 
                            index = len(users))
 
-@GradeServer.route('/master/add_class', methods = ['GET', 'POST'])
-@login_required
-def server_add_class():
-    global projectPath
-    error = None
-    courseAdministrator = ''
-    semester = 1
-    courseDescription = ''
-    startDateOfCourse = ''
-    endDateOfCourse = ''
-    courseIndex = ''
-    courseName = ''
-    languages = []
-    
-    try:
-        allCourses = dao.query(Courses).\
-                         all()
-    except:
-        error = 'Error has been occurred while searching courses'
-    
-    try:
-        allLanguages = dao.query(Languages).\
-                           all()
-    except:
-        error = 'Error has been occurred while searching languages'
-    
-    try:               
-        allCourseAdministrators = dao.query(Members).\
-                                      filter(Members.authority=="CourseAdministrator").\
-                                      all()
-    except:
-         error = 'Error has been occurred while searching course administrators'
-                        
-    if request.method == 'POST':
-        courseAdministrator = request.form['courseAdministrator']
-        semester = request.form['semester'] 
-        courseDescription = request.form['courseDescription']
-        startDateOfCourse = request.form['startDateOfCourse']
-        endDateOfCourse = request.form['endDateOfCourse']
-        courseIndex, courseName = request.form['courseId'].split(' ', 1)
-        
-        for form in request.form:
-            if 'languageIndex' in form:
-                languages.append(request.form[form].split('_'))
-                
-        if not courseIndex:
-            error = 'You have to choose a class name'
-        elif not courseAdministrator:
-            error = 'You have to enter a manager'
-        elif not semester:
-            error = 'You have to choose a semester'
-        elif not languages:
-            error = 'You have to choose at least one language'
-        elif not courseDescription:
-            error = 'You have to enter a class description'
-        elif not startDateOfCourse:
-            error = 'You have to choose a start date'
-        elif not endDateOfCourse:
-            error = 'You have to choose a end date'
-        else:
-            existCoursesNum = dao.query(RegisteredCourses.courseId).\
-                                  all()
-            newCourseNum = '%s%s%03d' % (startDateOfCourse[:4], semester, int(courseIndex)) # yyyys
-            isNewCourse = True
-            for existCourse in existCoursesNum:
-                # if the course is already registered, then make another subclass
-                if existCourse[0][:8] == newCourseNum:
-                    NumberOfCurrentSubCourse = dao.query(func.count(RegisteredCourses.courseId).label('num')).\
-                                                   filter(RegisteredCourses.courseId.like(newCourseNum+'__')).\
-                                               first().\
-                                               num
-                    """
-                    수정할것!!count 사용해서
-                    func.count().label
-                    """
-                    newCourseNum = '%s%02d' % (existCourse[0][:8], 
-                                               NumberOfCurrentSubCourse + 1) # yyyysccc
-                    isNewCourse = False
-                    break
-                
-            # new class case
-            if isNewCourse:
-                newCourseNum = '%s01' % (newCourseNum)
-            try:
-                newCourse = RegisteredCourses(courseId = newCourseNum, 
-                                              courseName = courseName, 
-                                              courseDescription = courseDescription,
-                                              startDateOfCourse = startDateOfCourse, 
-                                              endDateOfCourse = endDateOfCourse, 
-                                              courseAdministratorId = courseAdministrator.split(' ')[0])    
-                dao.add(newCourse)
-                dao.commit()
-            except:
-                dao.rollback()
-                error = 'Creation course failed'
-                return render_template('/server_add_class.html', 
-                                       error = error,
-                                       courses = allCourses, 
-                                       languages = allLanguages)
-                
-            # create course folder in 'CurrentCourses' folder
-            courseName = courseName.replace(' ', '')
-            problemPath = "%s/CurrentCourses/%s_%s" % (projectPath, newCourseNum, courseName)
-            if not os.path.exists(problemPath):
-                os.makedirs(problemPath)
-            
-            for language in languages:
-                languageIndex, languageVersion = language
-                try:
-                    newCourseLanguage = LanguagesOfCourses(courseId = newCourseNum, 
-                                                           languageIndex = int(languageIndex), 
-                                                           languageVersion = languageVersion)
-                    dao.add(newCourseLanguage)
-                    dao.commit()
-                except:
-                    dao.rollback()
-                    error = 'Course language error'
-                    return render_template('/server_add_class.html', 
-                                           error = error,
-                                           courses = allCourses, 
-                                           languages = allLanguages)
-                    
-            return redirect(url_for('.server_manage_class'))
 
-    return render_template('/server_add_class.html', 
-                           error = error,
-                           courseAdministrator = courseAdministrator,
-                           semester = semester,
-                           courseDescription = courseDescription,
-                           startDateOfCourse = startDateOfCourse,
-                           endDateOfCourse = endDateOfCourse,
-                           courseIndex = courseIndex,
-                           courseName = courseName,
-                           choosedLanguages = languages,
-                           courses = allCourses, 
-                           languages = allLanguages,
-                           allCourseAdministrators = allCourseAdministrators)
 
 @GradeServer.route('/master/addUser', methods = ['GET', 'POST'])
 @login_required
