@@ -124,19 +124,27 @@ def submissions_sorted(submissions, sortCondition = RATE):
     #Get Comment
     # rate 정렬
     if sortCondition == RATE:
-        rankMemberRecords = dao.query(submissions,
-                                      Members.comment).\
-                                join(Members,
-                                     Members.memberId == submissions.c.memberId).\
-                                order_by(submissions.c.solvedRate.asc())
-    else: #if sortCondition == SOLVED_PROBLEM
-        rankMemberRecords = dao.query(submissions,
-                                      Members.comment).\
-                                join(Members,
-                                     Members.memberId == submissions.c.memberId).\
-                                order_by(submissions.c.solvedCount.desc())
-    
-    return rankMemberRecords
+        memberRecords = dao.query(submissions,
+                                  Members.comment).\
+                            join(Members,
+                                 Members.memberId == submissions.c.memberId).\
+                            order_by(submissions.c.solvedRate.asc())
+    # Solved Problem Sorted
+    elif sortCondition == SOLVED_PROBLEM:
+        memberRecords = dao.query(submissions,
+                                  Members.comment).\
+                            join(Members,
+                                Members.memberId == submissions.c.memberId).\
+                            order_by(submissions.c.sumOfSolvedProblemCount.desc())
+        # 제출날짜순 정렬
+    elif sortCondition == SUBMISSION_DATE:
+        memberRecords = dao.query(submissions,
+                                  Members.comment).\
+                            join(Members,
+                                Members.memberId == submissions.c.memberId).\
+                            order_by(submissions.c.sumOfSolvedProblemCount.desc())
+                            
+    return memberRecords
 
 
 '''
