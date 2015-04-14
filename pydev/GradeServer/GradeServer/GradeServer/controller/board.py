@@ -50,8 +50,8 @@ def board(pageNum):
         # 검색시 FilterCondition List
         Filters = ['모두', '작성자', '제목 및 내용']
         # 과목별 게시글
-        courses, courseNotices, pages = [], [], []
-        articles, articleNotices = [], []
+        courseRecords, courseNoticeRecords, pages = [], [], []
+        articleRecords, articleNoticeRecords = [], []
         
         articlesOnBoard = dao.query(ArticlesOnBoard).\
                               filter(ArticlesOnBoard.isDeleted == NOT_DELETED).\
@@ -78,7 +78,7 @@ def board(pageNum):
             articlesOnBoard = search_articles(Filters,
                                               articlesOnBoard,
                                               filterCondition = Filters[0] if not filterCondition else filterCondition,
-                                              keyWord = keyWord)
+                                              keyWord = keyWord).subquery()
         # Get Method
                 #과목 목록
         try:
@@ -98,21 +98,28 @@ def board(pageNum):
                             subquery()
             # 과목 게시글 모음
             try:
-                courses.append(dao.query(select_article(courseSub,
-                                                        NOT_NOTICE)).\
-                                   all())
+                articleSub = select_article(courseSub,
+                                            NOT_NOTICE)
+                courseRecords.append(get_page_record(articleSub,
+                                               int(pageNum)).\
+                               all())
+                count = dao.query(func.count(articleSub.subquery().c.articleIndex).label('count')).\
+                            first().\
+                            count
             except Exception:
-                courses.append([])
+                count = 0
+                courseRecords.append([])
             try:
-                courseNotices.append(dao.query(select_article(courseSub,
-                                                              NOTICE)).\
-                                         all())
+                courseNoticeRecords.append(get_page_record((select_article(courseSub,
+                                                              NOTICE)),
+                                                     int(pageNum)).\
+                                     all())
             except Exception:
-                courseNotices.append([])
+                courseNoticeRecords.append([])
             
             # 과목 게시물 페이지 정보 구하기
             pages.append(get_page_pointed(int(pageNum),
-                                          len(courses[i])))
+                                          count))
         # All Course Subquery
         courseSub = dao.query(myCourses.c.courseName,
                               articlesOnBoard).\
@@ -121,21 +128,30 @@ def board(pageNum):
                         subquery()
         # All 과목 게시글
         try:
-            articles = dao.query(select_article(courseSub,
-                                                NOT_NOTICE)).\
-                           all()
+            articleSub = select_article(courseSub,
+                                        NOT_NOTICE)
+            articleRecords = get_page_record(articleSub,
+                                             int(pageNum)).\
+                             all()
+            count = dao.query(func.count(articleSub.subquery().c.articleIndex).label('count')).\
+                        first().\
+                        count
         except Exception:
-            articles = []
+            count = 0
+            articleRecords = []
+            
+                 # 모드느 과목 페이징 정보 구하기
+        allPages = get_page_pointed(int(pageNum),
+                                    count)
         # All 과목 공지글    
         try:    
-            articleNotices = dao.query(select_article(courseSub,
-                                                                                NOTICE)).\
-                                 all()
+            articleNoticeRecords = get_page_record((select_article(courseSub,
+                                                             NOTICE)),
+                                             int(pageNum)).\
+                             all()
         except Exception:
-            articleNotices = []
-        # 모드느 과목 페이징 정보 구하기
-        allPages = get_page_pointed(int(pageNum),
-                                    len(articles))
+            articleNoticeRecords = []
+
         # 허용 과목 리스트
         try:
             myCourses = dao.query(myCourses).\
@@ -144,11 +160,11 @@ def board(pageNum):
             myCourses = []
         
         return render_template('/board.html',
-                               articles = articles,
-                               articleNotices =  articleNotices,
+                               articleRecords = articleRecords,
+                               articleNoticeRecords =  articleNoticeRecords,
                                myCourses = myCourses,
-                               courses = courses,
-                               courseNotices = courseNotices,
+                               courseRecords = courseRecords,
+                               courseNoticeRecords = courseNoticeRecords,
                                allPages = allPages,
                                pages  =pages,
                                Filters = Filters) # classType, condition은 검색 할 때 필요한 변수    
@@ -162,8 +178,7 @@ def select_article(courseSub, isNotice):
     
     return dao.query(courseSub).\
                filter(courseSub.c.isNotice == isNotice).\
-               order_by(courseSub.c.articleIndex.desc()).\
-               subquery()
+               order_by(courseSub.c.articleIndex.desc())
  
  
 '''
@@ -551,5 +566,5 @@ def search_articles(Filters, articlesOnBoard, filterCondition, keyWord =''):
         articlesOnBoard =dao.query(articlesOnBoard).\
             filter(or_(articlesOnBoard.c.title.like('%'+keyWord+'%'), articlesOnBoard.c.content.like('%'+keyWord+'%')))
 
-    return articlesOnBoard.subquery()
+    return articlesOnBoard
             

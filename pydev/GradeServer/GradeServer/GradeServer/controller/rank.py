@@ -60,7 +60,6 @@ def rank(sortCondition, pageNum, error =None):
         if request.method == 'POST':
                         # 순차 탐색으로 찾아야 함
             for i in range(1, pages['allPage'] + 1):
-                print i
                 rankSub = get_page_record(dao.query(submissions),
                                           i).\
                                   subquery()
