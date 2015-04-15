@@ -146,10 +146,13 @@ Submissions Sorting Condition
 '''
 def submissions_sorted(submissions, sortCondition = SUBMISSION_DATE):
     
+    print "CCCCCC", sortCondition
         # 제출날짜순 정렬
     if sortCondition == SUBMISSION_DATE:
+        print "DDDDD"
         submissionRecords = dao.query(submissions).\
                                 order_by(submissions.c.codeSubmissionDate.desc())
+        print "EEEEE"
          # 실행 시간 순 정렬
     elif sortCondition == RUN_TIME:
         submissionRecords = dao.query(submissions).\
