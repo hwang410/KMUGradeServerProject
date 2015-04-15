@@ -29,9 +29,9 @@ $(function() {
 				<td style ='vertical-align: middle'>Ranking</td>
 				<td style ='vertical-align: middle'>User Id</td>
 				<td style ='vertical-align: middle'>Comment</td>
-				<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.rank', sortCondition ='solvedProblem', pageNum =1) }}">Solved Problem</a></td>
+				<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.rank', sortCondition ='solvedProblem', pageNum = pages['pageNum']) }}">Solved Problem</a></td>
 				<td style ='vertical-align: middle'>Count</td>
-				<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum =1) }}">Rate</a></td>
+				<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum = pages['pageNum']) }}">Rate</a></td>
 			</tr>
 		</thead>
 		{%- for rankMemberRecord in rankMemberRecords %}

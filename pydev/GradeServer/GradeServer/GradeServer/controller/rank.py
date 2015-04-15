@@ -2,16 +2,15 @@
 
 
 from flask import render_template, request
-from sqlalchemy import func, and_
+from sqlalchemy import func
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
-from GradeServer.utils.utilQuery import select_all_user, select_rank, submissions_sorted, submissions_last_submitted
+from GradeServer.utils.utilQuery import select_all_user, select_rank, rank_sorted, submissions_last_submitted
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utils import *
 
 from GradeServer.database import dao
-from GradeServer.model.submissions import Submissions
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
 
@@ -81,7 +80,7 @@ def rank(sortCondition, pageNum, error =None):
        
                 # 랭크 정보
         try:
-            rankMemberRecords = get_page_record(submissions_sorted(submissions,
+            rankMemberRecords = get_page_record(rank_sorted(submissions,
                                                                    sortCondition),
                                                 int(pageNum)).\
                                 all()
