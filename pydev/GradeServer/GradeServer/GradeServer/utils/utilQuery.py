@@ -174,21 +174,18 @@ def select_notices():
     try:
         # 서버 공지만
         try:
-            serverAdministratorId = dao.query(Members.memberId).\
-                                        filter(Members.authority == SERVER_ADMINISTRATOR).\
-                                        first().\
-                                        memberId
-            serverAdministratorNotices = dao.query(ArticlesOnBoard).\
-                                             filter(ArticlesOnBoard.isNotice == NOTICE,
-                                                    ArticlesOnBoard.writerId == serverAdministratorId).\
-                                             subquery()
-            serverAdministratorNotices = dao.query(serverAdministratorNotices,
-                                                   RegisteredCourses.courseName).\
-                                             join(RegisteredCourses,
-                                                  serverAdministratorNotices.c.courseId == RegisteredCourses.courseId).\
-                                             all()
+            try:
+                serverAdministratorId = dao.query(Members.memberId).\
+                                            filter(Members.authority == SERVER_ADMINISTRATOR).\
+                                            first().\
+                                            memberId
+            except:
+                serverAdministratorId = None
+                
+            publicNoticeRecords = select_simple_notice().filter(ArticlesOnBoard.writerId == serverAdministratorId).\
+                                                         all()
         except Exception:
-            serverAdministratorNotices = []
+            publicNoticeRecords = []
             
         # 로그인 상태
         try:
@@ -196,12 +193,7 @@ def select_notices():
             if login_required:
                 # 서버 관리자는 모든 공지
                 if SERVER_ADMINISTRATOR in session[AUTHORITY]:
-                    notices = dao.query(ArticlesOnBoard,
-                                        RegisteredCourses.courseName).\
-                                  join(RegisteredCourses,
-                                       ArticlesOnBoard.courseId == RegisteredCourses.courseId).\
-                                  filter(ArticlesOnBoard.isNotice == NOTICE).\
-                                  all()
+                    noticeRecords = select_simple_notice().all()
                 # 과목 관리자 및 유저는 담당 과목 공지
                 else:
                     if COURSE_ADMINISTRATOR in session[AUTHORITY]:
@@ -215,36 +207,49 @@ def select_notices():
                                                  subquery()
                     
                     # 해당 과목 추려내기
-                    notices = dao.query(ArticlesOnBoard).\
-                                  join(registeredCourseId,
-                                       ArticlesOnBoard.courseId == registeredCourseId.c.courseId).\
-                                  filter(ArticlesOnBoard.isNotice == NOTICE).\
-                                  subquery()
-                    # 과목이름 넣기
-                    notices = dao.query(notices,
-                                        RegisteredCourses.courseName).\
-                                  join(RegisteredCourses,
-                                       notices.c.courseId == RegisteredCourses.courseId).\
-                                  all()
-                    notices.extend(serverAdministratorNotices)
-                    
+        # slicke 0 ~ NOTICE_LIST
+                    noticeRecords = dao.query(ArticlesOnBoard.articleIndex,
+                                              ArticlesOnBoard.courseId,
+                                              ArticlesOnBoard.title,
+                                              ArticlesOnBoard.replyCount,
+                                              ArticlesOnBoard.content,
+                                              ArticlesOnBoard.writtenDate,
+                                              RegisteredCourses.courseName).\
+                                        join(registeredCourseId,
+                                             ArticlesOnBoard.courseId == registeredCourseId.c.courseId).\
+                                        join(RegisteredCourses,
+                                             ArticlesOnBoard.courseId == RegisteredCourses.courseId).\
+                                        filter(ArticlesOnBoard.isNotice == NOTICE).\
+                                        order_by(ArticlesOnBoard.writtenDate.desc()).\
+                                        slice(0, NOTICE_LIST).\
+                                        all()
         except Exception:
             # Not Login
-            notices = serverAdministratorNotices
-
-        # articleIndex 정렬
-        notices = sorted(notices,
-                         key = attrgetter('writtenDate'),
-                         reverse = True)
-        # 최대 5개만 보여주므로 그 밑에는 자르기
-        if len(notices) > NOTICE_LIST:
-            notices = notices[:NOTICE_LIST]   
+            noticeRecords = publicNoticeRecords
     except Exception:
         # query get All Error None type Error
-        notices = []
+        noticeRecords = []
     
-    return notices 
+    return noticeRecords 
 
+
+''' 
+Get Notices
+'''
+def select_simple_notice():
+    
+    return dao.query(ArticlesOnBoard.articleIndex,
+                     ArticlesOnBoard.courseId,
+                     ArticlesOnBoard.title,
+                     ArticlesOnBoard.replyCount,
+                     ArticlesOnBoard.content,
+                     ArticlesOnBoard.writtenDate,
+                     RegisteredCourses.courseName).\
+               join(RegisteredCourses,
+                    ArticlesOnBoard.courseId == RegisteredCourses.courseId).\
+               filter(ArticlesOnBoard.isNotice == NOTICE)
+
+                                                    
 '''
 Top Coder
 '''

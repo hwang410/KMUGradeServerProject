@@ -112,8 +112,8 @@ def board(activeTabCourse, pageNum):
             try:
                 courseNoticeRecords.append(get_page_record((select_article(courseSub,
                                                                            NOTICE)),
-                                                           int(pageNum)).\
-                                     all())
+                                                           int(pageNum),
+                                                           NOTICE_LIST).all())
             except Exception:
                 courseNoticeRecords.append([])
             
@@ -147,8 +147,8 @@ def board(activeTabCourse, pageNum):
         try:    
             articleNoticeRecords = get_page_record((select_article(courseSub,
                                                              NOTICE)),
-                                             int(pageNum)).\
-                             all()
+                                             int(pageNum),
+                                             NOTICE_LIST).all()
         except Exception:
             articleNoticeRecords = []
 
@@ -507,7 +507,9 @@ def write(articleIndex, error =None):
                             dao.rollback()
                             error =get_message('updateFailed')
                             
-                        return redirect(url_for('.board', pageNum=1))
+                        return redirect(url_for(BOARD,
+                                                activeTabCourse = 'all',
+                                                pageNum = 1))
                     # 게시물 수정    
                     else:
                         dao.query(ArticlesOnBoard).\
