@@ -7,8 +7,9 @@ from subprocess import call
 
 RUN_COMMAND_LIST = []
 
-class EvaluateTools():
-    def __init__(self, usingLang, limitTime, limitMemory, answerPath, version, gradeMethod, runFileName, problemName, caseCount):
+class EvaluateTools(object):
+    def __init__(self, usingLang, limitTime, limitMemory, answerPath, version,
+                 gradeMethod, runFileName, problemName, caseCount):
         self.usingLang = usingLang
         self.limitTime = limitTime
         self.limitMemory = limitMemory
@@ -194,6 +195,7 @@ class EvaluateTools():
                     if index != -1:
                         words = fileLines[i].split()
                         temp = int(words[index+1])
+                        break;
                 
                 if temp > usingMem:
                     usingMem = temp
