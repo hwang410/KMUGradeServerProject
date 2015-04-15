@@ -66,7 +66,7 @@
 							<a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum = 1) }}"><abbr title="Showing the submit record of each person and each problem">Rank</abbr></a>
 						</li>
 						<li>
-							<a href="{{ url_for('GradeServer.board', pageNum =1) }}"><abbr title="QA board">Board</abbr></a>
+							<a href="{{ url_for('GradeServer.board', activeTabCourse = 'all', pageNum =1) }}"><abbr title="QA board">Board</abbr></a>
 						</li>
 						<li>
 							<a href="{{ url_for('GradeServer.team', pageNum =1) }}"><abbr title="Showing your team information">Team</abbr></a>
@@ -83,7 +83,7 @@
 								</li>
 								{% endif %}
 								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>
-								<li><a href="{{ url_for('GradeServer.board', pageNum =1) }}">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
+								<li><a href="{{ url_for('GradeServer.board', activeTabCourse = 'all', pageNum =1) }}">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
 								<li><a href="#">Manual</a></li>
 								{%- if "ServerAdministrator" in session['authority'] %}
 								<li class="dropdown-submenu">

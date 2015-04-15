@@ -43,9 +43,9 @@ def close_db_session(exception = None):
 게시판을 과목별 혹은 전체 통합으로
 보여주는 페이지
 '''
-@GradeServer.route('/board/course<tabCourseName>/page<pageNum>', methods = ['GET', 'POST'])
+@GradeServer.route('/board/course<activeTabCourse>/page<pageNum>', methods = ['GET', 'POST'])
 @login_required
-def board(pageNum):    
+def board(activeTabCourse, pageNum):    
     try:
         # 검색시 FilterCondition List
         Filters = ['모두', '작성자', '제목 및 내용']
