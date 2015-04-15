@@ -75,10 +75,10 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 									<td style ='vertical-align: middle'>Problem Title</td>
 									<td style ='vertical-align: middle'>Status</td>
 									<td style ='vertical-align: middle'>Score</td>
-									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='runTime', pageNum =1) }}">Runtime</a></td>
-									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='codeLength', pageNum =1) }}">Code Length</a></td>
+									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='runTime', pageNum = pages['pageNum']) }}">Runtime</a></td>
+									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='codeLength', pageNum = pages['pageNum']) }}">Code Length</a></td>
 									<td style ='vertical-align: middle'>Language</td>
-									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Submit Date</a></td>
+									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum = pages['pageNum']) }}">Submit Date</a></td>
 								</tr>
 							</thead>
 							{%- for submissionRecord in submissionRecords %}

@@ -118,33 +118,48 @@ def select_rank(submissions):
 
 
 '''
-Submissions Sorting Condtion
+Rank Sorting Condition
 '''
-def submissions_sorted(submissions, sortCondition = RATE):
+def rank_sorted(ranks, sortCondition = RATE):
     #Get Comment
     # rate 정렬
     if sortCondition == RATE:
-        memberRecords = dao.query(submissions,
-                                  Members.comment).\
-                            join(Members,
-                                 Members.memberId == submissions.c.memberId).\
-                            order_by(submissions.c.solvedRate.asc())
+        rankMemberRecords = dao.query(ranks,
+                                      Members.comment).\
+                                join(Members,
+                                     Members.memberId == ranks.c.memberId).\
+                                order_by(ranks.c.solvedRate.asc())
     # Solved Problem Sorted
     elif sortCondition == SOLVED_PROBLEM:
-        memberRecords = dao.query(submissions,
-                                  Members.comment).\
-                            join(Members,
-                                Members.memberId == submissions.c.memberId).\
-                            order_by(submissions.c.sumOfSolvedProblemCount.desc())
-        # 제출날짜순 정렬
-    elif sortCondition == SUBMISSION_DATE:
-        memberRecords = dao.query(submissions,
-                                  Members.comment).\
-                            join(Members,
-                                Members.memberId == submissions.c.memberId).\
-                            order_by(submissions.c.sumOfSolvedProblemCount.desc())
+        rankMemberRecords = dao.query(ranks,
+                                      Members.comment).\
+                                join(Members,
+                                     Members.memberId == ranks.c.memberId).\
+                                order_by(ranks.c.sumOfSolvedProblemCount.desc())
+                                
+    return rankMemberRecords
+
                             
-    return memberRecords
+                            
+'''
+Submissions Sorting Condition
+'''
+def submissions_sorted(submissions, sortCondition = SUBMISSION_DATE):
+    
+        # 제출날짜순 정렬
+    if sortCondition == SUBMISSION_DATE:
+        submissionRecords = dao.query(submissions).\
+                                order_by(submissions.c.codeSubmissionDate.desc())
+         # 실행 시간 순 정렬
+    elif sortCondition == RUN_TIME:
+        submissionRecords = dao.query(submissions).\
+                                order_by(submissions.c.runTime.asc())
+         # 코드 길이별 정렬         
+    elif sortCondition == CODE_LENGTH:
+        submissionRecords = dao.query(submissions).\
+                                order_by(submissions.c.sumOfSubmittedFileSize.asc())  
+                                 
+    return submissionRecords
 
 
 '''

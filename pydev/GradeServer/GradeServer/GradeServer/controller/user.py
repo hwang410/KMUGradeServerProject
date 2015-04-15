@@ -6,7 +6,7 @@ from sqlalchemy import func
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
-from GradeServer.utils.utilQuery import sum_of_solved_problem_count
+from GradeServer.utils.utilQuery import sum_of_solved_problem_count, submissions_sorted
 from GradeServer.utils.utils import *
 
 from GradeServer.database import dao
@@ -122,24 +122,15 @@ def user_history(memberId, sortCondition, pageNum):
                                     join(submissions,
                                          Problems.problemId == submissions.c.problemId).\
                                     subquery()
-                # 제출날짜순 정렬
-            if sortCondition == SUBMISSION_DATE:
-                submissionRecords = get_page_record(dao.query(submissionRecords).\
-                                                        order_by(submissionRecords.c.codeSubmissionDate.desc()),
-                                                    int(pageNum)).\
-                                    all()
-            # 실행 시간 순 정렬
-            elif sortCondition == RUN_TIME:
-                submissionRecords = get_page_record(dao.query(submissionRecords).\
-                                                        order_by(submissionRecords.c.runTime.asc()),
-                                                    int(pageNum)).\
-                                    all()
-            # 코드 길이별 정렬
-            else: # elif sortCondition == CODE_LENGTH:
-                submissionRecords = get_page_record(dao.query(submissionRecords).\
-                                                        order_by(submissionRecords.c.sumOfSubmittedFileSize.asc()),
-                                                    int(pageNum)).\
-                                    all()
+            # Sorted
+            submissionRecords = get_page_record(submissions_sorted(dao.query(Problems.problemName,
+                                                                             submissions).\
+                                                                       join(submissions,
+                                                                            Problems.problemId == submissions.c.problemId).\
+                                                                       subquery(),
+                                                                   sortCondition),
+                                                int(pageNum)).\
+                                all()
         except Exception:
             #None Type Exception
             submissionRecords = []

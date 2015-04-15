@@ -43,7 +43,7 @@ def close_db_session(exception = None):
 게시판을 과목별 혹은 전체 통합으로
 보여주는 페이지
 '''
-@GradeServer.route('/board/page<pageNum>', methods = ['GET', 'POST'])
+@GradeServer.route('/board/course<tabCourseName>/page<pageNum>', methods = ['GET', 'POST'])
 @login_required
 def board(pageNum):    
     try:
@@ -111,8 +111,8 @@ def board(pageNum):
                 courseRecords.append([])
             try:
                 courseNoticeRecords.append(get_page_record((select_article(courseSub,
-                                                              NOTICE)),
-                                                     int(pageNum)).\
+                                                                           NOTICE)),
+                                                           int(pageNum)).\
                                      all())
             except Exception:
                 courseNoticeRecords.append([])
