@@ -2,8 +2,10 @@ from subprocess import call
 from EvaluateTools import EvaluateTools
 
 class EvaluateTools_Multicase(EvaluateTools):
-    def __init__(self, usingLang, limitTime, limitMemory, answerPath, version, gradeMethod, caseCount, runFileName, problemName, filePath):
-        EvaluateTools.__init__(self, usingLang, limitTime, limitMemory, answerPath, version, gradeMethod, runFileName, problemName, caseCount)
+    def __init__(self, usingLang, limitTime, limitMemory, answerPath, version,
+                 gradeMethod, caseCount, runFileName, problemName, filePath):
+        EvaluateTools.__init__(self, usingLang, limitTime, limitMemory, answerPath,
+                               version, gradeMethod, runFileName, problemName, caseCount)
         self.filePath  = filePath
         
     def Solution(self):
@@ -14,8 +16,9 @@ class EvaluateTools_Multicase(EvaluateTools):
         for i in range(1, self.caseCount+1):
             # input.txt file copy
             try:
-                call('input.txt', shell = True) # ...ing....
-                call('cp ' + self.answerPath + self.problemName + '_case' + str(i) + '_input.in input.txt', shell = True) # ...ing...
+                call('input.txt', shell = True)
+                call('cp ' + self.answerPath + self.problemName + '_case' + str(i) +
+                     '_input.in input.txt', shell = True)
             except Exception as e:
                 print e
                 return 'error'
@@ -23,7 +26,8 @@ class EvaluateTools_Multicase(EvaluateTools):
             # program run
             call(command, shell = True)
             
-            answerFile = open(self.answerPath + self.problemName + '_case' + str(i) + '_output.out', 'r') # answer output open
+            answerFile = open(self.answerPath + self.problemName + '_case' + str(i) +
+                              '_output.out', 'r') # answer output open
             stdOutput = open('output.txt', 'r') # student output open
             
             answer = answerFile.read()
@@ -53,8 +57,9 @@ class EvaluateTools_Multicase(EvaluateTools):
         for i in range(1, self.caseCount+1):
             # input.txt file copy
             try:
-                call('input.txt', shell = True) # ...ing....
-                call(self.answerPath + self.problemName + '_case' + str(i) + '_input.in input.txt', shell = True) # ...ing...
+                call('input.txt', shell = True)
+                call(self.answerPath + self.problemName + '_case' + str(i) +
+                     '_input.in input.txt', shell = True)
             except Exception as e:
                 print e
                 return 'error'
