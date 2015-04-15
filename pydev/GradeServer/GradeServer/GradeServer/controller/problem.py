@@ -5,6 +5,7 @@ from sqlalchemy import and_, func
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
+from GradeServer.utils.utilQuery import submissions_sorted, submissions_last_submitted
 from GradeServer.utils.utils import *
 
 from GradeServer.database import dao
@@ -223,47 +224,32 @@ def record(courseId, problemId, sortCondition = RUN_TIME):
         problemInformationRecords = []
     # Problem Solved Users
     try:
-        lastProblemSubmissionCounts = dao.query(Submissions.memberId,
-                                                Submissions.problemId,
-                                                Submissions.courseId,
-                                                func.max(Submissions.solutionCheckCount).label('lastSolutionCheckCount')).\
-                                          group_by(Submissions.memberId,
-                                                   Submissions.problemId,
-                                                   Submissions.courseId).\
-                                          subquery()
-        problemSolvedUserRecords = dao.query(Submissions.memberId,
-                                             Submissions.runTime,
-                                             Submissions.sumOfSubmittedFileSize,
-                                             Submissions.codeSubmissionDate,
-                                             Submissions.usedMemory).\
-                                       join(lastProblemSubmissionCounts,
-                                            Submissions.memberId == lastProblemSubmissionCounts.c.memberId,
-                                            Submissions.problemId == lastProblemSubmissionCounts.c.problemId,
-                                            Submissions.courseId == lastProblemSubmissionCounts.c.courseId).\
-                                       filter(Submissions.status == SOLVED).\
-                                       subquery()
-        # Sort Run Time
-        if sortCondition == RUN_TIME:
-            problemSolvedUserRecords = dao.query(problemSolvedUserRecords).\
-                                           order_by(problemSolvedUserRecords.c.runTime.asc()).\
-                                           all()
-        # Sort Submission Date
-        elif sortCondition == SUBMISSION_DATE:
-            problemSolvedUserRecords = dao.query(problemSolvedUserRecords).\
-                                           order_by(problemSolvedUserRecords.c.codeSubmissionDate.desc()).\
-                                           all()
-        # Sort Code Length
-        if sortCondition == CODE_LENGTH:
-            problemSolvedUserRecords = dao.query(problemSolvedUserRecords).\
-                                           order_by(problemSolvedUserRecords.c.sumOfSubmittedFileSize.asc()).\
-                                           all()
+        # last Submissions Info
+        submissions = submissions_last_submitted().filter(Submissions.problemId == problemId,
+                                                          Submissions.courseId == courseId).\
+                                                   subquery()
+       
+       # Problem Solved Member
+        problemSolvedMemberRecords = submissions_sorted(dao.query(Submissions.memberId,
+                                                                Submissions.runTime,
+                                                                Submissions.sumOfSubmittedFileSize,
+                                                                Submissions.codeSubmissionDate,
+                                                                Submissions.usedMemory).\
+                                                          join(submissions,
+                                                               and_(Submissions.memberId == submissions.c.memberId,
+                                                                    Submissions.problemId == submissions.c.problemId,
+                                                                    Submissions.courseId == submissions.c.courseId,
+                                                                    Submissions.solutionCheckCount == submissions.c.solutionCheckCount)).\
+                                                          filter(Submissions.status == SOLVED).\
+                                                          subquery(),
+                                                      sortCondition).all()
             
     except Exception:
-        problemSolvedUserRecords = []
+        problemSolvedMemberRecords = []
     
     return render_template('/record.html',
                            courseId = courseId,
-                           problemSolvedUserRecords = problemSolvedUserRecords,
+                           problemSolvedMemberRecords = problemSolvedMemberRecords,
                            problemInformationRecords = problemInformationRecords,
                            chartSubmissionDescriptions = chartSubmissionDescriptions,
                            chartSubmissionRecords = chartSubmissionRecords)

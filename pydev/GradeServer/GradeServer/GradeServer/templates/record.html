@@ -92,17 +92,17 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 																						sortCondition = "submissionDate") }}'>Sumission Date</td>
 								</tr>
 							</thead>
-							{% for problemSolvedUserRecord in problemSolvedUserRecords %}
+							{% for problemSolvedMemberRecord in problemSolvedMemberRecords %}
 							<tr>
 								<td style ='vertical-align: middle'>{{ loop.index }}</td>
 								<td style ='vertical-align: middle'>
 									<a href='{{ url_for("GradeServer.user_record", problemId = problemInformationRecords.problemId, courseId = courseId) }}'>
-									{{ problemSolvedUserRecord.memberId }}
+									{{ problemSolvedMemberRecord.memberId }}
 									</a>
 								</td>
-								<td style ='vertical-align: middle'>{{ problemSolvedUserRecord.runTime }} ms</td>
-								<td style ='vertical-align: middle'>{{ problemSolvedUserRecord.sumOfSubmittedFileSize }} Byte</td>
-								<td style ='vertical-align: middle'>{{ problemSolvedUserRecord.codeSubmissionDate }}</td>
+								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.runTime }} ms</td>
+								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.sumOfSubmittedFileSize }} Byte</td>
+								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.codeSubmissionDate }}</td>
 							</tr>
 							{% endfor %}
 						</table>
