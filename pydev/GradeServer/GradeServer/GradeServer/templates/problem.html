@@ -12,13 +12,6 @@
 		<h4 class="problem_constraints">Time Limit : {{ problemInformation.limitedTime }} ms| Memory Limit : {{ problemInformation.limitedMemory }} MB</h4>
 		<div class="container">"Problem Contents"</div>
 	</div>
-	{% if browserName != 'msie' %}
-	<object type="application/pdf" data="/static/ProblemDescriptions/{{ problemId }}_{{ problemName }}/{{ problemId }}_{{ problemName }}.pdf" width="1000" height="1300">
-		</object>
-	{% else %}
-	<a href="#" onclick="window.open( '/static/ProblemDescriptions/{{ problemId }}_{{ problemName }}/{{ problemId }}_{{ problemName }}.pdf',
-	'Windows', 'toolbar=no,menubar=no,scrollbars=yes,resizable=yes,location=no,directories=no,status=no' )">Problem Information</a>
-	{% endif %}
 </div>
 <!-- source code space -->
 
@@ -27,12 +20,14 @@
 	<ul id="myTabs" class="nav nav-tabs">
   	<li class="active"><a href="#upload" data-toggle="tab">Upload Files</a></li>
   	<li><a href="#write" data-toggle="tab">Write Code</a></li>
+  	<li><a href="#info" data-toggle="tab">PDF</a></li>
   </ul>
 	<div id="myTabContent2" class="tab-content">
   	<div class="tab-pane active" id="upload">
 			<div id="content">
     		<ul id="myTab" class="nav nav-tabs" role="tablist">
-	      	<li class="dropdown"><a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown" aria-controls="myTabDrop1-contents">Language Select<span class="caret"></span></a>
+	      	<li class="dropdown"><a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown" aria-controls="myTabDrop1-contents">
+	      	{% if languageName|length == 1 %} {{ languageName[0].languageName }} </a> {% else %} Language Select<span class="caret"></span></a> {% endif %}
         		<ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1" id="myTabDrop1-contents">
         		{% for name in languageName %}
         			{% if name.languageName == "C++" %}
@@ -112,6 +107,10 @@
 					<textarea name="copycode" id="copycode" style="display:none;"></textarea>
 				</form>
 			</div>
+		</div>
+		<div class="tab-pane" id="info">
+			<object type="application/pdf" data="/static/ProblemDescriptions/{{ problemId }}_{{ problemName }}/{{ problemId }}_{{ problemName }}.pdf"
+			width="1000" height="600"></object>
 		</div>
 	</div>
 </div>
