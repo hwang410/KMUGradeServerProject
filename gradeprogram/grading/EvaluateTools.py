@@ -160,8 +160,7 @@ class EvaluateTools(object):
             os.dup2(fd2,2)
         
         rlimTime = int(self.limitTime / 1000) + 1
-        corefileSize = 1 << 20
-        resource.setrlimit(resource.RLIMIT_CORE, (corefileSize,corefileSize))
+        resource.setrlimit(resource.RLIMIT_CORE, (1024,1024))
         resource.setrlimit(resource.RLIMIT_CPU, (rlimTime,rlimTime))
         ptrace.traceme()
         
