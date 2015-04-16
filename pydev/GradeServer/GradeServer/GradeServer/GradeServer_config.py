@@ -20,6 +20,7 @@ class GradeServerConfig(object):
     PERMANENT_SESSION_LIFETIME = 60 * 60
     # 업로드 파일 경로
     UPLOAD_FOLDER = '/mnt/shared/Temp'
+    CURRENT_FOLDER = '/mnt/shared/CurrentCourses'
     #: 쿠기에 저장되는 세션 쿠키
     SESSION_COOKIE_NAME = 'GradeServer_session'
     #: 로그 레벨 설정
