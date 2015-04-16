@@ -26,24 +26,25 @@ class MakePath(object):
         self.answerPath = self.MakeAnswerPath()
     
     def MakeAnswerPath(self):
-        if self.gradeMethod == 'Solution':
-            return self.problemPath + '/' + self.problemName + '_Solution/'
-        else:
-            return self.problemPath + '/' + self.problemName + '_Checker/'
+        return self.problemPath + '/' + self.problemName + '_' + self.gradeMethod + '/'
     
     def MakeRunFileName(self):
-        if self.usingLang == 'PYTHON':
-            fileList = glob.glob(self.filePath + '*.py')
-        elif self.usingLang == 'JAVA':
-            fileList = glob.glob(self.filePath + '*.java')
-        else:
+        if self.usingLang == 'C' or self.usingLang == 'C++':
             return 'main'
+        
+        if self.usingLang == 'JAVA':
+            fileExtention = '*.java'
             
-        if len(fileList) > 1:
-            return 'main'
         else:
-            name = fileList[0].split('/')[-1]
-            return name.split('.')[0]
+            fileExtention = '*.py'
+            
+        fileList = glob.glob(self.filePath + fileExtention)
+        
+        if fileList:
+            return 'main'
+        
+        name = fileList[0].split('/')[-1]
+        return name.split('.')[0]
         
     def MakeProblemName(self):
         return self.problemPath.split('/')[-1]

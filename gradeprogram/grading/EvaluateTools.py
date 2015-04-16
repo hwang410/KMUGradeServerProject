@@ -36,19 +36,19 @@ class EvaluateTools(object):
          
         if pid == 0:
             self.RunProgram()
+        
         else:
             result, time, usingMem = self.WatchRunProgram(pid)
-        print time
+        
+        print time, usingMem
+        
         userTime = int(time * 1000)
         
-        if result == 'time over':
-            return 'time over', userTime, usingMem
+        if result == 'TimeOver' or result == 'RunTimeError':
+            return result, userTime, usingMem
         
-        elif result == 'runtime':
-            return 'runtime', 0, 0
-
         if userTime > self.limitTime:
-            return 'time over', userTime, usingMem
+            return 'TimeOver', userTime, usingMem
         
         coreSize = 0
         coreList = glob.glob('core.[0-9]*')
@@ -57,17 +57,16 @@ class EvaluateTools(object):
             coreSize = os.path.getsize(coreList[0])
         
         if coreSize == 0:  # if not exist core file -> evaluate output
-            if self.gradeMethod == 'Solution':   # solution
-                success = self.Solution()
-            else:   # checker
-                success = self.Checker()
+            success = self.Grade()
+                
+            if success == 'error':
+                return 'ServerError', 0, 0
+            
             return success, userTime, usingMem
         
-        elif coreSize > 0: # runtime error.
-            return 'runtime', 0, 0
+        else:
+            return 'RunTimeError', 0, 0
         
-        else:   # server error
-            return 'error', 0, 0
         
     def MakeCommand(self):
         # make execution command
@@ -91,15 +90,14 @@ class EvaluateTools(object):
             RUN_COMMAND_LIST.append('/usr/bin/java')
             RUN_COMMAND_LIST.append(self.runFileName)
         
-    def Solution(self):
+    def SolutionSingle(self):
         # user output file each line compare with answer file each line.
         try:
             answerFile = open(self.answerPath + self.problemName + '_cases_total_outputs.out', 'r')
+            stdOutput = open('output.txt', 'r')
         except Exception as e:
             print e
             return 'error'
-        
-        stdOutput = open('output.txt', 'r')
         
         stdLines = stdOutput.readlines()
         answerLines = answerFile.readlines()
@@ -109,12 +107,8 @@ class EvaluateTools(object):
         
         count = len(stdLines) - len(answerLines)
         
-        if count < 0 :
-            _min = len(stdLines)
-            count = abs(count)
-        else:
-            _min = len(answerLines)
-            count = count
+        _min = len(stdLines) if count < 0 else len(answerLines)
+        count = abs(count)
         
         for i in range(_min):
             stdLine = stdLines[i].strip('\r\n')
@@ -123,24 +117,23 @@ class EvaluateTools(object):
             if stdLine != answerLine:   # if not same each line
                 count += 1
         
-        if count == 0:
-            return 100
-        else:
+        score = 100
+        
+        if count > 0:
             score = int( ((len(answerLines) - count) * 100) / len(answerLines) )
             
-            if score < 0:
-                return 0
+        if score < 0:
+            return 0
             
-            return score
+        return score
         
-    def Checker(self):
+    def CheckerSingle(self):
         try:
             call('cp ' + self.answerPath + self.problemName + '.out checker.out', shell = True)
+            call('./checker.out 1>result.txt', shell = True)
         except Exception as e:
             print e
             return 'error'
-        
-        call('./checker.out 1>result.txt', shell = True)
         
         rf = open('reuslt.txt', 'r')
         
@@ -153,19 +146,22 @@ class EvaluateTools(object):
     def RunProgram(self):
         os.nice(19)
         
-        fd1 = os.open('output.txt', os.O_RDWR|os.O_CREAT)
-        os.dup2(fd1,1)
-        if self.usingLang == 'JAVA' or self.usingLang == 'PYTHON':
-            fd2 = os.open('core.1', os.O_RDWR|os.O_CREAT)
-            os.dup2(fd2,2)
+        reditectionSTDOUT = os.open('output.txt', os.O_RDWR|os.O_CREAT)
+        os.dup2(reditectionSTDOUT,1)
         
         rlimTime = int(self.limitTime / 1000) + 1
+        
         resource.setrlimit(resource.RLIMIT_CORE, (1024,1024))
         resource.setrlimit(resource.RLIMIT_CPU, (rlimTime,rlimTime))
+        
         ptrace.traceme()
         
         if self.usingLang == 'PYTHON' or self.usingLang == 'JAVA':
+            reditectionSTDERROR = os.open('core.1', os.O_RDWR|os.O_CREAT)
+            os.dup2(reditectionSTDERROR,2)
+            
             os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1], RUN_COMMAND_LIST[2])
+            
         elif self.usingLang == 'C' or self.usingLang =='C++':
             os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1])
             
@@ -180,23 +176,46 @@ class EvaluateTools(object):
                 return 'ok', res[0], usingMem
             
             exitCode = os.WEXITSTATUS(status)
-            if exitCode != 0 and exitCode != 5 and exitCode != 17:
-                return 'runtime', 0, 0 
+            if exitCode != 5 and exitCode != 0 and exitCode != 17:
+                return 'RunTimeError', 0, 0 
                 
             elif os.WIFSIGNALED(status):
-                return 'time over', res[0], usingMem
+                return 'TimeOver', res[0], usingMem
+            
             else:
-                procFile = open('/proc/' + str(pid) + '/status', 'r')
-                fileLines = procFile.readlines()
-
-                for i in range(15,20):
-                    index = fileLines[i].find('VmRSS')
-                    if index != -1:
-                        words = fileLines[i].split()
-                        temp = int(words[index+1])
-                        break;
+                self.GetUsingMemory(pid)
                 
                 if temp > usingMem:
                     usingMem = temp
                 
                 ptrace.syscall(pid, 0)
+                
+    def GetUsingMemory(self, pid):
+        procFile = open('/proc/' + str(pid) + '/status', 'r')
+        fileLines = procFile.readlines()
+
+        for i in range(15,20):
+            index = fileLines[i].find('VmRSS')
+            if index != -1:
+                words = fileLines[i].split()
+                temp = int(words[index+1])
+                break;
+            
+        return temp
+    
+    def Grade(self):
+        if self.gradeMethod == 'Solution':   # solution
+            if self.caseCount > 1:
+                success = self.SolutionMulti()
+                
+            else:
+                success = self.SolutionSingle()
+            
+        else:   # checker
+            if self.caseCount > 1:
+                success = self.CheckerMulti()
+                
+            else:
+                success = self.CheckerSingle()
+            
+        return success
