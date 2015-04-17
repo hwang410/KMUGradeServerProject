@@ -29,7 +29,7 @@ class CompileTools(object):
         result = self.CompileErrorCheck()
         
         if result == False: # if compile error -> make error list
-            self.MakeErrorList()
+            result = self.MakeErrorList()
         
         # if not make execution file
         elif len(glob.glob('./'+self.runFileName)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
@@ -39,7 +39,12 @@ class CompileTools(object):
         
     def CompileErrorCheck(self):
         # if exist error message in file, compile error
-        fp = open('error.err', 'r')
+        try:
+            fp = open('error.err', 'r')
+        except Exception as e:
+            print e
+            return 'error'
+        
         errMess = fp.read()
         
         fp.close()
@@ -53,8 +58,13 @@ class CompileTools(object):
     def MakeErrorList(self):
         # if collect error message
         count = 0
-        wf = open(self.filePath + 'errorlist.txt', 'w')
-        rf = open('error.err', 'r')
+        
+        try:
+            wf = open(self.filePath + 'errorlist.txt', 'w')
+            rf = open('error.err', 'r')
+        except Exception as e:
+            print e
+            return 'error'
         
         lines = rf.readlines()
         _list = []
@@ -77,10 +87,15 @@ class CompileTools(object):
     def MakeCommand(self):
         # make compile command 
         if self.usingLang == 'C':
-            return 'gcc ' + self.filePath + '*.c -o main -lm -Wall 2>error.err'
+            extension = 'gcc ' 
+            option = '*.c -o main -lm -Wall 2>error.err'
             
         elif self.usingLang == 'C++':
-            return 'g++ ' + self.filePath + '*.cpp -o main -lm -Wall 2>error.err'
+            extension = 'g++ '
+            option = '*.cpp -o main -lm -Wall 2>error.err'
         
         elif self.usingLang == 'JAVA':
-            return 'javac -d ./ ' + self.filePath + '*.java 2>error.err'
+            extension = 'javac -d ./ '  
+            option = '*.java 2>error.err'
+            
+        return extension + self.filePath + option 
