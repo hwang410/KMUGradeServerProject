@@ -18,24 +18,139 @@
 <div class="container">
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
-			<li class="active"><a href="#all" data-toggle="tab">all</a></li>
-			{%- for course in myCourses %}
-				<li><a href="#{{ course.courseId }}" data-toggle="tab">{{ course.courseId }} {{ course.courseName }}</a></li>
-			{% endfor -%}
-			
-			<div style="text-align:right"><a href="{{ url_for('GradeServer.write', articleIndex =0) }}"><button type="button" class="write">Write</button></a></div>
+		{% for myCourse in myCourses %}
+		{# TabActive Setting #}
+			{% if loop.index0 == 0 %}
+				{% if myCourse == activeTabCourseId %}
+				<li class="active">
+					<a href = '#{{ myCourse }}' data-toggle="tab">
+				{% else %}
+				<li>
+					<a href = '{{ url_for ("GradeServer.board", activeTabCourseId = myCourse, pageNum = 1) }}'>
+				{% endif %}
+					{{ myCourse }} 
+				</a>
+			</li>
+			{% elif myCourse.courseId == activeTabCourseId %}
+			<li class="active">
+				<a href = "#{{ myCourse.courseId }}" data-toggle="tab">
+			{% else %}
+			<li>
+				<a href = '{{ url_for ("GradeServer.board", activeTabCourseId = myCourse.courseId, pageNum = 1) }}'>
+			{% endif %}
+					{{ myCourse.courseId }} {{ myCourse.courseName }} 
+				</a>
+			</li>
+		{% endfor %}
+		
+			<div style="text-align:right">
+				<a href="{{ url_for('GradeServer.write', articleIndex =0) }}">
+					<button type="button" class="write">Write</button>
+				</a>
+			</div>
 		</ul>
+		
 		<!-- posts -->
 		<div class="tab-content">
-			<!-- all posts -->
-			<div id="all" class="tab-pane active">
+		<!-- ActiveTab posts -->
+		{%- for myCourse in myCourses %}
+			{% if loop.index0 == 0 %}
+				{% if myCourse == activeTabCourseId %}
+				<div id="{{ myCourses }}" class = 'active'>
+					<table class="table">
+						<thead>
+							<tr>
+								<td>Num</td>
+								<td>Course Name</td>
+								<td>Title</td>
+								<td>User Id</td>
+								<td>Date</td>
+								<td>View</td>
+								<td>Like</td>
+							</tr>
+						</thead>
+						
+						<tbody>
+						<!-- Course Notice -->
+						{% for articleNoticeRecord in articleNoticeRecords %}
+						<tr>
+							<td>Notice</td>
+							<td>{{ articleNoticeRecord.courseId }} {{ articleNoticeRecord.courseName }}</td>
+							<td><a href= '{{ url_for ("GradeServer.read", articleIndex = articleNoticeRecord.articleIndex) }}'>{{ articleNoticeRecord.title }}</a>
+								{%- if articleNoticeRecord.replyCount > 0 %}
+									[{{ articleNoticeRecord.replyCount }}]
+								{% endif -%}
+							</td>
+							<td>{{ articleNoticeRecord.writerId }}</td>
+							<td>{{ articleNoticeRecord.writtenDate }}</td>
+							<td>{{ articleNoticeRecord.viewCount }}</td>
+							<td>{{ articleNoticeRecord.sumOfLikeCount }}</td>
+						</tr>
+						{% endfor %}
+						
+						<!-- Course Article -->
+						{% for articleRecord in articleRecords %}
+						<tr>
+							<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
+							<td>{{ articleRecord.courseId}} {{ articleRecord.courseName }}</td>
+							<td><a href='{{ url_for ("GradeServer.read", articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
+								{% if articleRecord.replyCount > 0 %}
+									[{{ articleRecord.replyCount }}]
+								{% endif %}
+							</td>
+							<td>{{ articleRecord.writerId }}</td>
+							<td>{{ articleRecord.writtenDate }}</td>
+							<td>{{ articleRecord.viewCount }}</td>
+							<td>{{ articleRecord.sumOfLikeCount }}</td>
+						</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+					
+					<!-- Paging -->
+					<div class="pagination pagination-centered">
+						<ul>
+							{%- if pages['pageNum'] > pages['BLOCK'] %}
+							<li><a href="{{ url_for ('GradeServer.board', activeTabCourseId = activeTabCourseId, pageNum = pages['pageNum'] -1) }}"><</a></li>
+							{% endif -%}
+							
+							{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
+							<li>
+								{% if pages['pageNum'] == i %}
+								<a style ='background-color:gray'>
+								{% else %}
+								<a href="{{ url_for ('GradeServer.board', activeTabCourseId = activeTabCourseId, pageNum = i) }}">
+								{% endif %}
+								{{ i }}
+								</a>
+							</li>
+							{% endfor -%}
+							
+							{%- if pages['endPage'] < pages['allPage'] %}
+							<li><a href="{{ url_for ('GradeServer.board', activeTabCourseId = activeTabCourseId, pageNum =pages['pageNum'] +1) }}">></a></li>
+							{% endif -%}
+						</ul>
+					</div>
+					<!-- End Paging -->
+				{% endif %}
+			{% elif myCourse.courseId == activeTabCourseId %}
+			<div id="{{ myCourses.courseId }}" class="active">
 				<table class="table">
 					<thead>
-						<tr><td>Num</td><td>Course Name</td><td>Title</td><td>User Id</td><td>Date</td><td>View</td><td>Like</td></tr>
+						<tr>
+							<td>Num</td>
+							<td>Course Name</td>
+							<td>Title</td>
+							<td>User Id</td>
+							<td>Date</td>
+							<td>View</td>
+							<td>Like</td>
+						</tr>
 					</thead>
+					
 					<tbody>
-					<!-- All Notice -->
-					{%- for articleNoticeRecord in articleNoticeRecords %}
+					<!-- Course Notice -->
+					{% for articleNoticeRecord in articleNoticeRecords %}
 					<tr>
 						<td>Notice</td>
 						<td>{{ articleNoticeRecord.courseId }} {{ articleNoticeRecord.courseName }}</td>
@@ -49,92 +164,22 @@
 						<td>{{ articleNoticeRecord.viewCount }}</td>
 						<td>{{ articleNoticeRecord.sumOfLikeCount }}</td>
 					</tr>
-					{% endfor -%}
-
-					<!-- All Board -->
-					{%- for articleRecord in articleRecords %}
-				 	<tr>
-				 		<td>{{ loop.index + (allPages['pageNum'] - 1) * allPages['LIST'] }}</td>
-						<td>{{ articleRecord.courseId }} {{ articleRecord.courseName }}</td>
-						<td><a href= '{{ url_for ("GradeServer.read", articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
-							{%- if articleRecord.replyCount > 0 %}
+					{% endfor %}
+					
+					<!-- Course Article -->
+					{% for articleRecord in articleRecords %}
+					<tr>
+						<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
+						<td>{{ articleRecord.courseId}} {{ articleRecord.courseName }}</td>
+						<td><a href='{{ url_for ("GradeServer.read", articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
+							{% if articleRecord.replyCount > 0 %}
 								[{{ articleRecord.replyCount }}]
-							{% endif -%}
+							{% endif %}
 						</td>
 						<td>{{ articleRecord.writerId }}</td>
 						<td>{{ articleRecord.writtenDate }}</td>
 						<td>{{ articleRecord.viewCount }}</td>
 						<td>{{ articleRecord.sumOfLikeCount }}</td>
-				 	</tr>
-					{% endfor -%}
-					</tbody>
-				</table>
-				<!-- Paging -->
-				<div class="pagination pagination-centered">
-					<ul>
-						{%- if allPages['pageNum'] > allPages['BLOCK'] %}
-						<li><a href="{{ url_for ('GradeServer.board', activeTabCourse = 'all', pageNum =allPages['pageNum'] -1) }}"><</a></li>
-						{% endif -%}
-						
-						{%- for i in range (allPages['startPage'], allPages['endPage'] + 1) %}
-						<li>
-							{% if allPages['pageNum'] == i %}
-							<a style ='background-color:gray'>
-							{% else %}
-							<a href="{{ url_for ('GradeServer.board', activeTabCourse = 'all', pageNum = i) }}">
-							{% endif %}
-							{{ i }}
-							</a>
-						</li>
-						{% endfor -%}
-						
-						{%- if allPages['endPage'] < allPages ['allPage'] %}
-						<li><a href="{{ url_for ('GradeServer.board', activeTabCourse = 'all', pageNum =pages['pageNum'] + 1) }}">></a></li>
-						{% endif -%}
-					</ul>
-				</div>
-				<!-- End Paging -->
-			</div>
-			
-			<!-- tab content of each Course -->
-			{%- for i in range (0, myCourses|length) %}
-			<div id="{{ myCourses[i].courseId }}" class="tab-pane">
-				<table class="table">
-					<thead>
-					<tr><td>Num</td><td>Course Name</td><td>Title</td><td>User Id</td><td>Date</td><td>View</td><td>Like</td></tr>
-					</thead>
-					<tbody>
-					<!-- Course Notice -->
-					{% for courseNoticeRecord in courseNoticeRecords[i] %}
-					<tr>
-						<td>Notice</td>
-						<td>{{ courseNoticeRecord.courseId }} {{ courseNoticeRecord.courseName }}</td>
-						<td><a href= '{{ url_for ("GradeServer.read", articleIndex = courseNoticeRecord.articleIndex) }}'>{{ courseNoticeRecord.title }}</a>
-							{%- if courseNoticeRecord.replyCount > 0 %}
-								[{{ courseNoticeRecord.replyCount }}]
-							{% endif -%}
-						</td>
-						<td>{{ courseNoticeRecord.writerId }}</td>
-						<td>{{ courseNoticeRecord.writtenDate }}</td>
-						<td>{{ courseNoticeRecord.viewCount }}</td>
-						<td>{{ courseNoticeRecord.sumOfLikeCount }}</td>
-					</tr>
-					{% endfor %}
-					
-					<!-- Course Board -->
-					{% for courseRecord in courseRecords[i] %}
-					<tr>
-						<td>{{ loop.index + (pages[i]['pageNum'] - 1) * pages[i]['LIST'] }}</td>
-						<td>{{ courseRecord.courseId}} {{ courseRecord.courseName }}</td>
-						<td><a href='{{ url_for ("GradeServer.read", articleIndex = courseRecord.articleIndex) }}'>{{ courseRecord.title }}</a>
-							{% if courseRecord.replyCount > 0 %}
-								[{{ courseRecord.replyCount }}]
-							{% endif %}
-						</td>
-						<td>{{ courseRecord.writerId }}</td>
-						<td>{{ courseRecord.writtenDate }}</td>
-						<td>{{ courseRecord.viewCount }}</td>
-						<td>{{ courseRecord.sumOfLikeCount }}</td>
 					</tr>
 					{% endfor %}
 					</tbody>
@@ -143,28 +188,29 @@
 				<!-- Paging -->
 				<div class="pagination pagination-centered">
 					<ul>
-						{%- if pages[i]['pageNum'] > pages[i]['BLOCK'] %}
-						<li><a href="{{ url_for ('GradeServer.board', activeTabCourse = 'all', pageNum =pages[i]['pageNum'] -1) }}"><</a></li>
+						{%- if pages['pageNum'] > pages['BLOCK'] %}
+						<li><a href="{{ url_for ('GradeServer.board', activeTabCourseId = activeTabCourseId, pageNum = pages['pageNum'] -1) }}"><</a></li>
 						{% endif -%}
 						
-						{%- for j in range (pages[i]['startPage'], pages[i]['endPage'] +1) %}
+						{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
 						<li>
-							{% if pages[i]['pageNum'] == i %}
+							{% if pages['pageNum'] == i %}
 							<a style ='background-color:gray'>
 							{% else %}
-							<a href="{{ url_for ('GradeServer.board', activeTabCourse = 'all', pageNum = j) }}">
+							<a href="{{ url_for ('GradeServer.board', activeTabCourseId = activeTabCourseId, pageNum = i) }}">
 							{% endif %}
-							{{ j }}
+							{{ i }}
 							</a>
 						</li>
 						{% endfor -%}
 						
-						{%- if pages[i]['endPage'] < pages[i]['allPage'] %}
-						<li><a href="{{ url_for ('GradeServer.board', activeTabCourse = 'all', pageNum =pages[i]['pageNum'] +1) }}">></a></li>
+						{%- if pages['endPage'] < pages['allPage'] %}
+						<li><a href="{{ url_for ('GradeServer.board', activeTabCourseId = activeTabCourseId, pageNum =pages['pageNum'] +1) }}">></a></li>
 						{% endif -%}
 					</ul>
 				</div>
 				<!-- End Paging -->
+			{% endif %}
 			</div>
 			{% endfor -%}
 		</div>
@@ -174,7 +220,7 @@
 	<!-- search bar -->
 	<form method ="post">
 			<!-- SearchBar // all -->
-			<div id="all" class="tab-pane active" style="text-align:center">
+			<div id= '{{ activeTabCourseId }}' class="tab-pane active" style="text-align:center">
 				
 				<div class="btn-group">
 					<a class="btn dropdown-toggle" data-toggle="dropdown" id = 'dropDownCondition'>All<span class="caret"></span></a>

@@ -43,7 +43,7 @@ RUN_TIME_ERROR = 'RunTimeError'
 SERVER_ERROR = 'ServerError'
 RATE = 'rate'
 SOLVED_PROBLEM = 'solvedProblem'
-
+ALL = 'All'
 
 # HTML Name
 MAIN_HTML = '/main.html'
