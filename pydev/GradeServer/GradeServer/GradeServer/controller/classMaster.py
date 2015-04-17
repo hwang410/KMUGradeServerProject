@@ -37,7 +37,10 @@ import re
 
 projectPath = '/mnt/shared'
 coursesPath = 'CurrentCourses'
+limitedFileSize = 1024
+
 newUsers = []
+newProblems = []
 
 @GradeServer.route('/classmaster/user_submit')
 @login_required
@@ -84,6 +87,8 @@ def class_user_submit():
 @login_required
 def class_manage_problem():
     global projectPath
+    global newProblems
+    
     error = None
     modalError = None
     
@@ -134,26 +139,22 @@ def class_manage_problem():
         
         
     if request.method == 'POST':
-        courseId = problemId = 0
-        isAllInputCaseInOneFile = 'OneFile'
-        startDate = ''
-        endDate = ''
-        openDate = ''
-        closeDate = ''
         isNewProblem = True
-        
+        numberOfNewProblems = (len(request.form)-1)/7
+        keys = {"courseId":"0", "courseName":"1", "problemId":"2", "problemName":"3", "multipleFiles":"4", "startDate":"5", "endDate":"6", "openDate":"7", "closeDate":"8"}
+        # courseId, courseName, problemId, problemName, isAllInputCaseInOneFile, startDate, endDate, openDate, closeDate
+        newProblem = [['' for i in range(9)] for j in range(numberOfNewProblems+1)]
+        print "forms:", request.form
         for form in request.form:
             if 'delete' in form:
                 isNewProblem = False
-                courseId, problemId = form[7:].split('_')
+                courseId, problemId = form.split('_')[1:]
                 try:
-                    print courseId, problemId
                     targetProblem = dao.query(RegisteredProblems).\
                                         filter(and_(RegisteredProblems.courseId == courseId, 
                                                     RegisteredProblems.problemId == problemId)).\
                                         first()
-                    targetProblem.problemId, targetProblem.courseId
-                        
+                    
                     dao.delete(targetProblem)
                     dao.commit()
                 except:
@@ -173,7 +174,7 @@ def class_manage_problem():
 
                 # actually editTarget is 'id' value of tag. 
                 # That's why it may have 'Tab' at the last of id to clarify whether it's 'all' tab or any tab of each course.
-                # so when user pushes one of tab and modify the data, then we need to remake the editTarget 
+                # so when user pushes one of tab and modify the data, then we need to re-make the editTarget 
                 if 'Tab' in editTarget:
                     editTarget = editTarget[:-3]
                 for registeredProblem, registeredCourse, problemName in ownProblems:
@@ -198,90 +199,96 @@ def class_manage_problem():
                         
             # addition problem
             else:
-                startDate = request.form['startDate']
-                endDate = request.form['endDate']
-                openDate = request.form['openDate']
-                closeDate = request.form['closeDate']
-                courseId = int(request.form['courseId'][:10])
-                limitedFileSize = 1024
-                problemId = int(request.form['problemId'][:5])
-                if form == 'multipleFiles':
-                    isAllInputCaseInOneFile = 'MultipleFiles'
-                    
+                if form == 'add':
+                    continue
+                value, index = re.findall('\d+|\D+', form)
+                index = int(index)
+                data = request.form[form]
+                newProblem[index-1][int(keys[value])] = data
+        
+            
         # when 'add' button is pushed, insert new problem into RegisteredProblems table
         if isNewProblem:
-            # if openDate, closeDate are empty then same with startDate, endDate
-            if not openDate:
-                openDate = startDate
-            if not closeDate:
-                closeDate = endDate
+            for index in range(numberOfNewProblems+1):
+                newProblems.append(newProblem[index])
             
-            try:
-                print problemId
-                solutionCheckType = dao.query(Problems).\
-                                        filter(Problems.problemId == problemId).\
-                                        first().\
-                                        solutionCheckType
-            except:
-                error = 'Error has been occurred while searching solution check type of the problem'
-                return render_template('/class_manage_problem.html', 
-                                       error = error, 
-                                       modalError = modalError,
-                                       allProblems = allProblems, 
-                                       ownCourses = ownCourses, 
-                                       ownProblems = ownProblems)
-            
-            try:
-                newProblem = RegisteredProblems(problemId = problemId,
-                                                courseId = courseId, 
-                                                solutionCheckType = solutionCheckType, 
-                                                isAllInputCaseInOneFile = isAllInputCaseInOneFile,
-                                                limittedFileSize = limitedFileSize,
-                                                startDateOfSubmission = startDate, 
-                                                endDateOfSubmission = endDate, 
-                                                openDate = openDate, 
-                                                closeDate = closeDate)
+            for problem in newProblems:
+                # if openDate, closeDate are empty then same with startDate, endDate
+                if not problem[int(keys['openDate'])]:
+                    problem[int(keys['openDate'])] = problem[int(keys['startDate'])]
+                if not problem[int(keys['closeDate'])]:
+                    problem[int(keys['closeDate'])] = problem[int(keys['endDate'])]
+                if not problem[int(keys['multipleFiles'])]:
+                    problem[int(keys['multipleFiles'])] = 'OneFile'
+                else:
+                    problem[int(keys['multipleFiles'])] = 'MultipleFiles'
+                problem[int(keys['courseId'])], problem[int(keys['courseName'])] = problem[int(keys['courseId'])].split(' ', 1)
+                problem[int(keys['problemId'])], problem[int(keys['problemName'])] = problem[int(keys['problemId'])].split(' ', 1)
+                try:
+                    solutionCheckType = dao.query(Problems).\
+                                            filter(Problems.problemId == problem[int(keys['problemId'])]).\
+                                            first().\
+                                            solutionCheckType
+                except:
+                    error = 'Error has been occurred while searching solution check type of the problem'
+                    return render_template('/class_manage_problem.html', 
+                                           error = error, 
+                                           modalError = modalError,
+                                           allProblems = allProblems, 
+                                           ownCourses = ownCourses, 
+                                           ownProblems = ownProblems)
                 
-                dao.add(newProblem)
-                dao.commit()
-            except:
-                dao.rollback()
-                error = 'Error has been occurred while making a new problem'
-                return render_template('/class_manage_problem.html', 
-                                       error = error, 
-                                       modalError = modalError,
-                                       allProblems = allProblems, 
-                                       ownCourses = ownCourses, 
-                                       ownProblems = ownProblems)
-            try:
-                newProblemRecord = SubmittedRecordsOfProblems(problemId = problemId,
-                                                              courseId = courseId)
-                dao.add(newProblemRecord)
-                dao.commit()
-            except:
-                dao.rollback()
-                error = 'Error has been occurred while creating new record'
-                return render_template('/class_manage_problem.html', 
-                           error = error, 
-                           modalError = modalError,
-                           allProblems = allProblems, 
-                           ownCourses = ownCourses, 
-                           ownProblems = ownProblems)
+                try:
+                    newProblem = RegisteredProblems(problemId = problem[int(keys['problemId'])],
+                                                    courseId = problem[int(keys['courseId'])], 
+                                                    solutionCheckType = solutionCheckType, 
+                                                    isAllInputCaseInOneFile = problem[int(keys['multipleFiles'])],
+                                                    limittedFileSize = limitedFileSize,
+                                                    startDateOfSubmission = problem[int(keys['startDate'])],
+                                                    endDateOfSubmission = problem[int(keys['endDate'])], 
+                                                    openDate = problem[int(keys['openDate'])], 
+                                                    closeDate = problem[int(keys['closeDate'])])
+                    
+                    dao.add(newProblem)
+                    dao.commit()
+                except:
+                    dao.rollback()
+                    error = 'Error has been occurred while making a new problem'
+                    return render_template('/class_manage_problem.html', 
+                                           error = error, 
+                                           modalError = modalError,
+                                           allProblems = allProblems, 
+                                           ownCourses = ownCourses, 
+                                           ownProblems = ownProblems)
+                try:
+                    newProblemRecord = SubmittedRecordsOfProblems(problemId = problem[int(keys['problemId'])],
+                                                                  courseId = problem[int(keys['courseId'])])
+                    dao.add(newProblemRecord)
+                    dao.commit()
+                except:
+                    dao.rollback()
+                    error = 'Error has been occurred while creating new record'
+                    return render_template('/class_manage_problem.html', 
+                               error = error, 
+                               modalError = modalError,
+                               allProblems = allProblems, 
+                               ownCourses = ownCourses, 
+                               ownProblems = ownProblems)
                 
-            courseName = request.form['courseId'][10:].replace(' ', '')
-            problemName = request.form['problemId'][5:].replace(' ', '')
-            print "okok"
-            problemPath = '%s/%s/%s_%s/%s_%s' % (projectPath, 
-                                                 coursesPath,
-                                                 courseId, 
-                                                 courseName, 
-                                                 problemId, 
-                                                 problemName)
-            
-            if not os.path.exists(problemPath):
-                os.makedirs(problemPath)
-
-        return redirect(url_for('.class_manage_problem'))
+                newProblems = []
+                courseName = problem[int(keys['courseName'])].replace(' ', '')
+                problemName = problem[int(keys['problemName'])].replace(' ', '')
+                problemPath = '%s/%s/%s_%s/%s_%s' % (projectPath, 
+                                                     coursesPath,
+                                                     problem[int(keys['courseId'])], 
+                                                     courseName, 
+                                                     problem[int(keys['problemId'])], 
+                                                     problemName)
+                
+                if not os.path.exists(problemPath):
+                    os.makedirs(problemPath)
+    
+            return redirect(url_for('.class_manage_problem'))
         
     return render_template('/class_manage_problem.html', 
                            error = error, 

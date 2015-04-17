@@ -91,7 +91,7 @@ def server_manage_collegedepartment():
         isNewDepartment = False
         numberOfColleges = (len(request.form) - 1) / 2
         newCollege = [['' for i in range(2)] for j in range(numberOfColleges + 1)]
-        numberOfDepartments = (len(request.form) - 1) / 2
+        numberOfDepartments = (len(request.form) - 1) / 3
         newDepartment = [['' for i in range(3)] for j in range(numberOfDepartments + 1)]
         for form in request.form:
             if 'addCollege' in request.form:
@@ -147,15 +147,11 @@ def server_manage_collegedepartment():
                                                error=error,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
-                        
+        
+                
         if isNewCollege:
             for index in range(numberOfColleges):
                 newColleges.append(newCollege[index])
-        elif isNewDepartment:
-            for index in range(numberOfDepartments):
-                newDepartments.append(newDepartment[index])
-                
-        if isNewCollege:
             for newPart in newColleges:
                 if newPart[1]:
                     try:
@@ -174,6 +170,8 @@ def server_manage_collegedepartment():
             currentTab = 'colleges'
             
         if isNewDepartment:
+            for index in range(numberOfDepartments):
+                newDepartments.append(newDepartment[index])
             newDepartment = []
             for newPart in newDepartments:
                 if newPart[1]:

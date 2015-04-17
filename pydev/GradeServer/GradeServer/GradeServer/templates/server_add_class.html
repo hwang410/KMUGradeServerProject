@@ -70,11 +70,11 @@ $(function() {
 		<h4>Class Description : <input class="input-xlarge" name="courseDescription" type="text" autocomplete="off" form="addCourse" value="{%- if courseDescription %}{{ courseDescription }}{% endif -%}"></h4> 
 		<script>
 		$(function() {
-	    if (!Modernizr.inputtypes['date']) {
-        $('input[type=date]').datepicker({
-            dateFormat: 'yy-mm-dd'
-        });
-	    }
+		    	if (!Modernizr.inputtypes['date']) {
+		        	$('input[type=date]').datepicker({
+		            	dateFormat: 'yy-mm-dd'
+		        	});
+		    	}
 		});
 		</script>
 		<h4>Start Date : 

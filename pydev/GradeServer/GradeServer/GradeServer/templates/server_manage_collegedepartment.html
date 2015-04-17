@@ -3,22 +3,25 @@
 <div class="container">
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
-			<li id="collegeTab"><a id="college" data-toggle="tab" href="#colleges">College</a>
-			<li id="departmentTab"><a id="department" data-toggle="tab" href="#departments">Department</a></li>
+			<li id="collegeTab">
+				<a id="college" data-toggle="tab" href="#colleges">College</a>
+			<li id="departmentTab">
+				<a id="department" data-toggle="tab"
+					href="#departments">Department</a></li>
 			<div style="text-align:right">
 				<a class="btn" id="addModal" data-toggle="modal" href="#collegeModal"
-					 rol="button">Add</a>
+				 	rol="button">Add</a>
 			</div>	
 		</ul>
 		<!-- ///// College Modal ///// -->
 		<!-- ///// Add case ///// -->
-	<form method="post">
+		<form method="post">
 		<div class="modal hide fade" id="collegeModal" 
-				 tabindex="-1" role="dialog" aria-labelledby="addCollegeModalLabel"
-				 aria-hidden="true">
+			  tabindex="-1" role="dialog" aria-labelledby="addCollegeModalLabel"
+			  aria-hidden="true">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button"
-								aria-hidden="true">x</button>
+						  aria-hidden="true">x</button>
 				<h3 id="addCollegeModalLabel">Add College</h3>
 			</div>
 			<div class="modal-body">
@@ -34,36 +37,36 @@
 					<tbody id="addCollegeForm">
 					<tr>
 						<td>
-							<input class="input-medium" id="collegeCode1" name="collegeCode1" type="text"
-										 placeholder="Optional">
+							<input class="input-medium" id="collegeCode1" name="collegeCode1"
+									type="text" placeholder="Optional">
 						<td>
-							<input class="input-medium" id="collegeName1" name="collegeName1" type="text"
-										 placeholder="College Name">
+							<input class="input-medium" id="collegeName1" name="collegeName1"
+									type="text" placeholder="College Name">
 				</table>
 			</div>
 			<div class="modal-footer">
 				<button class="btn" name="addCollege" type="submit">Done</button>
 				<button class="btn" id="resetAddCollegeForm"
-								data-dismiss="modal" aria-hidden="true">Close</button>
+						  data-dismiss="modal" aria-hidden="true">Close</button>
 			</div>
 		</div>
-	</form>
+		</form>
 		<!-- ///// end college modal ///// -->
 		<!-- ///// Department Modal ///// -->
 		<!-- ///// Add case ///// -->
-	<form method="post">
+		<form method="post">
 		<div class="modal hide fade" id="departmentModal"
-				 tabindex="-1" role="dialog" aria-labelledby="addDepartmentModalLabel"
-				 aria-hidden="true">
+			  tabindex="-1" role="dialog" aria-labelledby="addDepartmentModalLabel"
+			  aria-hidden="true">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
-								type="button" aria-hidden="true">x</button>
+						  type="button" aria-hidden="true">x</button>
 				<h3 id="addDepartmentModalLabel">Add Department</h3>
 			</div>
 			<div class="modal-body">
 				<p></p>
 				<div style="text-align:right">
-					<button class="btn" type="button" id="addline_department">Add line</button>
+					<button class="btn" id="addline_department" type="button">Add line</button>
 				</div>
 				<table class="table table-bordered" id='Departments' style="margin-top:10px">
 					<thead>
@@ -83,18 +86,18 @@
 				                  {% endfor -%}
 				                </select>
 						<td><input class="input-medium" name="departmentCode1"
-											 type="text" placeholder="Optional">
+								      type="text" placeholder="Optional">
 						<td><input class="input-medium" name="departmentName1"
-											 type="text" placeholder="Department Name">
+									 type="text" placeholder="Department Name">
 				</table>
 			</div>
 			<div class="modal-footer">
 				<button class="btn" name="addDepartment" type="submit">Done</button>
 				<button class="btn" id="resetAddDepartmentForm"
-								data-dismiss="modal" aria-hidden="true">Close</button>
+						  data-dismiss="modal" aria-hidden="true">Close</button>
 			</div>
 		</div>
-	</form>
+		</form>
 
 <!-- ///// end department modal ///// -->
 		<div class="tab-content">
@@ -125,23 +128,23 @@
 			<!-- ///// College Modal ///// -->
 			<!-- ///// Delete case ///// -->
 			<div class="modal hide fade" id="deleteCollegeModal"
-					 role="dialog" aria-labelledby="deleteCollegeModalLabel"
-					 aria-hidden="true" tabindex="-1">
+				  role="dialog" aria-labelledby="deleteCollegeModalLabel"
+				  aria-hidden="true" tabindex="-1">
 				<div class="modal-header">
 					<button class="close" type="button"
-									data-dismiss="modal" aria-hidden="true">x</button>
+							  data-dismiss="modal" aria-hidden="true">x</button>
 					<h3 id="deleteCollegeModalLabel">Delete College</h3>
 				</div>
 				<div class="modal-body">
 					<p>Do you really want to delete it?</p>
 				</div>
 				<div class="modal-footer">
-						<button class="btn" name="deleteCollege" type="submit">
-							Save changes
-						</button>
-						<button class="btn" data-dismiss="modal" aria-hidden="true">
-							Close
-						</button>
+					<button class="btn" name="deleteCollege" type="submit">
+						Save changes
+					</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true">
+						Close
+					</button>
 				</div>
 			</div>
 			<!-- no items choiced -->
@@ -150,16 +153,18 @@
 					 aria-hidden="true" tabindex="-1">
 				<div class="modal-header">
 					<button class="close" type="button" data-dismiss="modal"
-									aria-hidden="true">x</button>
+							  aria-hidden="true">x</button>
 					<h3 id="deleteModalLabel">Delete College</h3>
 				</div>
 				<div class="modal-body">
 					<p>No items choiced</p>
 				</div>
 				<div class="modal-footer">
-					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true">
+						Close
+					</button>
 				</div>
-				</form>	
+			</form>	
 			</div>
 			<!-- ***** end College Modal ***** -->
 
@@ -197,197 +202,203 @@
 			 aria-hidden="true" tabindex="-1">
 		<div class="modal-header">
 			<button class="close" type="button"
-							data-dismiss="modal" aria-hidden="true">x</button>
+					  data-dismiss="modal" aria-hidden="true">x</button>
 			<h3 id="deleteDepartmentModalLabel">Delete Department</h3>
 		</div>
 		<div class="modal-body">
 			<p>Do you really want to delete it?</p>
 		</div>
 		<div class="modal-footer">
-			<button class="btn" name="deleteDepartment" type="submit">Save changes</button>
-			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			<button class="btn" name="deleteDepartment" type="submit">
+				Save changes
+			</button>
+			<button class="btn" data-dismiss="modal" aria-hidden="true">
+				Close
+			</button>
 		</div>
 		</form>
 	</div>
 	<!-- no items choiced -->
 	<div class="modal hide fade" id="deleteNoDepartmentItem"
-			 role="dialog" aria-labelledby="deleteModalLabel"
-			 aria-hidden="true" tabindex="-1">
+		  role="dialog" aria-labelledby="deleteModalLabel"
+		  aria-hidden="true" tabindex="-1">
 		<div class="modal-header">
 			<button class="close" type="button" data-dismiss="modal"
-							aria-hidden="true">x</button>
+					  aria-hidden="true">x</button>
 			<h3 id="deleteModalLabel">Delete Department</h3>
 		</div>
 		<div class="modal-body">
 			<p>No items choiced</p>
 		</div>
 		<div class="modal-footer">
-			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			<button class="btn" data-dismiss="modal" aria-hidden="true">
+				Close
+			</button>
 		</div>
 	</div>
-	
 	<!-- ***** end Department Modal ***** -->
 
 	<div id="deleteButton" style="text-align:right">
 		<a class="btn" data-toggle="modal" role="button"
-			 onclick="showingDeleteModal('college')"> Delete </a>
+			onclick="showingDeleteModal('college')"> Delete </a>
 	</div>
 </div>
 <script>
-var currentTab = "{{ currentTab }}";
-document.getElementById(currentTab).className = "tab-pane active";
+var currentTab="{{ currentTab }}";
+document.getElementById(currentTab).className="tab-pane active";
+
 if(currentTab.indexOf("college") != -1){
-	currentTab = "collegeTab";
+	currentTab=buttonAttrUpToTab("college")+"Tab";
 }
 else{
-	currentTab = "departmentTab";
+	currentTab=buttonAttrUpToTab("department")+"Tab";
 }
-document.getElementById(currentTab).className = "active";
+
+function buttonAttrUpToTab(tab){
+	document.getElementById('addModal').href="#"+tab+"Modal";
+	changeOnClickEvent(tab);
+	return tab;
+}
+
+document.getElementById(currentTab).className="active";
 
 $('a[data-toggle="tab"]').on('shown', function(e){
-	var id = $(e.target).attr('id');
-	document.getElementById('addModal').href = "#" + id + "Modal";
-	var innerhtml = document.getElementById('deleteButton').innerHTML.split(' ');
-	var newinnerhtml = '';
-	if(id == 'department'){
-		for(var i=0;i<innerhtml.length;i++){
-			if(innerhtml[i].indexOf('onclick') > -1){
-				newinnerhtml += "onclick=\"showingDeleteModal('department')\"";
-			}
-			else if(innerhtml[i].indexOf('>') > -1){
-				newinnerhtml += '> Delete </a>';
-				break;
-			}
-			else{
-				newinnerhtml += innerhtml[i] + ' ';
-			}
-		}
-	}
-	else{
-		for(var i=0;i<innerhtml.length;i++){
-			if(innerhtml[i].indexOf('onclick') > -1){
-				newinnerhtml += "onclick=\"showingDeleteModal('college')\"";
-			}
-			else if(innerhtml[i].indexOf('>') > -1){
-				newinnerhtml += '> Delete </a>';
-				break;
-			}
-			else{
-				newinnerhtml += innerhtml[i] + ' ';
-			}
-		}
-	}
-	document.getElementById('deleteButton').innerHTML = newinnerhtml;
-})
-</script>
-<script>
-$("#addline_college").bind("click", function(){
-	var targetTable = document.getElementById("Colleges");
-	var numOfRow = targetTable.rows.length;
+	var id=$(e.target).attr('id');
+	document.getElementById('addModal').href="#"+id+"Modal";
+	attrUpToTab(id);
+});
 
-	reset_values = function(){
+function attrUpToTab(tab){
+	changeOnClickEvent(tab);
+}
+ 
+function changeOnClickEvent(tab){
+	var innerhtml=document.getElementById('deleteButton').innerHTML.split(' ');
+	var newinnerhtml='';
+	for(var i=0;i<innerhtml.length;i++){
+		if(innerhtml[i].indexOf('onclick') > -1){
+			newinnerhtml+="onclick=\"showingDeleteModal('"+tab+"')\"";
+		}
+		else if(innerhtml[i].indexOf('>') > -1){
+			newinnerhtml+='> Delete </a>';
+			break;
+		}
+		else{
+			newinnerhtml+=innerhtml[i]+' ';
+		}
+	}
+	document.getElementById('deleteButton').innerHTML=newinnerhtml;
+}
+
+$("#addline_college").bind("click", function(){
+	var targetTable=document.getElementById("Colleges");
+	var numOfRow=targetTable.rows.length;
+
+	reset_values=function(){
 		$("#collegeCode1").val();
 		$("#collegeName1").val();
 	}
 
-	var newRow = targetTable.insertRow(1);
+	var newRow=targetTable.insertRow(1);
 
-	var keys = ['collegeCode', 'collegeName'];
-	var placeholders = ['Optional', 'College Name'];
+	var keys=['collegeCode', 'collegeName'];
+	var placeholders=['Optional', 'College Name'];
 	for(var i=0;i<targetTable.rows[0].cells.length;i++){
-		newRow.insertCell(i).innerHTML = 
-			"<tr>" +
-				"<td>" +
-					"<input class='input-medium" + 
-								"'id='" + keys[i] + numOfRow +
-								"'name='" + keys[i] + numOfRow +
-								"'type='text" +
-								"'placeholder='" + placeholders[i] +
-								"'values='" + $("#" + keys[i] + "1").val() +
-								"'>";
+		newRow.insertCell(i).innerHTML=
+			"<tr>"+
+				"<td>"+
+					"<input class='input-medium"+
+						    "'id='"+keys[i]+numOfRow+
+						    "'name='"+keys[i]+numOfRow+
+						    "'type='text"+
+						    "'placeholder='"+placeholders[i]+
+						    "'values='"+$("#"+keys[i]+"1").val()+
+						    "'>";
 	}
 	reset_values();
 });
+
 $("#resetAddCollegeForm").bind("click", function(){
-	var keys = ['collegeCode', 'collegeName'];
-	var placeholders = ['Optional', 'College Name'];
-	var newInnerHTML = "";
+	var keys=['collegeCode', 'collegeName'];
+	var placeholders=['Optional', 'College Name'];
+	var newInnerHTML="";
 	for(var i=0;i<2;i++){
-		newInnerHTML += "<tr>" +
-								"<td>" +
-									"<input class='input-medium" + 
-										    "'name='" + keys[i] + "1" +
-										    "'type='text" +
-										    "'placeholder='" + placeholders[i] +
+		newInnerHTML+="<tr>"+
+								"<td>"+
+									"<input class='input-medium"+
+										    "'name='"+keys[i]+"1"+
+										    "'type='text"+
+										    "'placeholder='"+placeholders[i]+
 										    "'>";
 	}
-	document.getElementById("addCollegeForm").innerHTML = newInnerHTML;
+	document.getElementById("addCollegeForm").innerHTML=newInnerHTML;
 });
 
 $("#addline_department").bind("click", function(){
-	var targetTable = document.getElementById("Departments");
-	var numOfRow = targetTable.rows.length;
+	var targetTable=document.getElementById("Departments");
+	var numOfRow=targetTable.rows.length;
 
-	reset_values = function(){
+	reset_values=function(){
 		$("#departmentCode1").val();
 		$("#departmentName1").val();
 	}
 
-	var newRow = targetTable.insertRow(1);
+	var newRow=targetTable.insertRow(1);
 
-	var keys = ['collegeIndex', 'departmentCode', 'departmentName'];
-	var placeholders = ['', 'Optional', 'Department Name'];
+	var keys=['collegeIndex', 'departmentCode', 'departmentName'];
+	var placeholders=['', 'Optional', 'Department Name'];
 
 	for(var i=0;i<targetTable.rows[0].cells.length;i++){
-		var newCell = "<tr><td>";
+		var newCell="<tr><td>";
 		if(i == 0){
-			newCell = "<select id='" + keys[i] + numOfRow +
-								"'name='" + keys[i] + numOfRow +
-								"'style='width:115px'>" +
+			newCell="<select id='"+keys[i]+numOfRow+
+							   "'name='"+keys[i]+numOfRow+
+							   "'style='width:115px'>"+
 			               	{%- for college in allColleges %}
-			               	"<option>" +
-			                    	"{{ college.collegeIndex }} {{ college.collegeName }}" +
-			                  	"</option>" +
+			               	"<option>"+
+		                    		"{{ college.collegeIndex }} {{ college.collegeName }}"+
+			                  	"</option>"+
 			                  	{% endfor -%}
-			               "</select>";
+	               	   "</select>";
 		}	
 		else{
-			newCell += "<input class='input-medium" + 
-						        "'name='" + keys[i] + numOfRow +
-						        "'type='text" +
-						        "'placeholder='" + placeholders[i] +
-						        "'values='" + $("#" + keys[i] + "1").val() +
-						        "'>";
+			newCell+="<input class='input-medium"+
+				        		   "'name='"+keys[i]+numOfRow+
+				        		   "'type='text"+
+				        		   "'placeholder='"+placeholders[i]+
+				        		   "'values='"+$("#"+keys[i]+"1").val()+
+				        		   "'>";
 		}
-		newRow.insertCell(i).innerHTML = newCell;
+		newRow.insertCell(i).innerHTML=newCell;
 					
 	}
 	reset_values();
 });
+
 $("#resetAddDepartmentForm").bind("click", function(){
-	var keys = ['departmentCode', 'departmentName'];
-	var placeholders = ['Optional', 'Department Name'];
-	document.getElementById("addDepartmentForm").innerHTML = 
-		"<tr>" +
-			"<td>" +
-				"<select id='collegeIndex1' name='collegeIndex1' style='width:115px'>" +
+	var keys=['departmentCode', 'departmentName'];
+	var placeholders=['Optional', 'Department Name'];
+	document.getElementById("addDepartmentForm").innerHTML=
+		"<tr>"+
+			"<td>"+
+				"<select id='collegeIndex1' name='collegeIndex1' style='width:115px'>"+
 	               	{%- for college in allColleges %}
-	                  	"<option>" +
-	                    	"{{ college.collegeIndex }} {{ college.collegeName }}" +
-	                  	"</option>" +
+	                  	"<option>"+
+	                    	"{{ college.collegeIndex }} {{ college.collegeName }}"+
+	                  	"</option>"+
 	                  	{% endfor -%}
-	               "</select>" +
-			"<td>" +
-				"<input class='input-medium" + 
-					    "'name='" + keys[0] + "1" +
-					    "'type='text" +
-					    "'placeholder='" + placeholders[0] +
-					    "'>" +
-			"<td>" +
-				"<input class='input-medium" + 
-					    "'name='" + keys[1] + "1" +
-					    "'type='text" +
-					    "'placeholder='" + placeholders[1] +
+	               "</select>"+
+			"<td>"+
+				"<input class='input-medium"+
+					    "'name='"+keys[0]+"1"+
+					    "'type='text"+
+					    "'placeholder='"+placeholders[0]+
+					    "'>"+
+			"<td>"+
+				"<input class='input-medium"+
+					    "'name='"+keys[1]+"1"+
+					    "'type='text"+
+					    "'placeholder='"+placeholders[1]+
 					    "'>";
 });
 </script>
