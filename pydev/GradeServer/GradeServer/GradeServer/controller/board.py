@@ -18,7 +18,7 @@ from sqlalchemy import func, or_
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.loginRequired import login_required
-from GradeServer.utils.utilQuery import select_accept_courses
+from GradeServer.utils.utilQuery import select_accept_courses, select_count
 from GradeServer.utils.utils import *
 
 from GradeServer.model.articlesOnBoard import ArticlesOnBoard
@@ -43,142 +43,93 @@ def close_db_session(exception = None):
 게시판을 과목별 혹은 전체 통합으로
 보여주는 페이지
 '''
-@GradeServer.route('/board/course<activeTabCourse>/page<pageNum>', methods = ['GET', 'POST'])
+@GradeServer.route('/board/<activeTabCourseId>/page<pageNum>', methods = ['GET', 'POST'])
 @login_required
-def board(activeTabCourse, pageNum):    
+def board(activeTabCourseId, pageNum):    
     try:
         # 검색시 FilterCondition List
         Filters = ['모두', '작성자', '제목 및 내용']
-        # 과목별 게시글
-        courseRecords, courseNoticeRecords, pages = [], [], []
-        articleRecords, articleNoticeRecords = [], []
         
-        articlesOnBoard = dao.query(ArticlesOnBoard).\
-                              filter(ArticlesOnBoard.isDeleted == NOT_DELETED).\
-                              subquery()
-        # 허용 과목 탐색
+        # get TabActive Articles
+        articlesOnBoard = select_articles(activeTabCourseId,
+                                          NOT_DELETED).subquery()
+                # 허용 과목 리스트
         myCourses = select_accept_courses().subquery()
-        
-        # POST
-        if request.method == 'POST':
-            # 과목 아이디만 가져옴
-            try:
-                for form in request.form:
-                    # Keyword Content
-                    if 'keyWord' == form:
-                        keyWord = request.form['keyWord']
-                        # findConditions
-                    else:
-                        filterCondition = form
-            except Exception:
-                filterCondition = None
-                keyWord = None
 
-            # Like Filterling    
-            articlesOnBoard = search_articles(Filters,
-                                              articlesOnBoard,
-                                              filterCondition = Filters[0] if not filterCondition else filterCondition,
-                                              keyWord = keyWord).subquery()
-        # Get Method
-                #과목 목록
+        # join Course Name
+        articlesOnBoard = join_course_name(articlesOnBoard, myCourses).subquery()
+        # TabActive Course Articles
+                # 과목 게시글
         try:
-            courseList = dao.query(myCourses).\
-                             all()
-        except Exception:
-            courseList = []
-            
-        for i in range(0, len(courseList)):
-            # 과목의 정보 취득
-            # 가져온 과목정에 맞는 게시판 글 취득
-            courseSub = dao.query(myCourses.c.courseName,
-                                  articlesOnBoard).\
-                            filter(myCourses.c.courseId == courseList[i].courseId).\
-                            join(articlesOnBoard,
-                                 articlesOnBoard.c.courseId == myCourses.c.courseId).\
-                            subquery()
-            # 과목 게시글 모음
-            try:
-                articleSub = select_article(courseSub,
-                                            NOT_NOTICE)
-                courseRecords.append(get_page_record(articleSub,
-                                               int(pageNum)).\
-                               all())
-                count = dao.query(func.count(articleSub.subquery().c.articleIndex).label('count')).\
-                            first().\
-                            count
-            except Exception:
-                count = 0
-                courseRecords.append([])
-            try:
-                courseNoticeRecords.append(get_page_record((select_article(courseSub,
-                                                                           NOTICE)),
-                                                           int(pageNum),
-                                                           NOTICE_LIST).all())
-            except Exception:
-                courseNoticeRecords.append([])
-            
-            # 과목 게시물 페이지 정보 구하기
-            pages.append(get_page_pointed(int(pageNum),
-                                          count))
-        # All Course Subquery
-        courseSub = dao.query(myCourses.c.courseName,
-                              articlesOnBoard).\
-                        join(articlesOnBoard,
-                             articlesOnBoard.c.courseId == myCourses.c.courseId).\
-                        subquery()
-        # All 과목 게시글
-        try:
-            articleSub = select_article(courseSub,
-                                        NOT_NOTICE)
+            articleSub = select_sorted_articles(articlesOnBoard,
+                                                NOT_NOTICE)
             articleRecords = get_page_record(articleSub,
-                                             int(pageNum)).\
-                             all()
-            count = dao.query(func.count(articleSub.subquery().c.articleIndex).label('count')).\
-                        first().\
-                        count
+                                             int(pageNum)).all()
+            count = select_count(articleSub.subquery().\
+                                            c.\
+                                            articleIndex).first().\
+                                                          count
         except Exception:
             count = 0
             articleRecords = []
-            
-                 # 모드느 과목 페이징 정보 구하기
-        allPages = get_page_pointed(int(pageNum),
-                                    count)
-        # All 과목 공지글    
+                # 과목 공지글    
         try:    
-            articleNoticeRecords = get_page_record((select_article(courseSub,
-                                                             NOTICE)),
-                                             int(pageNum),
-                                             NOTICE_LIST).all()
+            articleNoticeRecords = get_page_record((select_sorted_articles(articlesOnBoard,
+                                                                           NOTICE)),
+                                                   int(1),
+                                                   NOTICE_LIST).all()
         except Exception:
             articleNoticeRecords = []
-
-        # 허용 과목 리스트
         try:
-            myCourses = dao.query(myCourses).\
-                            all()
+            myCourses = dao.query(myCourses).all()
         except Exception:
             myCourses = []
-        
+            # myCourses Default Add ALL
+        myCourses.insert(0, ALL)
+
         return render_template('/board.html',
                                articleRecords = articleRecords,
                                articleNoticeRecords =  articleNoticeRecords,
                                myCourses = myCourses,
-                               courseRecords = courseRecords,
-                               courseNoticeRecords = courseNoticeRecords,
-                               allPages = allPages,
-                               pages  =pages,
-                               Filters = Filters) # classType, condition은 검색 할 때 필요한 변수    
+                               pages = get_page_pointed(int(pageNum),
+                                                        count),
+                               Filters = Filters,
+                               activeTabCourseId = activeTabCourseId) # classType, condition은 검색 할 때 필요한 변수    
     except Exception:
         return unknown_error()
+                            
 
+'''
+Join Course Name
+'''
+def join_course_name(articlesOnBoard, myCourses):
+    return dao.query(articlesOnBoard,
+                     myCourses.c.courseName).\
+               join(myCourses,
+                    articlesOnBoard.c.courseId == myCourses.c.courseId)
+               
+               
+'''
+Board Articles
+'''
+def select_articles(activeTabCourseId, isDeleted):
+    
+    if activeTabCourseId == ALL:
+        return dao.query(ArticlesOnBoard).\
+                   filter(ArticlesOnBoard.isDeleted == isDeleted)
+    else: #activeTabCourseId != ALL
+        return dao.query(ArticlesOnBoard).\
+                   filter(ArticlesOnBoard.courseId == activeTabCourseId,
+                          ArticlesOnBoard.isDeleted == isDeleted)
+               
 '''
 Board Notice Classification
 '''
-def select_article(courseSub, isNotice):
+def select_sorted_articles(articlesOnBoard, isNotice):
     
-    return dao.query(courseSub).\
-               filter(courseSub.c.isNotice == isNotice).\
-               order_by(courseSub.c.articleIndex.desc())
+    return dao.query(articlesOnBoard).\
+               filter(articlesOnBoard.c.isNotice == isNotice).\
+               order_by(articlesOnBoard.c.articleIndex.desc())
  
  
 '''

@@ -34,6 +34,14 @@ def select_match_member(memberId):
 
 
 '''
+Record count
+'''
+def select_count(keySub):
+    return dao.query(func.count(keySub).label('count'))
+
+
+
+'''
 허용된 과목 정보
 '''
 def select_accept_courses():
