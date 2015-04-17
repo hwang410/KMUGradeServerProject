@@ -9,15 +9,21 @@
 		<h3>Manage Class</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
-			<a href="{{ url_for('GradeServer.server_add_class') }}"><button class="btn" type="button">Add</button></a>
-			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">Delete</a>
+			<a href="{{ url_for('GradeServer.server_add_class') }}">
+				<button class="btn" type="button">Add</button>
+			</a>
+			<a class="btn" data-toggle="modal" role="button" 
+				onclick="showingDeleteModal()">Delete</a>
 		</div>
 
 		<!-- hidden modal pop -->
 		<!-- if any item choiced -->
-		<div class="modal hide fade" id="deleteModal" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+		<div class="modal hide fade" id="deleteModal"
+			  aria-labelledby="deleteModalLabel" aria-hidden="true"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal"
+						  type="button" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete Class</h3>
 			</div>
 			<div class="modal-body">
@@ -25,22 +31,31 @@
 			</div>
 			<div class="modal-footer">
 				<form method="post" id="deleteConfirm">
-					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-					<button class="btn btn-primary" type="submit">Confirm</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true">
+						Close
+					</button>
+					<button class="btn btn-primary" type="submit">
+						Confirm
+					</button>
 				
 			</div>
 		</div>
 		<!-- no items choiced -->
-		<div class="modal hide fade" id="deleteNoItem" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+		<div class="modal hide fade" id="deleteNoItem"
+			  aria-labelledby="deleteModalLabel" aria-hidden="true"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal"
+						  type="button" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete Class</h3>
 			</div>
 			<div class="modal-body">
 				<p>No items choiced</p>
 			</div>
 			<div class="modal-footer">
-				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">
+					Close
+				</button>
 			</div>
 		</div>
 		<!-- end hidden modal pop -->
@@ -72,7 +87,11 @@
 							{% endfor -%}
 					<td>{{ course.startDateOfCourse }}
 					<td>{{ course.endDateOfCourse }}
-					<td><label class="checkbox-center"><input class="box-check" name="{{ course.courseId }}" type="checkbox" form="deleteConfirm" value="{{ course.courseId }}"></label>
+					<td>
+						<label class="checkbox-center">
+							<input class="box-check" name="{{ course.courseId }}"
+									type="checkbox" form="deleteConfirm" value="{{ course.courseId }}">
+						</label>
 				{% endfor -%}
 				</form>
 		</table>
