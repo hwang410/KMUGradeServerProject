@@ -52,10 +52,10 @@
 					<button href="#" class="delete btn btn-primary" name ="deletePost" type="submit">Confirm</button>
 				</div>
 			</div>
-			<a href="{{ url_for('GradeServer.write', articleIndex =article.articleIndex) }}"><button type="button" class ="btn modify">Modify</button></a>
-			{% endif %}
-			<br>
 		</form>
+			<a href='{{ url_for("GradeServer.write", articleIndex = article.articleIndex) }}'><button type="button" class ="btn modify">Modify</button></a>
+			{% endif %}
+	
 	</div>
 </div>
 <!-- end content block -->
