@@ -9,11 +9,11 @@
 	<form method="post">
 		<h4>Class
 			<select class="span3" type="text" id="language" name="courseId">
-				{%- for course in myCourses %}
-					{% if article.courseId == course.courseId %}<option class ="{{ course.courseId }}" selected ="selected">
-					{% else %}<option class="{{ course.courseId }}">
+				{%- for myCourse in myCourses %}
+					{% if articlesOnBoard.courseId == myCourse.courseId %}<option class ="{{ myCourse.courseId }}" selected ="selected">
+					{% else %}<option class="{{ myCourse.courseId }}">
 					{% endif %}
-					{{ course.courseId }} {{ course.courseName }}</option>
+					{{ myCourse.courseId }} {{ myCourse.courseName }}</option>
 				<!--  if modify then default Course -->
 				
 				{% endfor -%}
@@ -21,9 +21,9 @@
 		</h4>
 		<h4>Title 
 			<input class="input-xxlarge" name="title" type="text" autocomplete="off" placeholder="less than 50 letters"
-			value ="{% if title %}{{ title }}{% elif article.title %}{{ article.title }}{% endif %}" autofocus ="autofocus">
+			value ="{% if title %}{{ title }}{% elif articlesOnBoard.title %}{{ articlesOnBoard.title }}{% endif %}" autofocus ="autofocus">
 		</h4>
-		<textarea class="content input-xxlarge" id="writePlace" name="content" row="5" placeholder="write here" onkeyup="autoSize(this)" autocomplete="off">{% if content %}{{ content }}{% elif article.content %}{{ article.content }}{% endif %}</textarea>
+		<textarea class="content input-xxlarge" id="writePlace" name="content" row="5" placeholder="write here" onkeyup="autoSize(this)" autocomplete="off">{% if content %}{{ content }}{% elif articlesOnBoard.content %}{{ articlesOnBoard.content }}{% endif %}</textarea>
 		<br>
 		<input type="submit" id="writeDone" value="Done">
 		<!--<button class="btn" type="submit">Done</button>-->

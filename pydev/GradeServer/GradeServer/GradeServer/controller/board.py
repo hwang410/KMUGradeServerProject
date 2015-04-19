@@ -73,7 +73,7 @@ def board(activeTabCourseId, pageNum):
             count = 0
             articleRecords = []
                 # 과목 공지글    
-        try:    
+        try:  
             articleNoticeRecords = get_page_record((select_sorted_articles(articlesOnBoard,
                                                                            NOTICE)),
                                                    int(1),
@@ -86,7 +86,7 @@ def board(activeTabCourseId, pageNum):
             myCourses = []
             # myCourses Default Add ALL
         myCourses.insert(0, ALL)
-
+       
         return render_template('/board.html',
                                articleRecords = articleRecords,
                                articleNoticeRecords =  articleNoticeRecords,
@@ -95,6 +95,7 @@ def board(activeTabCourseId, pageNum):
                                                         count),
                                Filters = Filters,
                                activeTabCourseId = activeTabCourseId) # classType, condition은 검색 할 때 필요한 변수    
+        
     except Exception:
         return unknown_error()
                             
@@ -103,10 +104,21 @@ def board(activeTabCourseId, pageNum):
 Join Course Name
 '''
 def join_course_name(articlesOnBoard, myCourses):
+    
     return dao.query(articlesOnBoard,
                      myCourses.c.courseName).\
                join(myCourses,
                     articlesOnBoard.c.courseId == myCourses.c.courseId)
+               
+
+'''
+Board Article
+'''
+def select_article(articleIndex, isDeleted):   
+      
+    return dao.query(ArticlesOnBoard).\
+               filter(ArticlesOnBoard.articleIndex == articleIndex,
+                      ArticlesOnBoard.isDeleted == isDeleted)
                
                
 '''
@@ -114,13 +126,16 @@ Board Articles
 '''
 def select_articles(activeTabCourseId, isDeleted):
     
+    # activate Tab Select
     if activeTabCourseId == ALL:
         return dao.query(ArticlesOnBoard).\
-                   filter(ArticlesOnBoard.isDeleted == isDeleted)
-    else: #activeTabCourseId != ALL
-        return dao.query(ArticlesOnBoard).\
-                   filter(ArticlesOnBoard.courseId == activeTabCourseId,
-                          ArticlesOnBoard.isDeleted == isDeleted)
+               filter(ArticlesOnBoard.isDeleted == isDeleted)
+    else:
+        return  dao.query(ArticlesOnBoard).\
+               filter(ArticlesOnBoard.isDeleted == isDeleted,
+                      ArticlesOnBoard.courseId == activeTabCourseId)
+    
+
                
 '''
 Board Notice Classification
@@ -143,29 +158,23 @@ def read(articleIndex, error = None):
     # Final 
     try:
         # 게시글 정보
-        article = dao.query(ArticlesOnBoard).\
-                      filter(ArticlesOnBoard.articleIndex == articleIndex).\
-                      subquery()
+        articlesOnBoard = select_article(articleIndex,
+                                          NOT_DELETED).subquery()
         try:
-            article = dao.query(article, 
-                                RegisteredCourses.courseName).\
-                          join(RegisteredCourses,
-                               article.c.courseId == RegisteredCourses.courseId).\
-                          first()
+            articlesOnBoard = join_course_name(articlesOnBoard, 
+                                               dao.query(RegisteredCourses).\
+                                                   subquery()).first()
         except Exception:
-            article = []
+            articlesOnBoard = []
             
         # 내가 게시글에 누른 좋아요 정보submissionCount
         try:
-            isPostLiked = dao.query(LikesOnBoard.cancelledLike).\
-                              filter(LikesOnBoard.boardLikerId == session[MEMBER_ID],
-                                     LikesOnBoard.articleIndex == articleIndex).\
-                              first() 
+            isPostLiked = select_article_is_like(session[MEMBER_ID],
+                                                 articleIndex).first().\
+                                                               cancelledLike
         except Exception:
-            isPostLiked = NOT_CANCELLED
+            isPostLiked = None
             
-        if isPostLiked:
-            isPostLiked = isPostLiked.cancelledLike
         # replies 정보
         try:
             commentRecords = dao.query(RepliesOnBoard).\
@@ -207,13 +216,13 @@ def read(articleIndex, error = None):
         # 읽은 횟수 카운팅
         dao.query(ArticlesOnBoard).\
             filter(ArticlesOnBoard.articleIndex == articleIndex).\
-            update(dict(viewCount = article.viewCount + 1))
+            update(dict(viewCount = articlesOnBoard.viewCount + 1))
         # Commit Exception
         try:
             dao.commit()
             
             return render_template(READ_HTML,
-                                   article = article,
+                                   article = articlesOnBoard,
                                    commentRecords = commentRecords,
                                    isLikeds = isLikeds,
                                    isPostLiked = isPostLiked,
@@ -225,24 +234,21 @@ def read(articleIndex, error = None):
     elif request.method == 'POST':
         # flash message Init
         flashMsg =None
-        
         for form in request.form:
             
             # 게시글 좋아요
             if form == 'postLike':
                 # 좋아요를 누른적 없을 때
                 if not isPostLiked:
-                    
                     update_board_like_count(articleIndex,
-                                            article.sumOfLikeCount + 1)
-                    
+                                            articlesOnBoard.sumOfLikeCount + 1)
                     dao.add(LikesOnBoard(articleIndex = articleIndex,
                                         boardLikerId = session[MEMBER_ID]))
                 # 다시 좋아요 누를 때
                 elif isPostLiked == CANCELLED:
                     
                     update_board_like_count(articleIndex,
-                                            article.sumOfLikeCount + 1)
+                                            articlesOnBoard.sumOfLikeCount + 1)
                     update_board_liker_cancelled (articleIndex,
                                                   session[MEMBER_ID],
                                                   NOT_CANCELLED)
@@ -250,7 +256,7 @@ def read(articleIndex, error = None):
                 else:  # if it's already exist then change the value of 'pushedLike'
                     
                     update_board_like_count(articleIndex,
-                                            article.sumOfLikeCount -1)
+                                            articlesOnBoard.sumOfLikeCount -1)
                     update_board_liker_cancelled (articleIndex,
                                                   session[MEMBER_ID],
                                                 CANCELLED)
@@ -258,7 +264,7 @@ def read(articleIndex, error = None):
                 # remove duplicated read count
                 dao.query(ArticlesOnBoard).\
                     filter(ArticlesOnBoard.articleIndex == articleIndex).\
-                    update(dict(viewCount = article.viewCount - 1))
+                    update(dict(viewCount = articlesOnBoard.viewCount - 1))
                 
                 break 
                 # 댓글 달기
@@ -275,14 +281,14 @@ def read(articleIndex, error = None):
                 
                 # 새로운 댓글 정보
                 newComment = RepliesOnBoard(boardReplyIndex = boardReplyIndex,
-                                            articleIndex = article.articleIndex,
+                                            articleIndex = articlesOnBoard.articleIndex,
                                             boardReplierId = session[MEMBER_ID],
                                             boardReplyContent = request.form['boardCommentWrite'],
                                             boardReplierIp = socket.gethostbyname(socket.gethostname()),
                                             boardRepliedDate = datetime.now())
                 dao.add(newComment)
                 # remove duplicated read count
-                dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=article.viewCount - 1, replyCount =article.replyCount + 1))
+                dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=articlesOnBoard.viewCount - 1, replyCount =articlesOnBoard.replyCount + 1))
                 
                 flashMsg =get_message('writtenComment')
                 
@@ -309,7 +315,7 @@ def read(articleIndex, error = None):
                                                                   boardReplyLikerId =session['memberId']).update(dict(cancelledLike ='Cancelled'))
                         dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex=int(form[idIndex:])).update(dict(sumOfLikeCount=sumOfLikeCount - 1))
                 # remove duplicated read count
-                dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=article.viewCount - 1))
+                dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=articlesOnBoard.viewCount - 1))
                 
                 break 
             # 댓글 삭제   
@@ -325,9 +331,9 @@ def read(articleIndex, error = None):
                 # 삭제 시킬 경우
                 if deleteCheck.isDeleted == 'Not-Deleted':
                     dao.query(RepliesOnBoard).filter_by(articleIndex=articleIndex, boardReplyIndex=form[idIndex:]).update(dict(isDeleted ='Deleted'))
-                    dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(replyCount=article.replyCount - 1))
+                    dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(replyCount=articlesOnBoard.replyCount - 1))
                     # remove duplicated read count
-                    dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=article.viewCount - 1))
+                    dao.query(ArticlesOnBoard).filter_by(articleIndex=articleIndex).update(dict(viewCount=articlesOnBoard.viewCount - 1))
                     
                     flashMsg =get_message('deletedComment')
                     
@@ -339,7 +345,7 @@ def read(articleIndex, error = None):
                 # remove duplicated read count
                 dao.query(ArticlesOnBoard).\
                     filter(ArticlesOnBoard.articleIndex == articleIndex).\
-                    update(dict(viewCount = article.viewCount - 1))
+                    update(dict(viewCount = articlesOnBoard.viewCount - 1))
                 #update comment
                 dao.query(RepliesOnBoard).\
                     filter(RepliesOnBoard.articleIndex == articleIndex,
@@ -356,7 +362,7 @@ def read(articleIndex, error = None):
                 idIndex = len('modifyBoardComment')
 
                 return render_template(READ_HTML,
-                                   article = article,
+                                   article = articlesOnBoard,
                                    commentRecords = commentRecords,
                                    boardReplyIndex = int(form[idIndex:]),
                                    isLikeds = isLikeds,
@@ -377,6 +383,7 @@ def read(articleIndex, error = None):
                         error = get_message('updateFailed')
                         
                     return redirect(url_for(BOARD,
+                                            activeTabCourseId = ALL,
                                             pageNum = 1))
         
         # Commit Exception
@@ -395,6 +402,7 @@ def read(articleIndex, error = None):
     
     # Exception View    
     return redirect(url_for(BOARD,
+                            activeTabCourseId = ALL,
                             pageNum = 1))
 
 
@@ -408,18 +416,18 @@ def write(articleIndex, error =None):
     try:
         # 수강  과목 정보
         try:
-            myCourses = dao.query(select_accept_courses().subquery()).\
-                           all()
+            myCourses = select_accept_courses().all()
         except Exception:
             myCourses = []
-            
+        print "CCCCC"
         # 수정 할 글 정보
         try:
-            article =dao.query(ArticlesOnBoard.title, ArticlesOnBoard.content, ArticlesOnBoard.courseId, RegisteredCourses.courseName).\
-                join(RegisteredCourses, ArticlesOnBoard.courseId == RegisteredCourses.courseId).\
-                filter(ArticlesOnBoard.articleIndex == articleIndex).first()
+            articlesOnBoard = select_article(articleIndex, NOT_DELETED).subquery()
+            articlesOnBoard = join_course_name(articlesOnBoard,
+                                               dao.query(RegisteredCourses).\
+                                                   subquery()).first()
         except Exception:
-            article =[]
+            articlesOnBoard =[]
         
         # 작성시 빈칸 검사
         if request.method == 'POST':
@@ -439,16 +447,23 @@ def write(articleIndex, error =None):
                 try:
                     # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 중간의 공백을 기준으로 나눔
                     courseId =request.form['courseId'].split()[0]
+                    isNotice = NOTICE
                     title = request.form['title']
                     content = request.form['content']
                     currentDate = datetime.now()
                     currentIP = socket.gethostbyname(socket.gethostname())
                     # 새로 작성
-                    if not article:
+                    if not articlesOnBoard:
+                        # Set isNotice
                         if 'User' in session['authority']: 
-                            newPost = ArticlesOnBoard(courseId=courseId, writerId=session['memberId'], title=title, content=content, writtenDate=currentDate, writerIp=currentIP)
-                        else:
-                            newPost = ArticlesOnBoard(courseId=courseId, writerId=session['memberId'], isNotice='Notice', title=title, content=content, writtenDate=currentDate, writerIp=currentIP)
+                            isNotice = NOT_NOTICE
+                        newPost = ArticlesOnBoard(courseId = courseId,
+                                                  writerId = session[MEMBER_ID],
+                                                  isNotice = isNotice,
+                                                  title = title,
+                                                  content = content,
+                                                  writtenDate = currentDate,
+                                                  writerIp = currentIP)
                         dao.add(newPost)
                         # Commit Exception
                         try:
@@ -459,13 +474,17 @@ def write(articleIndex, error =None):
                             error =get_message('updateFailed')
                             
                         return redirect(url_for(BOARD,
-                                                activeTabCourse = 'all',
+                                                activeTabCourseId = ALL,
                                                 pageNum = 1))
                     # 게시물 수정    
                     else:
-                        dao.query(ArticlesOnBoard).\
-                            filter_by(articleIndex =articleIndex).\
-                            update(dict(courseId =courseId, title=title, content=content, writtenDate=currentDate, writerIp=currentIP))
+                        articlesOnBoard = select_article(articleIndex,
+                                                          NOT_DELETED)
+                        articlesOnBoard = articlesOnBoard.update(dict(courseId = courseId,
+                                                                      title = title,
+                                                                      content = content,
+                                                                      writtenDate = currentDate,
+                                                                      writerIp = currentIP))
                         
                         # Commit Exception
                         try:
@@ -475,17 +494,33 @@ def write(articleIndex, error =None):
                             dao.rollback()
                             error =get_message('updateFailed')
                         # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 
-                        return redirect(url_for('.read', courseName =request.form['courseId'].split()[1], articleIndex =articleIndex))
+                        return redirect(url_for('.read',
+                                                courseName = request.form['courseId'].split()[1],
+                                                articleIndex = articleIndex))
                 
                 except Exception:
                     error =get_message()
  
-        return render_template('/write.html', myCourses =myCourses, article =article, title =title, content =content, error=error)
+        return render_template('/write.html',
+                               myCourses = myCourses,
+                               articlesOnBoard = articlesOnBoard,
+                               title = title,
+                               content = content,
+                               error = error)
     except Exception:
         # Unknown Error
         return unknown_error()
+
+'''
+ Board IsLike
+'''
+def select_article_is_like(boardLikerId, articleIndex):
     
- 
+    return dao.query(LikesOnBoard).\
+               filter(LikesOnBoard.boardLikerId == boardLikerId,
+                      LikesOnBoard.articleIndex == articleIndex)
+               
+               
 '''
   Board Like Count
 '''
