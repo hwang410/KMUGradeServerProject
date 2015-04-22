@@ -44,7 +44,6 @@ TAB = 'Tab'
 ADD = 'add'
 ONE_FILE = 'OneFile'
 MULTIPLE_FILES = 'MultipleFiles'
-MEMBER_ID = session['memberId']
 POST_METHOD = 'POST'
 
 newUsers = []
@@ -69,7 +68,7 @@ def class_user_submit():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
+                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
                          all()
     except:
         error = 'Error has been occurred while searching registered courses.'
@@ -126,7 +125,7 @@ def class_manage_problem():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
+                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
                          all()
     except:
         error = 'Error has been occurred while searching registered courses'
@@ -138,7 +137,7 @@ def class_manage_problem():
                                ownProblems = [])
     
     try:
-        ownProblems = get_own_problems(MEMBER_ID)
+        ownProblems = get_own_problems(session['memberId'])
     except:
         error = 'Error has been occurred while searching own problems'
         return render_template('/class_manage_problem.html', 
@@ -309,7 +308,7 @@ def class_manage_problem():
     
             return redirect(url_for('.class_manage_problem'))
     
-    ownProblems = get_own_problems(MEMBER_ID)
+    ownProblems = get_own_problems(session['memberId'])
     return render_template('/class_manage_problem.html', 
                            error = error, 
                            modalError = modalError,
@@ -324,7 +323,7 @@ def class_manage_user():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
+                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
                          all()
     except:
         error = 'Error has been occurred while searching own courses'
@@ -456,7 +455,7 @@ def class_add_user():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
+                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
                          all()
     except:
         error = 'Error has been occurred while searching own courses'
@@ -791,7 +790,7 @@ def user_submit_summary():
 
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
+                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
                          all()
     except:
         return render_template('/class_user_submit_summary.html', 
@@ -804,7 +803,7 @@ def user_submit_summary():
         ownProblems = dao.query(RegisteredProblems).\
                           join(RegisteredCourses,
                                RegisteredProblems.courseId == RegisteredCourses.courseId).\
-                          filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
+                          filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
                           all()
     except:
         return render_template('/class_user_submit_summary.html', 
@@ -817,7 +816,7 @@ def user_submit_summary():
         ownMembers = dao.query(Registrations).\
                          join(RegisteredCourses,
                               RegisteredCourses.courseId == Registrations.courseId).\
-                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
+                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
                          all()
     except:
         return render_template('/class_user_submit_summary.html', 
