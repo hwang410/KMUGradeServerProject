@@ -38,10 +38,30 @@ import re
 projectPath = '/mnt/shared'
 coursesPath = 'CurrentCourses'
 limitedFileSize = 1024
+DELETE = 'delete'
+EDIT = 'edit'
+TAB = 'Tab'
+ADD = 'add'
+ONE_FILE = 'OneFile'
+MULTIPLE_FILES = 'MultipleFiles'
+MEMBER_ID = session['memberId']
+POST_METHOD = 'POST'
 
 newUsers = []
 newProblems = []
 
+def get_own_problems(memberId):
+    ownProblems = (dao.query(RegisteredProblems,
+                             RegisteredCourses, 
+                             Problems).\
+                       join(RegisteredCourses, 
+                            RegisteredCourses.courseId == RegisteredProblems.courseId).\
+                       join(Problems, 
+                            Problems.problemId == RegisteredProblems.problemId).\
+                       filter(RegisteredCourses.courseAdministratorId == memberId)).\
+                  all()
+    return ownProblems
+        
 @GradeServer.route('/classmaster/user_submit')
 @login_required
 def class_user_submit():
@@ -49,7 +69,7 @@ def class_user_submit():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter_by(courseAdministratorId = session['memberId']).\
+                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
                          all()
     except:
         error = 'Error has been occurred while searching registered courses.'
@@ -106,7 +126,7 @@ def class_manage_problem():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter_by(courseAdministratorId = session['memberId']).\
+                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
                          all()
     except:
         error = 'Error has been occurred while searching registered courses'
@@ -118,16 +138,7 @@ def class_manage_problem():
                                ownProblems = [])
     
     try:
-        ownProblems = (dao.query(RegisteredProblems,
-                                 RegisteredCourses, 
-                                 Problems).\
-                           join(RegisteredCourses, 
-                                RegisteredCourses.courseId == RegisteredProblems.courseId).\
-                           join(Problems, 
-                                Problems.problemId == RegisteredProblems.problemId).\
-                           filter(RegisteredCourses.courseAdministratorId == session['memberId'])).\
-                      all()
-        
+        ownProblems = get_own_problems(MEMBER_ID)
     except:
         error = 'Error has been occurred while searching own problems'
         return render_template('/class_manage_problem.html', 
@@ -138,15 +149,23 @@ def class_manage_problem():
                                ownProblems = [])
         
         
-    if request.method == 'POST':
+    if request.method == POST_METHOD:
         isNewProblem = True
         numberOfNewProblems = (len(request.form)-1)/7
-        keys = {"courseId":"0", "courseName":"1", "problemId":"2", "problemName":"3", "multipleFiles":"4", "startDate":"5", "endDate":"6", "openDate":"7", "closeDate":"8"}
+        keys = {"courseId":"0", 
+                "courseName":"1", 
+                "problemId":"2", 
+                "problemName":"3", 
+                "multipleFiles":"4", 
+                "startDate":"5", 
+                "endDate":"6", 
+                "openDate":"7", 
+                "closeDate":"8"}
+        
         # courseId, courseName, problemId, problemName, isAllInputCaseInOneFile, startDate, endDate, openDate, closeDate
         newProblem = [['' for i in range(9)] for j in range(numberOfNewProblems+1)]
-        print "forms:", request.form
         for form in request.form:
-            if 'delete' in form:
+            if DELETE in form:
                 isNewProblem = False
                 courseId, problemId = form.split('_')[1:]
                 try:
@@ -167,7 +186,7 @@ def class_manage_problem():
                                            ownCourses = ownCourses, 
                                            ownProblems = ownProblems)
                     
-            elif 'edit' in form:
+            elif EDIT in form:
                 isNewProblem = False
                 editTarget, courseId, problemId, targetData = form[5:].split('_')
                 targetData = request.form[form]
@@ -175,7 +194,7 @@ def class_manage_problem():
                 # actually editTarget is 'id' value of tag. 
                 # That's why it may have 'Tab' at the last of id to clarify whether it's 'all' tab or any tab of each course.
                 # so when user pushes one of tab and modify the data, then we need to re-make the editTarget 
-                if 'Tab' in editTarget:
+                if TAB in editTarget:
                     editTarget = editTarget[:-3]
                 for registeredProblem, registeredCourse, problemName in ownProblems:
                     if registeredCourse.courseId == courseId and\
@@ -199,7 +218,7 @@ def class_manage_problem():
                         
             # addition problem
             else:
-                if form == 'add':
+                if form == ADD:
                     continue
                 value, index = re.findall('\d+|\D+', form)
                 index = int(index)
@@ -219,9 +238,9 @@ def class_manage_problem():
                 if not problem[int(keys['closeDate'])]:
                     problem[int(keys['closeDate'])] = problem[int(keys['endDate'])]
                 if not problem[int(keys['multipleFiles'])]:
-                    problem[int(keys['multipleFiles'])] = 'OneFile'
+                    problem[int(keys['multipleFiles'])] = ONE_FILE
                 else:
-                    problem[int(keys['multipleFiles'])] = 'MultipleFiles'
+                    problem[int(keys['multipleFiles'])] = MULTIPLE_FILES
                 problem[int(keys['courseId'])], problem[int(keys['courseName'])] = problem[int(keys['courseId'])].split(' ', 1)
                 problem[int(keys['problemId'])], problem[int(keys['problemName'])] = problem[int(keys['problemId'])].split(' ', 1)
                 try:
@@ -289,7 +308,8 @@ def class_manage_problem():
                     os.makedirs(problemPath)
     
             return redirect(url_for('.class_manage_problem'))
-        
+    
+    ownProblems = get_own_problems(MEMBER_ID)
     return render_template('/class_manage_problem.html', 
                            error = error, 
                            modalError = modalError,
@@ -304,7 +324,7 @@ def class_manage_user():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter_by(courseAdministratorId = session['memberId']).\
+                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
                          all()
     except:
         error = 'Error has been occurred while searching own courses'
@@ -405,7 +425,7 @@ def class_manage_user():
         loopIndex += 1
     
     print "rf", request.form
-    if request.method == 'POST':
+    if request.method == POST_METHOD:
         for form in request.form:
             if 'delete' in form:
                 courseId, memberId = form[7:].split('_')
@@ -436,7 +456,7 @@ def class_add_user():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
                          all()
     except:
         error = 'Error has been occurred while searching own courses'
@@ -771,7 +791,7 @@ def user_submit_summary():
 
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
                          all()
     except:
         return render_template('/class_user_submit_summary.html', 
@@ -784,7 +804,7 @@ def user_submit_summary():
         ownProblems = dao.query(RegisteredProblems).\
                           join(RegisteredCourses,
                                RegisteredProblems.courseId == RegisteredCourses.courseId).\
-                          filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                          filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
                           all()
     except:
         return render_template('/class_user_submit_summary.html', 
@@ -797,7 +817,7 @@ def user_submit_summary():
         ownMembers = dao.query(Registrations).\
                          join(RegisteredCourses,
                               RegisteredCourses.courseId == Registrations.courseId).\
-                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                         filter(RegisteredCourses.courseAdministratorId == MEMBER_ID).\
                          all()
     except:
         return render_template('/class_user_submit_summary.html', 
