@@ -25,6 +25,7 @@ if __name__ == '__main__':
     
     print 'running...'
     http_server = HTTPServer (WSGIContainer (application))
-    http_server.listen(80)
+    http_server.bind(80)
+    http_server.start(6)
     IOLoop.instance().start ()
     
