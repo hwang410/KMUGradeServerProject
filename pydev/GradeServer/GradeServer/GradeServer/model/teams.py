@@ -15,11 +15,16 @@ from sqlalchemy.dialects.mysql import VARCHAR, TEXT, ENUM
 
 from GradeServer.model import Base
 
+from GradeServer.utils.enumResources import ENUMResources
+
 class Teams (Base) :
     
     __tablename__ ="Teams"
     
     teamName =Column (VARCHAR (128), primary_key =True, nullable =False)
     teamDescription =Column (TEXT, nullable =True)
-    isDeleted =Column (ENUM ('Deleted', 'Not-Deleted'), default ='Not-Deleted', nullable =False)
+    isDeleted =Column (ENUM (ENUMResources.const.true,
+                             ENUMResources.const.false),
+                       default = ENUMResources.const.false,
+                       nullable =False)
     

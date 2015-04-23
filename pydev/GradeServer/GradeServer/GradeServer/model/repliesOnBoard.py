@@ -17,6 +17,8 @@ from GradeServer.model import Base
 from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 from GradeServer.model.members import Members
 
+from GradeServer.utils.enumResources import ENUMResources
+
 class RepliesOnBoard (Base) :
     
     __tablename__ ="RepliesOnBoard"
@@ -27,6 +29,9 @@ class RepliesOnBoard (Base) :
     boardReplyContent =Column (TEXT, nullable =False)
     boardReplierIp =Column (VARCHAR (20), nullable =False)
     boardRepliedDate =Column (DATETIME, nullable =False)
-    isDeleted =Column (ENUM ('Deleted', 'Not-Deleted'), default ='Not-Deleted', nullable =False)
+    isDeleted =Column (ENUM (ENUMResources.const.true,
+                             ENUMResources.const.false),
+                       default = ENUMResources.const.false,
+                       nullable =False)
     sumOfLikeCount =Column (INTEGER (unsigned =True), default =0, nullable =False)
     

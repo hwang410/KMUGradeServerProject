@@ -11,11 +11,13 @@
 
 
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy.dialects.mysql import VARCHAR, INTEGER, TEXT
+from sqlalchemy.dialects.mysql import VARCHAR, INTEGER, TEXT, ENUM
 
 from GradeServer.model import Base
 from GradeServer.model.members import Members
 from GradeServer.model.registeredProblems import RegisteredProblems
+
+from GradeServer.utils.enumResources import ENUMResources
 
 class SubmittedFiles (Base) :
     
@@ -28,3 +30,7 @@ class SubmittedFiles (Base) :
     fileName =Column (VARCHAR (50), nullable =False)
     filePath =Column (TEXT, nullable =False)
     fileSize =Column (INTEGER (unsigned =True), default =0, nullable =False) #Byte
+    isDeleted = Column(ENUM(ENUMResources.const.true,
+                            ENUMResources.const.false),
+                       default = ENUMResources.const.false,
+                       nullable = False)
