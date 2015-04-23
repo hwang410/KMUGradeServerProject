@@ -14,19 +14,19 @@ class GradingTools(object):
     def Grade(self):
         if self.gradeMethod == 'Solution':   # solution
             if self.caseCount > 1:
-                result = self.SolutionMulti()
+                result, score = self.SolutionMulti()
                 
             else:
-                result = self.SolutionSingle()
+                result, score = self.SolutionSingle()
             
         else:   # checker
             if self.caseCount > 1:
-                result = self.CheckerMulti()
+                result, score = self.CheckerMulti()
                 
             else:
-                result = self.CheckerSingle()
+                result, score = self.CheckerSingle()
             
-        return result
+        return result, score
     
     def MakeMulticaseCommand(self):
         # make execution command
@@ -69,15 +69,17 @@ class GradingTools(object):
             if stdLine != answerLine:   # if not same each line
                 count += 1
         
+        result = 'Solved'
         score = 100
         
         if count > 0:
+            result = 'WrongAnswer'
             score = int( ((len(answerLines) - count) * 100) / len(answerLines) )
             
         if score < 0:
-            return 0
+            return 'WrongAnswer', 0
             
-        return score
+        return result, score
         
     def CheckerSingle(self):
         try:
