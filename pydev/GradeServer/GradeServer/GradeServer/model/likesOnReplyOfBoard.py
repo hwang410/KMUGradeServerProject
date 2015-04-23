@@ -16,6 +16,7 @@ from sqlalchemy.dialects.mysql import VARCHAR, INTEGER, ENUM
 from GradeServer.model import Base
 from GradeServer.model.repliesOnBoard import RepliesOnBoard
 from GradeServer.model.members import Members
+from GradeServer.utils.enumResources import ENUMResources
 
 class LikesOnReplyOfBoard (Base) :
     
@@ -24,4 +25,7 @@ class LikesOnReplyOfBoard (Base) :
     articleIndex =Column (INTEGER (unsigned =True), ForeignKey (RepliesOnBoard.articleIndex, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, autoincrement =False, nullable =False)
     boardReplyIndex =Column (INTEGER (unsigned =True), ForeignKey (RepliesOnBoard.boardReplyIndex, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, autoincrement =False, nullable =False)
     boardReplyLikerId =Column (VARCHAR (20), ForeignKey (Members.memberId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
-    cancelledLike =Column (ENUM ('Cancelled', 'Not-Cancelled'), default ='Not-Cancelled', nullable =False)
+    isLikeCancelled =Column (ENUM (ENUMResources.const.true,
+                                   ENUMResources.const.false),
+                             default = ENUMResources.const.false,
+                             nullable =False)

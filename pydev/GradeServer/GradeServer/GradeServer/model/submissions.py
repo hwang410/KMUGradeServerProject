@@ -17,6 +17,8 @@ from GradeServer.model import Base
 from GradeServer.model.languages import Languages
 from GradeServer.model.submittedFiles import SubmittedFiles
 
+from GradeServer.utils.enumResources import ENUMResources
+
 class Submissions (Base) :
     
     __tablename__ ="Submissions"
@@ -26,7 +28,15 @@ class Submissions (Base) :
     courseId =Column (VARCHAR (10), ForeignKey (SubmittedFiles.courseId, onupdate ="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable = False)
     submissionCount =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, default =0, nullable =False)
     solutionCheckCount =Column (INTEGER (unsigned =True), default = 0, nullable =False)
-    status =Column (ENUM ('NeverSubmitted', 'Judging', 'Solved', 'TimeOver', 'WrongAnswer', 'CompileError', 'RunTimeError', 'ServerError'), default ='NeverSubmitted', nullable =False)
+    status =Column (ENUM (ENUMResources.const.neverSubmitted,
+                          ENUMResources.const.judging,
+                          ENUMResources.const.solved,
+                          ENUMResources.const.timeOver,
+                          ENUMResources.const.wrongAnswer,
+                          ENUMResources.const.compileError,
+                          ENUMResources.const.runtimeError,
+                          ENUMResources.const.serverError),
+                    default = ENUMResources.const.neverSubmitted, nullable =False)
     score =Column (INTEGER (unsigned =True), default =0, nullable =False)
     codeSubmissionDate =Column (DATETIME, nullable =False)
     viewCount =Column (INTEGER (unsigned =True), default =0, nullable =False)

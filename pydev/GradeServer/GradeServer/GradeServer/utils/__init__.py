@@ -9,4 +9,4 @@
     :@author: algolab
 """
 
-__all__ = ['loginRequired', 'utilMessages', 'utilPaging', 'utilQuery', 'utils']
+__all__ = ['loginRequired', 'utilMessages', 'utilPaging', 'utilQuery', 'utils', 'enumResources', 'setResources', 'const']
