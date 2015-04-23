@@ -15,7 +15,7 @@ class CompileTools(object):
                 call('cp ' + self.filePath + '*.py ./', shell = True)
             except Exception as e:
                 print e
-                return 'error'
+                return 'ServerError'
             
             return True
             
@@ -33,7 +33,7 @@ class CompileTools(object):
         
         # if not make execution file
         elif len(glob.glob('./'+self.runFileName)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
-            return 'error'
+            return 'ServerError'
         
         return result
         
@@ -43,7 +43,7 @@ class CompileTools(object):
             fp = open('error.err', 'r')
         except Exception as e:
             print e
-            return 'error'
+            return 'ServerError'
         
         errMess = fp.read()
         
@@ -87,15 +87,10 @@ class CompileTools(object):
     def MakeCommand(self):
         # make compile command 
         if self.usingLang == 'C':
-            extension = 'gcc ' 
-            option = '*.c -o main -lm -Wall 2>error.err'
+            return 'gcc ' + self.filePath + '*.c -o main -lm -w 2>error.err'
             
         elif self.usingLang == 'C++':
-            extension = 'g++ '
-            option = '*.cpp -o main -lm -Wall 2>error.err'
+            return 'g++' + self.filePath + '*.cpp -o main -lm -w 2>error.err'
         
         elif self.usingLang == 'JAVA':
-            extension = 'javac -d ./ '  
-            option = '*.java 2>error.err'
-            
-        return extension + self.filePath + option 
+            return 'javac -nowarn -d ./' + self.filePath + '*.java 2>error.err'
