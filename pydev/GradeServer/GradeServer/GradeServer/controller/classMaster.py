@@ -186,10 +186,8 @@ def class_manage_problem():
                                            ownProblems = ownProblems)
                     
             elif EDIT in form:
-                print "inin:", form
                 isNewProblem = False
                 editTarget, courseId, problemId, targetData = form[5:].split('_')
-                print "1234:", editTarget
                 targetData = request.form[form]
 
                 # actually editTarget is 'id' value of tag. 
@@ -197,7 +195,6 @@ def class_manage_problem():
                 # so when user pushes one of tab and modify the data, then we need to re-make the editTarget 
                 if TAB in editTarget:
                     editTarget = editTarget[:-3]
-                print "1111",editTarget
                 for registeredProblem, registeredCourse, problemName in ownProblems:
                     if registeredCourse.courseId == courseId and\
                        registeredProblem.problemId == int(problemId):
@@ -426,7 +423,6 @@ def class_manage_user():
                 userIndex += 1  
         loopIndex += 1
     
-    print "rf", request.form
     if request.method == POST_METHOD:
         for form in request.form:
             if 'delete' in form:
