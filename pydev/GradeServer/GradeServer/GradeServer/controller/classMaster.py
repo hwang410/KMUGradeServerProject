@@ -45,6 +45,7 @@ ADD = 'add'
 ONE_FILE = 'OneFile'
 MULTIPLE_FILES = 'MultipleFiles'
 POST_METHOD = 'POST'
+MEMBER_ID = 'memberId'
 
 newUsers = []
 newProblems = []
@@ -60,16 +61,20 @@ def get_own_problems(memberId):
                        filter(RegisteredCourses.courseAdministratorId == memberId)).\
                   all()
     return ownProblems
-        
+
+def get_own_courses(memberId):
+    ownCourses = dao.query(RegisteredCourses).\
+                     filter(RegisteredCourses.courseAdministratorId == memberId).\
+                     all()
+    return ownCourses
+
 @GradeServer.route('/classmaster/user_submit')
 @login_required
 def class_user_submit():
     error = None
     
     try:
-        ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
-                         all()
+        ownCourses = get_own_courses(session[MEMBER_ID])
     except:
         error = 'Error has been occurred while searching registered courses.'
         return render_template('/class_user_submit.html', 
@@ -124,9 +129,7 @@ def class_manage_problem():
                                ownProblems = [])
     
     try:
-        ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
-                         all()
+        ownCourses = get_own_courses(session[MEMBER_ID])
     except:
         error = 'Error has been occurred while searching registered courses'
         return render_template('/class_manage_problem.html', 
@@ -137,7 +140,7 @@ def class_manage_problem():
                                ownProblems = [])
     
     try:
-        ownProblems = get_own_problems(session['memberId'])
+        ownProblems = get_own_problems(session[MEMBER_ID])
     except:
         error = 'Error has been occurred while searching own problems'
         return render_template('/class_manage_problem.html', 
@@ -308,7 +311,7 @@ def class_manage_problem():
     
             return redirect(url_for('.class_manage_problem'))
     
-    ownProblems = get_own_problems(session['memberId'])
+    ownProblems = get_own_problems(session[MEMBER_ID])
     return render_template('/class_manage_problem.html', 
                            error = error, 
                            modalError = modalError,
@@ -323,7 +326,7 @@ def class_manage_user():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                         filter(RegisteredCourses.courseAdministratorId == session[MEMBER_ID]).\
                          all()
     except:
         error = 'Error has been occurred while searching own courses'
@@ -454,7 +457,7 @@ def class_add_user():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                         filter(RegisteredCourses.courseAdministratorId == session[MEMBER_ID]).\
                          all()
     except:
         error = 'Error has been occurred while searching own courses'
@@ -789,7 +792,7 @@ def user_submit_summary():
 
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                         filter(RegisteredCourses.courseAdministratorId == session[MEMBER_ID]).\
                          all()
     except:
         return render_template('/class_user_submit_summary.html', 
@@ -802,7 +805,7 @@ def user_submit_summary():
         ownProblems = dao.query(RegisteredProblems).\
                           join(RegisteredCourses,
                                RegisteredProblems.courseId == RegisteredCourses.courseId).\
-                          filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                          filter(RegisteredCourses.courseAdministratorId == session[MEMBER_ID]).\
                           all()
     except:
         return render_template('/class_user_submit_summary.html', 
@@ -815,7 +818,7 @@ def user_submit_summary():
         ownMembers = dao.query(Registrations).\
                          join(RegisteredCourses,
                               RegisteredCourses.courseId == Registrations.courseId).\
-                         filter(RegisteredCourses.courseAdministratorId == session['memberId']).\
+                         filter(RegisteredCourses.courseAdministratorId == session[MEMBER_ID]).\
                          all()
     except:
         return render_template('/class_user_submit_summary.html', 

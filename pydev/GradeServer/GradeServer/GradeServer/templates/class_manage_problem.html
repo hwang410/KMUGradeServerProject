@@ -100,61 +100,6 @@
 			</div>
 		</div>
 
-		<!-- ///// Edit case ///// -->
-		<!--
-		<div class="modal hide fade" id="editModal" 
-		 	  role="dialog" aria-labelledby="editProblemModalLabel"
-		 	  aria-hidden="true" tabindex="-1">
-			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button"
-						  aria-hidden="true">x</button>
-				<h3 id="editProblemModalLabel">Edit Problem</h3>
-			</div>
-			<div class="modal-body">
-				<table class="table table-bordered" style="margin-top:10px">
-					<thead>
-						<tr>
-							<td>Course Id
-							<td>Problem Name
-							<td>Start Date
-							<td>End Date
-					<tbody>
-						<tr>
-							<td>"Course Id"
-							<td>"Problem Name"
-							<td><input class="datepicker input-small" id="beginDate"
-										 name="beginDate" type="date" data-date-format="yyyy-mm-dd"
-										 autocomplete="off" placeholder="click and choose">
-							<td><input class="datepicker input-small" id="beginDate"
-										 name="beginDate"type="date" data-date-format="yyyy-mm-dd"
-										 autocomplete="off" placeholder="click and choose">
-				</table>
-			</div>
-			<div class="modal-footer">
-				<button class="btn">Save changes</button>
-				<button class="btn" data-dismiss="modal" aria-hidden="true">
-					Close
-				</button>
-			</div>
-		</div>
-		<div class="modal hide fade" id="editNoItem"
-			  role="dialog" aria-labelledby="deleteModalLabel"
-			  aria-hidden="true" tabindex="-1">
-			<div class="modal-header">
-				<button class="close" type="button"
-						  data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">Edit Problem</h3>
-			</div>
-			<div class="modal-body">
-				<p>No items choiced</p>
-			</div>
-			<div class="modal-footer">
-				<button class="btn" data-dismiss="modal" aria-hidden="true">
-					Close
-				</button>
-			</div>
-		</div>
-		-->
 	<form method="post">
 		<div class="tab-content">
 			<div class="tab-pane active" id="all">
@@ -361,38 +306,38 @@ $(function(){
 // target == isAllInputCaseInOneFile_ or startDateOfSubmission_ or endDateOfSubmission_ or openDate_ or closeDate_ or delete_
 function modifySelector(target){ 
 	document.getElementById("editButton").style.display="";
-	var $targetValue=document.getElementById(target).innerHTML;
+	var targetValue=document.getElementById(target).innerHTML;
 	// when user double clicked the form, innerHTML contains the word 'input'
 	// In this case, targetValue shouldn't be '<input ... >' but only date.
 	// using regular expression, find date value.
-	if($targetValue.indexOf("input") > -1){
-		var tokens=$targetValue.split(' ');
+	if(targetValue.indexOf("input") > -1){
+		var tokens=targetValue.split(' ');
 		for(var i=0;i<tokens.length;i++){
 			if(tokens[i].indexOf("value") > -1){
-				$targetValue=tokens[i].split("=\"")[1];
+				targetValue=tokens[i].split("=\"")[1];
 				break;
 			}
 		}
 	}
 	if(target.split("_")[0] == "isAllInputCaseInOneFile" || 
 	   target.split("_")[0] == "isAllInputCaseInOneFileTab"){
-		if($targetValue == "OneFile"){
-			$targetValue=document.getElementById(target).innerHTML="MultipleFiles";
+		if(targetValue.indexOf("OneFile")!=-1){
+			targetValue=document.getElementById(target).innerHTML="MultipleFiles";
 		}
 		else{
-			$targetValue=document.getElementById(target).innerHTML="OneFile";
+			targetValue=document.getElementById(target).innerHTML="OneFile";
 		}
 		document.getElementById(target.split("_")[0]+'_'+
 									 target.split("_")[1]+'_'+
-									 target.split("_")[2]).innerHTML=
-			"<input id='"+target+
-				    "'type='hidden'"+
-				    "'name='edit_'"+target+
-				    "'value='"+$targetValue+"'>";
+									 target.split("_")[2]).innerHTML
+			="<input id='"+target+
+				     "'type='hidden'"+
+				     "name='edit_"+target+
+				     "'value='"+targetValue+"'>";
 	}
 	// about dates
 	else{
-		var date = $targetValue.replace(/\t/g, '').split(' ')[0];
+		var date = targetValue.replace(/\t/g, '').split(' ')[0];
 		document.getElementById(target).innerHTML=
 			"<input class='datepicker input-usmall'"+
 				    "'id='"+target+
