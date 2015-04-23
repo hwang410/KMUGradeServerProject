@@ -7,5 +7,5 @@ class SETResources(object):
     
     # SET
     const.user = 'USER'
-    const.serverAdministrator = 'SEVER_ADMINISTRATOR'
+    const.serverAdministrator = 'SERVER_ADMINISTRATOR'
     const.courseAdministrator = 'COURSE_ADMINISTRATOR'
