@@ -261,6 +261,7 @@
 			{% endfor %}
 		</div>
 		<input type="submit" id="hidden_editButton" style="display:None"> <!-- virtual submit tag -->
+		<input type="submit" id="hidden_deleteButton" style="display:None"> <!-- virtual submit tag -->
 	</form>
 	<div style="text-align:right">		
 		<label for="hidden_editButton" style="display:inline">
@@ -285,8 +286,8 @@
 			<p>Do you really want to delete it?</p>
 		</div>
 		<div class="modal-footer">
-			<label for="hidden_deleteButton">
-				<button class="btn" type="submit">
+			<label for="hidden_deleteButton" style="display:inline">
+				<button class="btn" id="deleteButton"> 
 					Save changes
 				</button>
 			</label>
