@@ -197,7 +197,7 @@ def id_check(select, error = None):
                         return unknown_error()
                 # 암호가 일치 하지 않을 때
                 else:
-                    error = get_message('wrong password')
+                    error = get_message('wrongPassword')
             except Exception as e:
                 Log.error(str(e))
                 raise e
