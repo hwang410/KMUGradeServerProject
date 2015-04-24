@@ -7,7 +7,13 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utilQuery import sum_of_solved_problem_count, submissions_sorted
-from GradeServer.utils.utils import *
+
+from GradeServer.resource.enumResources import ENUMResources
+from GradeServer.resource.setResources import SETResources
+from GradeServer.resource.htmlResources import HTMLResources
+from GradeServer.resource.routeResources import RouteResources
+from GradeServer.resource.otherResources import OtherResources
+from GradeServer.resource.sessionResources import SessionResources
 
 from GradeServer.database import dao
 
@@ -24,9 +30,6 @@ from GradeServer.controller.classMaster import *
 
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
-
-from GradeServer.utils.setResources import SETResources
-
 
 @GradeServer.teardown_request
 def close_db_session(exception = None):
@@ -70,34 +73,34 @@ def user_history(memberId, sortCondition, pageNum):
                           subquery()
         # 중복 제거푼 문제숫
         sumOfSolvedProblemCount = sum_of_solved_problem_count(dao.query(submissions).\
-                                                                  filter(submissions.c.status == SOLVED).\
+                                                                  filter(submissions.c.status == ENUMResources.const.SOLVED).\
                                                                   group_by(submissions.c.problemId,
                                                                            submissions.c.courseId).\
                                                                   subquery()).\
                                   subquery()
         # 모든 맞춘 횟수
         sumOfSolvedCount = dao.query(func.count(submissions.c.memberId).label('sumOfSolvedCount')).\
-                               filter(submissions.c.status == SOLVED).\
+                               filter(submissions.c.status == ENUMResources.const.SOLVED).\
                                subquery()
         # 틀린 횟수
         sumOfWrongAnswerCount = dao.query(func.count(submissions.c.memberId).label('sumOfWrongAnswerCount')).\
-                                    filter(submissions.c.status == WRONG_ANSWER).\
+                                    filter(submissions.c.status == ENUMResources.const.WRONG_ANSWER).\
                                     subquery()
         # 타임 오버 횟수
         sumOfTimeOverCount = dao.query(func.count(submissions.c.memberId).label('sumOfTimeOverCount')).\
-                                 filter(submissions.c.status == TIME_OVER).\
+                                 filter(submissions.c.status == ENUMResources.const.TIME_OVER).\
                                  subquery()
         # 컴파일 에러 횟수
         sumOfCompileErrorCount = dao.query(func.count(submissions.c.memberId).label('sumOfCompileErrorCount')).\
-                                     filter(submissions.c.status == COMPILE_ERROR).\
+                                     filter(submissions.c.status == ENUMResources.const.COMPILE_ERROR).\
                                      subquery()
         # 런타임 에러 횟수
         sumOfRunTimeErrorCount = dao.query(func.count(submissions.c.memberId).label('sumOfRunTimeErrorCount')).\
-                                     filter(submissions.c.status == RUN_TIME_ERROR).\
+                                     filter(submissions.c.status == ENUMResources.const.RUN_TIME_ERROR).\
                                      subquery()
         # 서버 에러 횟수
         sumOfServerErrorCount = dao.query(func.count(submissions.c.memberId).label('sumOfServerErrorCount')).\
-                                    filter(submissions.c.status == SERVER_ERROR).\
+                                    filter(submissions.c.status == ENUMResources.const.SERVER_ERROR).\
                                     subquery()
         try:
                         # 차트 정보
@@ -130,13 +133,13 @@ def user_history(memberId, sortCondition, pageNum):
                                                                             Problems.problemId == submissions.c.problemId).\
                                                                        subquery(),
                                                                    sortCondition),
-                                                int(pageNum)).\
-                                all()
+                                                int(pageNum)).all()
         except Exception:
             #None Type Exception
             submissionRecords = []
        
-        return render_template(USER_HISTORY_HTML,
+        return render_template(HTMLResources.const.USER_HISTORY_HTML,
+                               SETResources = SETResources,
                                memberId = memberId,
                                sortCondition = sortCondition,
                                submissionRecords = submissionRecords,
@@ -161,7 +164,7 @@ def id_check(select, error = None):
             error ='Password' + get_message('fillData')
         else:
             try:
-                memberId = session[MEMBER_ID]
+                memberId = session[SessionResources.const.MEMBER_ID]
                 password = request.form['password']
                 check = dao.query(Members.password).\
                             filter(Members.memberId == memberId).first()
@@ -170,9 +173,9 @@ def id_check(select, error = None):
                 if check.password == password:#check_password_hash(password, check.password):
                     # for all user
                     if select == 'account':
-                        return redirect(url_for(EDIT_PERSONAL))
+                        return redirect(url_for(RouteResources.const.EDIT_PERSONAL))
                     # server manager
-                    elif session[AUTHORITY][0] == SERVER_ADMINISTRATOR:
+                    elif session[SessionResources.const.AUTHORITY][0] == SETResources.const.SERVER_ADMINISTRATOR:
                         if select == 'server_manage_collegedepartment':
                             return redirect(url_for('.server_manage_collegedepartment'))
                         elif select == 'server_manage_class':
@@ -184,7 +187,7 @@ def id_check(select, error = None):
                         elif select == 'server_manage_service':
                             return redirect(url_for('.server_manage_service'))
                     # class manager
-                    elif session[AUTHORITY][0] == COURSE_ADMINISTRATOR:
+                    elif session[SessionResources.const.AUTHORITY][0] == SETResources.const.COURSE_ADMINISTRATOR:
                         if select == 'user_submit':
                             return redirect(url_for('.class_user_submit'))
                         elif select == 'cm_manage_problem':
@@ -202,7 +205,7 @@ def id_check(select, error = None):
                 Log.error(str(e))
                 raise e
                
-    return render_template(ID_CHECK_HTML,
+    return render_template(HTMLResources.const.ID_CHECK_HTML,
                            SETResources = SETResources,
                            error = error)
 
@@ -267,7 +270,7 @@ def edit_personal(error = None):
                 
                 #Update DB
                 dao.query(Members).\
-                    filter(Members.memberId == session[MEMBER_ID]).\
+                    filter(Members.memberId == session[SessionResources.const.MEMBER_ID]).\
                     update(dict(password = password,
                                 contactNumber = contactNumber,
                                 emailAddress = emailAddress,
@@ -277,7 +280,7 @@ def edit_personal(error = None):
                     dao.commit()
                     flash(get_message('updateSucceeded'))
                     
-                    return redirect(url_for(SIGN_IN))
+                    return redirect(url_for(RouteResources.const.SIGN_IN))
                 except Exception:
                     dao.rollback()
                     error = get_message('upateFailed')
@@ -288,7 +291,7 @@ def edit_personal(error = None):
             else:
                 error = get_message('wrongPassword')
         
-        return render_template(EDIT_PERSONAL_HTML,
+        return render_template(HTMLResources.const.EDIT_PERSONAL_HTML,
                                SETResources = SETResources,
                                memberInformation = memberData,
                                error = error)

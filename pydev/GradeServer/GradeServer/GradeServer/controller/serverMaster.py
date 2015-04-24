@@ -33,7 +33,7 @@ from GradeServer.model.courses import Courses
 from GradeServer.model.departmentsOfColleges import DepartmentsOfColleges
 from GradeServer.model.problems import Problems
 
-from GradeServer.utils.setResources import SETResources
+from GradeServer.resource.setResources import SETResources
 
 import re
 import zipfile
