@@ -709,7 +709,6 @@ def server_add_user():
     error = None
     targetUserIdToDelete = []
     authorities = ['Course Admin', 'User']
-    
     try:
         allColleges = dao.query(Colleges).\
                           all()
@@ -749,11 +748,12 @@ def server_add_user():
                 'collegeName':4,
                 'departmentIndex':5,
                 'departmentName':6}
+        
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
             numberOfUsers = (len(request.form) - 1) / 5
             newUser = [['' for i in range(7)] for j in range(numberOfUsers + 1)]
-            
+            print "in", request.form
             for form in request.form:
                 if form != 'addIndivisualUser':
                     value, index = re.findall('\d+|\D+', form)
@@ -770,10 +770,10 @@ def server_add_user():
                     elif value == 'college':
                         newUser[index - 1][keys['collegeIndex']] = data.split()[0]
                         try:
-                            newUser[index - 1][keys['departmentIndex']] = dao.query(Colleges).\
-                                                        filter(Colleges.collegeIndex == newUser[index - 1][keys['collegeIndex']]).\
-                                                        first().\
-                                                        collegeName
+                            newUser[index - 1][keys['collegeName']] = dao.query(Colleges).\
+                                                                              filter(Colleges.collegeIndex == newUser[index - 1][keys['collegeIndex']]).\
+                                                                              first().\
+                                                                              collegeName
                         except:
                             error = 'Wrong college index has inserted'
                             return render_template('/server_add_user.html', 
@@ -801,6 +801,7 @@ def server_add_user():
                                                    newUsers = newUsers)
                         
             for index in range(numberOfUsers+1):
+                print newUser[index]
                 valid = True
                 # check for empty row
                 for col in range(7):
@@ -809,7 +810,7 @@ def server_add_user():
                         break
                 if valid:
                     newUsers.append(newUser[index])
-                
+                    
         elif 'addUserGroup' in request.form:
             files = request.files.getlist('files')
             if list(files)[0].filename:
@@ -964,7 +965,7 @@ def server_add_user():
                         del newUsers[index]
                         break
                     index += 1
-                               
+    
     return render_template('/server_add_user.html', 
                            error = error,  
                            SETResources = SETResources,
