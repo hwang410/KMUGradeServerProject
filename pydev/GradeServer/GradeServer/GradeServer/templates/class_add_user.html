@@ -6,26 +6,28 @@
 {%- block body %}
 <script>
 $(function() {
-  var allUsers = [
-  	{%- for user in allUsers %}
-  	{%- ifz}
-  	{ value: "{{ user.memberId }} {{ user.memberName }}", 
-  		data: "{{ user.memberId }} {{ user.memberName }}" },
-  	{% endfor -%}
-  	{ value: "", data: "" }
-  ];
-  $("#userId1").autocomplete({
-  	lookup: allUsers,
-  	onSelect: function(suggestion){
-  		var userId = suggestion.data.split(" ")[0];
-  		var userName = suggestion.data.split(" ")[1];
-  		var userIdx = this.id.match(/(\d+)/g);
-  		document.getElementById(this.id).value = userId;
-  		document.getElementById("username"+userIdx).value = userName;
-  	}
-  });
+	// To do.
+	// now it shows all members having 'user' authority.
+	// but if the member is exist, then it needs to change college/department/authority space automatically.
+	var allUsers = [
+		{%- for user in allUsers %}
+		{ value: "{{ user.memberId }} {{ user.memberName }}", 
+			data: "{{ user.memberId }} {{ user.memberName }}" },
+		{% endfor -%}
+		{ value: "", data: "" }
+	];
+	$("#userId1").autocomplete({
+		lookup: allUsers,
+		onSelect: function(suggestion){
+			var userId = suggestion.data.split(" ")[0];
+			var userName = suggestion.data.split(" ")[1];
+			var userIdx = this.id.match(/(\d+)/g);
+			document.getElementById(this.id).value = userId;
+			document.getElementById("username"+userIdx).value = userName;
+		}
+	});
   
-  $("#addline").bind('click',function(){
+	$("#addline").bind('click',function(){
 	  var targetTable = document.getElementById('indivisual');
 	  var numOfRow = targetTable.rows.length;
 
@@ -40,9 +42,9 @@ $(function() {
 
 	  var newRow = targetTable.insertRow(2);
 	  var keys = ['courseId', 'userId', 'username', 
-	  						'college', 'department', 'authority'];
+	  				'college', 'department', 'authority'];
 	  var placeholders = ['Course Id', 'ID', 'Name', 
-	  										'College', 'Department', 'Authority'];
+	  						'College', 'Department', 'Authority'];
 	  var formsize = ['', 'small', 'mini', 'medium', 'medium', 'medium'];
 
 	  for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
@@ -54,9 +56,9 @@ $(function() {
 			}
 	    if(i < 1){
 				uploadObj += "<select id='" + keys[i] + numOfRow +
-											      "'name='" + keys[i] + numOfRow +
-													  "'value='" + $("#" + keys[i] + "1").val() +
-													  "'style='width:115px'>";
+								      	"'name='" + keys[i] + numOfRow +
+									  	"'value='" + $("#" + keys[i] + "1").val() +
+									  	"'style='width:115px'>";
 				{%- for ownCourse in ownCourses %}
 				uploadObj += "<option";
 				if(index == "{{ loop.index }}"){
@@ -68,20 +70,20 @@ $(function() {
 			}
 			else if(i < 3){
 				uploadObj += "<input class='input-" + formsize[i] +
-													 "'id='" + keys[i] + numOfRow +
-													 "'name='" + keys[i] +
-													 "'type='text'" +
-													 "'autocomplete='off'" +
-													 "'placeholder='" + placeholders[i] +
-													 "'value='" + $("#" + keys[i] + "1").val() +
-													 ">";			
+										 "'id='" + keys[i] + numOfRow +
+										 "'name='" + keys[i] +
+										 "'type='text'" +
+										 "'autocomplete='off'" +
+										 "'placeholder='" + placeholders[i] +
+										 "'value='" + $("#" + keys[i] + "1").val() +
+										 "'>";			
 			}
 			else{
 	    	uploadObj += "<select class='input-" + formsize[i] +
-	    											"'id='" + keys[i] + numOfRow +
-											      "'name='" + keys[i] + numOfRow +
-													  "'value='" + $("#" + keys[i] + "1").val() +
-													  ">";
+								"'id='" + keys[i] + numOfRow +
+						      	"'name='" + keys[i] + numOfRow +
+							  	"'value='" + $("#" + keys[i] + "1").val() +
+							  	"'>";
 				switch(i){
 					case 3:
 						{%- for college in allColleges %}
@@ -136,42 +138,42 @@ $(function() {
 
   $("#resetIndivisualUserForm").bind('click',function(){
     document.getElementById("indivisualUserForm").innerHTML = 
-    	'<td>' +
-				'<select id="courseId1" name="courseId1" style="width:115px">' +
-				  '{%- for ownCourse in ownCourses %}' +
-				  '<option>' +
-				  '{{ ownCourse.courseId }} {{ ownCourse.courseName }}' +
-				  '</option>' +
-				  '{% endfor -%}' +
-			  '</select>' +
-			'<td>' +
-				'<input class="input-small formLine1" id="userId1" name="userId1"' +
-							 'type="text" placeholder="ID" value="">' +
-			'<td>' +
-				'<input class="input-mini formLine1" id="username1" name="username1"' +
-							 'type="text" placeholder="Name" value="">' +
-			'<td>' +
-				'<select class="input-medium" id="college1" name="college1">' +
-					'{%- for college in allColleges %}' +
-					'<option>' +
-					'{{ college.collegeIndex }} {{ college.collegeName }}' +
-					'</option>' +
-					'{% endfor -%}' +
-				'</select>' +
-			'<td>' +
-				'<select class="input-medium" id="department1" name="department1">' +
-					'{%- for department in allDepartments %}' +
-					'<option>' +
-					'{{ department.departmentIndex }} {{ department.departmentName }}' +
-					'</option>' +
-					'{% endfor -%}' +
-				'</select>' +
-			'<td>' +
-				'<select class="input-medium" id="authority1" name="authority1">' +
-					'{%- for authority in authorities %}' +
-					'<option> {{ authority }} </option>' +
-					'{% endfor -%}' +
-				'</select>';
+    		'<td>' +
+			'<select id="courseId1" name="courseId1" style="width:115px">' +
+			  '{%- for ownCourse in ownCourses %}' +
+			  '<option>' +
+			  '{{ ownCourse.courseId }} {{ ownCourse.courseName }}' +
+			  '</option>' +
+			  '{% endfor -%}' +
+		  '</select>' +
+		'<td>' +
+			'<input class="input-small formLine1" id="userId1" name="userId1"' +
+						 'type="text" placeholder="ID" value="">' +
+		'<td>' +
+			'<input class="input-mini formLine1" id="username1" name="username1"' +
+						 'type="text" placeholder="Name" value="">' +
+		'<td>' +
+			'<select class="input-medium" id="college1" name="college1">' +
+				'{%- for college in allColleges %}' +
+				'<option>' +
+				'{{ college.collegeIndex }} {{ college.collegeName }}' +
+				'</option>' +
+				'{% endfor -%}' +
+			'</select>' +
+		'<td>' +
+			'<select class="input-medium" id="department1" name="department1">' +
+				'{%- for department in allDepartments %}' +
+				'<option>' +
+				'{{ department.departmentIndex }} {{ department.departmentName }}' +
+				'</option>' +
+				'{% endfor -%}' +
+			'</select>' +
+		'<td>' +
+			'<select class="input-medium" id="authority1" name="authority1">' +
+				'{%- for authority in authorities %}' +
+				'<option> {{ authority }} </option>' +
+				'{% endfor -%}' +
+			'</select>';
 	  
 	  $("#userId1").autocomplete({
 	  	lookup: allUsers,
@@ -205,6 +207,7 @@ $(function() {
 
 		<!-- hidden modal pop -->
 		<!-- ///// Add indivisual ///// -->
+		<form id="addIndivisualUser" method="post">
 		<div class="modal hide fade" id="addUserModal"
 				 aria-labelledby="addUserModalLabel" aria-hidden="false" role="dialog"
 				 tabindex="-1" style="width:900px;margin-left:-450px">
@@ -228,7 +231,6 @@ $(function() {
 							<td>Department
 							<td>Authority
 					<tbody id="indivisualUserForm">
-<form id="addIndivisualUser" method="post">
 						<tr>
 							<td>
 								<select id="courseId1" name="courseId1" style="width:115px">
@@ -266,11 +268,10 @@ $(function() {
 			<div class="modal-footer">
 				<button class="btn" name="addIndivisualUser" type="submit">Done</button>
 				<button class="btn" id="resetIndivisualUserForm"
-								data-dismiss="modal" aria-hidden="true">Close</button>
-</form>
+						  data-dismiss="modal" aria-hidden="true">Close</button>
 			</div>
 		</div>
-
+		</form>
 		<!-- ///// add group ///// -->
 		<div class="modal hide fade" id="addGroupModal"
 				 aria-labelledby="addGroupModalLabel" aria-hidden="true"
@@ -314,7 +315,7 @@ $(function() {
 					<td><script> document.write(++index); </script>
 					<td>{{ newUser[0] }}
 					<td>{{ newUser[1] }}
-					<td>{% if newUser[2]=="User" %}Student{% else %}{{ newUser[2] }}{% endif %}
+					<td>{% if newUser[2]==SETResources.const.USER %}Student{% else %}{{ newUser[2] }}{% endif %}
 					<td>{{ newUser[4] }}
 					<td>{{ newUser[6] }}
 					<td>

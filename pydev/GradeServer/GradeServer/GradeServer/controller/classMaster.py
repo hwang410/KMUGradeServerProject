@@ -296,17 +296,9 @@ def class_manage_problem():
                                ownProblems = ownProblems)
                 
                 newProblems = []
-                courseName = problem[keys['courseName']].replace(' ','')
-                problemName = problem[keys['problemName']].replace(' ','')
-                problemPath = '%s/%s/%s_%s/%s_%s' % (projectPath,
-                                                     coursesPath,
-                                                     problem[keys['courseId']],
-                                                     courseName,
-                                                     problem[keys['problemId']],
-                                                     problemName)
+                #courseName = problem[keys['courseName']].replace(' ','')
+                #problemName = problem[keys['problemName']].replace(' ','')
                 
-                if not os.path.exists(problemPath):
-                    os.makedirs(problemPath)
     
             return redirect(url_for('.class_manage_problem'))
     
@@ -344,7 +336,7 @@ def class_manage_user():
                           Members).\
                     join(Members,
                          Members.memberId == DepartmentsDetailsOfMembers.memberId).\
-                    filter(Members.authority == 'User').\
+                    filter(Members.authority == SETResources.const.USER).\
                     order_by(DepartmentsDetailsOfMembers.memberId)).\
                all()
     
@@ -457,6 +449,14 @@ def class_add_user():
     error = None
     targetUserIdToDelete = []
     authorities = ['Course Admin','User']
+    keys = {'memberId':0,
+            'memberName':1,
+            'authority':2,
+            'collegeIndex':3,
+            'collegeName':4,
+            'departmentIndex':5,
+            'departmentName':6,
+            'courseId':7}
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
@@ -475,9 +475,8 @@ def class_add_user():
                                newUsers = newUsers)
     try:
         allUsers = dao.query(Members).\
-                       filter(or_(Members.authority == "User",
-                                  Members.authority == "CourseAdministrator")).\
-                       subquery()
+                       filter(or_(Members.authority == SETResources.const.USER,
+                                  Members.authority == SETResources.const.COURSE_ADMINISTRATOR))
     except:
         error = 'Error has been occurred while searching all users'
         return render_template('/class_add_user.html',
@@ -531,18 +530,19 @@ def class_add_user():
                     index = int(index)
                     data = request.form[form]
                     if value == 'userId':
-                        newUser[index - 1][0] = data
+                        newUser[index - 1][keys['memberId']] = data
                     elif value == 'username':
-                        newUser[index - 1][1] = data
+                        newUser[index - 1][keys['memberName']] = data
                     elif value == 'authority':
-                        newUser[index - 1][2] = data
+                        newUser[index - 1][keys['authority']] = data
                     elif value == 'college':
-                        newUser[index - 1][3] = data.split()[0]
+                        newUser[index - 1][keys['collegeIndex']] = data.split()[0]
                         try:
-                            newUser[index - 1][4] = dao.query(Colleges).\
-                                                        filter(Colleges.collegeIndex == newUser[index - 1][3]).\
-                                                        first().\
-                                                        collegeName
+                            newUser[index - 1][keys['collegeName']] =\
+                                dao.query(Colleges).\
+                                    filter(Colleges.collegeIndex == newUser[index - 1][keys['collegeIndex']]).\
+                                    first().\
+                                    collegeName
                         except:
                             error = 'Wrong college index has inserted'
                             return render_template('/class_add_user.html',
@@ -555,12 +555,13 @@ def class_add_user():
                                                    authorities = authorities,
                                                    newUsers = newUsers)
                     elif value == 'department':
-                        newUser[index - 1][5] = data.split()[0]
+                        newUser[index - 1][keys['departmentIndex']] = data.split()[0]
                         try:
-                            newUser[index - 1][6] = dao.query(Departments).\
-                                                        filter(Departments.departmentIndex == newUser[index - 1][5]).\
-                                                        first().\
-                                                        departmentName
+                            newUser[index - 1][keys['departmentName']] =\
+                                dao.query(Departments).\
+                                    filter(Departments.departmentIndex == newUser[index - 1][keys['departmentIndex']]).\
+                                    first().\
+                                    departmentName
                         except:
                             error = 'Wrong department index has inserted'
                             return render_template('/class_add_user.html',
@@ -573,7 +574,7 @@ def class_add_user():
                                                    authorities = authorities,
                                                    newUsers = newUsers)
                     elif value == 'courseId':
-                        newUser[index-1][7] = data.strip()
+                        newUser[index-1][keys['courseId']] = data.strip()
                         
             for index in range(numberOfUsers):
                 newUsers.append(newUser[index])
@@ -593,20 +594,20 @@ def class_add_user():
                         for eachData in userInformation:
                             if '=' in eachData:
                                 # all authority is user in adding user from text file
-                                newUser[2] = 'User'
+                                newUser[keys['authority']] = SETResources.const.USER
                                 key,value = eachData.split('=')
                                 if key == 'userId':
-                                    newUser[0] = value 
+                                    newUser[keys['memberId']] = value 
                                     
                                 elif key == 'username':
-                                    newUser[1] = value
+                                    newUser[keys['memberName']] = value
                                     
                                 elif key == 'college':
                                     try:
-                                        newUser[4] = dao.query(Colleges).\
-                                                         filter(Colleges.collegeIndex == value).\
-                                                         first().\
-                                                         collegeName
+                                        newUser[keys['collegeName']] = dao.query(Colleges).\
+                                                                           filter(Colleges.collegeIndex == value).\
+                                                                           first().\
+                                                                           collegeName
                                     except:
                                         error = 'Wrong college index has inserted'
                                         return render_template('/class_add_user.html',
@@ -618,7 +619,7 @@ def class_add_user():
                                                                allDepartments = allDepartments,
                                                                authorities = authorities,
                                                                newUsers = newUsers)
-                                    newUser[3] = value
+                                    newUser[keys['collegeIndex']] = value
                                        
                                 elif key == 'department':
                                     try:
@@ -680,9 +681,9 @@ def class_add_user():
                                                        newUsers = newUsers)
                         
                         for user in newUsers:
-                            if user[0] == newUser[0] and\
-                               user[3] == newUser[3] and\
-                               user[5] == newUser[5]:
+                            if user[keys['memberId']] == newUser[keys['memberId']] and\
+                               user[keys['collegeIndex']] == newUser[keys['collegeIndex']] and\
+                               user[keys['departmentIndex']] == newUser[keys['departmentIndex']]:
                                 error = 'There is a duplicated user id. Check the file and added user list'
                                 return render_template('/class_add_user.html',
                                                        error = error, 
@@ -701,14 +702,14 @@ def class_add_user():
                 isExist = dao.query(Members).filter(Members.memberId == newUser[0]).first() 
                 if not isExist:
                     try:
-                        if newUser[2] == 'Course Admin':
-                            newUser[2] = 'CourseAdministrator'
+                        if newUser[keys['authority']] == 'Course Admin':
+                            newUser[keys['authority']] = SETResources.const.COURSE_ADMINISTRATOR
                                 
                         # at first insert to 'Members'. Duplicated tuple will be ignored.
-                        freshman = Members(memberId = newUser[0],
-                                           password = newUser[0],
-                                           memberName = newUser[1],
-                                           authority = newUser[2],
+                        freshman = Members(memberId = newUser[keys['memberId']],
+                                           password = newUser[keys['memberId']],
+                                           memberName = newUser[keys['memberName']],
+                                           authority = newUser[keys['authority']],
                                            signedInDate = datetime.now())
                         dao.add(freshman)
                         dao.commit()
@@ -726,15 +727,15 @@ def class_add_user():
                                                newUsers = newUsers)
                         
                 isExist = dao.query(Registrations).\
-                              filter(and_(Registrations.memberId == newUser[0],
-                                          Registrations.courseId == newUser[7].split()[0])).\
+                              filter(and_(Registrations.memberId == newUser[keys['memberId']],
+                                          Registrations.courseId == newUser[keys['courseId']].split()[0])).\
                               first()
                 # new member
                 if not isExist:
                     try:
                         # then insert to 'Registrations'.
-                        freshman = Registrations(memberId = newUser[0],
-                                                 courseId = newUser[7].split()[0])
+                        freshman = Registrations(memberId = newUser[keys['memberId']],
+                                                 courseId = newUser[keys['courseId']].split()[0])
                         dao.add(freshman)
                         dao.commit()
                     except:
@@ -751,9 +752,9 @@ def class_add_user():
                                                newUsers = newUsers)
                     
                     try:
-                        departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[0],
-                                                                            collegeIndex = newUser[3],
-                                                                            departmentIndex = newUser[5])
+                        departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[keys['memberId']],
+                                                                            collegeIndex = newUser[keys['collegeIndex']],
+                                                                            departmentIndex = newUser[keys['departmentIndex']])
                         dao.add(departmentInformation)
                         dao.commit()
                     except:
@@ -762,14 +763,24 @@ def class_add_user():
                 else:
                     # suppose the user's department is different with his registered information
                     try:
-                        departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[0],
-                                                                            collegeIndex = newUser[3],
-                                                                            departmentIndex =newUser[5])
-                        dao.all(departmentInformation)
+                        departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[keys['memberId']],
+                                                                            collegeIndex = newUser[keys['collegeIndex']],
+                                                                            departmentIndex = newUser[keys['departmentIndex']])
+                        dao.add(departmentInformation)
                         dao.commit()
                     except:
                         dao.rollback()
+                """
+                problemPath = '%s/%s/%s_%s/%s_%s' % (projectPath,
+                                                     coursesPath,
+                                                     newUser[7].split()[0],
+                                                     courseName,
+                                                     problem[keys['problemId']],
+                                                     problemName)
                 
+                if not os.path.exists(problemPath):
+                    os.makedirs(problemPath)
+                """
             newUsers = [] # initialize add user list
             return redirect(url_for('.class_manage_user'))
             
@@ -787,12 +798,12 @@ def class_add_user():
                 # each new user id
                 for newUser in newUsers:
                     # if target id and new user id are same
-                    if targetUser == newUser[0]:
+                    if targetUser == newUser[keys['memberId']]:
                         del newUsers[index]
                         break
                     index += 1
-                               
-        
+                    
+    print "dd:", allUsers
     return render_template('/class_add_user.html',
                            error = error, 
                            SETResources = SETResources,
