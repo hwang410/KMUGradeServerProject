@@ -31,7 +31,7 @@ from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.sessionResources import SessionResources
 from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.routeResources import RouteResources
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, func, update
 from GradeServer.celeryServer import Grade
 from os.path import exists
 
@@ -171,7 +171,30 @@ def get_case_count(problemCasesPath, isAllInputCaseInOneFile):
             caseCount -= 1
         else:
             caseCount = 1
-            
+
+def get_old_submitted_files(memberId, problemId, courseId):
+    try:
+        oldSubmittedFiles = dao.query(SubmittedFiles).\
+                            filter(and_(SubmittedFiles.memberId == memberId,
+                                        SubmittedFiles.problemId == problemId,
+                                        SubmittedFiles.courseId == courseId,
+                                        SubmittedFiles.isDeleted == ENUMResources.const.FALSE))
+    except Exception as e:
+        return unknown_error('dbError')                            
+    return oldSubmittedFiles
+
+def old_submitted_files_are_deleted(memberId, problemId, courseId):
+    try:
+        oldSubmittedFilesAreDeleted = dao.query(SubmittedFiles).\
+                                          filter(and_(SubmittedFiles.memberId == memberId,
+                                                      SubmittedFiles.problemId == problemId,
+                                                      SubmittedFiles.courseId == courseId,
+                                                      SubmittedFiles.isDeleted == ENUMResources.const.FALSE)).\
+                                          update(dict(isDeleted = ENUMResources.const.TRUE))
+    except Exception as e:
+        return unknown_error('dbError')
+    dao.commit()   
+        
 @GradeServer.route('/problem_<courseId>_<problemId>', methods = ['POST'])
 @login_required
 def upload(courseId, problemId):
@@ -194,15 +217,9 @@ def upload(courseId, problemId):
     except Exception as e:
         return unknown_error('askToMaster')
            
-    try:
-        dao.query(SubmittedFiles).\
-            filter(and_(SubmittedFiles.memberId == memberId,
-                        SubmittedFiles.problemId == problemId,
-                        SubmittedFiles.courseId == courseId)).\
-            delete()
-        dao.commit()
-    except Exception as e:
-        return unknown_error('dbError')
+    oldSubmittedFiles = get_old_submitted_files(memberId, problemId, courseId)
+    if oldSubmittedFiles != None:
+        old_submitted_files_are_deleted(memberId, problemId, courseId)
 
     try:
         upload_files = request.files.getlist(OtherResources.const.GET_FILES)
@@ -276,16 +293,9 @@ def code(courseId, pageNum, problemId):
     except Exception as e:
         return unknown_error('askToMaster')
     
-    try:
-        dao.query(SubmittedFiles).\
-            filter(and_(SubmittedFiles.memberId == memberId,
-                        SubmittedFiles.problemId == problemId,
-                        SubmittedFiles.courseId == courseId)).\
-            delete()
-        dao.commit()
-    except Exception as e:
-        dao.rollback()
-        return unknown_error('dbError')
+    oldSubmittedFiles = get_old_submitted_files(memberId, problemId, courseId)
+    if oldSubmittedFiles != None:
+        old_submitted_files_are_deleted(memberId, problemId, courseId)
         
     tests = request.form[OtherResources.const.GET_CODE]
     unicode(tests)
