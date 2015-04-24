@@ -298,7 +298,7 @@ def server_add_class():
     
     try:               
         allCourseAdministrators = dao.query(Members).\
-                                      filter(Members.authority=="CourseAdministrator").\
+                                      filter(Members.authority==SETResources.const.COURSE_ADMINISTRATOR).\
                                       all()
     except:
          error = 'Error has been occurred while searching course administrators'
@@ -351,7 +351,7 @@ def server_add_class():
             
             try:
                 dao.query(Members).\
-                    filter(and_(Members.authority == "CourseAdministrator",
+                    filter(and_(Members.authority == SETResources.const.COURSE_ADMINISTRATOR,
                                 Members.memberId == courseAdministrator.split()[0])).\
                     first().memberId
             except:
@@ -905,7 +905,6 @@ def server_add_user():
                         newUsers.append(newUser)
                         
         elif 'addUser' in request.form:
-            print "newUsers:", newUsers
             for newUser in newUsers:
                 try:
                     if newUser[keys['authority']] == 'Course Admin':
@@ -921,7 +920,7 @@ def server_add_user():
                                                allDepartments = allDepartments,
                                                authorities = authorities,
                                                newUsers = newUsers)
-                        
+
                     freshman = Members(memberId = newUser[keys['memberId']], 
                                        password = newUser[keys['memberId']], 
                                        memberName = newUser[keys['memberName']], 
@@ -930,25 +929,17 @@ def server_add_user():
                     dao.add(freshman)
                     dao.commit()
                 except:
-                    error = "There are few members already registered. "
+                    dao.rollback()
                 
                 try:
                     departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[keys['memberId']], 
-                                                                        collegeIndex = int(newUser[keys['collegeIndex']]), 
-                                                                        departmentIndex = int(newUser[keys['departmentIndex']]))
+                                                                        collegeIndex = newUser[keys['collegeIndex']], 
+                                                                        departmentIndex = newUser[keys['departmentIndex']])
                     dao.add(departmentInformation)
                     dao.commit()
                 except:
-                    if not error:
-                        error = ""
-                    error += "Duplicated information is already exist"
-                    return render_template('/server_add_user.html', 
-                                           error = error,  
-                                           SETResources = SETResources,
-                                           allColleges = allColleges,
-                                           allDepartments = allDepartments,
-                                           authorities = authorities,
-                                           newUsers = newUsers)
+                    dao.rollback()
+                    
                     
             newUsers = [] # initialize add user list
             if error:
