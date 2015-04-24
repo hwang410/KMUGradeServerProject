@@ -1,10 +1,9 @@
 
+from GradeServer.resource import const
 
 class ENUMResources(object):
     """ENUM Resource Static Class"""
     
-    from GradeServer.resource import const
-
     # ENUM
     const.TRUE = 'TRUE'
     const.FALSE = 'FALSE'
