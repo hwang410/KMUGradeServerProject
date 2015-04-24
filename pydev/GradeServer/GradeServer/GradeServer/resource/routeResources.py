@@ -18,3 +18,6 @@ class RouteResources(object):
     # User routes
     const.EDIT_PERSONAL = '.edit_personal'
     const.USER_HISTORY = '.user_history'
+    
+    # Problem routes
+    const.PROBLEM_LIST = '.problemList'
