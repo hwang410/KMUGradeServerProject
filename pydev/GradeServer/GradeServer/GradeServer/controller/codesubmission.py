@@ -32,20 +32,22 @@ from GradeServer.celeryServer import Grade
 from os.path import exists
 
 # Initialize the Flask application
-errorMessages = ["DB 에러입니다.",  "서버 오류입니다. 다시 제출해 주세요.",  "파일 저장 오류"]
+errorMessages = ["DB 에러입니다.",  "서버 오류입니다. 다시 제출해 주세요.",  "파일 저장 오류", "관리자한테 문의하세요."]
 PATH = GradeServerConfig.CURRENT_FOLDER
 
 class MakePath:
-    def __init__(self, path, memberId, courseId, courseName, problemId, problemName, submissionCount):
+    def __init__(self, path, memberId, courseId, courseName, problemId, problemName):
         self.path = path
         self.memberId = memberId
         self.courseId = courseId
         self.courseName = courseName
         self.problemId = problemId
         self.problemName = problemName
-        self.submissionCount = '%s_%s' %('sub', str(submissionCount))
     def make_current_path(self):
-        result = '%s/%s_%s/%s_%s/%s/%s' %(self.path, self.courseId, self.courseName, self.problemId, self.problemName, self.memberId, self.submissionCount)
+        result = '%s/%s_%s/%s_%s' %(self.path, self.courseId, self.courseName, self.memberId, self.problemId, self.problemName)
+        return result.replace(' ', '')
+    def make_temp_path(self):
+        result = '%s/%s_%s/%s_%s_tmp' %(self.path, self.courseId, self.courseName, self.memberId, self.problemId, self.problemName)
         return result.replace(' ', '')
 
 class InsertToSubmittedFiles:
@@ -157,6 +159,16 @@ def used_language_version(courseId, usedLanguage):
     except Exception as e:
         return unknown_error(errorMessages[0])
     return usedLanguageVersion
+
+def get_case_count(problemCasesPath, isAllInputCaseInOneFile):
+    caseCount = len(glob.glob(os.path.join(problemCasesPath, '*.*')))/2
+    
+    if caseCount > 1:
+        if isAllInputCaseInOneFile == 'MultipleFiles':
+            caseCount -= 1
+        else:
+            caseCount = 1
+            
 @GradeServer.route('/problem_<courseId>_<problemId>', methods = ['POST'])
 @login_required
 def upload(courseId, problemId):
@@ -167,16 +179,18 @@ def upload(courseId, problemId):
     problemName = problem_name(problemId)
     subCountNum = get_submission_count(memberId, courseId, problemId)
     
-    makePath = MakePath(PATH, memberId, courseId, courseName, problemId, problemName, subCountNum)
+    makePath = MakePath(PATH, memberId, courseId, courseName, problemId, problemName)
     filePath = makePath.make_current_path()
-    makePath = MakePath(PATH, memberId, courseId, courseName, problemId, problemName, subCountNum-1)
-    deletePath = makePath.make_current_path()
+    tempPath = makePath.make_temp_path()
     sumOfSubmittedFileSize = 0
     usedLanguage = 0
     usedLanguageVersion = 0
 
-    os.makedirs(filePath)
-    
+    try:
+        os.mkdir(tempPath)
+    except Exception as e:
+        return unknown_error(errorMessages[3])
+           
     try:
         dao.query(SubmittedFiles).\
             filter(and_(SubmittedFiles.memberId == memberId,
@@ -193,23 +207,24 @@ def upload(courseId, problemId):
             fileName = secure_filename(file.filename)
             
             try:
-                file.save(os.path.join(filePath, fileName))
-            except:
+                file.save(os.path.join(tempPath, fileName))
+            except Exception as e:
                 return unknown_error(errorMessages[2])
             
-            fileSize = os.stat(os.path.join(filePath, fileName)).st_size                                          
+            fileSize = os.stat(os.path.join(tempPath, fileName)).st_size                                          
             insertSubmittedFilesObject = InsertToSubmittedFiles(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
             insert_submitted_files(insertSubmittedFilesObject)
            
             fileIndex += 1
             sumOfSubmittedFileSize += fileSize
         dao.commit()
-    except:
+    except Exception as e:
         dao.rollback()
-        os.system("rm -rf %s" % filePath)
+        os.system("rm -rf %s" % tempPath)
         return unknown_error(errorMessages[1])
 
-    os.system("rm -rf %s" % deletePath)
+    os.system("rm -rf %s" % filePath)
+    os.rename(tempPath, filePath)
     usedLanguageName = request.form['usedLanguageName']
     usedLanguage = get_used_language(usedLanguageName)
     usedLanguageVersion = used_language_version(courseId, usedLanguage)
@@ -219,13 +234,8 @@ def upload(courseId, problemId):
 
     isAllInputCaseInOneFile = is_support_multiple_case(problemId, courseId)
     
-    caseCount = len(glob.glob(os.path.join(problemCasesPath, '*.*')))/2
+    caseCount = get_case_count(problemCasesPath, isAllInputCaseInOneFile)
     
-    if caseCount > 1:
-        if isAllInputCaseInOneFile == 'MultipleFiles':
-            caseCount -= 1
-        else:
-            caseCount = 1
     send_to_celery(filePath,
                    problemPath,
                    memberId,
@@ -255,10 +265,12 @@ def code(courseId, pageNum, problemId):
     
     makePath = MakePath(PATH, memberId, courseId, courseName, problemId, problemName, subCountNum)
     filePath = makePath.make_current_path()
-    makePath = MakePath(PATH, memberId, courseId, courseName, problemId, problemName, subCountNum-1)
-    deletePath = makePath.make_current_path()
+    tempPath = makePath.make_temp_path()
     
-    os.makedirs(filePath)
+    try:
+        os.mkdir(tempPath)
+    except Exception as e:
+        return unknown_error(errorMessages[3])
     
     try:
         dao.query(SubmittedFiles).\
@@ -293,14 +305,15 @@ def code(courseId, pageNum, problemId):
         fileName = 'test.py'
         
     try:
-        fout = open(os.path.join(filePath, fileName), 'w')
+        fout = open(os.path.join(tempPath, fileName), 'w')
         fout.write(tests)
         fout.close()
     except:
-        os.system("rm -rf %s" % filePath)
+        os.system("rm -rf %s" % tempPath)
         return unknown_error(errorMessages[2])
 
-    os.system("rm -rf %s" % deletePath)    
+    os.system("rm -rf %s" % filePath)
+    os.rename(tempPath, filePath)
     fileSize = os.stat(os.path.join(filePath, fileName)).st_size
     
     insertSubmittedFilesObject = InsertToSubmittedFiles(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
@@ -320,13 +333,7 @@ def code(courseId, pageNum, problemId):
 
     isAllInputCaseInOneFile = is_support_multiple_case(problemId, courseId)
     
-    caseCount = len(glob.glob(os.path.join(problemCasesPath, '*.*')))/2
-    
-    if caseCount > 1:
-        if isAllInputCaseInOneFile == 'MultipleFiles':
-            caseCount -= 1
-        else:
-            caseCount = 1
+    caseCount = get_case_count(problemCasesPath, isAllInputCaseInOneFile)
             
     send_to_celery(filePath,
                    problemPath,
