@@ -17,7 +17,7 @@ from GradeServer.model import Base
 from GradeServer.model.problems import Problems
 from GradeServer.model.registeredCourses import RegisteredCourses
 
-from GradeServer.utils.enumResources import ENUMResources
+from GradeServer.resource.enumResources import ENUMResources
 
 class RegisteredProblems (Base) :
     
@@ -25,9 +25,9 @@ class RegisteredProblems (Base) :
     
     problemId =Column (INTEGER, ForeignKey (Problems.problemIndex, onupdate ="CASCADE", ondelete ="CASCADE"), autoincrement =False, primary_key =True, nullable =False)
     courseId =Column (VARCHAR (10), ForeignKey (RegisteredCourses.courseId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
-    isAllInputCaseInOneFile =Column (ENUM (ENUMResources.const.true, 
-                                           ENUMResources.const.false), 
-                                     default =ENUMResources.const.true, 
+    isAllInputCaseInOneFile =Column (ENUM (ENUMResources.const.TRUE, 
+                                           ENUMResources.const.FALSE), 
+                                     default =ENUMResources.const.TRUE, 
                                      nullable =False)
     limittedFileSize =Column (INTEGER (unsigned =True), default =1024, nullable =False) #MB
     openDate =Column (DATETIME, nullable =False)

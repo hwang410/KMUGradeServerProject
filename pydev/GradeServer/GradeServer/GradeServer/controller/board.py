@@ -21,6 +21,12 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilQuery import select_accept_courses, select_count
 from GradeServer.utils.utils import *
 
+from GradeServer.resource.enumResources import ENUMResources
+from GradeServer.resource.setResources import SETResources
+from GradeServer.resource.htmlResources import HTMLResources
+from GradeServer.resource.otherResources import OtherResources
+from GradeServer.resource.sessionResources import SessionResources
+
 from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 from GradeServer.model.likesOnBoard import LikesOnBoard
 from GradeServer.model.registeredCourses import RegisteredCourses

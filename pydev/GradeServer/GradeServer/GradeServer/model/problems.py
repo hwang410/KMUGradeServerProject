@@ -15,7 +15,7 @@ from sqlalchemy.dialects.mysql import VARCHAR, INTEGER, TEXT, ENUM
 
 from GradeServer.model import Base 
 
-from GradeServer.utils.enumResources import ENUMResources
+from GradeServer.resource.enumResources import ENUMResources
 
 class Problems (Base) :
     
@@ -24,14 +24,14 @@ class Problems (Base) :
     problemIndex = Column (INTEGER (unsigned =True), nullable =False)
     problemId =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, nullable =False)
     problemName =Column (VARCHAR (1024), nullable =False)
-    solutionCheckType =Column (ENUM (ENUMResources.const.solution,
-                                     ENUMResources.const.checker),
-                               default = ENUMResources.const.checker,
+    solutionCheckType =Column (ENUM (ENUMResources.const.SOLUTION,
+                                     ENUMResources.const.CHECKER),
+                               default = ENUMResources.const.CHECKER,
                                nullable =False)
     limitedTime =Column (INTEGER (unsigned =True), default =3000, nullable =False) #ms
     limitedMemory =Column (INTEGER (unsigned =True), default =1024, nullable =False) #MB
     problemPath =Column (TEXT, nullable =True)
-    isDeleted =Column (ENUM (ENUMResources.const.true,
-                            ENUMResources.const.false),
-                       default =ENUMResources.const.false,
+    isDeleted =Column (ENUM (ENUMResources.const.TRUE,
+                            ENUMResources.const.FALSE),
+                       default =ENUMResources.const.FALSE,
                        nullable =False)
