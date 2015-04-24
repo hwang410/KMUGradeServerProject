@@ -25,6 +25,7 @@ from GradeServer.controller.classMaster import *
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
 
+from GradeServer.utils.setResources import SETResources
 
 
 @GradeServer.teardown_request
@@ -154,7 +155,6 @@ def user_history(memberId, sortCondition, pageNum):
 @GradeServer.route('/id_check/<select>', methods = ['GET', 'POST'])
 @login_required
 def id_check(select, error = None):
-    
     if request.method == 'POST':
         # 암호를 입력 안했을 때
         if not request.form['password']:
@@ -201,8 +201,10 @@ def id_check(select, error = None):
             except Exception as e:
                 Log.error(str(e))
                 raise e
-            
-    return render_template(ID_CHECK_HTML, error = error)
+               
+    return render_template(ID_CHECK_HTML,
+                           SETResources = SETResources,
+                           error = error)
 
 """
 로그인한 유저가 자신의 암호, 연락처 등을 바꿀수 있고
@@ -287,6 +289,7 @@ def edit_personal(error = None):
                 error = get_message('wrongPassword')
         
         return render_template(EDIT_PERSONAL_HTML,
+                               SETResources = SETResources,
                                memberInformation = memberData,
                                error = error)
     except Exception:

@@ -33,6 +33,8 @@ from GradeServer.model.courses import Courses
 from GradeServer.model.departmentsOfColleges import DepartmentsOfColleges
 from GradeServer.model.problems import Problems
 
+from GradeServer.utils.setResources import SETResources
+
 import re
 import zipfile
 import os
@@ -54,7 +56,6 @@ currentTab = 'colleges'
 def server_manage_collegedepartment():
     global newColleges, newDepartments
     global currentTab
-
     # moved from other page, then show 'college' tab
     if request.referrer.rsplit('/', 1)[1] != "manage_collegedepartment":
         currentTab = 'colleges'
@@ -67,7 +68,8 @@ def server_manage_collegedepartment():
     except:
         error = 'Error has been occurred while searching colleges'
         return render_template('/server_manage_collegedepartment.html', 
-                               error=error,
+                               error=error, 
+                               SETResources = SETResources,
                                allColleges = [],
                                allDepartments = [])
     try:    
@@ -82,7 +84,8 @@ def server_manage_collegedepartment():
     except:
         error = 'Error has been occurred while searching departments'
         return render_template('/server_manage_collegedepartment.html', 
-                               error=error,
+                               error=error, 
+                               SETResources = SETResources,
                                allColleges = allColleges,
                                allDepartments = [])
     
@@ -127,7 +130,8 @@ def server_manage_collegedepartment():
                         error = 'Delete all departments before this work'
                         dao.rollback()
                         return render_template('/server_manage_collegedepartment.html', 
-                                               error=error,
+                                               error=error, 
+                                               SETResources = SETResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
             elif 'deleteDepartment' in request.form:
@@ -144,7 +148,8 @@ def server_manage_collegedepartment():
                         error = 'Error has been occurred while searching departments'
                         dao.rollback()
                         return render_template('/server_manage_collegedepartment.html', 
-                                               error=error,
+                                               error=error, 
+                                               SETResources = SETResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
         
@@ -163,7 +168,8 @@ def server_manage_collegedepartment():
                         error = 'Error has been occurred while making new college'
                         dao.rollback()
                         return render_template('/server_manage_collegedepartment.html', 
-                                               error=error,
+                                               error=error, 
+                                               SETResources = SETResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
             newColleges = []
@@ -184,7 +190,8 @@ def server_manage_collegedepartment():
                         error = 'Error has been occurred while making new department'
                         dao.rollback()
                         return render_template('/server_manage_collegedepartment.html', 
-                                               error=error,
+                                               error=error, 
+                                               SETResources = SETResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
                     try:
@@ -197,7 +204,8 @@ def server_manage_collegedepartment():
                         error = 'Error has been occurred while making new relation of department'  
                         dao.rollback()
                         return render_template('/server_manage_collegedepartment.html', 
-                                               error=error,
+                                               error=error, 
+                                               SETResources = SETResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
                         
@@ -205,9 +213,9 @@ def server_manage_collegedepartment():
             currentTab = 'departments'
             
         return redirect(url_for('.server_manage_collegedepartment'))
-    
     return render_template('/server_manage_collegedepartment.html', 
-                           error=error,
+                           error=error, 
+                           SETResources = SETResources,
                            currentTab = currentTab,
                            allColleges = allColleges,
                            allDepartments = allDepartments)
@@ -255,8 +263,9 @@ def server_manage_class():
     
     session['ownCourses'] = dao.query(RegisteredCourses).all()
     
-    return render_template('/server_manage_class.html', 
-                           error = error, 
+    return render_template('/server_manage_class.html',
+                           error = error,  
+                           SETResources = SETResources,
                            courses = courses, 
                            languagesOfCourse = languagesOfCourse)
     
@@ -325,7 +334,8 @@ def server_add_class():
             if startDate > endDate:
                 error = "Start date should be earlier than end date"
                 return render_template('/server_add_class.html', 
-                                       error = error,
+                                       error = error, 
+                                       SETResources = SETResources,
                                        courseAdministrator = courseAdministrator,
                                        semester = semester,
                                        courseDescription = courseDescription,
@@ -346,7 +356,8 @@ def server_add_class():
             except:
                 error = "%s is not registered as a course administrator" % (courseAdministrator.split()[0])
                 return render_template('/server_add_class.html', 
-                                       error = error,
+                                       error = error, 
+                                       SETResources = SETResources,
                                        courseAdministrator = courseAdministrator,
                                        semester = semester,
                                        courseDescription = courseDescription,
@@ -395,7 +406,8 @@ def server_add_class():
                 dao.rollback()
                 error = 'Creation course failed'
                 return render_template('/server_add_class.html', 
-                                       error = error,
+                                       error = error, 
+                                       SETResources = SETResources,
                                        courses = allCourses, 
                                        languages = allLanguages)
                 
@@ -417,14 +429,16 @@ def server_add_class():
                     dao.rollback()
                     error = 'Course language error'
                     return render_template('/server_add_class.html', 
-                                           error = error,
+                                           error = error, 
+                                           SETResources = SETResources,
                                            courses = allCourses, 
                                            languages = allLanguages)
                     
             return redirect(url_for('.server_manage_class'))
 
     return render_template('/server_add_class.html', 
-                           error = error,
+                           error = error, 
+                           SETResources = SETResources,
                            courseAdministrator = courseAdministrator,
                            semester = semester,
                            courseDescription = courseDescription,
@@ -470,7 +484,8 @@ def server_manage_problem():
                     except:
                         error = 'Error has occurred while searching problems'
                         return render_template('/server_manage_problem.html', 
-                                               error = error,
+                                               error = error, 
+                                               SETResources = SETResources,
                                                uploadedProblems = [])
                 # read each uploaded file(zip)
                 for fileData in files:
@@ -525,7 +540,8 @@ def server_manage_problem():
                         dao.rollback()
                         error = 'Creation Problem Error'
                         return render_template('/server_manage_problem.html', 
-                                               error = error,
+                                               error = error, 
+                                               SETResources = SETResources,
                                                uploadedProblems = [])
 
                     # rename new problem folder
@@ -539,7 +555,8 @@ def server_manage_problem():
                     except OSError:
                         error = 'Error has occurred while removing space of folder name'
                         return render_template('/server_manage_problem.html', 
-                                               error = error,
+                                               error = error, 
+                                               SETResources = SETResources,
                                                uploadedProblems = [])
 
                     try:
@@ -547,7 +564,8 @@ def server_manage_problem():
                     except OSError:
                         error = 'Error has occurred while renaming a folder'
                         return render_template('/server_manage_problem.html', 
-                                               error = error,
+                                               error = error, 
+                                               SETResources = SETResources,
                                                uploadedProblems = [])
                     
                     # change problems information files name
@@ -559,7 +577,8 @@ def server_manage_problem():
                     except OSError:
                         error = 'Error has occurred while removing space of folder name'
                         return render_template('/server_manage_problem.html', 
-                                               error = error,
+                                               error = error, 
+                                               SETResources = SETResources,
                                                uploadedProblems = [])
                     
                     try:
@@ -567,7 +586,8 @@ def server_manage_problem():
                     except OSError:
                         error = 'Error has occured while renaming a folder'
                         return render_template('/server_manage_problem.html', 
-                                               error = error,
+                                               error = error, 
+                                               SETResources = SETResources,
                                                uploadedProblems = [])
                         
                     # create final goal path
@@ -585,7 +605,8 @@ def server_manage_problem():
                     except OSError :
                         error = 'Error has occurred while moving new problem'
                         return render_template('/server_manage_problem.html', 
-                                               error = error,
+                                               error = error, 
+                                               SETResources = SETResources,
                                                uploadedProblems = [])
                     
                     try:
@@ -593,7 +614,8 @@ def server_manage_problem():
                     except:
                         error = 'Error has been occurred while copying new problem'
                         return render_template('/server_manage_problem.html', 
-                                               error = error,
+                                               error = error, 
+                                               SETResources = SETResources,
                                                uploadedProblems = [])
                     
             else:
@@ -606,7 +628,8 @@ def server_manage_problem():
                     dao.rollback()
                     error = 'Problem deletion error'
                     return render_template('/server_manage_problem.html', 
-                                           error = error,
+                                           error = error, 
+                                           SETResources = SETResources,
                                            uploadedProblems = [])
 
         return redirect(url_for('.server_manage_problem'))
@@ -620,14 +643,15 @@ def server_manage_problem():
             uploadedProblems = []
             
     return render_template('/server_manage_problem.html', 
-                           error = error,
+                           error = error, 
+                           SETResources = SETResources,
                            uploadedProblems = uploadedProblems)
 
 @GradeServer.route('/master/manage_users', methods = ['GET', 'POST'])
 @login_required
 def server_manage_user():
     error = None
-    
+
     try:
         users = (dao.query(Members,
                            Colleges,
@@ -640,11 +664,12 @@ def server_manage_user():
                           Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
                      order_by(Members.signedInDate.desc())).\
                 all()
-                          
+                
     except:
         error = 'Error has occurred while getting member information'
         return render_template('/server_manage_user.html', 
-                               error = error,
+                               error = error, 
+                               SETResources = SETResources,
                                users = [], 
                                index = len(users))
               
@@ -661,14 +686,16 @@ def server_manage_user():
                 dao.rollback()
                 error = 'Deletion error'
                 return render_template('/server_manage_user.html', 
-                                       error = error,
+                                       error = error, 
+                                       SETResources = SETResources,
                                        users = users, 
                                        index = len(users))
                 
         return redirect(url_for('.server_manage_user'))
-    
+
     return render_template('/server_manage_user.html', 
-                           error = error,
+                           error = error, 
+                           SETResources = SETResources,
                            users = users, 
                            index = len(users))
 
@@ -688,7 +715,8 @@ def server_add_user():
     except:
         error = 'Error has been occurred while searching all colleges'
         return render_template('/server_add_user.html', 
-                               error = error, 
+                               error = error,  
+                               SETResources = SETResources,
                                allColleges = [],
                                allDepartments = [],
                                authorities = authorities,
@@ -705,7 +733,8 @@ def server_add_user():
     except:
         error = 'Error has been occurred while searching departments'
         return render_template('/class_add_user.html', 
-                               error = error, 
+                               error = error,  
+                               SETResources = SETResources,
                                allColleges = allColleges,
                                allDepartments = [],
                                authorities = authorities,
@@ -740,7 +769,8 @@ def server_add_user():
                         except:
                             error = 'Wrong college index has inserted'
                             return render_template('/server_add_user.html', 
-                                                   error = error, 
+                                                   error = error,  
+                                                   SETResources = SETResources,
                                                    allColleges = allColleges,
                                                    allDepartments = allDepartments,
                                                    authorities = authorities,
@@ -755,7 +785,8 @@ def server_add_user():
                         except:
                             error = 'Wrong department index has inserted'
                             return render_template('/server_add_user.html', 
-                                                   error = error, 
+                                                   error = error,  
+                                                   SETResources = SETResources,
                                                    allColleges = allColleges,
                                                    allDepartments = allDepartments,
                                                    authorities = authorities,
@@ -806,7 +837,8 @@ def server_add_user():
                                     except:
                                         error = 'Wrong college index has inserted'
                                         return render_template('/server_add_user.html', 
-                                                               error = error, 
+                                                               error = error,  
+                                                               SETResources = SETResources,
                                                                allColleges = allColleges,
                                                                allDepartments = allDepartments,
                                                                authorities = authorities,
@@ -823,7 +855,8 @@ def server_add_user():
                                     except:
                                         error = 'Wrong department index has inserted'
                                         return render_template('/server_add_user.html', 
-                                                               error = error, 
+                                                               error = error,  
+                                                               SETResources = SETResources,
                                                                allColleges = allColleges,
                                                                allDepartments = allDepartments,
                                                                authorities = authorities,
@@ -832,7 +865,8 @@ def server_add_user():
                                 else:
                                     error = 'Try again after check the manual'
                                     return render_template('/server_add_user.html', 
-                                                           error = error, 
+                                                           error = error,  
+                                                           SETResources = SETResources,
                                                            allColleges = allColleges,
                                                            allDepartments = allDepartments,
                                                            authorities = authorities,
@@ -841,7 +875,8 @@ def server_add_user():
                             else:
                                 error = 'Try again after check the manual'
                                 return render_template('/server_add_user.html', 
-                                                       error = error, 
+                                                       error = error,  
+                                                       SETResources = SETResources,
                                                        allColleges = allColleges,
                                                        allDepartments = allDepartments,
                                                        authorities = authorities,
@@ -853,7 +888,8 @@ def server_add_user():
                                user[5] == newUser[5]:
                                 error = 'There is a duplicated user id. Check the file and added user list'
                                 return render_template('/server_add_user.html', 
-                                                       error = error, 
+                                                       error = error,  
+                                                       SETResources = SETResources,
                                                        allColleges = allColleges,
                                                        allDepartments = allDepartments,
                                                        authorities = authorities,
@@ -913,7 +949,8 @@ def server_add_user():
                     index += 1
                                
     return render_template('/server_add_user.html', 
-                           error = error, 
+                           error = error,  
+                           SETResources = SETResources,
                            allColleges = allColleges,
                            allDepartments = allDepartments,
                            authorities = authorities,
@@ -922,4 +959,7 @@ def server_add_user():
 @GradeServer.route('/master/manage_service')
 @login_required
 def server_manage_service():
-    return render_template('/server_manage_service.html')
+    error = None
+    return render_template('/server_manage_service.html',
+                           error = error,
+                           SETResources = SETResources)

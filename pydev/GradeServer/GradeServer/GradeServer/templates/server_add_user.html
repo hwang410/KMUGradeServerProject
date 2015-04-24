@@ -28,19 +28,18 @@ $(function() {
 		for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
 		  	uploadObj = "<td>";
 		  	if(i < 2){
-			    	uploadObj += "<input class='input-" + formsize[i] + " formLine1' " +
-									    "id='" + keys[i] + numOfRow + "' " +
-									    "name='" + keys[i] + numOfRow + "' " +
-									    "type='text' form='addIndivisualUser' " +
-									    "placeholder='" + placeholders[i] + "' " +
-									    "value='" + $("#" + keys[i] + "1").val() +"' >";
+			    	uploadObj += "<input class='input-" + formsize[i] + " formLine1'" +
+									    "id='" + keys[i] + numOfRow +
+									    "'name='" + keys[i] + numOfRow +
+									    "'type='text' form='addIndivisualUser'"+
+									    "placeholder='" + placeholders[i] +
+									    "'value='" + $("#" + keys[i] + "1").val() +"'>";
 		    }
 		    else{
-			    	uploadObj += "<select class='input-" + formsize[i] + "' " +
-										 "id='" + keys[i] + numOfRow + "' " +
-										 "name='" + keys[i] + numOfRow + "' " +
-										 "value='" + $("#" + keys[i] + "1").val() + "' " +
-										 "form='addIndivisualUser'>";
+			    	uploadObj += "<select class='input-" + formsize[i] +
+										 "'id='" + keys[i] + numOfRow +
+										 "'name='" + keys[i] + numOfRow +
+										 "'value='" + $("#" + keys[i] + "1").val() + "'>";
 			    	switch(i){
 			    		case 2:
 			    			var index = $("#" + keys[i] + "1 option:selected").text().match(/(\d+)/g);
@@ -86,7 +85,7 @@ $(function() {
 		}
 
 		$("#college"+numOfRow).bind("click", function(){
-			LineOnClickController(numOfRow);
+			RowOnClickController(numOfRow);
 		});
 
 		reset_val();
@@ -139,7 +138,7 @@ $(function() {
 	  	document.getElementById("indivisualUserForm").innerHTML = uploadObj;
 
 	  	$("#college1").bind("click", function(){
-	  		LineOnClickController(1);
+	  		RowOnClickController(1);
 	  	});
 	});
 });
@@ -291,7 +290,7 @@ $(function() {
 						<td><script> document.write(++index); </script>
 						<td>{{ newUser[0] }}
 						<td>{{ newUser[1] }}
-						<td>{% if newUser[2]=="User" %} Student 
+						<td>{% if newUser[2]==SETResources.const.user %} Student 
 							  {% else %} {{ newUser[2] }} 
 							  {% endif %}
 						<td>{{ newUser[4] }}
@@ -312,9 +311,9 @@ $(function() {
 <script>
 // For the first line of Add Indivisual User
 $("#college1").bind("click", function(){
-	LineOnClickController(1);
+	RowOnClickController(1);
 });
-function LineOnClickController(IdxOfRow){
+function RowOnClickController(IdxOfRow){
 	$("#college"+IdxOfRow).change(function(){
 		var selectedText = $("#college"+IdxOfRow+" option:selected").text();
 		var index = selectedText.split(' ')[0];
