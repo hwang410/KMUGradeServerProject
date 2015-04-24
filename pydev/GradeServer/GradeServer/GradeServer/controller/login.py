@@ -8,7 +8,6 @@
     :copyright: (c) 2015 by KookminUniv
 
 """
-
 """
 bug reporting
 
@@ -64,8 +63,7 @@ def sign_in():
                 password = request.form['password']
                 
                 try :
-                    check = dao.query(select_match_member(memberId).subquery()).\
-                                first ()
+                    check = select_match_member(memberId).first()
                     #Checking Success
                     if check.password == password:#check_password_hash (password, check.password)
                         flash(get_message('login'))
@@ -77,22 +75,16 @@ def sign_in():
                         ownCourses = select_accept_courses().subquery()
                         # Get My Accept Courses
                         try:
-                            session[SessionResources.const.OWN_CURRENT_COURSES] = dao.query(ownCourses).\
-                                                                                      filter(ownCourses.c.endDateOfCourse >= datetime.now()).\
-                                                                                      all()
+                            session[SessionResources.const.OWN_CURRENT_COURSES] = select_current_courses(ownCourses).all()
                         except Exception:
                             session[SessionResources.const.OWN_CURRENT_COURSES] = []
                         
                         try:
-                            session[SessionResources.const.OWN_PAST_COURSES] = dao.query(ownCourses).\
-                                                                                   filter(ownCourses.c.endDateOfCourse < datetime.now()).\
-                                                                                   all()
+                            session[SessionResources.const.OWN_PAST_COURSES] = select_past_courses(ownCourses).all()
                         except Exception:
                             session[SessionResources.const.OWN_PAST_COURSES] = []
                                     
-                        dao.query(Members).\
-                            filter(Members.memberId == memberId).\
-                            update(dict(lastAccessDate = session[SessionResources.const.LAST_ACCESS_DATE]))
+                        update_recent_access_date(memberId)
                         # Commit Exception
                         try:
                             dao.commit()
@@ -113,7 +105,26 @@ def sign_in():
                            noticeRecords = select_notices(),
                            topCoderId = select_top_coder(),
                            error = error)
-
+'''
+Select Past, Current course
+'''
+def select_past_courses(ownCoursesSub):
+    return dao.query(ownCoursesSub).\
+               filter(ownCoursesSub.c.endDateOfCourse < datetime.now())
+def select_current_courses(ownCoursesSub):
+    return dao.query(ownCoursesSub).\
+               filter(ownCoursesSub.c.endDateOfCourse >= datetime.now())
+               
+               
+''' 
+Update Login Time
+'''
+def update_recent_access_date(memberId):
+    dao.query(Members).\
+        filter(Members.memberId == memberId).\
+        update(dict(lastAccessDate = datetime.now()))
+        
+        
 """
 로그아웃
 """

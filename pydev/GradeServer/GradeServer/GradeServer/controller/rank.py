@@ -2,11 +2,10 @@
 
 
 from flask import render_template, request
-from sqlalchemy import func
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
-from GradeServer.utils.utilQuery import select_all_user, select_rank, rank_sorted, submissions_last_submitted, select_count
+from GradeServer.utils.utilQuery import select_all_user, select_rank, rank_sorted, submissions_last_submitted, select_count, select_match_member_sub
 from GradeServer.utils.utilMessages import unknown_error, get_message
 
 from GradeServer.resource.enumResources import ENUMResources
@@ -71,8 +70,8 @@ def rank(sortCondition, pageNum, error =None):
                                           i).subquery()
                 # finding MemberId in Pages
                 try:
-                    if select_memberId(rankSub, findMemberId).first().\
-                                                         memberId:
+                    if select_match_member_sub(rankSub, findMemberId).first().\
+                                                                      memberId:
                         # Finding move to page
                         pageNum = i
                     
@@ -100,11 +99,3 @@ def rank(sortCondition, pageNum, error =None):
                                error = error) # 페이지 정보
     except Exception:
         return unknown_error()     
-    
-    
-'''
-Select MemberId
-'''
-def select_memberId(rankSub, findMemberId):
-    return dao.query(rankSub.c.memberId).\
-               filter(rankSub.c.memberId == findMemberId)
