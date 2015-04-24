@@ -75,12 +75,14 @@
 					<td>{{ user.contactNumber }}
 					<td>{{ user.emailAddress }}
 					<td>{%- for authority in user.authority %}
-							{%- if authority==SETResources.const.user %}
+							{%- if authority==SETResources.const.USER %}
 								Student
-							{% elif authority==SETResources.const.serverAdministrator %}
+							{% elif authority==SETResources.const.SERVER_ADMINISTRATOR %}
 								Server Admin
-							{% elif authority==SETResources.const.courseAdministrator %}
+							{% elif authority==SETResources.const.COURSE_ADMINISTRATOR %}
 								Course Admin
+							{% else %}
+								Unknown
 							{% endif -%}
 						{% endfor -%}
 					<td>{{ user.lastAccessDate }}
