@@ -111,7 +111,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
     this.rows = calcRows;
 });*/
 
-var textarea = $('#copycode');
+var textarea = $('#getCode');
 
 // language change
 function selectLanguage(selectObj) {
