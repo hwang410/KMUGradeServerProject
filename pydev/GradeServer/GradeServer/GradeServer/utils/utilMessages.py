@@ -34,7 +34,12 @@ def get_message(key ='unknown'):
                   'inviteeSucceeded': '님을 초대 하였습니다!!!',
                   'existTeamName': '같은 팀 명이 존재 합니다.',
                   'makeTeamSucceeded': '팀이 만들어졌습니다!!!',
-                  'removeTeamSucceeded': '팀이 삭제 되었습니다!!!'}
+                  'removeTeamSucceeded': '팀이 삭제 되었습니다!!!',
+                  
+                  'dbError' : "DB 에러입니다.", 
+                  'serverError' : "서버 오류입니다. 다시 제출해 주세요.",
+                  'fileSaveError' : "파일 저장 오류",
+                  'askToMaster' : "관리자한테 문의하세요."}
 
     return messageDict[key]
 
