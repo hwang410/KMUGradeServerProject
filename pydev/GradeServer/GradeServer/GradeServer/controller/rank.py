@@ -8,7 +8,13 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilQuery import select_all_user, select_rank, rank_sorted, submissions_last_submitted
 from GradeServer.utils.utilMessages import unknown_error, get_message
-from GradeServer.utils.utils import *
+
+from GradeServer.resource.enumResources import ENUMResources
+from GradeServer.resource.setResources import SETResources
+from GradeServer.resource.htmlResources import HTMLResources
+from GradeServer.resource.routeResources import RouteResources
+from GradeServer.resource.otherResources import OtherResources
+from GradeServer.resource.sessionResources import SessionResources
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_logger import Log
@@ -87,7 +93,8 @@ def rank(sortCondition, pageNum, error =None):
         except Exception:
             rankMemberRecords = []
             
-        return render_template(RANK_HTML,
+        return render_template(HTMLResources.const.RANK_HTML,
+                               SETResources = SETResources,
                                sortCondition =  sortCondition,
                                memberRecords = memberRecords,
                                rankMemberRecords = rankMemberRecords,

@@ -22,8 +22,13 @@ from werkzeug.security import check_password_hash
 from GradeServer.utils.utilMessages import get_message
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilQuery import select_accept_courses, select_notices, select_match_member, select_top_coder
-from GradeServer.utils.utils import *
+
+from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
+from GradeServer.resource.htmlResources import HTMLResources
+from GradeServer.resource.routeResources import RouteResources
+from GradeServer.resource.otherResources import OtherResources
+from GradeServer.resource.sessionResources import SessionResources
 
 from GradeServer.model.members import Members
 from GradeServer.database import dao
@@ -65,29 +70,29 @@ def sign_in():
                     if check.password == password:#check_password_hash (password, check.password)
                         flash(get_message('login'))
                         #push Session Cache 
-                        session[MEMBER_ID] = memberId
-                        session[AUTHORITY] = list(check.authority)
-                        session[LAST_ACCESS_DATE] = datetime.now()
+                        session[SessionResources.const.MEMBER_ID] = memberId
+                        session[SessionResources.const.AUTHORITY] = list(check.authority)
+                        session[SessionResources.const.LAST_ACCESS_DATE] = datetime.now()
                         
                         ownCourses = select_accept_courses().subquery()
                         # Get My Accept Courses
                         try:
-                            session[OWN_CURRENT_COURSES] = dao.query(ownCourses).\
-                                                               filter(ownCourses.c.endDateOfCourse >= datetime.now()).\
-                                                               all()
+                            session[SessionResources.const.OWN_CURRENT_COURSES] = dao.query(ownCourses).\
+                                                                                      filter(ownCourses.c.endDateOfCourse >= datetime.now()).\
+                                                                                      all()
                         except Exception:
-                            session[OWN_CURRENT_COURSES] = []
+                            session[SessionResources.const.OWN_CURRENT_COURSES] = []
                         
                         try:
-                            session[OWN_PAST_COURSES] = dao.query(ownCourses).\
-                                                            filter(ownCourses.c.endDateOfCourse < datetime.now()).\
-                                                            all()
+                            session[SessionResources.const.OWN_PAST_COURSES] = dao.query(ownCourses).\
+                                                                                   filter(ownCourses.c.endDateOfCourse < datetime.now()).\
+                                                                                   all()
                         except Exception:
-                            session[OWN_PAST_COURSES] = []
+                            session[SessionResources.const.OWN_PAST_COURSES] = []
                                     
                         dao.query(Members).\
                             filter(Members.memberId == memberId).\
-                            update(dict(lastAccessDate = session[LAST_ACCESS_DATE]))
+                            update(dict(lastAccessDate = session[SessionResources.const.LAST_ACCESS_DATE]))
                         # Commit Exception
                         try:
                             dao.commit()
@@ -103,7 +108,7 @@ def sign_in():
             except Exception as e:
                 Log.error(str(e))
 
-    return render_template(MAIN_HTML,
+    return render_template(HTMLResources.const.MAIN_HTML,
                            SETResources = SETResources,
                            noticeRecords = select_notices(),
                            topCoderId = select_top_coder(),
@@ -119,4 +124,4 @@ def sign_out():
     # 세션 클리어
     session.clear()
     # 메인 페이지로 옮기기
-    return redirect(url_for(SIGN_IN))
+    return redirect(url_for(RouteResources.const.SIGN_IN))

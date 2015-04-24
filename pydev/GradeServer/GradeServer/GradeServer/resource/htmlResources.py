@@ -17,7 +17,7 @@ class HTMLResources():
     const.ARTICLE_WRITE_HTML = '/article_write.html'
     
     # Rank
-    const.rankHtml = '/rank.html'
+    const.RANK_HTML = '/rank.html'
     
     # Team
     const.TEAM_HTML = '/team.html'
