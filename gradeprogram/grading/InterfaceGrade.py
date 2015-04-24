@@ -1,5 +1,6 @@
-import CompileTools
 import glob
+import string
+import CompileTools
 from grading import ExecutionTools
 from grading import GradingTools
 
@@ -19,10 +20,10 @@ class InterfaceGrade(object):
         self.submitCount = int(args[12])
         self.problemName = args[13]
         
-        self.answerPath = self.problemPath + '/' + self.problemName + '_' + self.gradeMethod + '/'
+        self.answerPath = "%s%s%s%s%s%s" % (self.problemPath, '/', self.problemName, '_', self.gradeMethod, '/')
         
         # make execution file name
-        self.filePath = self.filePath + '/'
+        self.filePath = "%s%s" % (self.filePath, '/')
         self.runFileName = self.MakeRunFileName()
         
     def Compile(self):
@@ -70,5 +71,6 @@ class InterfaceGrade(object):
         if fileList:
             return 'main'
         
-        name = fileList[0].split('/')[-1]
-        return name.split('.')[0]
+        split = string.split
+        name = split(fileList[0], '/')
+        return split(name, '.')[0]

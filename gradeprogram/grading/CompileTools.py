@@ -1,4 +1,5 @@
 import glob
+import string
 from subprocess import call
 
 class CompileTools(object):
@@ -12,7 +13,8 @@ class CompileTools(object):
     def CodeCompile(self):
         if self.usingLang == 'PYTHON':
             try:
-                call('cp ' + self.filePath + '*.py ./', shell = True)
+                copyCommand = "%s%s%s" % ('cp ', self.filePath, '*.py ./')
+                call(copyCommand, shell = True)
             except Exception as e:
                 print e
                 return 'ServerError'
@@ -64,21 +66,23 @@ class CompileTools(object):
             rf = open('error.err', 'r')
         except Exception as e:
             print e
-            return 'error'
+            return 'ServerError'
         
         lines = rf.readlines()
         _list = []
+        append = _list.append
+        
+        split = string.split
         
         for line in lines:
             if line.find('error:') != -1:   # if there is an 'error:'
-                part = line.split('/')
-                _list.append(part[-1])
+                part = split(line, '/')
+                append(part[-1])
                 count += 1
                 if count == 6:
                     break
         
         wf.write(str(count)+'\n')
-        
         wf.writelines(_list)
                 
         wf.close()
@@ -87,10 +91,10 @@ class CompileTools(object):
     def MakeCommand(self):
         # make compile command 
         if self.usingLang == 'C':
-            return 'gcc ' + self.filePath + '*.c -o main -lm -w 2>error.err'
+            return "%s%s%s" % ('gcc ', self.filePath, '*.c -o main -lm -w 2>error.err')
             
         elif self.usingLang == 'C++':
-            return 'g++' + self.filePath + '*.cpp -o main -lm -w 2>error.err'
+            return "%s%s%s" % ('g++', self.filePath, '*.cpp -o main -lm -w 2>error.err')
         
         elif self.usingLang == 'JAVA':
-            return 'javac -nowarn -d ./' + self.filePath + '*.java 2>error.err'
+            return "%s%s%s" % ('javac -nowarn -d ./', self.filePath, '*.java 2>error.err')

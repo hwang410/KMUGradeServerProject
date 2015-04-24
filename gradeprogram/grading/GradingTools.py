@@ -1,3 +1,4 @@
+import string
 from subprocess import call
 
 class GradingTools(object):
@@ -32,20 +33,21 @@ class GradingTools(object):
         # make execution command
         if self.usingLang == 'PYTHON':
             if self.version == '2.7':
-                return 'python ' + self.runFileName + '.py 1>output.txt 2>core.1'
+                return "%s%s%s" % ('python ', self.runFileName, '.py 1>output.txt 2>core.1')
             elif self.version == '3.4':
-                return 'python3 ' + self.runFileName + '.py 1>output.txt 2>core.1'
+                return "%s%s%s" % ('python3 ', self.runFileName, '.py 1>output.txt 2>core.1')
         
         elif self.usingLang == 'C' or self.usingLang == 'C++':
             return 'ulimit -c unlimited; ./main 1>output.txt'
         
         elif self.usingLang == 'JAVA':
-            return 'java ' + self.runFileName + ' 1>output.txt 2>core.1'
+            return "%s%s%s" % ('java ', self.runFileName, ' 1>output.txt 2>core.1')
         
     def SolutionSingle(self):
         # user output file each line compare with answer file each line.
         try:
-            answerFile = open(self.answerPath + self.problemName + '_cases_total_outputs.out', 'r')
+            answerOpenCommand = "%s%s%s" % (self.answerPath, self.problemName, '_cases_total_outputs.out')
+            answerFile = open(answerOpenCommand, 'r')
             stdOutput = open('output.txt', 'r')
         except Exception as e:
             print e
@@ -62,9 +64,11 @@ class GradingTools(object):
         _min = len(stdLines) if count < 0 else len(answerLines)
         count = abs(count)
         
+        strip = string.rstrip
+        
         for i in range(_min):
-            stdLine = stdLines[i].strip('\r\n')
-            answerLine = answerLines[i].strip('\r\n')
+            stdLine = strip(stdLines[i], '\r\n')
+            answerLine = strip(answerLines[i], '\r\n')
             
             if stdLine != answerLine:   # if not same each line
                 count += 1
@@ -83,7 +87,8 @@ class GradingTools(object):
         
     def CheckerSingle(self):
         try:
-            call('cp ' + self.answerPath + self.problemName + '.out checker.out', shell = True)
+            copyCommand = "%s%s%s%s" % ('cp ', self.answerPath, self.problemName, '.out checker.out')
+            call(copyCommand, shell = True)
             call('./checker.out 1>result.txt', shell = True)
         except Exception as e:
             print e
@@ -99,22 +104,30 @@ class GradingTools(object):
     
     def SolutionMulti(self):
         count = 0
+        
         _list = []
+        append = _list.append
+        strip = string.rstrip
         
         command = self.MakeMulticaseCommand()
         
         for i in range(1, self.caseCount+1):
             try:
+                copyCommand = "%s%s%s%s%i%s" % ('cp ', self.answerPath,
+                                                self.problemName, '_case',
+                                                i, '_input.in input.txt')
+                answerOpenCommand = "%s%s%s%i%s" % (self.answerPath,
+                                                    self.problemName,
+                                                    '_case', i, '_output.out')
+                
                 # input.txt file copy
                 call('rm -r input.txt', shell = True)
-                call('cp ' + self.answerPath + self.problemName + '_case' + str(i) +
-                     '_input.in input.txt', shell = True)
+                call(copyCommand, shell = True)
                 
                 # program run
                 call(command, shell = True)
             
-                answerFile = open(self.answerPath + self.problemName + '_case' + str(i) +
-                                  '_output.out', 'r') # answer output open
+                answerFile = open(answerOpenCommand, 'r') # answer output open
                 stdOutput = open('output.txt', 'r') # student output open
             except Exception as e:
                 print e
@@ -126,12 +139,12 @@ class GradingTools(object):
             answerFile.close()
             stdOutput.close()
             
-            answer = answer.strip('\r\n')
-            student = student.strip('\r\n')
+            answer = strip(answer, '\r\n')
+            student = strip(student, '\r\n')
             
             if answer != student:
                 count += 1
-                _list.append(i)
+                append(i)
            
         if count == 0:
             return 100
@@ -142,22 +155,28 @@ class GradingTools(object):
         
     def CheckerMulti(self):
         count = 0
+        
         _list = []
+        append = _list.append
         
         command = self.MakeMulticaseCommand()
         
         try:
-            call('cp ' + self.answerPath + self.problemName + '.out checker.out', shell = True)
+            copyCommand = "%s%s%s%s" % ('cp ', self.answerPath, self.problemName,
+                                        '.out checker.out')
+            call(copyCommand, shell = True)
         except Exception as e:
                 print e
                 return 'error'    
         
         for i in range(1, self.caseCount+1):
             try:
+                copyCommand = "%s%s%s%s%i%s" % ('cp ', self.answerPath,
+                                                self.problemName, '_case', i,
+                                                '_input.in input.txt')
                 # input.txt file copy
                 call('rm -r input.txt', shell = True)
-                call(self.answerPath + self.problemName + '_case' + str(i) +
-                     '_input.in input.txt', shell = True)
+                call(copyCommand, shell = True)
                 
                 # program run
                 call(command, shell = True)
@@ -174,7 +193,7 @@ class GradingTools(object):
             
             if int(score) != 100:
                 count += 1
-                _list.append(i)
+                append(i)
            
         if count == 0:
             return 100
@@ -186,16 +205,18 @@ class GradingTools(object):
     def MakeCaseList(self, _list):
         wf = open(self.filePath + 'caselist.txt', 'w')
         size = len(_list)
-            
+        find = string.find
         wf.wrtie(str(size))
             
         for i in size:
-            rf = open(self.answerPath + self.problemName + '_case' + str(_list[i]) + '.in', 'r')
+            answerOpenCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName, '_case', _list[i], '.in')
+            rf = open(answerOpenCommand, 'r')
+            
             case = rf.readlines()
             rf.close()
                 
-            if case[-1].find('\n'):
-                case[-1] = case[-1] + '\n'
+            if find(case[-1], '\n'):
+                case[-1] = "%s%s" % (case[-1], '\n')
                 
             wf.write(case)
                 
