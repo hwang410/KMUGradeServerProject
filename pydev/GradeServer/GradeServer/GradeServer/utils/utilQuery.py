@@ -35,7 +35,11 @@ def select_match_member(memberId):
     # memberId Filterling
     return dao.query(Members).\
                filter(Members.memberId == memberId)
-
+def select_match_member_sub(memberSub, memberId):
+    # memberId Filterling
+    return dao.query(memberSub).\
+               filter(Members.memberId == memberId)
+               
 
 '''
 Record count
