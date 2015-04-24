@@ -17,7 +17,7 @@ from GradeServer.model import Base
 from GradeServer.model.members import Members
 from GradeServer.model.submissions import Submissions
 
-from GradeServer.utils.enumResources import ENUMResources
+from GradeServer.resource.enumResources import ENUMResources
 
 class RepliesOnSubmission (Base) :
     

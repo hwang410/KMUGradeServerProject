@@ -77,7 +77,15 @@
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">{{ session['memberId'] }}</abbr><b class="caret"></b></a>
 							<ul class="dropdown-menu">
+<<<<<<< HEAD
+							<script >
+								alert (11+"{{SETResources.const.serverAdministrator}}"+11);
+								alert({{session['authority']}});
+							</script>
+								{%- if SETResources.const.SERVER_ADMINISTRATOR not in session['authority'] and SETResources.const.COURSE_ADMINISTRATOR not in session['authority'] %}
+=======
 								{%- if SETResources.const.serverAdministrator not in session['authority'] and SETResources.const.courseAdministrator not in session['authority'] %}
+>>>>>>> 853858e94061261a3412afaddba8d2ca72c2a665
 								<li>
 									<a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Record</a>
 								</li>
@@ -85,7 +93,7 @@
 								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>
 								<li><a href="{{ url_for('GradeServer.board', activeTabCourseId = 'All', pageNum =1) }}">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
 								<li><a href="#">Manual</a></li>
-								{%- if SETResources.const.serverAdministrator in session['authority'] %}
+								{%- if SETResources.const.SERVER_ADMINISTRATOR in session['authority'] %}
 								<li class="dropdown-submenu">
 									<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="server-management">Server Management</a>
 									<ul class="dropdown-menu" id="menu-box">
@@ -96,7 +104,7 @@
 										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_service') }}" id='manage-service'>Service</a></li>
 									</ul>
 								</li>
-								{%- elif SETResources.const.courseAdministrator in session['authority'] %}
+								{%- elif SETResources.const.COURSE_ADMINISTRATOR in session['authority'] %}
 								<li class="dropdown-submenu">
 									<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="class-server-management">Class Management</a>
 									<ul class="dropdown-menu" id="menu-box">

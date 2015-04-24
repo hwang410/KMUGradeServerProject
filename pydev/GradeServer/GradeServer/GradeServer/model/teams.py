@@ -15,7 +15,7 @@ from sqlalchemy.dialects.mysql import VARCHAR, TEXT, ENUM
 
 from GradeServer.model import Base
 
-from GradeServer.utils.enumResources import ENUMResources
+from GradeServer.resource.enumResources import ENUMResources
 
 class Teams (Base) :
     
@@ -23,8 +23,8 @@ class Teams (Base) :
     
     teamName =Column (VARCHAR (128), primary_key =True, nullable =False)
     teamDescription =Column (TEXT, nullable =True)
-    isDeleted =Column (ENUM (ENUMResources.const.true,
-                             ENUMResources.const.false),
-                       default = ENUMResources.const.false,
+    isDeleted =Column (ENUM (ENUMResources.const.TRUE,
+                             ENUMResources.const.FALSE),
+                       default = ENUMResources.const.FALSE,
                        nullable =False)
     

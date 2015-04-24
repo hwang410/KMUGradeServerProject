@@ -17,7 +17,7 @@ from GradeServer.model import Base
 from GradeServer.model.submissions import Submissions
 from GradeServer.model.members import Members
 
-from GradeServer.utils.enumResources import ENUMResources
+from GradeServer.resource.enumResources import ENUMResources
 
 class LikesOnSubmission(Base) :
     
