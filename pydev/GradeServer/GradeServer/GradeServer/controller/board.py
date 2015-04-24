@@ -90,7 +90,7 @@ def board(activeTabCourseId, pageNum):
             myCourses = dao.query(myCourses).all()
         except Exception:
             myCourses = []
-            # myCourses Default Add ALL
+        # myCourses Default Add ALL
         myCourses.insert(0, OtherResources.const.ALL)
        
         return render_template(HTMLResources.const.BOARD_HTML,
@@ -114,8 +114,8 @@ def join_course_name(articlesOnBoard, myCourses):
     
     return dao.query(articlesOnBoard,
                      myCourses.c.courseName).\
-               join(myCourses,
-                    articlesOnBoard.c.courseId == myCourses.c.courseId)
+               outerjoin(myCourses,
+                         articlesOnBoard.c.courseId == myCourses.c.courseId)
                
 
 '''
@@ -140,7 +140,8 @@ def select_articles(activeTabCourseId, isDeleted):
     else:
         return  dao.query(ArticlesOnBoard).\
                filter(ArticlesOnBoard.isDeleted == isDeleted,
-                      ArticlesOnBoard.courseId == activeTabCourseId)
+                      or_(ArticlesOnBoard.courseId == activeTabCourseId,
+                          ArticlesOnBoard.courseId == None))
     
 
                
@@ -431,7 +432,7 @@ def write(articleIndex, error =None):
             myCourses = select_accept_courses().all()
         except Exception:
             myCourses = []
-        print "CCCCC"
+        
         # 수정 할 글 정보
         try:
             articlesOnBoard = select_article(articleIndex, ENUMResources.const.FALSE).subquery()
@@ -458,7 +459,9 @@ def write(articleIndex, error =None):
             else:
                 try:
                     # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 중간의 공백을 기준으로 나눔
-                    courseId =request.form['courseId'].split()[0]
+                    courseId = request.form['courseId'].split()[0]
+                    if courseId == OtherResources.const.ALL:
+                        courseId = None
                     isNotice = ENUMResources.const.TRUE
                     title = request.form['title']
                     content = request.form['content']
@@ -467,9 +470,10 @@ def write(articleIndex, error =None):
                     # 새로 작성
                     if not articlesOnBoard:
                         # Set isNotice
-                        if 'User' in session['authority']: 
+                        if SETResources.const.USER in session['authority']: 
                             isNotice = ENUMResources.const.FALSE
-                        newPost = ArticlesOnBoard(courseId = courseId,
+                        newPost = ArticlesOnBoard(problemId =problemId,
+                                                  courseId = courseId,
                                                   writerId = session[SessionResources.const.MEMBER_ID],
                                                   isNotice = isNotice,
                                                   title = title,

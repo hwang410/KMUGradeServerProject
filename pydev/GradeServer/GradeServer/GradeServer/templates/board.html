@@ -75,7 +75,13 @@
 						{% for articleNoticeRecord in articleNoticeRecords %}
 						<tr>
 							<td>Notice</td>
-							<td>{{ articleNoticeRecord.courseId }} {{ articleNoticeRecord.courseName }}</td>
+							<td>
+								{% if articleNoticeRecord.courseId %}
+								{{ articleNoticeRecord.courseId }} {{ articleNoticeRecord.courseName }}
+								{% else %}
+								Server Notice
+								{% endif %}
+							</td>
 							<td><a href= '{{ url_for ("GradeServer.read", articleIndex = articleNoticeRecord.articleIndex) }}'>{{ articleNoticeRecord.title }}</a>
 								{%- if articleNoticeRecord.replyCount > 0 %}
 									[{{ articleNoticeRecord.replyCount }}]

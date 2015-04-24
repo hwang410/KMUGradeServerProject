@@ -9,14 +9,25 @@
 	<form method="post">
 		<h4>Class
 			<select class="span3" type="text" id="language" name="courseId">
+			{% if 'USER' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
 				{%- for myCourse in myCourses %}
-					{% if articlesOnBoard.courseId == myCourse.courseId %}<option class ="{{ myCourse.courseId }}" selected ="selected">
-					{% else %}<option class="{{ myCourse.courseId }}">
+					<option class ="{{ myCourse.courseId }}"
+					{% if loop.index0 == 0 %}
+					selected ="selected">
+					{% else %}>
 					{% endif %}
 					{{ myCourse.courseId }} {{ myCourse.courseName }}</option>
 				<!--  if modify then default Course -->
-				
 				{% endfor -%}
+			{% else %}
+				<option class ="Blank" selected ="selected">
+				All Noticle</option>
+				{%- for myCourse in myCourses %}
+					<option class ="{{ myCourse.courseId }}">
+					{{ myCourse.courseId }} {{ myCourse.courseName }}</option>
+				<!--  if modify then default Course -->
+				{% endfor -%}
+			{% endif %}
 			</select>
 		</h4>
 		<h4>Title 
