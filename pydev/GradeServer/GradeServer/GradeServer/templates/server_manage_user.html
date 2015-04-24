@@ -9,15 +9,20 @@
 		<h3>Manage User</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
-			<a href="{{ url_for('GradeServer.server_add_user') }}"><button class="btn" type="button">Add</button></a>
+			<a href="{{ url_for('GradeServer.server_add_user') }}">
+				<button class="btn" type="button">Add</button>
+			</a>
 			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">Delete</a>
 		</div>
 
 		<!-- hidden modal pop -->
 		<!-- if any item choiced -->
-		<div class="modal hide fade" id="deleteModal" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+		<div class="modal hide fade" id="deleteModal"
+			  aria-labelledby="deleteModalLabel" aria-hidden="true"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal"
+						  type="button" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete User</h3>
 			</div>
 			<div class="modal-body">
@@ -31,9 +36,12 @@
 			</div>
 		</div>
 		<!-- no items choiced -->
-		<div class="modal hide fade" id="deleteNoItem" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+		<div class="modal hide fade" id="deleteNoItem"
+			  aria-labelledby="deleteModalLabel" aria-hidden="true"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal"
+						  stype="button" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete User</h3>
 			</div>
 			<div class="modal-body">
@@ -67,16 +75,20 @@
 					<td>{{ user.contactNumber }}
 					<td>{{ user.emailAddress }}
 					<td>{%- for authority in user.authority %}
-								{%- if authority=="User" %}
-									Student
-								{% elif authority=="ServerAdministrator" %}
-									Server Admin
-								{% elif authority=="CourseAdministrator" %}
-									Course Admin
-								{% endif -%}
-							{% endfor -%}
+							{%- if authority==SETResources.const.user %}
+								Student
+							{% elif authority==SETResources.const.serverAdministrator %}
+								Server Admin
+							{% elif authority==SETResources.const.courseAdministrator %}
+								Course Admin
+							{% endif -%}
+						{% endfor -%}
 					<td>{{ user.lastAccessDate }}
-					<td><label class="checkbox-center"><input class="box-check" name="{{ user.memberId }}" type="checkbox" form="deleteConfirm"></label>
+					<td>
+						<label class="checkbox-center">
+							<input class="box-check" name="{{ user.memberId }}"
+									type="checkbox" form="deleteConfirm">
+						</label>
 				{% endfor -%}
 				</form>
 		</table>

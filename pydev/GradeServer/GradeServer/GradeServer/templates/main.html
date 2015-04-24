@@ -77,10 +77,6 @@
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">{{ session['memberId'] }}</abbr><b class="caret"></b></a>
 							<ul class="dropdown-menu">
-							<script >
-								alert (11+"{{SETResources.const.serverAdministrator}}"+11);
-								alert({{session['authority']}});
-							</script>
 								{%- if SETResources.const.serverAdministrator not in session['authority'] and SETResources.const.courseAdministrator not in session['authority'] %}
 								<li>
 									<a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Record</a>
