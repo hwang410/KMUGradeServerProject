@@ -27,12 +27,15 @@ from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMe
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.GradeServer_config import GradeServerConfig
 from GradeServer.utils.utilMessages import unknown_error
+from GradeServer.resource.enumResources import ENUMResources
+from GradeServer.resource.sessionResources import SessionResources
+from GradeServer.resource.otherResources import OtherResources
+from GradeServer.resource.routeResources import RouteResources
 from sqlalchemy import and_, func, select
 from GradeServer.celeryServer import Grade
 from os.path import exists
 
 # Initialize the Flask application
-errorMessages = ["DB 에러입니다.",  "서버 오류입니다. 다시 제출해 주세요.",  "파일 저장 오류", "관리자한테 문의하세요."]
 PATH = GradeServerConfig.CURRENT_FOLDER
 
 class MakePath:
@@ -68,7 +71,7 @@ def course_name(courseId):
                          courseName
         return courseName
     except Exception as e:
-        return unknown_error(errorMessages[0])
+        return unknown_error('dbError')
     
 def problem_name(problemId):
     try:
@@ -78,11 +81,11 @@ def problem_name(problemId):
                           problemName
         return problemName
     except Exception as e:
-        return unknown_error(errorMessages[0])
+        return unknown_error('dbError')
 
 def get_submission_count(memberId, courseId, problemId):
     try:
-        subCount = dao.query(func.max(Submissions.submissionCount).label ('submissionCount')).\
+        subCount = dao.query(func.max(Submissions.submissionCount).label (OtherResources.const.SUBMISSION_COUNT)).\
                        filter(Submissions.memberId == memberId,
                               Submissions.courseId == courseId,
                               Submissions.problemId == problemId).\
@@ -122,7 +125,7 @@ def get_used_language(usedLanguageName):
                            first().\
                            languageIndex
     except Exception as e:
-        return unknown_error(errorMessages[0])
+        return unknown_error('dbError')
     return usedLanguage
 
 def get_problem_info(problemId, problemName):
@@ -135,7 +138,7 @@ def get_problem_info(problemId, problemName):
                                                                          first()
         problemCasesPath = '%s/%s_%s_%s' %(problemPath, problemId, problemName, solutionCheckType)
     except Exception as e:
-        return unknown_error(errorMessages[0])
+        return unknown_error('dbError')
     return problemPath, limitedTime, limitedMemory, solutionCheckType, problemCasesPath
 
 def is_support_multiple_case(problemId, courseId):
@@ -146,7 +149,7 @@ def is_support_multiple_case(problemId, courseId):
                                       first().\
                                       isAllInputCaseInOneFile
     except Exception as e:
-        return unknown_error(errorMessages[0])
+        return unknown_error('dbError')
     return isAllInputCaseInOneFile
 
 def used_language_version(courseId, usedLanguage):
@@ -157,14 +160,14 @@ def used_language_version(courseId, usedLanguage):
                                   first().\
                                   languageVersion
     except Exception as e:
-        return unknown_error(errorMessages[0])
+        return unknown_error('dbError')
     return usedLanguageVersion
 
 def get_case_count(problemCasesPath, isAllInputCaseInOneFile):
     caseCount = len(glob.glob(os.path.join(problemCasesPath, '*.*')))/2
     
     if caseCount > 1:
-        if isAllInputCaseInOneFile == 'MultipleFiles':
+        if isAllInputCaseInOneFile == ENUMResources.const.FALSE:
             caseCount -= 1
         else:
             caseCount = 1
@@ -172,7 +175,7 @@ def get_case_count(problemCasesPath, isAllInputCaseInOneFile):
 @GradeServer.route('/problem_<courseId>_<problemId>', methods = ['POST'])
 @login_required
 def upload(courseId, problemId):
-    memberId = session['memberId']
+    memberId = session[SessionResources.const.MEMBER_ID]
     fileIndex = 1
     
     courseName = course_name(courseId)
@@ -189,7 +192,7 @@ def upload(courseId, problemId):
     try:
         os.mkdir(tempPath)
     except Exception as e:
-        return unknown_error(errorMessages[3])
+        return unknown_error('askToMaster')
            
     try:
         dao.query(SubmittedFiles).\
@@ -199,17 +202,17 @@ def upload(courseId, problemId):
             delete()
         dao.commit()
     except Exception as e:
-        return unknown_error(errorMessages[0])
+        return unknown_error('dbError')
 
     try:
-        upload_files = request.files.getlist('file[]')
+        upload_files = request.files.getlist(OtherResources.const.GET_FILES)
         for file in upload_files:
             fileName = secure_filename(file.filename)
             
             try:
                 file.save(os.path.join(tempPath, fileName))
             except Exception as e:
-                return unknown_error(errorMessages[2])
+                return unknown_error('fileSaveError')
             
             fileSize = os.stat(os.path.join(tempPath, fileName)).st_size                                          
             insertSubmittedFilesObject = InsertToSubmittedFiles(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
@@ -221,11 +224,11 @@ def upload(courseId, problemId):
     except Exception as e:
         dao.rollback()
         os.system("rm -rf %s" % tempPath)
-        return unknown_error(errorMessages[1])
+        return unknown_error('serverError')
 
     os.system("rm -rf %s" % filePath)
     os.rename(tempPath, filePath)
-    usedLanguageName = request.form['usedLanguageName']
+    usedLanguageName = request.form[OtherResources.const.USED_LANGUAGE_NAME]
     usedLanguage = get_used_language(usedLanguageName)
     usedLanguageVersion = used_language_version(courseId, usedLanguage)
     solCountNum = get_solution_check_count(memberId, courseId, problemId, subCountNum)
@@ -248,13 +251,13 @@ def upload(courseId, problemId):
                    usedLanguageVersion,
                    courseId,
                    subCountNum)
-    flash('submission success!')
+    flash(OtherResources.const.SUBMISSION_SUCCESS)
     return "0"
 
 @GradeServer.route('/problem_<courseId>_page<pageNum>_<problemId>', methods = ['POST'])
 @login_required
 def code(courseId, pageNum, problemId):
-    memberId = session['memberId']
+    memberId = session[SessionResources.const.MEMBER_ID]
     fileIndex = 1
     usedLanguage = 0
     usedLanguageVersion = 0
@@ -270,7 +273,7 @@ def code(courseId, pageNum, problemId):
     try:
         os.mkdir(tempPath)
     except Exception as e:
-        return unknown_error(errorMessages[3])
+        return unknown_error('askToMaster')
     
     try:
         dao.query(SubmittedFiles).\
@@ -281,28 +284,28 @@ def code(courseId, pageNum, problemId):
         dao.commit()
     except Exception as e:
         dao.rollback()
-        return unknown_error(errorMessages[0])
+        return unknown_error('dbError')
         
-    tests = request.form['copycode']
+    tests = request.form[OtherResources.const.GET_CODE]
     unicode(tests)
-    tests = tests.replace('\r\n', '\n')
-    usedLanguageName = request.form['language']
+    tests = tests.replace(OtherResources.const.LINUX_NEW_LINE, OtherResources.const.WINDOWS_NEW_LINE)
+    usedLanguageName = request.form[OtherResources.const.LANGUAGE]
     
-    if usedLanguageName == 'C':
-        fileName = 'test.c'
+    if usedLanguageName == OtherResources.const.C:
+        fileName = OtherResources.const.C_SOURCE_NAME
     
-    elif usedLanguageName == 'C++':
-        fileName = 'test.cpp'
+    elif usedLanguageName == OtherResources.const.CPP:
+        fileName = OtherResources.const.CPP_SOURCE_NAME
     
-    elif usedLanguageName == 'JAVA':
-        className = re.search(r'public\s+class\s+(\w+)', tests)
+    elif usedLanguageName == OtherResources.const.JAVA:
+        className = re.search(OtherResources.const.JAVA_MAIN_CLASS, tests)
         try:
-            fileName = '%s.java' %(className.group(1))
+            fileName = OtherResources.const.JAVA_SOURCE_NAME %(className.group(1))
         except:
-            fileName = 'missClassName.java'
+            fileName = OtherResources.const.MISS_CLASS_NAME
         
-    elif usedLanguageName == 'PYTHON':
-        fileName = 'test.py'
+    elif usedLanguageName == OtherResources.const.PYTHON:
+        fileName = OtherResources.const.PYTHON_SOURCE_NAME
         
     try:
         fout = open(os.path.join(tempPath, fileName), 'w')
@@ -310,7 +313,7 @@ def code(courseId, pageNum, problemId):
         fout.close()
     except:
         os.system("rm -rf %s" % tempPath)
-        return unknown_error(errorMessages[2])
+        return unknown_error('fileSaveError')
 
     os.system("rm -rf %s" % filePath)
     os.rename(tempPath, filePath)
@@ -321,7 +324,7 @@ def code(courseId, pageNum, problemId):
         insert_submitted_files(insertSubmittedFilesObject)
     except Exception as e:
         dao.rollback()
-        return unknown_error(errorMessages[0]) 
+        return unknown_error('dbError') 
     dao.commit()
     
     usedLanguage = get_used_language(usedLanguageName)
@@ -348,8 +351,8 @@ def code(courseId, pageNum, problemId):
                    courseId,
                    subCountNum)
     
-    flash('submission success!')
-    return redirect(url_for('.problemList',
+    flash(OtherResources.const.SUBMISSION_SUCCESS)
+    return redirect(url_for(RouteResources.const.PROBLEM_LIST,
                             courseId = courseId,
                             pageNum = pageNum))
     
@@ -361,7 +364,7 @@ def insert_to_sumbissions(courseId, memberId, problemId, filePath, subCountNum, 
                                   courseId = courseId,
                                   submissionCount = subCountNum,
                                   solutionCheckCount = solCountNum,
-                                  status = 'Judging',
+                                  status = ENUMResources.const.JUDGING,
                                   codeSubmissionDate = datetime.now(),
                                   sumOfSubmittedFileSize = sumOfSubmittedFileSize,
                                   usedLanguage = usedLanguage,
@@ -370,7 +373,7 @@ def insert_to_sumbissions(courseId, memberId, problemId, filePath, subCountNum, 
         
     except Exception as e:
         dao.rollback()
-        return unknown_error(errorMessages[0])
+        return unknown_error('dbError')
     dao.commit()
     """try:
         departmentIndex = dao.query(DepartmentsDetailsOfMembers.departmentIndex).\
@@ -378,7 +381,7 @@ def insert_to_sumbissions(courseId, memberId, problemId, filePath, subCountNum, 
                               first().\
                               departmentIndex
     except Exception as e:
-        return unknown_error(errorMessages[0])"""
+        return unknown_error('dbError')"""
         
 def send_to_celery(filePath,
                    problemPath,
