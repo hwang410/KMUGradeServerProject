@@ -98,7 +98,6 @@ if __name__ == '__main__':
         except Exception as e:
             result = 'ServerError'
             dao.rollback() 
-            raise e
             
         if result == 'Solved':
             # update database 'solved'
@@ -116,7 +115,6 @@ if __name__ == '__main__':
             except Exception as e:
                 result = 'ServerError'
                 dao.rollback()
-                raise e
         
         elif result == 'TimeOver':
             # update database 'time out'
@@ -134,7 +132,6 @@ if __name__ == '__main__':
             except Exception as e:
                 result = 'ServerError'
                 dao.rollback()
-                raise e
         
         elif result == 'RunTimeError':
             # update database 'runtime error'
@@ -152,7 +149,6 @@ if __name__ == '__main__':
             except Exception as e:
                 result = 'ServerError'
                 dao.rollback()
-                raise e
         
         elif result == 'WrongAnser':
             # update database 'wrong answer'
@@ -170,7 +166,6 @@ if __name__ == '__main__':
             except Exception as e:
                 result = 'ServerError'
                 dao.rollback()
-                raise e
             
         if result == 'ServerError':
         # update database 'server error'

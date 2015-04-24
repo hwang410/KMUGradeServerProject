@@ -1,6 +1,7 @@
 import os
 import glob
 import time
+import string
 import ptrace
 import resource
 from subprocess import call
@@ -23,7 +24,8 @@ class ExecutionTools(object):
         # copy input data
         try:
             if self.caseCount > 0:
-                call('cp ' + self.answerPath + self.problemName + '_cases_total_inputs.in input.txt', shell = True)
+                copyCommand = "%s%s%s%s" % ('cp ', self.answerPath, self.problemName, '_cases_total_inputs.in input.txt')
+                call(copyCommand, shell = True)
         except Exception as e:
             print e
             return 'ServerError', 0, 0
@@ -64,25 +66,26 @@ class ExecutionTools(object):
         
     def MakeCommand(self):
         # make execution command
+        append = RUN_COMMAND_LIST.append
         if self.usingLang == 'PYTHON':
             if self.version == '2.7':
-                RUN_COMMAND_LIST.append('/usr/bin/python')
-                RUN_COMMAND_LIST.append('/usr/bin/python')
-                RUN_COMMAND_LIST.append(self.runFileName + '.py')
+                append('/usr/bin/python')
+                append('/usr/bin/python')
+                append(self.runFileName + '.py')
                 
             elif self.version == '3.4':
-                RUN_COMMAND_LIST.append('/usr/local/bin/python3')
-                RUN_COMMAND_LIST.append('/usr/local/bin/python3')
-                RUN_COMMAND_LIST.append(self.runFileName + '.py')
+                append('/usr/local/bin/python3')
+                append('/usr/local/bin/python3')
+                append(self.runFileName + '.py')
                 
         elif self.usingLang == 'C' or self.usingLang == 'C++':
-            RUN_COMMAND_LIST.append('./main')
-            RUN_COMMAND_LIST.append('./main')
+            append('./main')
+            append('./main')
             
         elif self.usingLang == 'JAVA':
-            RUN_COMMAND_LIST.append('/usr/bin/java')
-            RUN_COMMAND_LIST.append('/usr/bin/java')
-            RUN_COMMAND_LIST.append(self.runFileName)
+            append('/usr/bin/java')
+            append('/usr/bin/java')
+            append(self.runFileName)
     
     def RunProgram(self):
         os.nice(19)
@@ -124,7 +127,7 @@ class ExecutionTools(object):
                 return 'TimeOver', res[0], usingMem
             
             else:
-                self.GetUsingMemory(pid)
+                temp = self.GetUsingMemory(pid)
                 
                 if temp > usingMem:
                     usingMem = temp
@@ -132,14 +135,16 @@ class ExecutionTools(object):
                 ptrace.syscall(pid, 0)
                 
     def GetUsingMemory(self, pid):
-        procFile = open('/proc/' + str(pid) + '/status', 'r')
+        procFileOpenCommand = "%s%i%s" % ('/proc/', pid, '/status') 
+        procFile = open(procFileOpenCommand, 'r')
         fileLines = procFile.readlines()
+        split = string.split
 
         for i in range(15,20):
             index = fileLines[i].find('VmRSS')
             if index != -1:
-                words = fileLines[i].split()
+                words = split(fileLines[i])
                 temp = int(words[index+1])
                 break;
-            
+        
         return temp
