@@ -45,7 +45,7 @@ class ArticlesOnBoard (Base) :
                       ForeignKey(RegisteredCourses.courseId,
                                  onupdate ="CASCADE",
                                  ondelete ="CASCADE"),
-                      nullable =False)
+                      nullable =True)
     title =Column (VARCHAR (1024),
                    nullable =False)
     content =Column (TEXT, nullable = False) # contents of article

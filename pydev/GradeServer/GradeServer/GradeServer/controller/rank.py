@@ -6,7 +6,7 @@ from sqlalchemy import func
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
-from GradeServer.utils.utilQuery import select_all_user, select_rank, rank_sorted, submissions_last_submitted
+from GradeServer.utils.utilQuery import select_all_user, select_rank, rank_sorted, submissions_last_submitted, select_count
 from GradeServer.utils.utilMessages import unknown_error, get_message
 
 from GradeServer.resource.enumResources import ENUMResources
@@ -51,29 +51,28 @@ def rank(sortCondition, pageNum, error =None):
         
         # records count
         try:
-            count = dao.query(func.count(submissions.c.memberId).label('count')).\
-                        first().\
-                        count
+            count = select_count(submissions.c.memberId).first().\
+                                                         count
         except Exception:
             count = 0
             
         # Paging Pointed
         pages = get_page_pointed(int(pageNum),
-                                count)
+                                 count)
         
         # Find MemberId 뷰 호출
         if request.method == 'POST':
+            # Finding MemberId
+            findMemberId = request.form['memberId']
                         # 순차 탐색으로 찾아야 함
             for i in range(1, pages['allPage'] + 1):
+                # memberId in Pages 
                 rankSub = get_page_record(dao.query(submissions),
-                                          i).\
-                                  subquery()
+                                          i).subquery()
                 # finding MemberId in Pages
                 try:
-                    if dao.query(rankSub.c.memberId).\
-                        filter(rankSub.c.memberId == request.form['memberId']).\
-                        first().\
-                        memberId:
+                    if select_memberId(rankSub, findMemberId).first().\
+                                                         memberId:
                         # Finding move to page
                         pageNum = i
                     
@@ -87,9 +86,8 @@ def rank(sortCondition, pageNum, error =None):
                 # 랭크 정보
         try:
             rankMemberRecords = get_page_record(rank_sorted(submissions,
-                                                                   sortCondition),
-                                                int(pageNum)).\
-                                all()
+                                                            sortCondition),
+                                                int(pageNum)).all()
         except Exception:
             rankMemberRecords = []
             
@@ -101,4 +99,12 @@ def rank(sortCondition, pageNum, error =None):
                                pages = pages,
                                error = error) # 페이지 정보
     except Exception:
-        return unknown_error()        
+        return unknown_error()     
+    
+    
+'''
+Select MemberId
+'''
+def select_memberId(rankSub, findMemberId):
+    return dao.query(rankSub.c.memberId).\
+               filter(rankSub.c.memberId == findMemberId)
