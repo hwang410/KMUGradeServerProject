@@ -250,7 +250,8 @@ def upload(courseId, problemId):
                    usedLanguageName,
                    usedLanguageVersion,
                    courseId,
-                   subCountNum)
+                   subCountNum,
+                   problemName)
     flash(OtherResources.const.SUBMISSION_SUCCESS)
     return "0"
 
@@ -349,7 +350,8 @@ def code(courseId, pageNum, problemId):
                    usedLanguageName,
                    usedLanguageVersion,
                    courseId,
-                   subCountNum)
+                   subCountNum,
+                   problemName)
     
     flash(OtherResources.const.SUBMISSION_SUCCESS)
     return redirect(url_for(RouteResources.const.PROBLEM_LIST,
@@ -394,7 +396,8 @@ def send_to_celery(filePath,
                    usedLanguageName,
                    usedLanguageVersion,
                    courseId,
-                   subCountNum): 
+                   subCountNum,
+                   problemName): 
     Grade.delay(str(filePath),
                 str(problemPath),
                 str(memberId),
@@ -406,4 +409,5 @@ def send_to_celery(filePath,
                 str(usedLanguageName),
                 str(usedLanguageVersion),
                 str(courseId),
-                subCountNum)
+                subCountNum,
+                str(problemName))
