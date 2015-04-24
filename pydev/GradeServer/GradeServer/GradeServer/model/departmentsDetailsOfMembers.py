@@ -21,6 +21,11 @@ class DepartmentsDetailsOfMembers(Base) :
     
     __tablename__ ='DepartmentsDetailsOfMembers'
     
-    memberId =Column (VARCHAR (20), ForeignKey (Members.memberId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
+    memberId =Column (VARCHAR (20),
+                      ForeignKey(Members.memberId,
+                                 onupdate ="CASCADE",
+                                 ondelete ="CASCADE"),
+                                 primary_key =True,
+                                 nullable =False)
     collegeIndex =Column (INTEGER (unsigned =True), ForeignKey (DepartmentsOfColleges.collegeIndex, onupdate ="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable =False)
     departmentIndex =Column (INTEGER (unsigned =True), ForeignKey (DepartmentsOfColleges.departmentIndex, onupdate="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable =False)

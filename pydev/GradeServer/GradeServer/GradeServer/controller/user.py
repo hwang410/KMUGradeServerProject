@@ -25,7 +25,7 @@ from GradeServer.controller.classMaster import *
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
 
-from GradeServer.utils.setResources import SETResources
+from GradeServer.resource.setResources import SETResources
 
 
 @GradeServer.teardown_request
@@ -172,7 +172,7 @@ def id_check(select, error = None):
                     if select == 'account':
                         return redirect(url_for(EDIT_PERSONAL))
                     # server manager
-                    elif session[AUTHORITY][0] == SERVER_ADMINISTRATOR:
+                    elif session[AUTHORITY][0] == SETResources.const.SERVER_ADMINISTRATOR:
                         if select == 'server_manage_collegedepartment':
                             return redirect(url_for('.server_manage_collegedepartment'))
                         elif select == 'server_manage_class':
@@ -184,7 +184,7 @@ def id_check(select, error = None):
                         elif select == 'server_manage_service':
                             return redirect(url_for('.server_manage_service'))
                     # class manager
-                    elif session[AUTHORITY][0] == COURSE_ADMINISTRATOR:
+                    elif session[AUTHORITY][0] == SETResources.const.COURSE_ADMINISTRATOR:
                         if select == 'user_submit':
                             return redirect(url_for('.class_user_submit'))
                         elif select == 'cm_manage_problem':

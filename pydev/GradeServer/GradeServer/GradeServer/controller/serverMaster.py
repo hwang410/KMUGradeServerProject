@@ -33,7 +33,8 @@ from GradeServer.model.courses import Courses
 from GradeServer.model.departmentsOfColleges import DepartmentsOfColleges
 from GradeServer.model.problems import Problems
 
-from GradeServer.utils.setResources import SETResources
+from GradeServer.resource.setResources import SETResources
+from GradeServer.resource.enumResources import ENUMResources
 
 import re
 import zipfile
@@ -622,7 +623,7 @@ def server_manage_problem():
                 try:
                     dao.query(Problems).\
                         filter(Problems.problemId == int(form)).\
-                        update(dict(isDeleted = 'Deleted'))
+                        update(dict(isDeleted = ENUMResources.const.TRUE))
                     dao.commit()
                 except:
                     dao.rollback()
@@ -637,7 +638,7 @@ def server_manage_problem():
     else:
         try:
             uploadedProblems = dao.query(Problems).\
-                                   filter(Problems.isDeleted == 'Not-Deleted').\
+                                   filter(Problems.isDeleted == ENUMResources.const.FALSE).\
                                    all()
         except:
             uploadedProblems = []
@@ -741,6 +742,13 @@ def server_add_user():
                                newUsers = newUsers)
         
     if request.method == 'POST':
+        keys = {'memberId':0,
+                'memberName':1,
+                'authority':2,
+                'collegeIndex':3,
+                'collegeName':4,
+                'departmentIndex':5,
+                'departmentName':6}
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
             numberOfUsers = (len(request.form) - 1) / 5
@@ -754,16 +762,16 @@ def server_add_user():
                     if not data or data == "select college":
                         continue
                     if value == 'userId':
-                        newUser[index - 1][0] = data
+                        newUser[index - 1][keys['memberId']] = data
                     elif value == 'username':
-                        newUser[index - 1][1] = data
+                        newUser[index - 1][keys['memberName']] = data
                     elif value == 'authority':
-                        newUser[index - 1][2] = data
+                        newUser[index - 1][keys['authority']] = data
                     elif value == 'college':
-                        newUser[index - 1][3] = data.split()[0]
+                        newUser[index - 1][keys['collegeIndex']] = data.split()[0]
                         try:
-                            newUser[index - 1][4] = dao.query(Colleges).\
-                                                        filter(Colleges.collegeIndex == newUser[index - 1][3]).\
+                            newUser[index - 1][keys['departmentIndex']] = dao.query(Colleges).\
+                                                        filter(Colleges.collegeIndex == newUser[index - 1][keys['collegeIndex']]).\
                                                         first().\
                                                         collegeName
                         except:
@@ -776,10 +784,10 @@ def server_add_user():
                                                    authorities = authorities,
                                                    newUsers = newUsers)               
                     elif value == 'department':
-                        newUser[index - 1][5] = data.split()[0]
+                        newUser[index - 1][keys['departmentIndex']] = data.split()[0]
                         try:
-                            newUser[index - 1][6] = dao.query(Departments).\
-                                                        filter(Departments.departmentIndex == newUser[index - 1][5]).\
+                            newUser[index - 1][keys['departmentName']] = dao.query(Departments).\
+                                                        filter(Departments.departmentIndex == newUser[index - 1][keys['departmentIndex']]).\
                                                         first().\
                                                         departmentName
                         except:
@@ -791,7 +799,6 @@ def server_add_user():
                                                    allDepartments = allDepartments,
                                                    authorities = authorities,
                                                    newUsers = newUsers)
-                        
                         
             for index in range(numberOfUsers+1):
                 valid = True
@@ -813,24 +820,24 @@ def server_add_user():
                         # slice and make information from 'key=value'
                         userInformation = userData.split(', ')
                         # userId, userName, authority, collegeIndex, collegeName, departmentIndex, departmentName
-                        newUser = [''] * 8
+                        newUser = [''] * 7
                         
                         for eachData in userInformation:
                             if '=' in eachData:
                                 # all authority is user in adding user from text file
-                                newUser[2] = 'User'
+                                newUser[keys['authority']] = 'User'
                                 key = eachData.split('=')[0]
                                 value = eachData.split('=')[1]
                                 if key == 'userId':
-                                    newUser[0] = value 
+                                    newUser[keys['memberId']] = value 
                                     
                                 elif key == 'username':
-                                    newUser[1] = value
+                                    newUser[keys['memberName']] = value
                                     
                                 elif key == 'college':
-                                    newUser[3] = value
+                                    newUser[keys['collegeIndex']] = value
                                     try:
-                                        newUser[4] = dao.query(Colleges).\
+                                        newUser[keys['collegeName']] = dao.query(Colleges).\
                                                          filter(Colleges.collegeIndex == value).\
                                                          first().\
                                                          collegeName
@@ -845,9 +852,9 @@ def server_add_user():
                                                                newUsers = newUsers)
                                         
                                 elif key == 'department':
-                                    newUser[5] = value
+                                    newUser[keys['departmentIndex']] = value
                                     try:
-                                        newUser[6] = dao.query(Departments).\
+                                        newUser[keys['departmentName']] = dao.query(Departments).\
                                                          filter(Departments.departmentIndex == value).\
                                                          first().\
                                                          departmentName
@@ -883,9 +890,9 @@ def server_add_user():
                                                        newUsers = newUsers)
                         
                         for user in newUsers:
-                            if user[0] == newUser[0] and\
-                               user[3] == newUser[3] and\
-                               user[5] == newUser[5]:
+                            if user[keys['memberId']] == newUser[keys['memberId']] and\
+                               user[keys['collegeIndex']] == newUser[keys['collegeIndex']] and\
+                               user[keys['departmentIndex']] == newUser[keys['departmentIndex']]:
                                 error = 'There is a duplicated user id. Check the file and added user list'
                                 return render_template('/server_add_user.html', 
                                                        error = error,  
@@ -898,15 +905,27 @@ def server_add_user():
                         newUsers.append(newUser)
                         
         elif 'addUser' in request.form:
+            print "newUsers:", newUsers
             for newUser in newUsers:
                 try:
-                    if newUser[2] == 'Course Admin':
-                        newUser[2] = 'CourseAdministrator'
-                            
-                    freshman = Members(memberId = newUser[0], 
-                                       password = newUser[0], 
-                                       memberName = newUser[1], 
-                                       authority = newUser[2],
+                    if newUser[keys['authority']] == 'Course Admin':
+                        newUser[keys['authority']] = SETResources.const.COURSE_ADMINISTRATOR
+                    elif newUser[keys['authority']] == 'User':
+                        newUser[keys['authority']] = SETResources.const.USER
+                    else: # wrong access
+                        error = 'Wrong access'
+                        return render_template('/server_add_user.html', 
+                                               error = error,  
+                                               SETResources = SETResources,
+                                               allColleges = allColleges,
+                                               allDepartments = allDepartments,
+                                               authorities = authorities,
+                                               newUsers = newUsers)
+                        
+                    freshman = Members(memberId = newUser[keys['memberId']], 
+                                       password = newUser[keys['memberId']], 
+                                       memberName = newUser[keys['memberName']], 
+                                       authority = newUser[keys['authority']],
                                        signedInDate = datetime.now())
                     dao.add(freshman)
                     dao.commit()
@@ -914,15 +933,22 @@ def server_add_user():
                     error = "There are few members already registered. "
                 
                 try:
-                    departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[0], 
-                                                                        collegeIndex = newUser[3], 
-                                                                        departmentIndex = newUser[5])
+                    departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[keys['memberId']], 
+                                                                        collegeIndex = int(newUser[keys['collegeIndex']]), 
+                                                                        departmentIndex = int(newUser[keys['departmentIndex']]))
                     dao.add(departmentInformation)
                     dao.commit()
                 except:
                     if not error:
                         error = ""
                     error += "Duplicated information is already exist"
+                    return render_template('/server_add_user.html', 
+                                           error = error,  
+                                           SETResources = SETResources,
+                                           allColleges = allColleges,
+                                           allDepartments = allDepartments,
+                                           authorities = authorities,
+                                           newUsers = newUsers)
                     
             newUsers = [] # initialize add user list
             if error:
@@ -943,7 +969,7 @@ def server_add_user():
                 # each new user id
                 for newUser in newUsers:
                     # if target id and new user id are same
-                    if targetUser == newUser[0]:
+                    if targetUser == newUser[keys['memberId']]:
                         del newUsers[index]
                         break
                     index += 1
