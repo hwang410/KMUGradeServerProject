@@ -13,7 +13,7 @@
 
 class GradeServerConfig(object):
     #: 데이터베이스 연결 URL
-    DB_URL= "mysql+mysqlconnector://root:rhflwma@127.0.0.1/GradeServer_DB"
+    DB_URL= "mysql+mysqlconnector://root:dkfrhflwma@192.168.0.8/GradeServer_DB"
     #: 사진 업로드 시 사진이 임시로 저장되는 임시 폴더
     TMP_FOLDER = 'resource/tmp/'
     #: 세션 타임아웃은 초(second) 단위(60분)

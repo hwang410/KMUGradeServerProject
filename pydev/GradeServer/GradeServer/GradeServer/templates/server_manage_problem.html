@@ -50,7 +50,9 @@
 				</div>
 		</div>
 		<!-- no items choosed -->
-		<div class="modal hide fade" id="deleteNoItem" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+		<div class="modal hide fade" id="deleteNoItem" 
+			  aria-labelledby="deleteModalLabel" aria-hidden="true"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">Delete Problem</h3>
@@ -77,7 +79,12 @@
 				<td>{{ uploadedProblem.problemId }}
 				<td>{{ uploadedProblem.problemName }}
 				<td>{{ uploadedProblem.solutionCheckType }}
-				<td><label class="checkbox-center"><input class="box-check" name="{{ uploadedProblem.problemId }}" type="checkbox" form="deleteProblem" value="{{ uploadedProblem.problemId }}"></label>
+				<td>
+					<label class="checkbox-center">
+						<input class="box-check" name="{{ uploadedProblem.problemId }}"
+								type="checkbox" form="deleteProblem"
+								value="{{ uploadedProblem.problemId }}">
+					</label>
 			{% endfor -%}
 			</form> <!-- for IE, we need to cover all 'form tags' into the '<form>' tag between -->
 		</table>
