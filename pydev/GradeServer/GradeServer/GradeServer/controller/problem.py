@@ -6,7 +6,14 @@ from sqlalchemy import and_, func
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilQuery import submissions_sorted, submissions_last_submitted
-from GradeServer.utils.utils import *
+from GradeServer.utils.utilMessages import unknown_error
+
+from GradeServer.resource.enumResources import ENUMResources
+from GradeServer.resource.setResources import SETResources
+from GradeServer.resource.htmlResources import HTMLResources
+from GradeServer.resource.routeResources import RouteResources
+from GradeServer.resource.otherResources import OtherResources
+from GradeServer.resource.sessionResources import SessionResources
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
@@ -20,7 +27,6 @@ from GradeServer.model.submittedRecordsOfProblems import SubmittedRecordsOfProbl
 from GradeServer.model.languages import Languages
 from GradeServer.model.languagesOfCourses import LanguagesOfCourses
 from itertools import count
-from GradeServer.utils.utilMessages import unknown_error
 
 
 @GradeServer.route('/problemList/<courseId>/page<pageNum>')
@@ -32,7 +38,7 @@ def problemList(courseId, pageNum):
                                    Submissions.problemId,
                                    Submissions.courseId,
                                    func.max(Submissions.submissionCount).label('submissionCount')).\
-                             filter(Submissions.memberId == session[MEMBER_ID],
+                             filter(Submissions.memberId == session[SessionResources.const.MEMBER_ID],
                                     Submissions.courseId == courseId).\
                              group_by(Submissions.memberId,
                                       Submissions.problemId,
@@ -90,7 +96,8 @@ def problemList(courseId, pageNum):
     except:
         courseRecords = []
     
-    return render_template('/problem_list.html',
+    return render_template(HTMLResources.const.PROBLEM_LIST_HTML,
+                           SETResources = SETResources,
                            courseRecords = courseRecords,
                            problemListRecords = problemListRecords,
                            pages = get_page_pointed(int(pageNum),
@@ -107,9 +114,9 @@ def problem(courseId, problemId, pageNum):
         languageName = dao.query(Languages.languageName).\
                            join(LanguagesOfCourses, 
                                 and_(Languages.languageIndex == LanguagesOfCourses.languageIndex,
-                                Languages.languageVersion == LanguagesOfCourses.languageVersion)).\
-                                filter(LanguagesOfCourses.courseId == courseId).\
-                                all()
+                                     Languages.languageVersion == LanguagesOfCourses.languageVersion)).\
+                           filter(LanguagesOfCourses.courseId == courseId).\
+                           all()
     except Exception as e:
         unknown_error("DB 에러입니다")
     try:
@@ -117,7 +124,8 @@ def problem(courseId, problemId, pageNum):
                               filter(LanguagesOfCourses.courseId == courseId).\
                               all()
     except Exception as e:
-        unknown_error("DB 에러입니다") 
+        unknown_error("DB 에러입니filter(LanguagesOfCourses.courseId == courseId).\
+                        다") 
     try:
         languageIndex = dao.query(LanguagesOfCourses.languageIndex).\
                             filter(LanguagesOfCourses.courseId == courseId).\
@@ -134,7 +142,8 @@ def problem(courseId, problemId, pageNum):
     
     problemName = problemInformation.problemName.replace(' ', '')
     browserName = request.user_agent.browser
-    return render_template('/problem.html',
+    return render_template(HTMLResources.const.PROBLEM_HTML,
+                           SETResources = SETResources,
                            courseId = courseId,
                            problemId = problemId,
                            problemInformation = problemInformation,
@@ -166,7 +175,7 @@ def submit():
 
 @GradeServer.route('/record/<courseId>/<problemId>-<sortCondition>')
 @login_required
-def record(courseId, problemId, sortCondition = RUN_TIME):
+def record(courseId, problemId, sortCondition = OtherResources.const.RUN_TIME):
     """
     navbar - class - Record of problem
     """
@@ -192,7 +201,7 @@ def record(courseId, problemId, sortCondition = RUN_TIME):
                                          subquery()
         # Solved Members Count
         sumOfSolvedPeopleCount =dao.query(func.count(submissions.c.memberId).label('sumOfSolvedPeopleCount')).\
-                                    filter(submissions.c.status == SOLVED).\
+                                    filter(submissions.c.status == ENUMResources.const.SOLVED).\
                                     subquery()
                               
         problemSubmittedRecords = dao.query(func.max(SubmittedRecordsOfProblems.sumOfSubmissionCount).label('sumOfSubmissionCount'),
@@ -240,14 +249,15 @@ def record(courseId, problemId, sortCondition = RUN_TIME):
                                                                     Submissions.problemId == submissions.c.problemId,
                                                                     Submissions.courseId == submissions.c.courseId,
                                                                     Submissions.solutionCheckCount == submissions.c.solutionCheckCount)).\
-                                                          filter(Submissions.status == SOLVED).\
+                                                          filter(Submissions.status == ENUMResources.const.SOLVED).\
                                                           subquery(),
-                                                      sortCondition).all()
+                                                        sortCondition).all()
             
     except Exception:
         problemSolvedMemberRecords = []
     
-    return render_template('/record.html',
+    return render_template(HTMLResources.const.PROBLEM_RECORD_HTML,
+                           SETResources = SETResources,
                            courseId = courseId,
                            problemSolvedMemberRecords = problemSolvedMemberRecords,
                            problemInformationRecords = problemInformationRecords,
@@ -275,8 +285,8 @@ def user_record(problemId, courseId):
                                             Submissions.usedMemory).\
                                       filter(Submissions.problemId == problemId,
                                              Submissions.courseId == courseId,
-                                             Submissions.memberId == session[MEMBER_ID],
-                                             Submissions.status == SOLVED).\
+                                             Submissions.memberId == session[SessionResources.const.MEMBER_ID],
+                                             Submissions.status == ENUMResources.const.SOLVED).\
                                       group_by(Submissions.memberId,
                                                Submissions.problemId,
                                                Submissions.courseId).\
@@ -287,7 +297,7 @@ def user_record(problemId, courseId):
     # Submitted Files
     try:
         count = dao.query(func.count(SubmittedFiles.fileIndex).label('count')).\
-                    filter(SubmittedFiles.memberId == session[MEMBER_ID],
+                    filter(SubmittedFiles.memberId == session[SessionResources.const.MEMBER_ID],
                            SubmittedFiles.problemId == problemId,
                            SubmittedFiles.courseId == courseId).\
                     first().\
@@ -299,7 +309,7 @@ def user_record(problemId, courseId):
     try:
         submittedFileRecords = dao.query(SubmittedFiles.fileName,
                                          SubmittedFiles.filePath).\
-                                   filter(SubmittedFiles.memberId == session[MEMBER_ID],
+                                   filter(SubmittedFiles.memberId == session[SessionResources.const.MEMBER_ID],
                                           SubmittedFiles.problemId == problemId,
                                           SubmittedFiles.courseId == courseId).\
                                    all()
@@ -316,7 +326,8 @@ def user_record(problemId, courseId):
         submittedFileRecords = []
         fileData = []
    
-    return render_template(USER_CODE_HTML,
+    return render_template(HTMLResources.const.SUBMISSION_CODE_HTML,
+                           SETResources = SETResources,
                            submittedFileRecords = submittedFileRecords,
                            fileData = fileData,
                            problemName = problemName,

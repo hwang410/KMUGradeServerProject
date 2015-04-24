@@ -9,7 +9,13 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utilQuery import select_all_user, select_match_member
-from GradeServer.utils.utils import *
+
+from GradeServer.resource.enumResources import ENUMResources
+from GradeServer.resource.setResources import SETResources
+from GradeServer.resource.htmlResources import HTMLResources
+from GradeServer.resource.routeResources import RouteResources
+from GradeServer.resource.otherResources import OtherResources
+from GradeServer.resource.sessionResources import SessionResources
 
 from GradeServer.database import dao
 from GradeServer.model.registeredTeamMembers import RegisteredTeamMembers
@@ -37,8 +43,8 @@ def team(pageNum = 1, error = None):
         try:
             # 초대 목록
             teamInvitationRecords = dao.query(TeamInvitations.teamName).\
-                                        filter(TeamInvitations.inviteeId == session[MEMBER_ID],
-                                                  TeamInvitations.isDeleted == NOT_DELETED).\
+                                        filter(TeamInvitations.inviteeId == session[SessionResources.const.MEMBER_ID],
+                                                  TeamInvitations.isDeleted == ENUMResources.const.FALSE).\
                                         all()
         except Exception:
             # None Type Exception
@@ -46,8 +52,8 @@ def team(pageNum = 1, error = None):
            
         # 내가 속한 팀 정보
         teamNames = dao.query(RegisteredTeamMembers.teamName).\
-                        filter(RegisteredTeamMembers.teamMemberId == session[MEMBER_ID],
-                               RegisteredTeamMembers.isDeleted == NOT_DELETED).\
+                        filter(RegisteredTeamMembers.teamMemberId == session[SessionResources.const.MEMBER_ID],
+                               RegisteredTeamMembers.isDeleted == ENUMResources.const.FALSE).\
                         subquery()
         try:
             count = dao.query(func.count(teamNames.c.teamName).label("count")).\
@@ -61,7 +67,7 @@ def team(pageNum = 1, error = None):
                                      func.count(RegisteredTeamMembers.teamMemberId).label("teamMemberCount")).\
                                join(teamNames,
                                     RegisteredTeamMembers.teamName == teamNames.c.teamName).\
-                               filter(RegisteredTeamMembers.isDeleted == NOT_DELETED).\
+                               filter(RegisteredTeamMembers.isDeleted == ENUMResources.const.FALSE).\
                                group_by(RegisteredTeamMembers.teamName).\
                                subquery()
                             
@@ -70,8 +76,8 @@ def team(pageNum = 1, error = None):
                                 RegisteredTeamMembers.teamMemberId.label("teamMasterId")).\
                           join(teamNames,
                                RegisteredTeamMembers.teamName == teamNames.c.teamName).\
-                          filter(RegisteredTeamMembers.isTeamMaster == MASTER,
-                                 RegisteredTeamMembers.isDeleted == NOT_DELETED).\
+                          filter(RegisteredTeamMembers.isTeamMaster == ENUMResources.const.TRUE,
+                                 RegisteredTeamMembers.isDeleted == ENUMResources.const.FALSE).\
                           group_by(RegisteredTeamMembers.teamName).\
                           subquery()
     
@@ -90,7 +96,8 @@ def team(pageNum = 1, error = None):
             # None Type Error
             teamRecords =[]
         
-        return render_template(TEAM_HTML,
+        return render_template(HTMLResources.const.TEAM_HTML,
+                               SETResources = SETResources,
                                teamInvitationRecords = teamInvitationRecords,
                                teamRecords = teamRecords,
                                pages = get_page_pointed(int(pageNum),
@@ -111,13 +118,13 @@ def team_invitation(teamName, accept, error = None):
         # Delete Invitee
         dao.query(TeamInvitations).\
             filter(TeamInvitations.teamName == teamName,
-                   TeamInvitations.inviteeId == session[MEMBER_ID]).\
-            update(dict(isDeleted = DELETED))
+                   TeamInvitations.inviteeId == session[SessionResources.const.MEMBER_ID]).\
+            update(dict(isDeleted = ENUMResources.const.TRUE))
         
         # 초대 수락
-        if accept == ACCEPT:
+        if accept == OtherResources.const.ACCEPT:
             insert_team_member_id(teamName,
-                                  session[MEMBER_ID])
+                                  session[SessionResources.const.MEMBER_ID])
             # Commit Exception
             try:
                 dao.commit()
@@ -135,7 +142,7 @@ def team_invitation(teamName, accept, error = None):
                 dao.rollback()
                 error = get_message('updateFailed')
             
-        return redirect(url_for(TEAM,
+        return redirect(url_for(RouteResources.const.TEAM,
                                 pageNum = 1,
                                 error = error))   
     except Exception:
@@ -167,7 +174,8 @@ def make_team(error = None):
             del gTeamMembersId[:]
             gTeamName, gTeamDescription = None, None
             
-            return render_template(MAKE_TEAM_HTML,
+            return render_template(HTMLResources.const.TEAM_MAKE_HTML,
+                                   SETResources = SETResources,
                                    memberRecords = memberRecords)
               
         elif request.method == 'POST':
@@ -181,7 +189,8 @@ def make_team(error = None):
                     
                                         # 인풋 확인
                     if not gTeamName:
-                        return render_template(MAKE_TEAM_HTML,
+                        return render_template(HTMLResources.const.TEAM_MAKE_HTML,
+                                               SETResources = SETResources,
                                                memberRecords = memberRecords,
                                                gTeamMembersId = gTeamMembersId,
                                                gTeamDescription = gTeamDescription,
@@ -190,9 +199,10 @@ def make_team(error = None):
                     try:
                         if dao.query(check_team_name(gTeamName).subquery()).\
                                first().\
-                               isDeleted == NOT_DELETED:
+                               isDeleted == ENUMResources.const.FALSE:
                             # don't Exception
-                            return render_template(MAKE_TEAM_HTML,
+                            return render_template(HTMLResources.const.TEAM_MAKE_HTML,
+                                                   SETResources = SETResources,
                                                    memberRecords = memberRecords,
                                                    gTeamMembersId = gTeamMembersId,
                                                    gTeamDescription = gTeamDescription,
@@ -202,7 +212,7 @@ def make_team(error = None):
                             # Update Team
                             dao.query(Teams).\
                                 filter(Teams.teamName == gTeamName).\
-                                update(dict(isDeleted = NOT_DELETED))
+                                update(dict(isDeleted = ENUMResources.const.FALSE))
                     except Exception:
                         # Insert Team
                         newTeam = Teams(teamName = gTeamName,
@@ -216,8 +226,8 @@ def make_team(error = None):
                         dao.commit()
                                                 # 마스터 정보
                         insert_team_member_id(gTeamName,
-                                              session[MEMBER_ID],
-                                              MASTER)
+                                              session[SessionResources.const.MEMBER_ID],
+                                              ENUMResources.const.TRUE)
                         # this Commit Succeeded Go Next Step
                         try:
                             dao.commit()
@@ -233,7 +243,7 @@ def make_team(error = None):
                             gTeamName, gTeamDescription = None, None
                             flash(get_message('makeTeamSucceeded'))
 
-                            return redirect(url_for(TEAM,
+                            return redirect(url_for(RouteResources.const.TEAM,
                                                     pageNum = 1))
                         except Exception:
                             dao.rollback()
@@ -259,12 +269,13 @@ def make_team(error = None):
                     
                     break
                 
-            return render_template(MAKE_TEAM_HTML,
+            return render_template(HTMLResources.const.TEAM_MAKE_HTML,
+                                   SETResources = SETResources,
                                    memberRecords = memberRecords,
-                                    gTeamMembersId = gTeamMembersId,
-                                    gTeamName = gTeamName,
-                                    gTeamDescription = gTeamDescription,
-                                    error = error)
+                                   gTeamMembersId = gTeamMembersId,
+                                   gTeamName = gTeamName,
+                                   gTeamDescription = gTeamDescription,
+                                   error = error)
     except Exception:
         # Unknown Error
         del gTeamMembersId[:]
@@ -283,7 +294,7 @@ def team_information(teamName, error = None):
         try:
             teamInformation = dao.query(Teams).\
                                     filter(Teams.teamName == teamName,
-                                           Teams.isDeleted == NOT_DELETED).first()
+                                           Teams.isDeleted == ENUMResources.const.FALSE).first()
         except Exception:
             # None Type Exception
             teamInformation = []
@@ -291,14 +302,15 @@ def team_information(teamName, error = None):
         try:
             teamMemberRecords = dao.query(RegisteredTeamMembers.teamMemberId).\
                                     filter(RegisteredTeamMembers.teamName == teamName,
-                                           RegisteredTeamMembers.isDeleted == NOT_DELETED).\
+                                           RegisteredTeamMembers.isDeleted == ENUMResources.const.FALSE).\
                                     order_by(RegisteredTeamMembers.isTeamMaster.asc(),
                                              RegisteredTeamMembers.teamMemberId.asc()).all()
         except Exception:
             # None Type Exception
             teamMemberRecords = []
         
-        return render_template(TEAM_INFORMATION_HTML,
+        return render_template(HTMLResources.const.TEAM_INFORMATION_HTML,
+                               SETResources = SETResources,
                                teamInformation = teamInformation,
                                teamMemberRecords = teamMemberRecords)
     except Exception:
@@ -314,9 +326,10 @@ def team_record(teamName, error = None):
     """
     try:
         # user.py ->user_history이용       
-        return redirect(url_for(USER_HISTORY,
+        return redirect(url_for(RouteResources.const.USER_HISTORY,
+                                SETResources = SETResources,
                                 memberId = teamName,
-                                sortCondition = SUBMISSION_DATE,
+                                sortCondition = OtherResources.const.SUBMISSION_DATE,
                                 pageNum = 1))
     except Exception:
         # Unknow Error
@@ -341,7 +354,7 @@ def team_manage(teamName, error = None):
         try:
             teamInformation = dao.query(Teams).\
                                     filter(Teams.teamName == teamName,
-                                           Teams.isDeleted == NOT_DELETED).first()
+                                           Teams.isDeleted == ENUMResources.const.FALSE).first()
         except Exception:
             # None Type Exception
             teamInformation = []
@@ -349,7 +362,7 @@ def team_manage(teamName, error = None):
         try:
             teamMemberRecords = dao.query(RegisteredTeamMembers.teamMemberId).\
                                     filter(RegisteredTeamMembers.teamName == teamName,
-                                           RegisteredTeamMembers.isDeleted == NOT_DELETED).\
+                                           RegisteredTeamMembers.isDeleted == ENUMResources.const.FALSE).\
                                     order_by(RegisteredTeamMembers.isTeamMaster.asc(),
                                              RegisteredTeamMembers.teamMemberId.asc()).all()
         except Exception:
@@ -357,7 +370,7 @@ def team_manage(teamName, error = None):
             teamMemberRecords = []
         
         # 팀장이 아닌 애가 왔을 때
-        if session[MEMBER_ID] != teamMemberRecords[0].teamMemberId:
+        if session[SessionResources.const.MEMBER_ID] != teamMemberRecords[0].teamMemberId:
             return unknown_error(error = get_message('accessFailed'))
             
         if request.method == 'GET':
@@ -365,7 +378,8 @@ def team_manage(teamName, error = None):
             gTeamMembersId = copy.deepcopy(teamMemberRecords)
             gTeamName, gTeamDescription =None, None
             
-            return render_template(TEAM_MANAGE_HTML,
+            return render_template(HTMLResources.const.TEAM_MANAGE_HTML,
+                                   SETResources = SETResources,
                                    memberRecords = memberRecords,
                                    teamInformation =teamInformation, 
                                    gTeamMembersId = gTeamMembersId,
@@ -402,7 +416,7 @@ def team_manage(teamName, error = None):
                             dao.query(RegisteredTeamMembers).\
                                 filter(RegisteredTeamMembers.teamName == teamName,
                                        RegisteredTeamMembers.teamMemberId == raw.teamMemberId).\
-                                update(dict(isDeleted = DELETED))
+                                update(dict(isDeleted = ENUMResources.const.TRUE))
                     # Commit Exception
                     try:
                         dao.commit()
@@ -414,7 +428,7 @@ def team_manage(teamName, error = None):
                         dao.rollback()
                         error =get_message('updateFailed')
                     
-                    return redirect(url_for(TEAM,
+                    return redirect(url_for(RouteResources.const.TEAM,
                                             pageNum = 1,
                                             error = error))
                         
@@ -428,7 +442,8 @@ def team_manage(teamName, error = None):
                     error = check_invitee_member(inviteeId,
                                                  teamName)
                     
-                    return render_template(TEAM_MANAGE_HTML,
+                    return render_template(HTMLResources.const.TEAM_MANAGE_HTML,
+                                           SETResources = SETResources,
                                            memberRecords = memberRecords,
                                            teamInformation = teamInformation, 
                                            gTeamMembersId = gTeamMembersId,
@@ -440,7 +455,8 @@ def team_manage(teamName, error = None):
                     # form의 name이 deleteMemberi -> i=Index이므로 해당 인덱스 값 제거
                     gTeamMembersId.pop(int(form[-1]))
                     
-                    return render_template(TEAM_MANAGE_HTML,
+                    return render_template(HTMLResources.const.TEAM_MANAGE_HTML,
+                                           SETResources = SETResources,
                                            memberRecords = memberRecords,
                                            teamInformation = teamInformation, 
                                            gTeamMembersId = gTeamMembersId,
@@ -450,13 +466,13 @@ def team_manage(teamName, error = None):
                 elif form == 'deleteTeam':
                     dao.query(Teams).\
                         filter(Teams.teamName == teamName).\
-                        update(dict(isDeleted = DELETED))
+                        update(dict(isDeleted = ENUMResources.const.TRUE))
                     dao.query(RegisteredTeamMembers).\
                         filter(RegisteredTeamMembers.teamName == teamName).\
-                        update(dict(isDeleted = DELETED))
+                        update(dict(isDeleted = ENUMResources.const.TRUE))
                     dao.query(TeamInvitations).\
                         filter(TeamInvitations.teamName == teamName).\
-                        update(dict(isDeleted = DELETED))
+                        update(dict(isDeleted = ENUMResources.const.TRUE))
                     # Commit Exception
                     try:
                         dao.commit()
@@ -468,7 +484,7 @@ def team_manage(teamName, error = None):
                         dao.rollback()
                         error = get_message('updateFailed')
                         
-                    return redirect(url_for(TEAM,
+                    return redirect(url_for(RouteResources.const.TEAM,
                                             pageNum = 1,
                                             error =error))
     except Exception:
@@ -497,7 +513,7 @@ def check_invitee_member(inviteeId, teamName = None):
             
             return get_message('notExists')
         # 자가 자신 초대 방지
-        elif inviteeId == session[MEMBER_ID]:
+        elif inviteeId == session[SessionResources.const.MEMBER_ID]:
             return get_message('notSelf')
         # MakeTeam In Invitee
         elif not teamName:
@@ -514,7 +530,7 @@ def check_invitee_member(inviteeId, teamName = None):
             if dao.query(TeamInvitations).\
                    filter(TeamInvitations.teamName == teamName,
                               TeamInvitations.inviteeId == inviteeId,
-                              TeamInvitations.isDeleted == NOT_DELETED).\
+                              TeamInvitations.isDeleted == ENUMResources.const.FALSE).\
                    first():
                 
                 return get_message('alreadyExists')
@@ -523,7 +539,7 @@ def check_invitee_member(inviteeId, teamName = None):
             elif dao.query(RegisteredTeamMembers.teamMemberId).\
                      filter(RegisteredTeamMembers.teamName == teamName,
                             RegisteredTeamMembers.teamMemberId == inviteeId,
-                            RegisteredTeamMembers.isDeleted == NOT_DELETED).\
+                            RegisteredTeamMembers.isDeleted == ENUMResources.const.FALSE).\
                      first():
                 
                 return get_message('notTeamMemberInvitee')
@@ -539,7 +555,7 @@ def check_invitee_member(inviteeId, teamName = None):
 """
  DB Insert Team Members
 """
-def insert_team_member_id(teamName, teamMemberId, isTeamMaster = NOT_MASTER):
+def insert_team_member_id(teamName, teamMemberId, isTeamMaster = ENUMResources.const.FALSE):
     # if not exist Records then Insert
     if not dao.query(RegisteredTeamMembers).\
                filter(RegisteredTeamMembers.teamName == teamName,
@@ -554,7 +570,7 @@ def insert_team_member_id(teamName, teamMemberId, isTeamMaster = NOT_MASTER):
         dao.query(RegisteredTeamMembers).\
             filter(RegisteredTeamMembers.teamName == teamName,
                    RegisteredTeamMembers.teamMemberId == teamMemberId).\
-            update(dict(isDeleted = NOT_DELETED,
+            update(dict(isDeleted = ENUMResources.const.FALSE,
                         isTeamMaster =isTeamMaster)) 
         
 """
@@ -576,7 +592,7 @@ def insert_invitee_id(teamName, inviteeId):
         dao.query(TeamInvitations).\
             filter(TeamInvitations.teamName == teamName,
                    TeamInvitations.inviteeId == inviteeId).\
-            update(dict(isDeleted = NOT_DELETED))
+            update(dict(isDeleted = ENUMResources.const.FaLSE))
     # Commit Exception
     try:
         dao.commit()

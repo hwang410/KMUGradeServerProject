@@ -3,8 +3,8 @@
 from flask import session, request, current_app, redirect, url_for
 from functools import wraps
 
-from GradeServer.utils.utils import *
-
+from GradeServer.resource.routeResources import RouteResources
+from GradeServer.resource.sessionResources import SessionResources
 
 def login_required(f):
     """현재 사용자가 로그인 상태인지 확인하는 데코레이터
@@ -17,10 +17,10 @@ def login_required(f):
                 request.cookies.get(
                     current_app.config['SESSION_COOKIE_NAME'])
 
-            if not (session.sid == session_key and session.__contains__(MEMBER_ID)):
+            if not (session.sid == session_key and session.__contains__(SessionResources.const.MEMBER_ID)):
                 session.clear()
              
-                return redirect(url_for(SIGN_IN))
+                return redirect(url_for(RouteResources.const.SIGN_IN))
             
             return f(*args, **kwargs)
 
