@@ -533,11 +533,9 @@ def class_add_user():
             newUser = [['' for i in range(8)] for j in range(numberOfUsers + 1)]
             for form in request.form:
                 if form != 'addIndivisualUser':
-                    print "formcheck:", form
                     value,index = re.findall('\d+|\D+',form)
                     index = int(index)
                     data = request.form[form]
-                    print "check:", value, index, data
                     if value == 'userId':
                         newUser[index - 1][keys['memberId']] = data
                     elif value == 'username':
@@ -555,42 +553,30 @@ def class_add_user():
                                     first().\
                                     collegeName
                         except:
-                            error = 'Wrong college index has inserted'
-                            return render_template('/class_add_user.html',
-                                                   error = error, 
-                                                   SETResources = SETResources,
-                                                   ownCourses = ownCourses,
-                                                   allUsers = allUsers,
-                                                   allColleges = allColleges,
-                                                   allDepartments = allDepartments,
-                                                   authorities = authorities,
-                                                   newUsers = newUsers)
+                            pass
+                        
                     elif value == 'department':
                         newUser[index - 1][keys['departmentIndex']] = data.split()[0]
-                        print "valcheck:", newUser[index-1][keys['departmentIndex']]
                         try:
                             newUser[index - 1][keys['departmentName']] =\
                                 dao.query(Departments).\
                                     filter(Departments.departmentIndex == newUser[index - 1][keys['departmentIndex']]).\
                                     first().\
                                     departmentName
-                            print "valcheck2:", newUser[index-1][keys['departmentName']]
                         except:
-                            error = 'Wrong department index has inserted'
-                            return render_template('/class_add_user.html',
-                                                   error = error, 
-                                                   SETResources = SETResources,
-                                                   ownCourses = ownCourses,
-                                                   allUsers = allUsers,
-                                                   allColleges = allColleges,
-                                                   allDepartments = allDepartments,
-                                                   authorities = authorities,
-                                                   newUsers = newUsers)
+                            pass
+                            
                     elif value == 'courseId':
                         newUser[index-1][keys['courseId']] = data.strip()
                         
             for index in range(numberOfUsers):
-                newUsers.append(newUser[index])
+                isValid = True
+                for value in newUser[index]:
+                    if not value:
+                        isValid = False
+                        pass
+                if isValid:
+                    newUsers.append(newUser[index])
                 
         elif 'addUserGroup' in request.form:
             files = request.files.getlist('files')
