@@ -105,16 +105,16 @@ $(function() {
 		for(var i = 0; i < keys.length; i++){  
 			uploadObj += "<td>";
 		  	if(i < 2){
-			    uploadObj += "<input class='input-" + formsize[i] + " formLine1' " +
-									   "id='" + keys[i] + "1' " +
-									   "name='" + keys[i] + "1' " +
-									   "type='text' " +
-									   "placeholder='" + placeholders[i] + "' " +
-									   "value=''>";
+			    uploadObj += "<input class='input-" + formsize[i] + " formLine1'" +
+									   "id='" + keys[i] + "1'" +
+									   "name='" + keys[i] + "1'" +
+									   "type='text'" +
+									   "placeholder='" + placeholders[i] +
+									   "'value=''>";
 			}
 			else{
-				uploadObj += "<select class='input-" + formsize[i] + "' " +
-										 "id='" + keys[i] + "1' " +
+				uploadObj += "<select class='input-" + formsize[i] +
+										 "'id='" + keys[i] + "1'" +
 									      "name='" + keys[i] + "1'>";
 				switch(i){
 			    		case 2:
