@@ -27,35 +27,6 @@ function showSourceCodeForm(parent){
 	}
 }
 
-// when the score is 100, set 'one more?'
-// else set 'try again'
-function moveWhereAfterSubmit(score){
-	$('#move_after').load(function(){
-    	//var buttonContent = document.getElementById("move_after");
-    	var score = 100;
-    	if(score == 100){
-    		//buttonContent.innerHTML = "one more?";
-    		this.innerHTML = "one more?";
-    	}
-    	else{
-    		//buttonContent.innerHTML = "try again";
-    		this.innerHTML = "try again";
-    	}
-    });
-}
-
-// if score is 100, moving to problem List
-// else, moving to back page(problem information)
-function letItMove(where){
-	var place = where.innerHTML;
-	if(place == "one more?"){
-		window.location = "../userSignin/problemList";
-	}
-	else{
-		history.back();
-	}
-}
-
 // load function after all window's loaded
 $(window).load(function(){
 	window.onload = function(){
@@ -72,44 +43,6 @@ $(window).load(function(){
     	}
     }
 });
-
-
-/*
-// set donut chart graph
-$.getScript('../../static/bootstrap/js/Chart.js',function(){
-	var data = [];
-	var options = {
-		animation: false
-	};
-
-  //Get the context of the canvas element we want to select
-  var c = $('#submitChart');
-  var ct = c.get(0).getContext('2d');
-  var ctx = document.getElementById("submitChart").getContext("2d");
-  var colors = new Array("#0c274c", "#18709c", "#19bdc4", "#fff6ee", "#ef4089");
-  
-  myNewChart = new Chart(ct).Doughnut(data, options);
-  // input values and colors into the chart
-  // need to change 'value:#' 
-  for(var i=0;i<5;i++){
-  	myNewChart.addData({
-  		value:10,
-  		color: colors[i]
-  	})
-  }
-})
-        */
-
-// textarea auto resize function
-/*$('textarea').bind('keyup keypress', function() {
-    $(this).height('');
-    var brCount = this.value.split('\n').length;
-    this.rows = brCount+1; //++ To remove twitching
-    var areaH = this.scrollHeight,
-        lineHeight = $(this).css('line-height').replace('px',''),
-        calcRows = Math.floor(areaH/lineHeight);
-    this.rows = calcRows;
-});*/
 
 var textarea = $('#getCode');
 
@@ -293,9 +226,9 @@ function showingDeleteModal(target){
 			$('#deleteNoDepartmentItem').modal();
 		}
 		else{
-	    $('#deleteNoItem').modal();
-	  }
-  }
+			$('#deleteNoItem').modal();
+		}
+	}
 
 	else{ 
 		if(target == 'college'){
@@ -305,9 +238,9 @@ function showingDeleteModal(target){
 			$('#deleteDepartmentModal').modal();
 		}
 		else{
-	    $('#deleteModal').modal();
-	  }
-  }
+			$('#deleteModal').modal();
+		}
+	}
 }
 
 // showing delete modal

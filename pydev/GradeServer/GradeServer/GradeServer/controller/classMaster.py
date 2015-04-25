@@ -25,6 +25,7 @@ from GradeServer.model.submittedRecordsOfProblems import SubmittedRecordsOfProbl
 from GradeServer.model.members import Members
 from GradeServer.model.colleges import Colleges
 from GradeServer.model.departments import Departments
+from GradeServer.model.departmentsOfColleges import DepartmentsOfColleges
 from GradeServer.model.problems import Problems
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
@@ -505,8 +506,14 @@ def class_add_user():
                                authorities = authorities,
                                newUsers = newUsers)
     try:
-        allDepartments = dao.query(Departments).\
-                             all()
+        allDepartments = (dao.query(DepartmentsOfColleges,
+                                    Colleges,
+                                    Departments).\
+                              join(Colleges,
+                                   Colleges.collegeIndex == DepartmentsOfColleges.collegeIndex).\
+                              join(Departments,
+                                   Departments.departmentIndex == DepartmentsOfColleges.departmentIndex)).\
+                         all()
     except:
         error = 'Error has been occurred while searching all departments'
         return render_template('/class_add_user.html',
@@ -526,9 +533,11 @@ def class_add_user():
             newUser = [['' for i in range(8)] for j in range(numberOfUsers + 1)]
             for form in request.form:
                 if form != 'addIndivisualUser':
+                    print "formcheck:", form
                     value,index = re.findall('\d+|\D+',form)
                     index = int(index)
                     data = request.form[form]
+                    print "check:", value, index, data
                     if value == 'userId':
                         newUser[index - 1][keys['memberId']] = data
                     elif value == 'username':
@@ -537,6 +546,8 @@ def class_add_user():
                         newUser[index - 1][keys['authority']] = data
                     elif value == 'college':
                         newUser[index - 1][keys['collegeIndex']] = data.split()[0]
+                        # actually data.split()[1] is collegeName but it can be wrong, 
+                        # so, here for checking the index is valid.
                         try:
                             newUser[index - 1][keys['collegeName']] =\
                                 dao.query(Colleges).\
@@ -556,12 +567,14 @@ def class_add_user():
                                                    newUsers = newUsers)
                     elif value == 'department':
                         newUser[index - 1][keys['departmentIndex']] = data.split()[0]
+                        print "valcheck:", newUser[index-1][keys['departmentIndex']]
                         try:
                             newUser[index - 1][keys['departmentName']] =\
                                 dao.query(Departments).\
                                     filter(Departments.departmentIndex == newUser[index - 1][keys['departmentIndex']]).\
                                     first().\
                                     departmentName
+                            print "valcheck2:", newUser[index-1][keys['departmentName']]
                         except:
                             error = 'Wrong department index has inserted'
                             return render_template('/class_add_user.html',
@@ -802,8 +815,7 @@ def class_add_user():
                         del newUsers[index]
                         break
                     index += 1
-                    
-    print "dd:", allUsers
+    
     return render_template('/class_add_user.html',
                            error = error, 
                            SETResources = SETResources,
