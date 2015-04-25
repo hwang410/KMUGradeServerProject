@@ -35,6 +35,7 @@ from GradeServer.model.problems import Problems
 
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.enumResources import ENUMResources
+from GradeServer.resource.sessionResources import SessionResources
 
 import re
 import zipfile
@@ -71,6 +72,7 @@ def server_manage_collegedepartment():
         return render_template('/server_manage_collegedepartment.html', 
                                error=error, 
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                allColleges = [],
                                allDepartments = [])
     try:    
@@ -87,6 +89,7 @@ def server_manage_collegedepartment():
         return render_template('/server_manage_collegedepartment.html', 
                                error=error, 
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                allColleges = allColleges,
                                allDepartments = [])
     
@@ -133,6 +136,7 @@ def server_manage_collegedepartment():
                         return render_template('/server_manage_collegedepartment.html', 
                                                error=error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
             elif 'deleteDepartment' in request.form:
@@ -151,6 +155,7 @@ def server_manage_collegedepartment():
                         return render_template('/server_manage_collegedepartment.html', 
                                                error=error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
         
@@ -171,6 +176,7 @@ def server_manage_collegedepartment():
                         return render_template('/server_manage_collegedepartment.html', 
                                                error=error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
             newColleges = []
@@ -193,6 +199,7 @@ def server_manage_collegedepartment():
                         return render_template('/server_manage_collegedepartment.html', 
                                                error=error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
                     try:
@@ -207,6 +214,7 @@ def server_manage_collegedepartment():
                         return render_template('/server_manage_collegedepartment.html', 
                                                error=error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
                         
@@ -217,6 +225,7 @@ def server_manage_collegedepartment():
     return render_template('/server_manage_collegedepartment.html', 
                            error=error, 
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            currentTab = currentTab,
                            allColleges = allColleges,
                            allDepartments = allDepartments)
@@ -267,6 +276,7 @@ def server_manage_class():
     return render_template('/server_manage_class.html',
                            error = error,  
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            courses = courses, 
                            languagesOfCourse = languagesOfCourse)
     
@@ -337,6 +347,7 @@ def server_add_class():
                 return render_template('/server_add_class.html', 
                                        error = error, 
                                        SETResources = SETResources,
+                                       SessionResources = SessionResources,
                                        courseAdministrator = courseAdministrator,
                                        semester = semester,
                                        courseDescription = courseDescription,
@@ -359,6 +370,7 @@ def server_add_class():
                 return render_template('/server_add_class.html', 
                                        error = error, 
                                        SETResources = SETResources,
+                                       SessionResources = SessionResources,
                                        courseAdministrator = courseAdministrator,
                                        semester = semester,
                                        courseDescription = courseDescription,
@@ -409,6 +421,7 @@ def server_add_class():
                 return render_template('/server_add_class.html', 
                                        error = error, 
                                        SETResources = SETResources,
+                                       SessionResources = SessionResources,
                                        courses = allCourses, 
                                        languages = allLanguages)
                 
@@ -432,6 +445,7 @@ def server_add_class():
                     return render_template('/server_add_class.html', 
                                            error = error, 
                                            SETResources = SETResources,
+                                           SessionResources = SessionResources,
                                            courses = allCourses, 
                                            languages = allLanguages)
                     
@@ -440,6 +454,7 @@ def server_add_class():
     return render_template('/server_add_class.html', 
                            error = error, 
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            courseAdministrator = courseAdministrator,
                            semester = semester,
                            courseDescription = courseDescription,
@@ -487,6 +502,7 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                uploadedProblems = [])
                 # read each uploaded file(zip)
                 for fileData in files:
@@ -543,6 +559,7 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                uploadedProblems = [])
 
                     # rename new problem folder
@@ -558,6 +575,7 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                uploadedProblems = [])
 
                     try:
@@ -567,6 +585,7 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                uploadedProblems = [])
                     
                     # change problems information files name
@@ -580,6 +599,7 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                uploadedProblems = [])
                     
                     try:
@@ -589,6 +609,7 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                uploadedProblems = [])
                         
                     # create final goal path
@@ -608,6 +629,7 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                uploadedProblems = [])
                     
                     try:
@@ -617,6 +639,7 @@ def server_manage_problem():
                         return render_template('/server_manage_problem.html', 
                                                error = error, 
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                uploadedProblems = [])
                     
             else:
@@ -631,6 +654,7 @@ def server_manage_problem():
                     return render_template('/server_manage_problem.html', 
                                            error = error, 
                                            SETResources = SETResources,
+                                           SessionResources = SessionResources,
                                            uploadedProblems = [])
 
         return redirect(url_for('.server_manage_problem'))
@@ -646,6 +670,7 @@ def server_manage_problem():
     return render_template('/server_manage_problem.html', 
                            error = error, 
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            uploadedProblems = uploadedProblems)
 
 @GradeServer.route('/master/manage_users', methods = ['GET', 'POST'])
@@ -671,6 +696,7 @@ def server_manage_user():
         return render_template('/server_manage_user.html', 
                                error = error, 
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                users = [], 
                                index = len(users))
               
@@ -689,6 +715,7 @@ def server_manage_user():
                 return render_template('/server_manage_user.html', 
                                        error = error, 
                                        SETResources = SETResources,
+                                       SessionResources = SessionResources,
                                        users = users, 
                                        index = len(users))
                 
@@ -697,6 +724,7 @@ def server_manage_user():
     return render_template('/server_manage_user.html', 
                            error = error, 
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            users = users, 
                            index = len(users))
 
@@ -717,6 +745,7 @@ def server_add_user():
         return render_template('/server_add_user.html', 
                                error = error,  
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                allColleges = [],
                                allDepartments = [],
                                authorities = authorities,
@@ -735,6 +764,7 @@ def server_add_user():
         return render_template('/class_add_user.html', 
                                error = error,  
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                allColleges = allColleges,
                                allDepartments = [],
                                authorities = authorities,
@@ -779,6 +809,7 @@ def server_add_user():
                             return render_template('/server_add_user.html', 
                                                    error = error,  
                                                    SETResources = SETResources,
+                                                   SessionResources = SessionResources,
                                                    allColleges = allColleges,
                                                    allDepartments = allDepartments,
                                                    authorities = authorities,
@@ -795,6 +826,7 @@ def server_add_user():
                             return render_template('/server_add_user.html', 
                                                    error = error,  
                                                    SETResources = SETResources,
+                                                   SessionResources = SessionResources,
                                                    allColleges = allColleges,
                                                    allDepartments = allDepartments,
                                                    authorities = authorities,
@@ -847,6 +879,7 @@ def server_add_user():
                                         return render_template('/server_add_user.html', 
                                                                error = error,  
                                                                SETResources = SETResources,
+                                                               SessionResources = SessionResources,
                                                                allColleges = allColleges,
                                                                allDepartments = allDepartments,
                                                                authorities = authorities,
@@ -865,6 +898,7 @@ def server_add_user():
                                         return render_template('/server_add_user.html', 
                                                                error = error,  
                                                                SETResources = SETResources,
+                                                               SessionResources = SessionResources,
                                                                allColleges = allColleges,
                                                                allDepartments = allDepartments,
                                                                authorities = authorities,
@@ -875,6 +909,7 @@ def server_add_user():
                                     return render_template('/server_add_user.html', 
                                                            error = error,  
                                                            SETResources = SETResources,
+                                                           SessionResources = SessionResources,
                                                            allColleges = allColleges,
                                                            allDepartments = allDepartments,
                                                            authorities = authorities,
@@ -885,6 +920,7 @@ def server_add_user():
                                 return render_template('/server_add_user.html', 
                                                        error = error,  
                                                        SETResources = SETResources,
+                                                       SessionResources = SessionResources,
                                                        allColleges = allColleges,
                                                        allDepartments = allDepartments,
                                                        authorities = authorities,
@@ -898,6 +934,7 @@ def server_add_user():
                                 return render_template('/server_add_user.html', 
                                                        error = error,  
                                                        SETResources = SETResources,
+                                                       SessionResources = SessionResources,
                                                        allColleges = allColleges,
                                                        allDepartments = allDepartments,
                                                        authorities = authorities,
@@ -917,6 +954,7 @@ def server_add_user():
                         return render_template('/server_add_user.html', 
                                                error = error,  
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments,
                                                authorities = authorities,
@@ -969,6 +1007,7 @@ def server_add_user():
     return render_template('/server_add_user.html', 
                            error = error,  
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            allColleges = allColleges,
                            allDepartments = allDepartments,
                            authorities = authorities,
