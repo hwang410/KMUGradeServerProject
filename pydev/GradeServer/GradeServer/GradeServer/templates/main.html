@@ -41,8 +41,8 @@
 							{%- if session['memberId'] != NULL %}
 							<ul class="dropdown-menu">
 								<li class="nav-header">Current Class</li>
-								{%- if session['ownCurrentCourses'] %}
-									{%- for course in session['ownCurrentCourses'] %}
+								{%- if session[SessionResources.const.OWN_CURRENT_COURSES] %}
+									{%- for course in session[SessionResources.const.OWN_CURRENT_COURSES] %}
 									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId, pageNum = 1)}}" class="currentClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
@@ -52,8 +52,8 @@
 								<li class="divider"></li> <!-- seperation line -->
 
 								<li class="nav-header">Past Class</li>
-								{%- if session['ownPastCourses'] %}
-									{%- for course in session['ownPastCourses'] %}
+								{%- if session[SessionResources.const.OWN_PAST_COURSES] %}
+									{%- for course in session[SessionResources.const.OWN_PAST_COURSES] %}
 									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId, pageNum = 1)}}" class="pastClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
