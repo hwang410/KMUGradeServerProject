@@ -769,17 +769,22 @@ def class_add_user():
                         dao.commit()
                     except:
                         dao.rollback()
-                """
-                problemPath = '%s/%s/%s_%s/%s_%s' % (projectPath,
+                        
+                courseName = dao.query(RegisteredCourses).\
+                                 filter(RegisteredCourses.courseId == newUser[keys['courseId']].split()[0]).\
+                                 first().\
+                                 courseName
+                                 
+                memberPath = '%s/%s/%s_%s/%s_%s' % (projectPath,
                                                      coursesPath,
-                                                     newUser[7].split()[0],
+                                                     newUser[keys['courseId']].split()[0],
                                                      courseName,
-                                                     problem[keys['problemId']],
-                                                     problemName)
+                                                     newUser[keys['memberId']],
+                                                     newUser[keys['memberName']])
                 
-                if not os.path.exists(problemPath):
-                    os.makedirs(problemPath)
-                """
+                if not os.path.exists(memberPath):
+                    os.makedirs(memberPath)
+                
             newUsers = [] # initialize add user list
             return redirect(url_for('.class_manage_user'))
             
