@@ -140,6 +140,7 @@ def user_history(memberId, sortCondition, pageNum):
        
         return render_template(HTMLResources.const.USER_HISTORY_HTML,
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                memberId = memberId,
                                sortCondition = sortCondition,
                                submissionRecords = submissionRecords,
@@ -207,6 +208,7 @@ def id_check(select, error = None):
                
     return render_template(HTMLResources.const.ID_CHECK_HTML,
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            error = error)
 
 """
@@ -293,6 +295,7 @@ def edit_personal(error = None):
         
         return render_template(HTMLResources.const.EDIT_PERSONAL_HTML,
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                memberInformation = memberData,
                                error = error)
     except Exception:

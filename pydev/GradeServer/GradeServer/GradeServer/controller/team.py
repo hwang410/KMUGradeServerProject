@@ -98,6 +98,7 @@ def team(pageNum = 1, error = None):
         
         return render_template(HTMLResources.const.TEAM_HTML,
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                teamInvitationRecords = teamInvitationRecords,
                                teamRecords = teamRecords,
                                pages = get_page_pointed(int(pageNum),
@@ -176,6 +177,7 @@ def make_team(error = None):
             
             return render_template(HTMLResources.const.TEAM_MAKE_HTML,
                                    SETResources = SETResources,
+                                   SessionResources = SessionResources,
                                    memberRecords = memberRecords)
               
         elif request.method == 'POST':
@@ -191,6 +193,7 @@ def make_team(error = None):
                     if not gTeamName:
                         return render_template(HTMLResources.const.TEAM_MAKE_HTML,
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                memberRecords = memberRecords,
                                                gTeamMembersId = gTeamMembersId,
                                                gTeamDescription = gTeamDescription,
@@ -203,6 +206,7 @@ def make_team(error = None):
                             # don't Exception
                             return render_template(HTMLResources.const.TEAM_MAKE_HTML,
                                                    SETResources = SETResources,
+                                                   SessionResources = SessionResources,
                                                    memberRecords = memberRecords,
                                                    gTeamMembersId = gTeamMembersId,
                                                    gTeamDescription = gTeamDescription,
@@ -271,6 +275,7 @@ def make_team(error = None):
                 
             return render_template(HTMLResources.const.TEAM_MAKE_HTML,
                                    SETResources = SETResources,
+                                   SessionResources = SessionResources,
                                    memberRecords = memberRecords,
                                    gTeamMembersId = gTeamMembersId,
                                    gTeamName = gTeamName,
@@ -311,6 +316,7 @@ def team_information(teamName, error = None):
         
         return render_template(HTMLResources.const.TEAM_INFORMATION_HTML,
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                teamInformation = teamInformation,
                                teamMemberRecords = teamMemberRecords)
     except Exception:
@@ -380,6 +386,7 @@ def team_manage(teamName, error = None):
             
             return render_template(HTMLResources.const.TEAM_MANAGE_HTML,
                                    SETResources = SETResources,
+                                   SessionResources = SessionResources,
                                    memberRecords = memberRecords,
                                    teamInformation =teamInformation, 
                                    gTeamMembersId = gTeamMembersId,
@@ -444,6 +451,7 @@ def team_manage(teamName, error = None):
                     
                     return render_template(HTMLResources.const.TEAM_MANAGE_HTML,
                                            SETResources = SETResources,
+                                           SessionResources = SessionResources,
                                            memberRecords = memberRecords,
                                            teamInformation = teamInformation, 
                                            gTeamMembersId = gTeamMembersId,
@@ -457,6 +465,7 @@ def team_manage(teamName, error = None):
                     
                     return render_template(HTMLResources.const.TEAM_MANAGE_HTML,
                                            SETResources = SETResources,
+                                           SessionResources = SessionResources,
                                            memberRecords = memberRecords,
                                            teamInformation = teamInformation, 
                                            gTeamMembersId = gTeamMembersId,

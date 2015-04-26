@@ -92,6 +92,7 @@ def rank(sortCondition, pageNum, error =None):
             
         return render_template(HTMLResources.const.RANK_HTML,
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                sortCondition =  sortCondition,
                                memberRecords = memberRecords,
                                rankMemberRecords = rankMemberRecords,
