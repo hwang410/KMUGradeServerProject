@@ -302,6 +302,14 @@ $(function() {
 				<div class="modal-body">
 					<p>default authority is "User(student)"</p>
 					Manual : userId="userid", username="username", college="college Index", department="department Index"<br>
+					Course : 
+					<select id="courseId" name="courseId">
+					{%- for ownCourse in ownCourses %}
+					<option>
+						{{ ownCourse.courseId }} {{ ownCourse.courseName }}
+					</option>
+					{% endfor -%}
+					</select><br>
 					File(*.txt) : <input type="file" name="files" multiple>
 				</div>
 				<div class="modal-footer">
