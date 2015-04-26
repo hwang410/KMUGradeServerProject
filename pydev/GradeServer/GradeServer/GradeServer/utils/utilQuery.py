@@ -60,7 +60,7 @@ def select_accept_courses():
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse)
     # Class Master, User
-    elif SETResources.const.COURSE_ADMINISTRATOR in session['SessionResources.const.AUTHORITY']:
+    elif SETResources.const.COURSE_ADMINISTRATOR in session[SessionResources.const.AUTHORITY]:
         myCourses = dao.query(RegisteredCourses.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse).\
