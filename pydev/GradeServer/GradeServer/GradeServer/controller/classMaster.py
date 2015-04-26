@@ -36,6 +36,7 @@ from datetime import datetime
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.sessionResources import SessionResources
+from GradeServer.resource.otherResources import OtherResources
 
 import os
 import re
@@ -62,7 +63,8 @@ def get_own_problems(memberId):
                             RegisteredCourses.courseId == RegisteredProblems.courseId).\
                        join(Problems,
                             Problems.problemId == RegisteredProblems.problemId).\
-                       filter(RegisteredCourses.courseAdministratorId == memberId)).\
+                       filter(and_(RegisteredCourses.courseAdministratorId == memberId,
+                                   Problems.isDeleted == ENUMResources.const.FALSE))).\
                   all()
     return ownProblems
 
@@ -128,6 +130,7 @@ def class_manage_problem():
     
     try:
         allProblems = dao.query(Problems).\
+                          filter(Problems.isDeleted == ENUMResources.const.FALSE).\
                           all()
     except:
         error = 'Error has been occurred while searching problems'
