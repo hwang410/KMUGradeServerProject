@@ -46,7 +46,6 @@ def close_db_session(exception = None):
 @GradeServer.route('/user_history/<memberId>-<sortCondition>/page<pageNum>')
 @login_required
 def user_history(memberId, sortCondition, pageNum):
-
     try:       
         # 총 제출 횟수 
         sumOfSubmissionCount = dao.query(func.count(Submissions.memberId).label('sumOfSubmissionCount')).\
@@ -76,8 +75,7 @@ def user_history(memberId, sortCondition, pageNum):
                                                                   filter(submissions.c.status == ENUMResources.const.SOLVED).\
                                                                   group_by(submissions.c.problemId,
                                                                            submissions.c.courseId).\
-                                                                  subquery()).\
-                                  subquery()
+                                                                  subquery()).subquery()
         # 모든 맞춘 횟수
         sumOfSolvedCount = dao.query(func.count(submissions.c.memberId).label('sumOfSolvedCount')).\
                                filter(submissions.c.status == ENUMResources.const.SOLVED).\
@@ -96,7 +94,7 @@ def user_history(memberId, sortCondition, pageNum):
                                      subquery()
         # 런타임 에러 횟수
         sumOfRunTimeErrorCount = dao.query(func.count(submissions.c.memberId).label('sumOfRunTimeErrorCount')).\
-                                     filter(submissions.c.status == ENUMResources.const.RUN_TIME_ERROR).\
+                                     filter(submissions.c.status == ENUMResources.const.RUNTIME_ERROR).\
                                      subquery()
         # 서버 에러 횟수
         sumOfServerErrorCount = dao.query(func.count(submissions.c.memberId).label('sumOfServerErrorCount')).\
@@ -118,7 +116,6 @@ def user_history(memberId, sortCondition, pageNum):
             chartSubmissionRecords = []
         # Viiew Value Text
         chartSubmissionDescriptions = ['맞춘 문제 갯수','총 제출 횟수', '맞춘 횟수', '오답 횟수', '타임오버 횟수', '컴파일 에러 횟수', '런타임 에러 횟수', '서버 에러 횟수']
-
         try:                           
                 # 모든 제출 정보
             submissionRecords = dao.query(Problems.problemName,
@@ -138,7 +135,7 @@ def user_history(memberId, sortCondition, pageNum):
             #None Type Exception
             submissionRecords = []
        
-        return render_template(HTMLResources.const.USER_HISTORY_HTML,
+        return render_template(HTMLResources.const.SUBMISSION_RECORD_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
                                memberId = memberId,
