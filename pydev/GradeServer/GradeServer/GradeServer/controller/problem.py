@@ -98,6 +98,7 @@ def problemList(courseId, pageNum):
     
     return render_template(HTMLResources.const.PROBLEM_LIST_HTML,
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            courseRecords = courseRecords,
                            problemListRecords = problemListRecords,
                            pages = get_page_pointed(int(pageNum),
@@ -144,6 +145,7 @@ def problem(courseId, problemId, pageNum):
     browserName = request.user_agent.browser
     return render_template(HTMLResources.const.PROBLEM_HTML,
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            courseId = courseId,
                            problemId = problemId,
                            problemInformation = problemInformation,
@@ -258,6 +260,7 @@ def record(courseId, problemId, sortCondition = OtherResources.const.RUN_TIME):
     
     return render_template(HTMLResources.const.PROBLEM_RECORD_HTML,
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            courseId = courseId,
                            problemSolvedMemberRecords = problemSolvedMemberRecords,
                            problemInformationRecords = problemInformationRecords,
@@ -328,6 +331,7 @@ def user_record(problemId, courseId):
    
     return render_template(HTMLResources.const.SUBMISSION_CODE_HTML,
                            SETResources = SETResources,
+                           SessionResources = SessionResources,
                            submittedFileRecords = submittedFileRecords,
                            fileData = fileData,
                            problemName = problemName,
