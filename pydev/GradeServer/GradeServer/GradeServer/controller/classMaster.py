@@ -601,21 +601,28 @@ def class_add_user():
                 
         elif 'addUserGroup' in request.form:
             files = request.files.getlist('files')
+            courseId = request.form['courseId'].split()[0]
+            print courseId
             if list(files)[0].filename:
                 # read each file
                 for fileData in files:
                     # read each line    
                     for userData in fileData:
                         # slice and make information from 'key=value'
-                        userInformation = userData.split(',')
+                        userInformation = userData.replace(' ', '').replace('\n', '').replace('\xef\xbb\xbf', '').split(',')
+                        print userInformation
                         # userId,userName,authority,collegeIndex,collegeName,departmentIndex,departmentName
                         newUser = [''] * 8
                         
+                        # all authority is user in adding user from text file
+                        newUser[keys['authority']] = SETResources.const.USER
+                        newUser[keys['courseId']] = courseId
+                        
                         for eachData in userInformation:
+                            print eachData
                             if '=' in eachData:
-                                # all authority is user in adding user from text file
-                                newUser[keys['authority']] = SETResources.const.USER
-                                key,value = eachData.split('=')
+                                key, value = eachData.split('=')
+                                
                                 if key == 'userId':
                                     newUser[keys['memberId']] = value 
                                     
@@ -623,62 +630,26 @@ def class_add_user():
                                     newUser[keys['memberName']] = value
                                     
                                 elif key == 'college':
+                                    newUser[keys['collegeIndex']] = value
                                     try:
                                         newUser[keys['collegeName']] = dao.query(Colleges).\
                                                                            filter(Colleges.collegeIndex == value).\
                                                                            first().\
                                                                            collegeName
                                     except:
-                                        error = 'Wrong college index has inserted'
-                                        return render_template('/class_add_user.html',
-                                                               error = error, 
-                                                               SETResources = SETResources,
-                                                               SessionResources = SessionResources,
-                                                               ownCourses = ownCourses,
-                                                               allUsers = allUsers,
-                                                               allColleges = allColleges,
-                                                               allDepartments = allDepartments,
-                                                               authorities = authorities,
-                                                               newUsers = newUsers)
-                                    newUser[keys['collegeIndex']] = value
+                                        pass
                                        
                                 elif key == 'department':
+                                    newUser[keys['departmentIndex']] = value
                                     try:
-                                        newUser[6] = dao.query(Departments).\
-                                                         filter(Departments.departmentIndex == value).\
-                                                         first().\
-                                                         departmentName
+                                        newUser[keys['departmentName']] = dao.query(Departments).\
+                                                                              filter(Departments.departmentIndex == value).\
+                                                                              first().\
+                                                                              departmentName
                                                          
                                     except:
-                                        error = 'Wrong department index has inserted'
-                                        return render_template('/class_add_user.html',
-                                                               error = error, 
-                                                               SETResources = SETResources,
-                                                               SessionResources = SessionResources,
-                                                               ownCourses = ownCourses,
-                                                               allUsers = allUsers,
-                                                               allColleges = allColleges,
-                                                               allDepartments = allDepartments,
-                                                               authorities = authorities,
-                                                               newUsers = newUsers)
-                                    newUser[5] = value
-                                    
-                                elif key == 'courseId':
-                                    try:
-                                        newUser[7] = value.strip()
-                                    except:
-                                        error = 'Wrong course id has inserted'
-                                        return render_template('/class_add_user.html',
-                                                               error = error, 
-                                                               SETResources = SETResources,
-                                                               SessionResources = SessionResources,
-                                                               ownCourses = ownCourses,
-                                                               allUsers = allUsers,
-                                                               allColleges = allColleges,
-                                                               allDepartments = allDepartments,
-                                                               authorities = authorities,
-                                                               newUsers = newUsers)
-                                    
+                                        pass
+                                                                      
                                 else:
                                     error = 'Try again after check the manual'
                                     return render_template('/class_add_user.html',
@@ -720,8 +691,14 @@ def class_add_user():
                                                        allDepartments = allDepartments,
                                                        authorities = authorities,
                                                        newUsers = newUsers)
-                                
-                        newUsers.append(newUser)
+                        
+                        isValid = True
+                        for key in newUser:
+                            if key == '':
+                                isValid = False
+                                break
+                        if isValid:
+                            newUsers.append(newUser)
                         
         elif 'addUser' in request.form:
             for newUser in newUsers:

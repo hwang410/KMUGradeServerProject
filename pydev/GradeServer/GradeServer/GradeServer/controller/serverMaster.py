@@ -851,7 +851,7 @@ def server_add_user():
                     # read each line    
                     for userData in fileData:
                         # slice and make information from 'key=value'
-                        userInformation = userData.split(', ')
+                        userInformation = userData.replace(' ', '').split(',')
                         # userId, userName, authority, collegeIndex, collegeName, departmentIndex, departmentName
                         newUser = [''] * 7
                         
