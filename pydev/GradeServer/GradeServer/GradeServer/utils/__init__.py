@@ -14,5 +14,6 @@ __all__ = ['loginRequired',
            'utilPaging',
            'utilRankQuery',
            'utliSubmissionQuery',
+           'utilArticleQuery',
            'utilQuery',
            'utils']

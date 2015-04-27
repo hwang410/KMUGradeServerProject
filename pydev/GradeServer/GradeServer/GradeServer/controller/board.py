@@ -18,7 +18,7 @@ from sqlalchemy import func, or_
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.loginRequired import login_required
-from GradeServer.utils.utilQuery import select_accept_courses, select_count
+from GradeServer.utils.utilQuery import select_accept_courses, select_count, select_current_courses
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
@@ -60,7 +60,7 @@ def board(activeTabCourseId, pageNum):
         articlesOnBoard = select_articles(activeTabCourseId,
                                           ENUMResources.const.FALSE).subquery()
                 # 허용 과목 리스트
-        myCourses = select_accept_courses().subquery()
+        myCourses = select_current_courses(select_accept_courses().subquery()).subquery()
 
         # join Course Name
         articlesOnBoard = join_course_name(articlesOnBoard, myCourses).subquery()

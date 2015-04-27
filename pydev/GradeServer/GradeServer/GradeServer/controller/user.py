@@ -7,7 +7,7 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utilQuery import select_count
-from GradeServer.utils.utilSubmissionQuery import submissions_sorted
+from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_all_submission
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
@@ -48,31 +48,19 @@ def close_db_session(exception = None):
 @login_required
 def user_history(memberId, sortCondition, pageNum):
     try:       
-        # 총 제출 횟수 
-        sumOfSubmissionCount = dao.query(func.count(Submissions.memberId).label('sumOfSubmissionCount')).\
-                                   filter(Submissions.memberId == memberId).\
-                                   subquery()
+        # 모든 제출 정보
+        submissions = select_all_submission(memberId).subquery()
+        
         # List Count
         try:
-            count = select_count(sumOfSubmissionCount.c.sumOfSubmissionCount).first().\
-                                                                              count  
+            count = select_count(submissions.c.memberId).first().\
+                                                         count  
         except Exception:
             count = 0
-        # 모든 제출 정보
-        submissions = dao.query(Submissions.memberId,
-                                Submissions.problemId,
-                                Submissions.courseId, 
-                                Submissions.status,
-                                Submissions.score,
-                                Submissions.sumOfSubmittedFileSize,
-                                Submissions.runTime,
-                                Submissions.usedLanguage,
-                                Submissions.codeSubmissionDate,
-                                Languages.languageName).\
-                          filter(Submissions.memberId == memberId).\
-                          join(Languages, 
-                                Submissions.usedLanguage == Languages.languageIndex).\
-                          subquery()
+        
+        # 총 제출 횟수 
+        sumOfSubmissionCount = dao.query(func.count(submissions.c.memberId).label('sumOfSubmissionCount')).\
+                                   subquery()    
         # 중복 제거푼 문제숫
         sumOfSolvedProblemCount = dao.query(func.count(submissions.c.memberId).label('sumOfSolvedProblemCount')).\
                                       filter(submissions.c.status == ENUMResources.const.SOLVED).\
@@ -119,14 +107,11 @@ def user_history(memberId, sortCondition, pageNum):
             chartSubmissionRecords = []
         # Viiew Value Text
         chartSubmissionDescriptions = ['맞춘 문제 갯수','총 제출 횟수', '맞춘 횟수', '오답 횟수', '타임오버 횟수', '컴파일 에러 횟수', '런타임 에러 횟수', '서버 에러 횟수']
+        
         try:                           
                         # 모든 제출 정보
             # Sorted
-            submissionRecords = get_page_record(submissions_sorted(dao.query(Problems.problemName,
-                                                                             submissions).\
-                                                                       join(submissions,
-                                                                            Problems.problemId == submissions.c.problemId).\
-                                                                       subquery(),
+            submissionRecords = get_page_record(submissions_sorted(submissions,
                                                                    sortCondition),
                                                 int(pageNum)).all()
         except Exception:
