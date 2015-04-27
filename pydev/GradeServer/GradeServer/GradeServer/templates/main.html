@@ -63,7 +63,7 @@
 							{% endif -%}
 						</li>
 						<li>
-							<a href="{{ url_for('GradeServer.rank', sortCondition ='rate', pageNum = 1) }}"><abbr title="Showing the submit record of each person and each problem">Rank</abbr></a>
+							<a href="{{ url_for('GradeServer.rank', activeTabCourseId = 'All', sortCondition ='rate', pageNum = 1) }}"><abbr title="Showing the submit record of each person and each problem">Rank</abbr></a>
 						</li>
 						<li>
 							<a href="{{ url_for('GradeServer.board', activeTabCourseId = 'All', pageNum =1) }}"><abbr title="QA board">Board</abbr></a>
