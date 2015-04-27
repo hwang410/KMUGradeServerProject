@@ -25,7 +25,7 @@ class ExecutionTools(object):
         # copy input data
         try:
             if self.caseCount > 0:
-                copyCommand = "%s%s%s%s" % ('cp ', self.answerPath, self.problemName, '_cases_total_inputs.in input.txt')
+                copyCommand = "%s%s%s%s" % ('cp ', self.answerPath, self.problemName, '_cases_total_inputs.txt input.txt')
                 call(copyCommand, shell = True)
         except Exception as e:
             print e
