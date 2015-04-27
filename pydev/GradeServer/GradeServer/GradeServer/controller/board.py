@@ -382,18 +382,19 @@ def read(articleIndex, error = None):
 @GradeServer.route('/board/write/<articleIndex>', methods=['GET', 'POST'])
 @login_required
 def write(articleIndex, error =None):
-    title, content = None, None
+    title, content, articlesOnBoard = None, None, None
     try:
         # 수강  과목 정보
         myCourses = select_current_courses(select_accept_courses().subquery()).subquery()
         
-        # Modify Case 
-        try:
-            articlesOnBoard = join_course_name(select_article(articleIndex,
-                                                              isDeleted = ENUMResources.const.FALSE).subquery(),
-                                               myCourses).first()
-        except Exception:
-            articlesOnBoard = []
+        # Modify Case
+        if int(articleIndex) > 0: 
+            try:
+                articlesOnBoard = join_course_name(select_article(articleIndex,
+                                                                  isDeleted = ENUMResources.const.FALSE).subquery(),
+                                                   myCourses).first()
+            except Exception:
+                articlesOnBoard = []
                         
         try:
             myCourses = dao.query(myCourses).all()
@@ -401,77 +402,83 @@ def write(articleIndex, error =None):
             myCourses = []
                 # 작성시 빈칸 검사
         if request.method == 'POST':
-            if not request.form['title']:
-                # Get Exist Content
-                content = request.form['content']
-                error ='제목' +get_message('fillData')
-            elif not request.form['content']:
-                                # 타이틀 가져오기
-                title =request.form['title']
-                error ='내용' +get_message('fillData')
-            elif len(request.form['title']) > 50:
-                # 타이틀 가져오기
-                title =request.form['title']
-                # 내용 가져오기
-                content =request.form['content']
-                error = 'Title is too long. please write less than 50 letters'
-            # All Fill InputText
-            else:
+                        # 타이틀 가져오기
+            title = request.form['title']
+            # Get Exist Content
+            content = request.form['content']
+            # Not None
+            try:
+                courseId = request.form['courseId']
                 # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 중간의 공백을 기준으로 나눔
-                courseId = request.form['courseId'].split()[0]
+                courseId = courseId.split()[0]
                 if courseId == OtherResources.const.ALL:
                     courseId = None
-                isNotice = ENUMResources.const.TRUE
-                title = request.form['title']
-                content = request.form['content']
-                currentDate = datetime.now()
-                currentIP = socket.gethostbyname(socket.gethostname())
-                                    # 새로 작성
-                if int(articleIndex) == 0:
-                    # Set isNotice
-                    if SETResources.const.USER in session['authority']: 
-                        isNotice = ENUMResources.const.FALSE
-                    newPost = ArticlesOnBoard(problemId = None,
-                                              courseId = courseId,
-                                              writerId = session[SessionResources.const.MEMBER_ID],
-                                              isNotice = isNotice,
-                                              title = title,
-                                              content = content,
-                                              writtenDate = currentDate,
-                                              writerIp = currentIP)
-                    dao.add(newPost)
-                    # Commit Exception
-                    try:
-                        dao.commit()
-                        flash(get_message('writtenPost'))
-                    except Exception:
-                        dao.rollback()
-                        error =get_message('updateFailed')
-                        
-                    return redirect(url_for(RouteResources.const.BOARD,
-                                            activeTabCourseId = OtherResources.const.ALL,
-                                            pageNum = 1))
-                                    # 게시물 수정    
-                else:
-                                            # 수정 할 글 정보
-                    articlesOnBoard = select_article(articleIndex,
-                                                     isDeleted = ENUMResources.const.FALSE).update(dict(courseId = courseId,
-                                                                                                        title = title,
-                                                                                                        content = content,
-                                                                                                        writtenDate = currentDate,
-                                                                                                        writerIp = currentIP))
                     
-                    # Commit Exception
-                    try:
-                        dao.commit()
-                        flash(get_message('modifiedPost'))
-                    except Exception:
-                        dao.rollback()
-                        error =get_message('updateFailed')
-                    # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 
-                    return redirect(url_for(RouteResources.const.ARTICLE_READ,
-                                            courseName = courseId,
-                                            articleIndex = articleIndex))
+                if not title:
+                    error ='제목' +get_message('fillData')
+                elif not request.form['content']:
+                    error ='내용' +get_message('fillData')
+                elif len(title) > 50:
+                    error = 'Title is too long. please write less than 50 letters'
+                # All Fill InputText
+                else:
+                    isNotice = ENUMResources.const.TRUE
+                    currentDate = datetime.now()
+                    currentIP = socket.gethostbyname(socket.gethostname())
+                                        # 새로 작성
+                    if int(articleIndex) == 0:
+                        # Set isNotice
+                        if SETResources.const.USER in session['authority']: 
+                            isNotice = ENUMResources.const.FALSE
+                            # user None courseId reject 
+                            
+                        newPost = ArticlesOnBoard(problemId = None,
+                                                  courseId = courseId,
+                                                  writerId = session[SessionResources.const.MEMBER_ID],
+                                                  isNotice = isNotice,
+                                                  title = title,
+                                                  content = content,
+                                                  writtenDate = currentDate,
+                                                  writerIp = currentIP)
+                        dao.add(newPost)
+                        # Commit Exception
+                        try:
+                            dao.commit()
+                            flash(get_message('writtenPost'))
+                        except Exception:
+                            dao.rollback()
+                            error =get_message('updateFailed')
+                            
+                        return redirect(url_for(RouteResources.const.BOARD,
+                                                activeTabCourseId = OtherResources.const.ALL,
+                                                pageNum = 1))
+                                        # 게시물 수정    
+                    else:
+                                                # 수정 할 글 정보
+                        articlesOnBoard = select_article(articleIndex,
+                                                         isDeleted = ENUMResources.const.FALSE).update(dict(courseId = courseId,
+                                                                                                            title = title,
+                                                                                                            content = content,
+                                                                                                            writtenDate = currentDate,
+                                                                                                            writerIp = currentIP))
+                        
+                        # Commit Exception
+                        try:
+                            dao.commit()
+                            flash(get_message('modifiedPost'))
+                        except Exception:
+                            dao.rollback()
+                            error =get_message('updateFailed')
+                        # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 
+                        return redirect(url_for(RouteResources.const.ARTICLE_READ,
+                                                courseName = courseId,
+                                                articleIndex = articleIndex))
+            except Exception:
+                if SETResources.const.USER in session['authority']:
+                    error = get_message('banPosting')
+                else:
+                    error = get_message()
+            
                 
         return render_template(HTMLResources.const.ARTICLE_WRITE_HTML,
                                SETResources = SETResources,

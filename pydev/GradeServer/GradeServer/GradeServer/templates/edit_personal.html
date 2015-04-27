@@ -18,7 +18,7 @@
 				<div class="row-fluid">
 					<div class="span3">Password</div>
 					<div class="span2">
-						<input type="password" name="password" class="input-small" autofocus ="autofocus">
+						<input type="password" name="password" class="input-large" autofocus ="autofocus" placeholder = "Input new password">
 					</div>
 				</div>
 			</h4>
@@ -26,7 +26,7 @@
 				<div class="row-fluid">
 					<div class="span3">Password(confirm)</div>
 					<div class="span8">
-						<input type="password" name="passwordConfirm" class="input-small">
+						<input type="password" name="passwordConfirm" class="input-large" placeholder = "Confirm new password">
 					</div>
 				</div>
 			</h4>
@@ -50,7 +50,7 @@
 				<div class="row-fluid">
 					<div class="span3">contactNumber</div>
 					<div class="span8">
-						<input type="text" class="input-large" name="contactNumber"
+						<input type="text" class="input-large" name="contactNumber" placeholder = "Input your ContactNumber"
 							{% if memberInformation.contactNumber %} value="{{ memberInformation.contactNumber }}"{% endif -%}>
 					</div>
 				</div>
@@ -59,7 +59,7 @@
 				<div class="row-fluid">
 					<div class="span3">E-mail</div>
 					<div class="span8">
-						<input type="text" class="input-large" name="emailAddress"
+						<input type="text" class="input-large" name="emailAddress" placeholder = "Input your E-mail"
 								{% if memberInformation.emailAddress %} value="{{ memberInformation.emailAddress }}"{% endif -%}>
 					</div>
 				</div>
@@ -68,7 +68,7 @@
 				<div class="row-fluid">
 					<div class="span3">Comment</div>
 					<div class="span8">
-						<input type="text" class="input-xxlarge" name="comment"
+						<input type="text" class="input-xxlarge" name="comment" placeholder = "Input Short Comment"
 							{% if memberInformation.comment %} value="{{ memberInformation.comment }}"{% endif -%}>
 					</div>
 				</div>
