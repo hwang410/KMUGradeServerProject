@@ -18,6 +18,7 @@ from sqlalchemy import func, or_
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.utilArticleQuery import join_course_name, select_articles, select_article, select_sorted_articles
 from GradeServer.utils.utilQuery import select_accept_courses, select_count, select_current_courses
 
 from GradeServer.resource.enumResources import ENUMResources
@@ -56,43 +57,43 @@ def board(activeTabCourseId, pageNum):
         # 검색시 FilterCondition List
         Filters = ['모두', '작성자', '제목 및 내용']
         
-        # get TabActive Articles
-        articlesOnBoard = select_articles(activeTabCourseId,
-                                          ENUMResources.const.FALSE).subquery()
                 # 허용 과목 리스트
         myCourses = select_current_courses(select_accept_courses().subquery()).subquery()
-
-        # join Course Name
-        articlesOnBoard = join_course_name(articlesOnBoard, myCourses).subquery()
-        # TabActive Course Articles
+        # TabActive Course or All Articles
+        # get course or All Articles 
+        articlesOnBoard = join_course_name(# get TabActive Articles
+                                           select_articles(activeTabCourseId,
+                                                           isDeleted = ENUMResources.const.FALSE).subquery(),
+                                           myCourses).subquery()
                 # 과목 게시글
         try:
-            articleSub = select_sorted_articles(articlesOnBoard,
-                                                ENUMResources.const.FALSE)
-            articleRecords = get_page_record(articleSub,
-                                             int(pageNum)).all()
-            count = select_count(articleSub.subquery().\
-                                            c.\
-                                            articleIndex).first().\
-                                                          count
+            articlesOnBoardSub = select_sorted_articles(articlesOnBoard,
+                                                        isNotice = ENUMResources.const.FALSE)
+            count = select_count(articlesOnBoardSub.subquery().\
+                                                    c.articleIndex).first().\
+                                                                    count
+            articleRecords = get_page_record(articlesOnBoardSub,
+                                             pageNum = int(pageNum)).all()
         except Exception:
             count = 0
             articleRecords = []
+        
                 # 과목 공지글    
         try:  
             articleNoticeRecords = get_page_record((select_sorted_articles(articlesOnBoard,
-                                                                           ENUMResources.const.TRUE)),
-                                                   int(1),
-                                                   OtherResources.const.NOTICE_LIST).all()
+                                                                           isNotice = ENUMResources.const.TRUE)),
+                                                   pageNum = int(1),
+                                                   LIST = OtherResources.const.NOTICE_LIST).all()
         except Exception:
             articleNoticeRecords = []
+       
         try:
             myCourses = dao.query(myCourses).all()
         except Exception:
             myCourses = []
         # myCourses Default Add ALL
         myCourses.insert(0, OtherResources.const.ALL)
-       
+        
         return render_template(HTMLResources.const.BOARD_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
@@ -108,53 +109,6 @@ def board(activeTabCourseId, pageNum):
         return unknown_error()
                             
 
-'''
-Join Course Name
-'''
-def join_course_name(articlesOnBoard, myCourses):
-    
-    return dao.query(articlesOnBoard,
-                     myCourses.c.courseName).\
-               outerjoin(myCourses,
-                         articlesOnBoard.c.courseId == myCourses.c.courseId)
-               
-
-'''
-Board Article
-'''
-def select_article(articleIndex, isDeleted):   
-      
-    return dao.query(ArticlesOnBoard).\
-               filter(ArticlesOnBoard.articleIndex == articleIndex,
-                      ArticlesOnBoard.isDeleted == isDeleted)
-               
-               
-'''
-Board Articles
-'''
-def select_articles(activeTabCourseId, isDeleted):
-    
-    # activate Tab Select
-    if activeTabCourseId == OtherResources.const.ALL:
-        return dao.query(ArticlesOnBoard).\
-               filter(ArticlesOnBoard.isDeleted == isDeleted)
-    else:
-        return  dao.query(ArticlesOnBoard).\
-               filter(ArticlesOnBoard.isDeleted == isDeleted,
-                      or_(ArticlesOnBoard.courseId == activeTabCourseId,
-                          ArticlesOnBoard.courseId == None))
-    
-
-               
-'''
-Board Notice Classification
-'''
-def select_sorted_articles(articlesOnBoard, isNotice):
-    
-    return dao.query(articlesOnBoard).\
-               filter(articlesOnBoard.c.isNotice == isNotice).\
-               order_by(articlesOnBoard.c.articleIndex.desc())
- 
  
 '''
 게시글을 눌렀을 때 
@@ -168,7 +122,7 @@ def read(articleIndex, error = None):
     try:
         # 게시글 정보
         articlesOnBoard = select_article(articleIndex,
-                                          ENUMResources.const.FALSE).subquery()
+                                         isDeleted = ENUMResources.const.FALSE).subquery()
         try:
             articlesOnBoard = join_course_name(articlesOnBoard, 
                                                dao.query(RegisteredCourses).\
@@ -428,29 +382,31 @@ def read(articleIndex, error = None):
 @GradeServer.route('/board/write/<articleIndex>', methods=['GET', 'POST'])
 @login_required
 def write(articleIndex, error =None):
-    title, content =None, None
+    title, content = None, None
     try:
         # 수강  과목 정보
+        myCourses = select_current_courses(select_accept_courses().subquery()).subquery()
+        
+        # Modify Case 
         try:
-            myCourses = select_accept_courses().all()
+            articlesOnBoard = join_course_name(select_article(articleIndex,
+                                                              isDeleted = ENUMResources.const.FALSE).subquery(),
+                                               myCourses).first()
+        except Exception:
+            articlesOnBoard = []
+                        
+        try:
+            myCourses = dao.query(myCourses).all()
         except Exception:
             myCourses = []
-        
-        # 수정 할 글 정보
-        try:
-            articlesOnBoard = select_article(articleIndex, ENUMResources.const.FALSE).subquery()
-            articlesOnBoard = join_course_name(articlesOnBoard,
-                                               dao.query(RegisteredCourses).\
-                                                   subquery()).first()
-        except Exception:
-            articlesOnBoard =[]
-        
-        # 작성시 빈칸 검사
+                # 작성시 빈칸 검사
         if request.method == 'POST':
             if not request.form['title']:
+                # Get Exist Content
+                content = request.form['content']
                 error ='제목' +get_message('fillData')
             elif not request.form['content']:
-                # 타이틀 가져오기
+                                # 타이틀 가져오기
                 title =request.form['title']
                 error ='내용' +get_message('fillData')
             elif len(request.form['title']) > 50:
@@ -459,69 +415,64 @@ def write(articleIndex, error =None):
                 # 내용 가져오기
                 content =request.form['content']
                 error = 'Title is too long. please write less than 50 letters'
+            # All Fill InputText
             else:
-                try:
-                    # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 중간의 공백을 기준으로 나눔
-                    courseId = request.form['courseId'].split()[0]
-                    if courseId == OtherResources.const.ALL:
-                        courseId = None
-                    isNotice = ENUMResources.const.TRUE
-                    title = request.form['title']
-                    content = request.form['content']
-                    currentDate = datetime.now()
-                    currentIP = socket.gethostbyname(socket.gethostname())
-                    # 새로 작성
-                    if not articlesOnBoard:
-                        # Set isNotice
-                        if SETResources.const.USER in session['authority']: 
-                            isNotice = ENUMResources.const.FALSE
-                        newPost = ArticlesOnBoard(problemId =None,
-                                                  courseId = courseId,
-                                                  writerId = session[SessionResources.const.MEMBER_ID],
-                                                  isNotice = isNotice,
-                                                  title = title,
-                                                  content = content,
-                                                  writtenDate = currentDate,
-                                                  writerIp = currentIP)
-                        dao.add(newPost)
-                        # Commit Exception
-                        try:
-                            dao.commit()
-                            flash(get_message('writtenPost'))
-                        except Exception:
-                            dao.rollback()
-                            error =get_message('updateFailed')
-                            
-                        return redirect(url_for(RouteResources.const.BOARD,
-                                                SETResources = SETResources,
-                                                activeTabCourseId = OtherResources.const.ALL,
-                                                pageNum = 1))
-                    # 게시물 수정    
-                    else:
-                        articlesOnBoard = select_article(articleIndex,
-                                                          ENUMResources.const.FALSE)
-                        articlesOnBoard = articlesOnBoard.update(dict(courseId = courseId,
-                                                                      title = title,
-                                                                      content = content,
-                                                                      writtenDate = currentDate,
-                                                                      writerIp = currentIP))
+                # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 중간의 공백을 기준으로 나눔
+                courseId = request.form['courseId'].split()[0]
+                if courseId == OtherResources.const.ALL:
+                    courseId = None
+                isNotice = ENUMResources.const.TRUE
+                title = request.form['title']
+                content = request.form['content']
+                currentDate = datetime.now()
+                currentIP = socket.gethostbyname(socket.gethostname())
+                                    # 새로 작성
+                if int(articleIndex) == 0:
+                    # Set isNotice
+                    if SETResources.const.USER in session['authority']: 
+                        isNotice = ENUMResources.const.FALSE
+                    newPost = ArticlesOnBoard(problemId = None,
+                                              courseId = courseId,
+                                              writerId = session[SessionResources.const.MEMBER_ID],
+                                              isNotice = isNotice,
+                                              title = title,
+                                              content = content,
+                                              writtenDate = currentDate,
+                                              writerIp = currentIP)
+                    dao.add(newPost)
+                    # Commit Exception
+                    try:
+                        dao.commit()
+                        flash(get_message('writtenPost'))
+                    except Exception:
+                        dao.rollback()
+                        error =get_message('updateFailed')
                         
-                        # Commit Exception
-                        try:
-                            dao.commit()
-                            flash(get_message('modifiedPost'))
-                        except Exception:
-                            dao.rollback()
-                            error =get_message('updateFailed')
-                        # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 
-                        return redirect(url_for(RouteResources.const.ARTICLE_READ,
-                                                SETResources = SETResources,
-                                                courseName = request.form['courseId'].split()[1],
-                                                articleIndex = articleIndex))
+                    return redirect(url_for(RouteResources.const.BOARD,
+                                            activeTabCourseId = OtherResources.const.ALL,
+                                            pageNum = 1))
+                                    # 게시물 수정    
+                else:
+                                            # 수정 할 글 정보
+                    articlesOnBoard = select_article(articleIndex,
+                                                     isDeleted = ENUMResources.const.FALSE).update(dict(courseId = courseId,
+                                                                                                        title = title,
+                                                                                                        content = content,
+                                                                                                        writtenDate = currentDate,
+                                                                                                        writerIp = currentIP))
+                    
+                    # Commit Exception
+                    try:
+                        dao.commit()
+                        flash(get_message('modifiedPost'))
+                    except Exception:
+                        dao.rollback()
+                        error =get_message('updateFailed')
+                    # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 
+                    return redirect(url_for(RouteResources.const.ARTICLE_READ,
+                                            courseName = courseId,
+                                            articleIndex = articleIndex))
                 
-                except Exception:
-                    error =get_message()
- 
         return render_template(HTMLResources.const.ARTICLE_WRITE_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,

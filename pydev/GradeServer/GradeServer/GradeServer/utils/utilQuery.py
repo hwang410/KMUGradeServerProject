@@ -156,12 +156,12 @@ def select_accept_courses():
 '''
 Select Past, Current course
 '''
-def select_past_courses(ownCoursesSub):
-    return dao.query(ownCoursesSub).\
-               filter(ownCoursesSub.c.endDateOfCourse < datetime.now())
-def select_current_courses(ownCoursesSub):
-    return dao.query(ownCoursesSub).\
-               filter(ownCoursesSub.c.endDateOfCourse >= datetime.now())
+def select_past_courses(myCourses):
+    return dao.query(myCourses).\
+               filter(myCourses.c.endDateOfCourse < datetime.now())
+def select_current_courses(myCourses):
+    return dao.query(myCourses).\
+               filter(myCourses.c.endDateOfCourse >= datetime.now())
                
            
 '''

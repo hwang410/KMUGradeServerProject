@@ -64,7 +64,7 @@ def sign_in():
                 password = request.form['password']
                 
                 try :
-                    check = select_match_member(memberId).first()
+                    check = select_match_member(memberId = memberId).first()
                     #Checking Success
                     if check.password == password:#check_password_hash (password, check.password)
                         flash(get_message('login'))
