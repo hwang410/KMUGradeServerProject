@@ -26,7 +26,8 @@
 						{% endfor -%}
 					{% else %}
 						<option class ="Blank" selected ="selected">
-						All Noticle</option>
+							All Noticle
+						</option>
 						{%- for myCourse in myCourses %}
 							<option class ="{{ myCourse.courseId }}">
 							{{ myCourse.courseId }} {{ myCourse.courseName }}</option>

@@ -47,7 +47,8 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
             memberRecords = []
             
         # Last Submission Max Count
-        submissions = select_rank(select_last_submissions(None, activeTabCourseId).subquery()).subquery()
+        submissions = select_rank(select_last_submissions(memberId = None,
+                                                          courseId = activeTabCourseId).subquery()).subquery()
         
         # records count
         try:
@@ -57,8 +58,8 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
             count = 0
             
         # Paging Pointed
-        pages = get_page_pointed(int(pageNum),
-                                 count)
+        pages = get_page_pointed(pageNum = int(pageNum),
+                                 count = count)
         
         # Find MemberId 뷰 호출
         if request.method == 'POST':
@@ -68,10 +69,11 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
             for i in range(1, pages['allPage'] + 1):
                 # memberId in Pages 
                 rankSub = get_page_record(dao.query(submissions),
-                                          i).subquery()
+                                          pageNum = i).subquery()
                 # finding MemberId in Pages
                 try:
-                    if select_match_member_sub(rankSub, findMemberId).first().\
+                    if select_match_member_sub(rankSub,
+                                               memberId = findMemberId).first().\
                                                                       memberId:
                         # Finding move to page
                         pageNum = i
@@ -86,8 +88,8 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
                 # 랭크 정보
         try:
             rankMemberRecords = get_page_record(rank_sorted(submissions,
-                                                            sortCondition),
-                                                int(pageNum)).all()
+                                                            sortCondition = sortCondition),
+                                                pageNum = int(pageNum)).all()
         except Exception:
             rankMemberRecords = []
         

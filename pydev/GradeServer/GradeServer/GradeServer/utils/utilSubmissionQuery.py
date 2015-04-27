@@ -37,9 +37,12 @@ def select_last_submissions(memberId = None, courseId = None, problemId = None):
                          Submissions.courseId,
                          Submissions.problemId,
                          func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
-                   filter(Submissions.courseId == courseId if courseId else not courseId,
-                          Submissions.problemId == problemId if problemId else not problemId,
-                          Submissions.memberId == memberId if memberId else not memberId).\
+                   filter((Submissions.courseId == courseId if courseId
+                          else Submissions.courseId != None),
+                          (Submissions.problemId == problemId if problemId
+                           else Submissions.problemId != None),
+                          (Submissions.memberId == memberId if memberId
+                           else Submissions.memberId != None)).\
                    group_by(Submissions.memberId,
                             Submissions.problemId,
                             Submissions.courseId) 
@@ -57,9 +60,12 @@ def select_all_submission(memberId = None, courseId = None, problemId = None):
                      Submissions.runTime,
                      Submissions.codeSubmissionDate,
                      Languages.languageName).\
-               filter(Submissions.memberId == memberId if memberId else not memberId,
-                      Submissions.courseId == courseId if courseId else not courseId,
-                      Submissions.problemId == problemId if problemId else not problemId).\
+               filter((Submissions.memberId == memberId if memberId
+                       else Submissions.memberId != None),
+                      (Submissions.courseId == courseId if courseId
+                       else Submissions.courseId != None),
+                      (Submissions.problemId == problemId if problemId
+                       else Submissions.problemId != None)).\
                join(Languages, 
                     Submissions.usedLanguage == Languages.languageIndex).\
                join(Problems,

@@ -35,8 +35,8 @@ from itertools import count
 def problemList(courseId, pageNum):
     """ problem submitting page """
     # Get Last Submitted History
-    lastSubmissionCount = select_last_submissions(session[SessionResources.const.MEMBER_ID],
-                                              courseId).subquery()
+    lastSubmissionCount = select_last_submissions(memberId = session[SessionResources.const.MEMBER_ID],
+                                                  courseId = courseId).subquery()
     # Current Submission                                      
     submissions = dao.query(Submissions.score,
                             Submissions.status,
@@ -71,7 +71,7 @@ def problemList(courseId, pageNum):
                                                  outerjoin(submissions,
                                                            problems.c.problemId == submissions.c.problemId).\
                                                  order_by(problems.c.startDateOfSubmission.desc()),
-                                             int(pageNum)).all()
+                                             pageNum = int(pageNum)).all()
     except Exception:
         problemListRecords = []
         
@@ -89,8 +89,8 @@ def problemList(courseId, pageNum):
                            SessionResources = SessionResources,
                            courseRecords = courseRecords,
                            problemListRecords = problemListRecords,
-                           pages = get_page_pointed(int(pageNum),
-                                                   count))
+                           pages = get_page_pointed(pageNum = int(pageNum),
+                                                   count = count))
 
 @GradeServer.route('/problem/<courseId>/<problemId>?page<pageNum>')
 @login_required
@@ -179,7 +179,9 @@ def record(courseId, problemId, sortCondition = OtherResources.const.RUN_TIME):
                                    'Compile Error',
                                    'RunTime Error']
     try:
-        submissions = select_all_submission(None, courseId, problemId).subquery()
+        submissions = select_all_submission(memberId = None,
+                                            courseId = courseId,
+                                            problemId = problemId).subquery()
         # Submitted Members Count
         sumOfSubmissionPeopleCount = select_submission_people_count(submissions).subquery()
         # Solved Members Count
@@ -215,7 +217,9 @@ def record(courseId, problemId, sortCondition = OtherResources.const.RUN_TIME):
     # Problem Solved Users
     try:
         # last Submissions Info
-        lastSubmissions = select_last_submissions(None, courseId, problemId).subquery()
+        lastSubmissions = select_last_submissions(memberId = None,
+                                                  courseId = courseId,
+                                                  problemId = problemId).subquery()
        
        # Problem Solved Member
         problemSolvedMemberRecords = submissions_sorted(dao.query(submissions).\
@@ -226,7 +230,7 @@ def record(courseId, problemId, sortCondition = OtherResources.const.RUN_TIME):
                                                                     Submissions.courseId == submissions.c.courseId,
                                                                     Submissions.solutionCheckCount == submissions.c.solutionCheckCount)).\
                                                             subquery(),
-                                                        sortCondition).all()
+                                                        sortCondition = sortCondition).all()
             
     except Exception:
         problemSolvedMemberRecords = []

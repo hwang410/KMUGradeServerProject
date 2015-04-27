@@ -90,7 +90,7 @@ def team(pageNum = 1, error = None):
                                               join(teamMemberCounts,
                                                    teamMasters.c.teamName == teamMemberCounts.c.teamName).\
                                               order_by(teamMasters.c.teamName.asc()),
-                                          int(pageNum)).\
+                                          pageNum = int(pageNum)).\
                           all()
         except Exception:
             # None Type Error
@@ -101,8 +101,8 @@ def team(pageNum = 1, error = None):
                                SessionResources = SessionResources,
                                teamInvitationRecords = teamInvitationRecords,
                                teamRecords = teamRecords,
-                               pages = get_page_pointed(int(pageNum),
-                                                        count),
+                               pages = get_page_pointed(pageNum = int(pageNum),
+                                                        count = count),
                                error = error)
     except Exception:
         # Unknown Error
@@ -514,7 +514,7 @@ def check_invitee_member(inviteeId, teamName = None):
         # 인풋 폼안에 아이디가 있을 때
     if inviteeId:
         # 존재 하는 사용자 인지 확인
-        if not dao.query(select_match_member(inviteeId).subquery()).\
+        if not dao.query(select_match_member(memberId = inviteeId).subquery()).\
                    first():
             
             return get_message('notExists')

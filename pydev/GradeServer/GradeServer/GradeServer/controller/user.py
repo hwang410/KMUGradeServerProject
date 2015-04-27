@@ -51,7 +51,7 @@ def close_db_session(exception = None):
 def user_history(memberId, sortCondition, pageNum):
     try:       
         # 모든 제출 정보
-        submissions = select_all_submission(memberId).subquery()
+        submissions = select_all_submission(memberId = memberId).subquery()
         
         # List Count
         try:
@@ -89,8 +89,8 @@ def user_history(memberId, sortCondition, pageNum):
                         # 모든 제출 정보
             # Sorted
             submissionRecords = get_page_record(submissions_sorted(submissions,
-                                                                   sortCondition),
-                                                int(pageNum)).all()
+                                                                   sortCondition = sortCondition),
+                                                pageNum = int(pageNum)).all()
         except Exception:
             #None Type Exception
             submissionRecords = []
@@ -103,8 +103,8 @@ def user_history(memberId, sortCondition, pageNum):
                                submissionRecords = submissionRecords,
                                chartSubmissionDescriptions = chartSubmissionDescriptions,
                                chartSubmissionRecords = chartSubmissionRecords,
-                               pages = get_page_pointed(int(pageNum),
-                                                        count))
+                               pages = get_page_pointed(pageNum = int(pageNum),
+                                                        count = count))
     except Exception:
         # Unknow Error
         return unknown_error()

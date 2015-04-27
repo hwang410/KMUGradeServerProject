@@ -10,7 +10,7 @@ class RouteResources(object):
     
     # Board routes
     const.BOARD = '.board'
-    const.READ = '.read'
+    const.ARTICLE_READ = '.read'
 
     # Team routes
     const.TEAM = '.team'
