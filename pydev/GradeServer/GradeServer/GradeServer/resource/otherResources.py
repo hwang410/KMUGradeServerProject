@@ -34,4 +34,5 @@ class OtherResources(object):
     const.JAVA_MAIN_CLASS = r'public\s+class\s+(\w+)'
     const.LINUX_NEW_LINE = '\r\n'
     const.WINDOWS_NEW_LINE = '\n'
+    const.SUBMISSION_COUNT = 'submissionCount'
     const.SUBMISSION_SUCCESS = 'Submission Success!'
