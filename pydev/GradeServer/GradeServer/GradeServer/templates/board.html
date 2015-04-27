@@ -44,7 +44,7 @@
 		{% endfor %}
 		
 			<div style="text-align:right">
-				<a href="{{ url_for('GradeServer.write', articleIndex =0) }}">
+				<a href="{{ url_for('GradeServer.write', activeTabCourseId = activeTabCourseId, articleIndex =0) }}">
 					<button type="button" class="write">Write</button>
 				</a>
 			</div>
@@ -97,7 +97,7 @@
 						<!-- Course Article -->
 						{% for articleRecord in articleRecords %}
 						<tr>
-							<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
+							<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
 							<td>{{ articleRecord.courseId}} {{ articleRecord.courseName }}</td>
 							<td><a href='{{ url_for ("GradeServer.read", articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
 								{% if articleRecord.replyCount > 0 %}
@@ -181,7 +181,7 @@
 					<!-- Course Article -->
 					{% for articleRecord in articleRecords %}
 					<tr>
-						<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
+						<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
 						<td>{{ articleRecord.courseId}} {{ articleRecord.courseName }}</td>
 						<td><a href='{{ url_for ("GradeServer.read", articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
 							{% if articleRecord.replyCount > 0 %}
