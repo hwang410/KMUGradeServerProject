@@ -22,7 +22,7 @@ from GradeServer.model.colleges import Colleges
 '''
 Submissions to Last Submitted
 '''
-def submissions_last_submitted(courseId):
+def select_last_submissions(memberId = None, courseId = None, problemId = None):
     
     if courseId == OtherResources.const.ALL or not courseId:
         return dao.query(Submissions.memberId,
@@ -37,27 +37,34 @@ def submissions_last_submitted(courseId):
                          Submissions.courseId,
                          Submissions.problemId,
                          func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
-                   filter(Submissions.courseId == courseId).\
+                   filter(Submissions.courseId == courseId if courseId else not courseId,
+                          Submissions.problemId == problemId if problemId else not problemId,
+                          Submissions.memberId == memberId if memberId else not memberId).\
                    group_by(Submissions.memberId,
                             Submissions.problemId,
                             Submissions.courseId) 
 '''
 All Submission Record
 '''
-def select_all_submission(memberId, problemId, courseId):
+def select_all_submission(memberId = None, courseId = None, problemId = None):
     return dao.query(Submissions.memberId,
-                                Submissions.problemId,
-                                Submissions.courseId, 
-                                Submissions.status,
-                                Submissions.score,
-                                Submissions.sumOfSubmittedFileSize,
-                                Submissions.runTime,
-                                Submissions.usedLanguage,
-                                Submissions.codeSubmissionDate,
-                                Languages.languageName).\
-                          filter(Submissions.memberId == memberId).\
-                          join(Languages, 
-                                Submissions.usedLanguage == Languages.languageIndex)
+                     Submissions.problemId,
+                     Problems.problemName,
+                     Submissions.courseId, 
+                     Submissions.status,
+                     Submissions.score,
+                     Submissions.sumOfSubmittedFileSize,
+                     Submissions.runTime,
+                     Submissions.codeSubmissionDate,
+                     Languages.languageName).\
+               filter(Submissions.memberId == memberId if memberId else not memberId,
+                      Submissions.courseId == courseId if courseId else not courseId,
+                      Submissions.problemId == problemId if problemId else not problemId).\
+               join(Languages, 
+                    Submissions.usedLanguage == Languages.languageIndex).\
+               join(Problems,
+                    Submissions.problemId == Problems.problemId)
+                                  
                                   
 '''
 Submissions Sorting Condition

@@ -5,7 +5,8 @@ from sqlalchemy import and_, func
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
-from GradeServer.utils.utilSubmissionQuery import submissions_sorted, submissions_last_submitted
+from GradeServer.utils.utilQuery import select_submission_people_count, select_solved_people_count, select_count
+from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_last_submissions, select_all_submission
 from GradeServer.utils.utilMessages import unknown_error
 
 from GradeServer.resource.enumResources import ENUMResources
@@ -34,59 +35,48 @@ from itertools import count
 def problemList(courseId, pageNum):
     """ problem submitting page """
     # Get Last Submitted History
-    maxSubmissionCount = dao.query(Submissions.memberId,
-                                   Submissions.problemId,
-                                   Submissions.courseId,
-                                   func.max(Submissions.submissionCount).label('submissionCount')).\
-                             filter(Submissions.memberId == session[SessionResources.const.MEMBER_ID],
-                                    Submissions.courseId == courseId).\
-                             group_by(Submissions.memberId,
-                                      Submissions.problemId,
-                                      Submissions.courseId).\
-                             subquery()
-    submissions = dao.query(Submissions.problemId,
-                            Submissions.score,
+    lastSubmissionCount = select_last_submissions(session[SessionResources.const.MEMBER_ID],
+                                              courseId).subquery()
+    # Current Submission                                      
+    submissions = dao.query(Submissions.score,
                             Submissions.status,
-                            Submissions.solutionCheckCount).\
-                      join(maxSubmissionCount,
-                           and_(Submissions.memberId == maxSubmissionCount.c.memberId,
-                                Submissions.problemId == maxSubmissionCount.c.problemId,
-                                Submissions.courseId == maxSubmissionCount.c.courseId,
-                                Submissions.submissionCount == maxSubmissionCount.c.submissionCount)).\
+                            lastSubmissionCount).\
+                      join(lastSubmissionCount,
+                           and_(Submissions.memberId == lastSubmissionCount.c.memberId,
+                                Submissions.problemId == lastSubmissionCount.c.problemId,
+                                Submissions.courseId == lastSubmissionCount.c.courseId,
+                                Submissions.solutionCheckCount == lastSubmissionCount.c.solutionCheckCount)).\
                       subquery()
+                      
     # Get Problem Informations
     problems = dao.query(RegisteredProblems.problemId,
                          RegisteredProblems.startDateOfSubmission,
-                         RegisteredProblems.endDateOfSubmission).\
+                         RegisteredProblems.endDateOfSubmission,
+                         Problems.problemName).\
                    filter(RegisteredProblems.courseId == courseId).\
-                   subquery()
-    # Join Problems add Name   
-    problems = dao.query(Problems.problemName,
-                         problems).\
-                   join(problems,
-                        Problems.problemId == problems.c.problemId).\
+                   join(Problems,
+                        RegisteredProblems.problemId == Problems.problemId).\
                    subquery()
     # Get ProblemList Count
     try:
-        count = dao.query(func.count(problems.c.problemName).label('count')).\
-                    first().\
-                    count
+        count = select_count(problems.c.problemId).first().\
+                                                   count
     except Exception:
         count = 0
-    # Get ProblemListRecords
+    # Get ProblemListRecords OuterJoin
     try:
         problemListRecords = get_page_record(dao.query(problems,
                                                        submissions.c.score,
-                                                       submissions.c.status,
-                                                       submissions.c.solutionCheckCount).\
+                                                       submissions.c.status).\
                                                  outerjoin(submissions,
                                                            problems.c.problemId == submissions.c.problemId).\
                                                  order_by(problems.c.startDateOfSubmission.desc()),
-                                           int(pageNum)).\
-                                 all()
+                                             int(pageNum)).all()
     except Exception:
         problemListRecords = []
         
+    for p in problemListRecords:
+        print p.problemName, p.problemId
     # Get Course Information
     try:
         courseRecords = dao.query(RegisteredCourses.courseId,
@@ -191,20 +181,11 @@ def record(courseId, problemId, sortCondition = OtherResources.const.RUN_TIME):
                                    'Compile Error',
                                    'RunTime Error']
     try:
-        submissions = dao.query(Submissions).\
-                          filter(Submissions.problemId == problemId,
-                                 Submissions.courseId == courseId).\
-                          group_by(Submissions.memberId,
-                                   Submissions.problemId,
-                                   Submissions.courseId).\
-                          subquery()
+        submissions = select_all_submission(None, courseId, problemId).subquery()
         # Submitted Members Count
-        sumOfSubmissionPeopleCount = dao.query(func.count(submissions.c.memberId).label('sumOfSubmissionPeopleCount')).\
-                                         subquery()
+        sumOfSubmissionPeopleCount = select_submission_people_count(submissions).subquery()
         # Solved Members Count
-        sumOfSolvedPeopleCount =dao.query(func.count(submissions.c.memberId).label('sumOfSolvedPeopleCount')).\
-                                    filter(submissions.c.status == ENUMResources.const.SOLVED).\
-                                    subquery()
+        sumOfSolvedPeopleCount = select_solved_people_count(submissions).subquery()
                               
         problemSubmittedRecords = dao.query(func.max(SubmittedRecordsOfProblems.sumOfSubmissionCount).label('sumOfSubmissionCount'),
                                             func.max(SubmittedRecordsOfProblems.sumOfSolvedCount).label('sumOfSolvedCount'),
@@ -215,10 +196,10 @@ def record(courseId, problemId, sortCondition = OtherResources.const.RUN_TIME):
                                       filter(SubmittedRecordsOfProblems.problemId == problemId,
                                              SubmittedRecordsOfProblems.courseId == courseId).\
                                       subquery()
-        chartSubmissionRecords =dao.query(sumOfSubmissionPeopleCount,
-                                          sumOfSolvedPeopleCount,
-                                          problemSubmittedRecords).\
-                                    first()
+        chartSubmissionRecords = dao.query(sumOfSubmissionPeopleCount,
+                                           sumOfSolvedPeopleCount,
+                                           problemSubmittedRecords).\
+                                     first()
     except:
         print 'SubmittedRecordsOfProblems table is empty'
         chartSubmissionRecords = []
@@ -236,23 +217,17 @@ def record(courseId, problemId, sortCondition = OtherResources.const.RUN_TIME):
     # Problem Solved Users
     try:
         # last Submissions Info
-        submissions = submissions_last_submitted().filter(Submissions.problemId == problemId,
-                                                          Submissions.courseId == courseId).\
-                                                   subquery()
+        lastSubmissions = select_last_submissions(None, courseId, problemId).subquery()
        
        # Problem Solved Member
-        problemSolvedMemberRecords = submissions_sorted(dao.query(Submissions.memberId,
-                                                                Submissions.runTime,
-                                                                Submissions.sumOfSubmittedFileSize,
-                                                                Submissions.codeSubmissionDate,
-                                                                Submissions.usedMemory).\
-                                                          join(submissions,
+        problemSolvedMemberRecords = submissions_sorted(dao.query(submissions).\
+                                                            filter(Submissions.status == ENUMResources.const.SOLVED).\
+                                                            join(lastSubmissions,
                                                                and_(Submissions.memberId == submissions.c.memberId,
                                                                     Submissions.problemId == submissions.c.problemId,
                                                                     Submissions.courseId == submissions.c.courseId,
                                                                     Submissions.solutionCheckCount == submissions.c.solutionCheckCount)).\
-                                                          filter(Submissions.status == ENUMResources.const.SOLVED).\
-                                                          subquery(),
+                                                            subquery(),
                                                         sortCondition).all()
             
     except Exception:

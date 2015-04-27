@@ -7,7 +7,7 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilQuery import select_all_user, select_count, select_match_member_sub, select_accept_courses
 from GradeServer.utils.utilRankQuery import select_rank, rank_sorted
-from GradeServer.utils.utilSubmissionQuery import submissions_last_submitted
+from GradeServer.utils.utilSubmissionQuery import select_last_submissions
 from GradeServer.utils.utilMessages import unknown_error, get_message
 
 from GradeServer.resource.enumResources import ENUMResources
@@ -47,7 +47,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
             memberRecords = []
             
         # Last Submission Max Count
-        submissions = select_rank(submissions_last_submitted(activeTabCourseId).subquery()).subquery()
+        submissions = select_rank(select_last_submissions(None, activeTabCourseId).subquery()).subquery()
         
         # records count
         try:
