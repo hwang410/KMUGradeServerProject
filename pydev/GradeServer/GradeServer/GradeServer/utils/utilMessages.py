@@ -50,7 +50,8 @@ def get_message(key ='unknown'):
 오류로 인한  메인  페이지 이동
 """
 def unknown_error(error = get_message()):
-    from GradeServer.utils.utilQuery import select_top_coder, select_notices
+    from GradeServer.utils.utilQuery import select_notices
+    from GradeServer.utils.utilRankQuery import select_top_coder
     
     return render_template(HTMLResources.const.MAIN_HTML,
                            SessionResources = SessionResources,

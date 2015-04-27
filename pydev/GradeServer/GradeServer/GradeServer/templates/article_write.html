@@ -7,36 +7,64 @@
 <div class="container">
 	<h3>Writing</h3>
 	<form method="post">
-		<h4>Class
-			<select class="span3" type="text" id="language" name="courseId">
-			{% if 'USER' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
-				{%- for myCourse in myCourses %}
-					<option class ="{{ myCourse.courseId }}"
-					{% if loop.index0 == 0 %}
-					selected ="selected">
-					{% else %}>
+		<div class = 'row-fluid'>
+			<h4>
+				<div class = 'span1' style ='text-align:center'>
+					Class
+				</div>
+				<div class = 'span11'>
+					<select class="span3" type="text" id="language" name="courseId">
+					{% if 'USER' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
+						{%- for myCourse in myCourses %}
+							<option class ="{{ myCourse.courseId }}"
+							{% if loop.index0 == 0 %}
+							selected ="selected">
+							{% else %}>
+							{% endif %}
+							{{ myCourse.courseId }} {{ myCourse.courseName }}</option>
+						<!--  if modify then default Course -->
+						{% endfor -%}
+					{% else %}
+						<option class ="Blank" selected ="selected">
+						All Noticle</option>
+						{%- for myCourse in myCourses %}
+							<option class ="{{ myCourse.courseId }}">
+							{{ myCourse.courseId }} {{ myCourse.courseName }}</option>
+						<!--  if modify then default Course -->
+						{% endfor -%}
 					{% endif %}
-					{{ myCourse.courseId }} {{ myCourse.courseName }}</option>
-				<!--  if modify then default Course -->
-				{% endfor -%}
-			{% else %}
-				<option class ="Blank" selected ="selected">
-				All Noticle</option>
-				{%- for myCourse in myCourses %}
-					<option class ="{{ myCourse.courseId }}">
-					{{ myCourse.courseId }} {{ myCourse.courseName }}</option>
-				<!--  if modify then default Course -->
-				{% endfor -%}
-			{% endif %}
-			</select>
-		</h4>
-		<h4>Title 
-			<input class="input-xxlarge" name="title" type="text" autocomplete="off" placeholder="less than 50 letters"
-			value ="{% if title %}{{ title }}{% elif articlesOnBoard.title %}{{ articlesOnBoard.title }}{% endif %}" autofocus ="autofocus">
-		</h4>
-		<textarea class="content input-xxlarge" id="writePlace" name="content" row="5" placeholder="write here" onkeyup="autoSize(this)" autocomplete="off">{% if content %}{{ content }}{% elif articlesOnBoard.content %}{{ articlesOnBoard.content }}{% endif %}</textarea>
+					</select>
+				</div>
+			</h4>
+		</div>
+		<div class = 'row-fluid'>
+			<h4>
+				<div class = 'span1' style ='text-align:center'>
+					Title 
+				</div>
+				<div class = 'span11'>
+					<input class="input-xxlarge" name="title" type="text" autocomplete="off" placeholder="less than 50 letters"
+					value ="{% if title %}{{ title }}{% elif articlesOnBoard.title %}{{ articlesOnBoard.title }}{% endif %}" autofocus ="autofocus">
+				</div>
+			</h4>
+		</div>
+		<div class = 'row-fluid'>
+			<h4>
+				<div class = 'span1' style ='text-align:center'></div>
+				<div class = 'span11'>
+					<textarea class="input-xxlarge" name="content" row="5" placeholder="write here" onkeyup="autoSize(this)" autocomplete="off">{% if content %}{{ content }}{% elif articlesOnBoard.content %}{{ articlesOnBoard.content }}{% endif %}</textarea>
+				</div>
+			</h4>
+		</div>
 		<br>
-		<input type="submit" id="writeDone" value="Done">
+		<div class = 'row-fluid'>
+			<h4>
+				<div class = 'span1' style ='text-align:center'></div>
+				<div class = 'span11'>
+					<input type="submit" value="Done">
+				</div>
+			</h4>
+		</div>
 		<!--<button class="btn" type="submit">Done</button>-->
 	</form>
 </div>

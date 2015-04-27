@@ -5,7 +5,9 @@ from flask import render_template, request
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
-from GradeServer.utils.utilQuery import select_all_user, select_rank, rank_sorted, submissions_last_submitted, select_count, select_match_member_sub, select_accept_courses
+from GradeServer.utils.utilQuery import select_all_user, select_count, select_match_member_sub, select_accept_courses
+from GradeServer.utils.utilRankQuery import select_rank, rank_sorted
+from GradeServer.utils.utilSubmissionQuery import submissions_last_submitted
 from GradeServer.utils.utilMessages import unknown_error, get_message
 
 from GradeServer.resource.enumResources import ENUMResources
@@ -46,7 +48,6 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
             
         # Last Submission Max Count
         submissions = select_rank(submissions_last_submitted(activeTabCourseId).subquery()).subquery()
-        
         
         # records count
         try:
@@ -96,7 +97,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
             myCourses = []
         # myCourses Default Add ALL
         myCourses.insert(0, OtherResources.const.ALL)
-        
+       
         return render_template(HTMLResources.const.RANK_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,

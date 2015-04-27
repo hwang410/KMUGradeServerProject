@@ -6,7 +6,8 @@ from sqlalchemy import func
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
-from GradeServer.utils.utilQuery import sum_of_solved_problem_count, submissions_sorted
+from GradeServer.utils.utilQuery import select_count
+from GradeServer.utils.utilSubmissionQuery import submissions_sorted
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
@@ -52,9 +53,11 @@ def user_history(memberId, sortCondition, pageNum):
                                    filter(Submissions.memberId == memberId).\
                                    subquery()
         # List Count
-        count = dao.query(sumOfSubmissionCount).\
-                    first().\
-                    sumOfSubmissionCount  
+        try:
+            count = select_count(sumOfSubmissionCount.c.sumOfSubmissionCount).first().\
+                                                                              count  
+        except Exception:
+            count = 0
         # 모든 제출 정보
         submissions = dao.query(Submissions.memberId,
                                 Submissions.problemId,
@@ -71,11 +74,11 @@ def user_history(memberId, sortCondition, pageNum):
                                 Submissions.usedLanguage == Languages.languageIndex).\
                           subquery()
         # 중복 제거푼 문제숫
-        sumOfSolvedProblemCount = sum_of_solved_problem_count(dao.query(submissions).\
-                                                                  filter(submissions.c.status == ENUMResources.const.SOLVED).\
-                                                                  group_by(submissions.c.problemId,
-                                                                           submissions.c.courseId).\
-                                                                  subquery()).subquery()
+        sumOfSolvedProblemCount = dao.query(func.count(submissions.c.memberId).label('sumOfSolvedProblemCount')).\
+                                      filter(submissions.c.status == ENUMResources.const.SOLVED).\
+                                      group_by(submissions.c.problemId,
+                                               submissions.c.courseId).\
+                                      subquery()
         # 모든 맞춘 횟수
         sumOfSolvedCount = dao.query(func.count(submissions.c.memberId).label('sumOfSolvedCount')).\
                                filter(submissions.c.status == ENUMResources.const.SOLVED).\
@@ -117,12 +120,7 @@ def user_history(memberId, sortCondition, pageNum):
         # Viiew Value Text
         chartSubmissionDescriptions = ['맞춘 문제 갯수','총 제출 횟수', '맞춘 횟수', '오답 횟수', '타임오버 횟수', '컴파일 에러 횟수', '런타임 에러 횟수', '서버 에러 횟수']
         try:                           
-                # 모든 제출 정보
-            submissionRecords = dao.query(Problems.problemName,
-                                          submissions).\
-                                    join(submissions,
-                                         Problems.problemId == submissions.c.problemId).\
-                                    subquery()
+                        # 모든 제출 정보
             # Sorted
             submissionRecords = get_page_record(submissions_sorted(dao.query(Problems.problemName,
                                                                              submissions).\
@@ -218,48 +216,34 @@ def edit_personal(error = None):
     try:
         #Get User Information
         try:
-            memberInformation = dao.query(DepartmentsDetailsOfMembers,
+            memberInformation = dao.query(Members.memberId,
                                           Members.memberName,
                                           Members.contactNumber,
                                           Members.emailAddress,
                                           Members.comment,
                                           Colleges.collegeName,
                                           Departments.departmentName).\
+                                    filter(Members.memberId == session[SessionResources.const.MEMBER_ID]).\
+                                    join(DepartmentsDetailsOfMembers,
+                                         Members.memberId == DepartmentsDetailsOfMembers.memberId).\
                                     join(Colleges,
                                          Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
                                     join(Departments,
                                          Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
-                                    join(Members,
-                                         Members.memberId == session[MEMBER_ID]).\
-                                    filter(DepartmentsDetailsOfMembers.memberId == session[MEMBER_ID]).all()
-            memberData = []
-            loopIndex = 0
-            for information in memberInformation:
-                if loopIndex == 0:
-                    memberData.append(information.memberName)
-                    memberData.append(information.contactNumber)
-                    memberData.append(information.emailAddress)
-                    memberData.append(information.comment)
-                    memberData.append(information.collegeName)
-                    memberData.append(information.departmentName)
-                else:
-                    memberData.append(information.collegeName)
-                    memberData.append(information.departmentName)
-                loopIndex += 1   
-            
+                                    first()
         except Exception:
             #None Type Exception
-            memberData = []
-            
+            memberInformation = []
+        
         #Get Post
         if request.method == 'POST':
             
             password = request.form['password']
             passwordConfirm = request.form['passwordConfirm'] 
             #Get Updating Data
-            memberData[1] = contactNumber = request.form['contactNumber'] if request.form['contactNumber'] else memberData[1]
-            memberData[2] = emailAddress = request.form['emailAddress'] if request.form['emailAddress'] else memberData[2]
-            memberData[3] = comment = request.form['comment'] if request.form['comment'] else memberData[3]
+            contactNumber = request.form['contactNumber'] if request.form['contactNumber'] else memberInformation.contactNumber
+            emailAddress = request.form['emailAddress'] if request.form['emailAddress'] else memberInformation.emailAddress
+            comment = request.form['comment'] if request.form['comment'] else memberInformation.comment
             
             #Password Same
             if(password and passwordConfirm) and password == passwordConfirm:
@@ -273,7 +257,7 @@ def edit_personal(error = None):
                     update(dict(password = password,
                                 contactNumber = contactNumber,
                                 emailAddress = emailAddress,
-                                comment =comment))
+                                comment = comment))
                 # Commit Exception
                 try:
                     dao.commit()
@@ -293,7 +277,7 @@ def edit_personal(error = None):
         return render_template(HTMLResources.const.EDIT_PERSONAL_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
-                               memberInformation = memberData,
+                               memberInformation = memberInformation,
                                error = error)
     except Exception:
         return unknown_error()

@@ -5,7 +5,7 @@ from sqlalchemy import and_, func
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
-from GradeServer.utils.utilQuery import submissions_sorted, submissions_last_submitted
+from GradeServer.utils.utilSubmissionQuery import submissions_sorted, submissions_last_submitted
 from GradeServer.utils.utilMessages import unknown_error
 
 from GradeServer.resource.enumResources import ENUMResources
