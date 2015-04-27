@@ -1,5 +1,5 @@
 # 2015 Capstone Project 
-#### @Kookmin Univ.
+#### at Kookmin Univ.
 ### Project : KMU Grade Server
 ### Team : Attention Seeker (No14)
 KMU Grade Server is a Web code judging service for everybody who want to practice coding.
