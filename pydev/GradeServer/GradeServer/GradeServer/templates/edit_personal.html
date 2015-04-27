@@ -6,7 +6,6 @@
 {%- block body %}
 <div class="container">
 	<h3>Edit Personal Information</h3>
-<<<<<<< HEAD
 	<div class = 'span12'>
 		<h4>
 			<div class="row-fluid">
@@ -77,85 +76,6 @@
 			<br>
 			<button type="submit" class="btn">Confirm</button>
 		</div>
-=======
-	<h4>
-		<div class="row-fluid">
-			<div class="span3">User Id</div>
-			<div class="span8">{{ session['memberId'] }}</div>
-		</div>
-	</h4>
-	<form method="post">
-		<h4>
-			<div class="row-fluid">
-				<div class="span3">Password</div>
-				<div class="span2">
-					<input type="password" name="password" class="input-small" autofocus ="autofocus">
-				</div>
-			</div>
-		</h4>
-		<h4>
-			<div class="row-fluid">
-				<div class="span3">Password(confirm)</div>
-				<div class="span8">
-					<input type="password" name="passwordConfirm" class="input-small">
-				</div>
-			</div>
-		</h4>
-		<h4>
-			<div class="row-fluid">
-				<div class="span3">Department</div>
-				<div class="span8">
-					{% for information in memberInformation %}
-						{% if loop.index > 4 %}
-							<script>
-							{% if loop.index > 6 and loop.index%2!=0 %}
-							document.write(", ");
-							{% endif %}
-							document.write("{{ information }}");
-							</script>
-						{% endif %}
-					{% endfor %}
-				</div>
-			</div>
-		</h4>
-		<h4>
-			<div class="row-fluid">
-				<div class="span3">Name</div>
-				<div class="span8">
-					{{ memberInformation[0] }}
-				</div>
-			</div>
-		</h4>
-		<h4>
-			<div class="row-fluid">
-				<div class="span3">contactNumber</div>
-				<div class="span8">
-					<input type="text" class="input-large" name="contactNumber"
-							value="{%- if memberInformation[1] != None %}{{ memberInformation[1]}}{% endif -%}">
-				</div>
-			</div>
-		</h4>
-		<h4>
-			<div class="row-fluid">
-				<div class="span3">E-mail</div>
-				<div class="span8">
-					<input type="text" class="input-large" name="emailAddress"
-							alue="{%- if memberInformation[2] != None %}{{ memberInformation[2] }}{% endif -%}">
-				</div>
-			</div>
-		</h4>
-		<h4>
-			<div class="row-fluid">
-				<div class="span3">Comment</div>
-				<div class="span8">
-					<input type="text" class="input-xxlarge" name="comment"
-							value="{%- if memberInformation[3] %}{{ memberInformation[3] }}{% endif -%}">
-				</div>
-			</div>
-		</h4>
-		<br>
-		<button type="submit" class="btn">Confirm</button>
->>>>>>> 2bab35d75acabdd5e5c7cebc72383882d726b359
 	</form>
 </div>
 {% endblock -%}
