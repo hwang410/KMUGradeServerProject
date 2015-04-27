@@ -4,6 +4,7 @@ import time
 import string
 import ptrace
 import resource
+import DBUpdate
 from subprocess import call
 
 RUN_COMMAND_LIST = []
@@ -28,7 +29,7 @@ class ExecutionTools(object):
                 call(copyCommand, shell = True)
         except Exception as e:
             print e
-            return 'ServerError', 0, 0
+            DBUpdate.SubmittedRecordsOfProblems()
         
         # make execution command
         self.MakeCommand()

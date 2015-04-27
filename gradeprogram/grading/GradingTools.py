@@ -1,4 +1,5 @@
 import string
+import DBUpdate
 from subprocess import call
 
 class GradingTools(object):
@@ -51,7 +52,7 @@ class GradingTools(object):
             stdOutput = open('output.txt', 'r')
         except Exception as e:
             print e
-            return 'error'
+            DBUpdate.SubmittedRecordsOfProblems()
         
         stdLines = stdOutput.readlines()
         answerLines = answerFile.readlines()
@@ -92,7 +93,7 @@ class GradingTools(object):
             call('./checker.out 1>result.txt', shell = True)
         except Exception as e:
             print e
-            return 'error'
+            DBUpdate.SubmittedRecordsOfProblems()
         
         rf = open('reuslt.txt', 'r')
         
@@ -131,7 +132,7 @@ class GradingTools(object):
                 stdOutput = open('output.txt', 'r') # student output open
             except Exception as e:
                 print e
-                return 'error'
+                DBUpdate.SubmittedRecordsOfProblems()
             
             answer = answerFile.read()
             student = stdOutput.read()
@@ -167,7 +168,7 @@ class GradingTools(object):
             call(copyCommand, shell = True)
         except Exception as e:
                 print e
-                return 'error'    
+                DBUpdate.SubmittedRecordsOfProblems()
         
         for i in range(1, self.caseCount+1):
             try:
@@ -185,7 +186,7 @@ class GradingTools(object):
                 rf = open('reuslt.txt', 'r')
             except Exception as e:
                 print e
-                return 'error'
+                DBUpdate.SubmittedRecordsOfProblems()
             
             score = rf.readline()
             
