@@ -65,6 +65,8 @@ def board(activeTabCourseId, pageNum):
                                            select_articles(activeTabCourseId,
                                                            isDeleted = ENUMResources.const.FALSE).subquery(),
                                            myCourses).subquery()
+        for a in dao.query(articlesOnBoard).all():
+            print a.courseId, a.courseName, a.title, a.writerId
                 # 과목 게시글
         try:
             articlesOnBoardSub = select_sorted_articles(articlesOnBoard,

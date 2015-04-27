@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import func, null
+from sqlalchemy import func, or_
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
@@ -19,6 +19,7 @@ from GradeServer.model.members import Members
 Join Course Name
 '''
 def join_course_name(articlesOnBoard, myCourses):
+    print dao.query(myCourses).first().courseName, dao.query(myCourses).first().courseId
     return dao.query(articlesOnBoard,
                      myCourses.c.courseName).\
                outerjoin(myCourses,
@@ -36,7 +37,8 @@ def select_articles(activeTabCourseId, isDeleted = ENUMResources.const.FALSE):
     else:
         return dao.query(ArticlesOnBoard).\
                    filter(ArticlesOnBoard.isDeleted == isDeleted,
-                          ArticlesOnBoard.courseId == activeTabCourseId)
+                          or_(ArticlesOnBoard.courseId == activeTabCourseId,
+                              ArticlesOnBoard.courseId == None))
  
  
 '''
@@ -55,6 +57,7 @@ Board Notice Classification
 def select_sorted_articles(articlesOnBoard, isNotice = ENUMResources.const.FALSE):
     return dao.query(articlesOnBoard).\
            filter(articlesOnBoard.c.isNotice == isNotice,
-                  (articlesOnBoard.c.courseName == None if isNotice == ENUMResources.const.TRUE
+                  (or_(articlesOnBoard.c.courseName == None,
+                       articlesOnBoard.c.courseName != None) if isNotice == ENUMResources.const.TRUE
                    else articlesOnBoard.c.courseName != None)).\
            order_by(articlesOnBoard.c.articleIndex.desc())
