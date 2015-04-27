@@ -54,7 +54,16 @@ POST_METHOD = 'POST'
 
 newUsers = []
 newProblems = []
-
+keys = {'memberId':0,
+        'memberName':1,
+        'authority':2,
+        'collegeIndex':3,
+        'collegeName':4,
+        'departmentIndex':5,
+        'departmentName':6,
+        'courseId':7,
+        "closeDate":8}
+        
 def get_own_problems(memberId):
     ownProblems = (dao.query(RegisteredProblems,
                              RegisteredCourses,
@@ -173,15 +182,6 @@ def class_manage_problem():
     if request.method == POST_METHOD:
         isNewProblem = True
         numberOfNewProblems = (len(request.form)-1)/7
-        keys = {"courseId":0,
-                "courseName":1,
-                "problemId":2,
-                "problemName":3,
-                "multipleFiles":4,
-                "startDate":5,
-                "endDate":6,
-                "openDate":7,
-                "closeDate":8}
         
         # courseId,courseName,problemId,problemName,isAllInputCaseInOneFile,startDate,endDate,openDate,closeDate
         newProblem = [['' for i in range(9)] for j in range(numberOfNewProblems+1)]
@@ -370,8 +370,9 @@ def class_manage_user():
                                    eachUser.memberName,
                                    departmentsDetailsOfMember.collegeIndex,
                                    departmentsDetailsOfMember.departmentIndex])
+            print allUsersToData
         else:
-            if eachUser.memberId == allUsersToData[userIndex-1][0]:
+            if eachUser.memberId == allUsersToData[userIndex-1][keys['memberId']]:               
                 allUsersToData[userIndex-1].append(departmentsDetailsOfMember.collegeIndex)
                 allUsersToData[userIndex-1].append(departmentsDetailsOfMember.departmentIndex)
             else:
@@ -397,7 +398,8 @@ def class_manage_user():
                                          Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
                                     join(Departments,
                                          Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
-                                    filter(Registrations.courseId == ownCourse.courseId)).\
+                                    filter(Registrations.courseId == ownCourse.courseId).\
+                                    order_by(Members.memberId)).\
                                all()
         except:
             error = 'Error has been occurred while searching own users'
@@ -467,14 +469,6 @@ def class_add_user():
     error = None
     targetUserIdToDelete = []
     authorities = ['Course Admin','User']
-    keys = {'memberId':0,
-            'memberName':1,
-            'authority':2,
-            'collegeIndex':3,
-            'collegeName':4,
-            'departmentIndex':5,
-            'departmentName':6,
-            'courseId':7}
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
@@ -610,7 +604,7 @@ def class_add_user():
                     for userData in fileData:
                         # slice and make information from 'key=value'
                         userInformation = userData.replace(' ', '').replace('\n', '').replace('\xef\xbb\xbf', '').split(',')
-                        print userInformation
+                        
                         # userId,userName,authority,collegeIndex,collegeName,departmentIndex,departmentName
                         newUser = [''] * 8
                         
@@ -619,7 +613,6 @@ def class_add_user():
                         newUser[keys['courseId']] = courseId
                         
                         for eachData in userInformation:
-                            print eachData
                             if '=' in eachData:
                                 key, value = eachData.split('=')
                                 
