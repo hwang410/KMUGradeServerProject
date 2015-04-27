@@ -60,18 +60,21 @@ def select_accept_courses():
     if SETResources.const.SERVER_ADMINISTRATOR in session[SessionResources.const.AUTHORITY]:
         myCourses = dao.query(RegisteredCourses.courseId,
                               RegisteredCourses.courseName,
-                              RegisteredCourses.endDateOfCourse)
+                              RegisteredCourses.endDateOfCourse).\
+                        filter(RegisteredCourses.endDateOfCourse >= datetime.now())
     # Class Master, User
     elif SETResources.const.COURSE_ADMINISTRATOR in session[SessionResources.const.AUTHORITY]:
         myCourses = dao.query(RegisteredCourses.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse).\
-                        filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID])
+                        filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID],
+                               RegisteredCourses.endDateOfCourse >= datetime.now())
     else:
         myCourses = dao.query(Registrations.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse).\
-                        filter(Registrations.memberId == session[SessionResources.const.MEMBER_ID]).\
+                        filter(Registrations.memberId == session[SessionResources.const.MEMBER_ID],
+                               RegisteredCourses.endDateOfCourse >= datetime.now()).\
                         join(RegisteredCourses,
                              Registrations.courseId == RegisteredCourses.courseId)
             
