@@ -80,9 +80,7 @@ def sign_in():
                             session[SessionResources.const.OWN_CURRENT_COURSES] = []
                         try:
                             session[SessionResources.const.OWN_PAST_COURSES] = select_past_courses(ownCourses).all()
-                            print "CCCCCCCCCCCCCCCCL", len(session[SessionResources.const.OWN_PAST_COURSES])
                         except Exception:
-                            print "AAAAAAAZZZ"
                             session[SessionResources.const.OWN_PAST_COURSES] = []
                         update_recent_access_date(memberId)
                         # Commit Exception
