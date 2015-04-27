@@ -365,13 +365,11 @@ def read(articleIndex, error = None):
             error = get_message('updateFailed')
             
         return redirect(url_for(RouteResources.const.ARTICLE_READ,
-                                SETResources = SETResources,
                                 articleIndex = articleIndex,
                                 error = error))
     
     # Exception View    
     return redirect(url_for(RouteResources.const.BOARD,
-                            SETResources = SETResources,
                             activeTabCourseId = OtherResources.const.ALL,
                             pageNum = 1))
 
@@ -379,9 +377,9 @@ def read(articleIndex, error = None):
 '''
 게시판에 글을 쓰는 페이지
 '''
-@GradeServer.route('/board/write/<articleIndex>', methods=['GET', 'POST'])
+@GradeServer.route('/board/write-<activeTabCourseId>/<articleIndex>', methods=['GET', 'POST'])
 @login_required
-def write(articleIndex, error =None):
+def write(activeTabCourseId, articleIndex, error =None):
     title, content, articlesOnBoard = None, None, None
     try:
         # 수강  과목 정보
@@ -402,10 +400,6 @@ def write(articleIndex, error =None):
             myCourses = []
                 # 작성시 빈칸 검사
         if request.method == 'POST':
-                        # 타이틀 가져오기
-            title = request.form['title']
-            # Get Exist Content
-            content = request.form['content']
             # Not None
             try:
                 courseId = request.form['courseId']
@@ -414,6 +408,11 @@ def write(articleIndex, error =None):
                 if courseId == OtherResources.const.ALL:
                     courseId = None
                     
+                                # 타이틀 가져오기
+                title = request.form['title']
+                # Get Exist Content
+                content = request.form['content']
+            
                 if not title:
                     error ='제목' +get_message('fillData')
                 elif not request.form['content']:
@@ -450,7 +449,7 @@ def write(articleIndex, error =None):
                             error =get_message('updateFailed')
                             
                         return redirect(url_for(RouteResources.const.BOARD,
-                                                activeTabCourseId = OtherResources.const.ALL,
+                                                activeTabCourseId = activeTabCourseId,
                                                 pageNum = 1))
                                         # 게시물 수정    
                     else:
@@ -471,9 +470,9 @@ def write(articleIndex, error =None):
                             error =get_message('updateFailed')
                         # request.form['courseId']가 ex)2015100101 전산학 실습 일경우 
                         return redirect(url_for(RouteResources.const.ARTICLE_READ,
-                                                courseName = courseId,
                                                 articleIndex = articleIndex))
             except Exception:
+                # User None Course Posting Rejection
                 if SETResources.const.USER in session['authority']:
                     error = get_message('banPosting')
                 else:

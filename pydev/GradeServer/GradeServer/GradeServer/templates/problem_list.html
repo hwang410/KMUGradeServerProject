@@ -17,7 +17,7 @@
 		{% for problemListRecord in problemListRecords %}
 		<tr>
 			<td style ='vertical-align: middle'>
-				{{ (problemListRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST']}}
+				{{ (problemListRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}
 			</td>
 			<td style ='vertical-align: middle'>
 				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecord.problemId, pageNum = pages['pageNum']) }}">
