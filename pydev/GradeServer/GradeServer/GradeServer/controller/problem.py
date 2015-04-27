@@ -75,8 +75,6 @@ def problemList(courseId, pageNum):
     except Exception:
         problemListRecords = []
         
-    for p in problemListRecords:
-        print p.problemName, p.problemId
     # Get Course Information
     try:
         courseRecords = dao.query(RegisteredCourses.courseId,
