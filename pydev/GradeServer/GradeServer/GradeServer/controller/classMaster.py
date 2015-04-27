@@ -602,7 +602,7 @@ def class_add_user():
         elif 'addUserGroup' in request.form:
             files = request.files.getlist('files')
             courseId = request.form['courseId'].split()[0]
-            print courseId
+
             if list(files)[0].filename:
                 # read each file
                 for fileData in files:
