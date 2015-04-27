@@ -14,10 +14,7 @@ from flask import request,render_template,url_for,redirect,session
 from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
 
-from GradeServer.utils.utilMessages import get_message
 from GradeServer.utils.loginRequired import login_required
-from GradeServer.utils.utilQuery import select_accept_courses,select_notices,select_match_member,select_top_coder
-from GradeServer.utils.utils import *
 
 from GradeServer.model.registrations import Registrations
 from GradeServer.model.registeredCourses import RegisteredCourses
@@ -30,12 +27,13 @@ from GradeServer.model.problems import Problems
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.model.submissions import Submissions
-from sqlalchemy import and_,exc,or_,func
+from sqlalchemy import and_,or_,func
 from datetime import datetime
 
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.sessionResources import SessionResources
+from GradeServer.resource.otherResources import OtherResources
 
 import os
 import re
@@ -53,7 +51,16 @@ POST_METHOD = 'POST'
 
 newUsers = []
 newProblems = []
-
+keys = {'memberId':0,
+        'memberName':1,
+        'authority':2,
+        'collegeIndex':3,
+        'collegeName':4,
+        'departmentIndex':5,
+        'departmentName':6,
+        'courseId':7,
+        "closeDate":8}
+        
 def get_own_problems(memberId):
     ownProblems = (dao.query(RegisteredProblems,
                              RegisteredCourses,
@@ -62,7 +69,8 @@ def get_own_problems(memberId):
                             RegisteredCourses.courseId == RegisteredProblems.courseId).\
                        join(Problems,
                             Problems.problemId == RegisteredProblems.problemId).\
-                       filter(RegisteredCourses.courseAdministratorId == memberId)).\
+                       filter(and_(RegisteredCourses.courseAdministratorId == memberId,
+                                   Problems.isDeleted == ENUMResources.const.FALSE))).\
                   all()
     return ownProblems
 
@@ -128,6 +136,7 @@ def class_manage_problem():
     
     try:
         allProblems = dao.query(Problems).\
+                          filter(Problems.isDeleted == ENUMResources.const.FALSE).\
                           all()
     except:
         error = 'Error has been occurred while searching problems'
@@ -170,15 +179,6 @@ def class_manage_problem():
     if request.method == POST_METHOD:
         isNewProblem = True
         numberOfNewProblems = (len(request.form)-1)/7
-        keys = {"courseId":0,
-                "courseName":1,
-                "problemId":2,
-                "problemName":3,
-                "multipleFiles":4,
-                "startDate":5,
-                "endDate":6,
-                "openDate":7,
-                "closeDate":8}
         
         # courseId,courseName,problemId,problemName,isAllInputCaseInOneFile,startDate,endDate,openDate,closeDate
         newProblem = [['' for i in range(9)] for j in range(numberOfNewProblems+1)]
@@ -367,8 +367,9 @@ def class_manage_user():
                                    eachUser.memberName,
                                    departmentsDetailsOfMember.collegeIndex,
                                    departmentsDetailsOfMember.departmentIndex])
+            print allUsersToData
         else:
-            if eachUser.memberId == allUsersToData[userIndex-1][0]:
+            if eachUser.memberId == allUsersToData[userIndex-1][keys['memberId']]:               
                 allUsersToData[userIndex-1].append(departmentsDetailsOfMember.collegeIndex)
                 allUsersToData[userIndex-1].append(departmentsDetailsOfMember.departmentIndex)
             else:
@@ -394,7 +395,8 @@ def class_manage_user():
                                          Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
                                     join(Departments,
                                          Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
-                                    filter(Registrations.courseId == ownCourse.courseId)).\
+                                    filter(Registrations.courseId == ownCourse.courseId).\
+                                    order_by(Members.memberId)).\
                                all()
         except:
             error = 'Error has been occurred while searching own users'
@@ -464,14 +466,6 @@ def class_add_user():
     error = None
     targetUserIdToDelete = []
     authorities = ['Course Admin','User']
-    keys = {'memberId':0,
-            'memberName':1,
-            'authority':2,
-            'collegeIndex':3,
-            'collegeName':4,
-            'departmentIndex':5,
-            'departmentName':6,
-            'courseId':7}
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
@@ -598,21 +592,27 @@ def class_add_user():
                 
         elif 'addUserGroup' in request.form:
             files = request.files.getlist('files')
+            courseId = request.form['courseId'].split()[0]
+
             if list(files)[0].filename:
                 # read each file
                 for fileData in files:
                     # read each line    
                     for userData in fileData:
                         # slice and make information from 'key=value'
-                        userInformation = userData.split(',')
+                        userInformation = userData.replace(' ', '').replace('\n', '').replace('\xef\xbb\xbf', '').split(',')
+                        
                         # userId,userName,authority,collegeIndex,collegeName,departmentIndex,departmentName
                         newUser = [''] * 8
                         
+                        # all authority is user in adding user from text file
+                        newUser[keys['authority']] = SETResources.const.USER
+                        newUser[keys['courseId']] = courseId
+                        
                         for eachData in userInformation:
                             if '=' in eachData:
-                                # all authority is user in adding user from text file
-                                newUser[keys['authority']] = SETResources.const.USER
-                                key,value = eachData.split('=')
+                                key, value = eachData.split('=')
+                                
                                 if key == 'userId':
                                     newUser[keys['memberId']] = value 
                                     
@@ -620,62 +620,26 @@ def class_add_user():
                                     newUser[keys['memberName']] = value
                                     
                                 elif key == 'college':
+                                    newUser[keys['collegeIndex']] = value
                                     try:
                                         newUser[keys['collegeName']] = dao.query(Colleges).\
                                                                            filter(Colleges.collegeIndex == value).\
                                                                            first().\
                                                                            collegeName
                                     except:
-                                        error = 'Wrong college index has inserted'
-                                        return render_template('/class_add_user.html',
-                                                               error = error, 
-                                                               SETResources = SETResources,
-                                                               SessionResources = SessionResources,
-                                                               ownCourses = ownCourses,
-                                                               allUsers = allUsers,
-                                                               allColleges = allColleges,
-                                                               allDepartments = allDepartments,
-                                                               authorities = authorities,
-                                                               newUsers = newUsers)
-                                    newUser[keys['collegeIndex']] = value
+                                        pass
                                        
                                 elif key == 'department':
+                                    newUser[keys['departmentIndex']] = value
                                     try:
-                                        newUser[6] = dao.query(Departments).\
-                                                         filter(Departments.departmentIndex == value).\
-                                                         first().\
-                                                         departmentName
+                                        newUser[keys['departmentName']] = dao.query(Departments).\
+                                                                              filter(Departments.departmentIndex == value).\
+                                                                              first().\
+                                                                              departmentName
                                                          
                                     except:
-                                        error = 'Wrong department index has inserted'
-                                        return render_template('/class_add_user.html',
-                                                               error = error, 
-                                                               SETResources = SETResources,
-                                                               SessionResources = SessionResources,
-                                                               ownCourses = ownCourses,
-                                                               allUsers = allUsers,
-                                                               allColleges = allColleges,
-                                                               allDepartments = allDepartments,
-                                                               authorities = authorities,
-                                                               newUsers = newUsers)
-                                    newUser[5] = value
-                                    
-                                elif key == 'courseId':
-                                    try:
-                                        newUser[7] = value.strip()
-                                    except:
-                                        error = 'Wrong course id has inserted'
-                                        return render_template('/class_add_user.html',
-                                                               error = error, 
-                                                               SETResources = SETResources,
-                                                               SessionResources = SessionResources,
-                                                               ownCourses = ownCourses,
-                                                               allUsers = allUsers,
-                                                               allColleges = allColleges,
-                                                               allDepartments = allDepartments,
-                                                               authorities = authorities,
-                                                               newUsers = newUsers)
-                                    
+                                        pass
+                                                                      
                                 else:
                                     error = 'Try again after check the manual'
                                     return render_template('/class_add_user.html',
@@ -717,8 +681,14 @@ def class_add_user():
                                                        allDepartments = allDepartments,
                                                        authorities = authorities,
                                                        newUsers = newUsers)
-                                
-                        newUsers.append(newUser)
+                        
+                        isValid = True
+                        for key in newUser:
+                            if key == '':
+                                isValid = False
+                                break
+                        if isValid:
+                            newUsers.append(newUser)
                         
         elif 'addUser' in request.form:
             for newUser in newUsers:

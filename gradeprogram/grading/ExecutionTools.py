@@ -4,6 +4,7 @@ import time
 import string
 import ptrace
 import resource
+import DBUpdate
 from subprocess import call
 
 RUN_COMMAND_LIST = []
@@ -24,11 +25,11 @@ class ExecutionTools(object):
         # copy input data
         try:
             if self.caseCount > 0:
-                copyCommand = "%s%s%s%s" % ('cp ', self.answerPath, self.problemName, '_cases_total_inputs.in input.txt')
+                copyCommand = "%s%s%s%s" % ('cp ', self.answerPath, self.problemName, '_cases_total_inputs.txt input.txt')
                 call(copyCommand, shell = True)
         except Exception as e:
             print e
-            return 'ServerError', 0, 0
+            DBUpdate.SubmittedRecordsOfProblems()
         
         # make execution command
         self.MakeCommand()

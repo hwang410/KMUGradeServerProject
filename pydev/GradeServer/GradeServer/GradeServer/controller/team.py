@@ -98,6 +98,7 @@ def team(pageNum = 1, error = None):
         
         return render_template(HTMLResources.const.TEAM_HTML,
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                teamInvitationRecords = teamInvitationRecords,
                                teamRecords = teamRecords,
                                pages = get_page_pointed(int(pageNum),
@@ -165,8 +166,7 @@ def make_team(error = None):
         global gTeamMembersId, gTeamName, gTeamDescription
                 # 자동 완성을 위한 모든 유저기록
         try :
-            memberRecords = dao.query(select_all_user().subquery()).\
-                                all()
+            memberRecords = select_all_user().all()
         except Exception:
             memberRecords = []
             
@@ -176,6 +176,7 @@ def make_team(error = None):
             
             return render_template(HTMLResources.const.TEAM_MAKE_HTML,
                                    SETResources = SETResources,
+                                   SessionResources = SessionResources,
                                    memberRecords = memberRecords)
               
         elif request.method == 'POST':
@@ -191,18 +192,19 @@ def make_team(error = None):
                     if not gTeamName:
                         return render_template(HTMLResources.const.TEAM_MAKE_HTML,
                                                SETResources = SETResources,
+                                               SessionResources = SessionResources,
                                                memberRecords = memberRecords,
                                                gTeamMembersId = gTeamMembersId,
                                                gTeamDescription = gTeamDescription,
                                                error = '팀 명'  + get_message('fillData'))
                                         # 중복 팀명 확인
                     try:
-                        if dao.query(check_team_name(gTeamName).subquery()).\
-                               first().\
-                               isDeleted == ENUMResources.const.FALSE:
+                        if check_team_name(gTeamName).first().\
+                                                      isDeleted == ENUMResources.const.FALSE:
                             # don't Exception
                             return render_template(HTMLResources.const.TEAM_MAKE_HTML,
                                                    SETResources = SETResources,
+                                                   SessionResources = SessionResources,
                                                    memberRecords = memberRecords,
                                                    gTeamMembersId = gTeamMembersId,
                                                    gTeamDescription = gTeamDescription,
@@ -224,14 +226,13 @@ def make_team(error = None):
                     try:
                         # this Commit Succeeded Go Next Step
                         dao.commit()
-                                                # 마스터 정보
+                                                # 마스터 정보first().teamName
                         insert_team_member_id(gTeamName,
                                               session[SessionResources.const.MEMBER_ID],
                                               ENUMResources.const.TRUE)
                         # this Commit Succeeded Go Next Step
                         try:
                             dao.commit()
-                            
                             for inviteeId in gTeamMembersId:
                                 error = insert_invitee_id(gTeamName,
                                                           inviteeId)
@@ -271,6 +272,7 @@ def make_team(error = None):
                 
             return render_template(HTMLResources.const.TEAM_MAKE_HTML,
                                    SETResources = SETResources,
+                                   SessionResources = SessionResources,
                                    memberRecords = memberRecords,
                                    gTeamMembersId = gTeamMembersId,
                                    gTeamName = gTeamName,
@@ -311,6 +313,7 @@ def team_information(teamName, error = None):
         
         return render_template(HTMLResources.const.TEAM_INFORMATION_HTML,
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                teamInformation = teamInformation,
                                teamMemberRecords = teamMemberRecords)
     except Exception:
@@ -380,6 +383,7 @@ def team_manage(teamName, error = None):
             
             return render_template(HTMLResources.const.TEAM_MANAGE_HTML,
                                    SETResources = SETResources,
+                                   SessionResources = SessionResources,
                                    memberRecords = memberRecords,
                                    teamInformation =teamInformation, 
                                    gTeamMembersId = gTeamMembersId,
@@ -444,6 +448,7 @@ def team_manage(teamName, error = None):
                     
                     return render_template(HTMLResources.const.TEAM_MANAGE_HTML,
                                            SETResources = SETResources,
+                                           SessionResources = SessionResources,
                                            memberRecords = memberRecords,
                                            teamInformation = teamInformation, 
                                            gTeamMembersId = gTeamMembersId,
@@ -457,6 +462,7 @@ def team_manage(teamName, error = None):
                     
                     return render_template(HTMLResources.const.TEAM_MANAGE_HTML,
                                            SETResources = SETResources,
+                                           SessionResources = SessionResources,
                                            memberRecords = memberRecords,
                                            teamInformation = teamInformation, 
                                            gTeamMembersId = gTeamMembersId,
@@ -561,10 +567,10 @@ def insert_team_member_id(teamName, teamMemberId, isTeamMaster = ENUMResources.c
                filter(RegisteredTeamMembers.teamName == teamName,
                       RegisteredTeamMembers.teamMemberId == teamMemberId).\
                first():
-        
         dao.add(RegisteredTeamMembers(teamName = teamName,
                                       teamMemberId = teamMemberId,
                                       isTeamMaster = isTeamMaster))
+        dao.commit()
     # else then Update
     else:
         dao.query(RegisteredTeamMembers).\

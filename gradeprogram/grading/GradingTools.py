@@ -1,4 +1,5 @@
 import string
+import DBUpdate
 from subprocess import call
 
 class GradingTools(object):
@@ -46,12 +47,12 @@ class GradingTools(object):
     def SolutionSingle(self):
         # user output file each line compare with answer file each line.
         try:
-            answerOpenCommand = "%s%s%s" % (self.answerPath, self.problemName, '_cases_total_outputs.out')
+            answerOpenCommand = "%s%s%s" % (self.answerPath, self.problemName, '_cases_total_outputs.txt')
             answerFile = open(answerOpenCommand, 'r')
             stdOutput = open('output.txt', 'r')
         except Exception as e:
             print e
-            return 'error'
+            DBUpdate.SubmittedRecordsOfProblems()
         
         stdLines = stdOutput.readlines()
         answerLines = answerFile.readlines()
@@ -92,7 +93,7 @@ class GradingTools(object):
             call('./checker.out 1>result.txt', shell = True)
         except Exception as e:
             print e
-            return 'error'
+            DBUpdate.SubmittedRecordsOfProblems()
         
         rf = open('reuslt.txt', 'r')
         
@@ -115,10 +116,10 @@ class GradingTools(object):
             try:
                 copyCommand = "%s%s%s%s%i%s" % ('cp ', self.answerPath,
                                                 self.problemName, '_case',
-                                                i, '_input.in input.txt')
+                                                i, '_input.txt input.txt')
                 answerOpenCommand = "%s%s%s%i%s" % (self.answerPath,
                                                     self.problemName,
-                                                    '_case', i, '_output.out')
+                                                    '_case', i, '_output.txt')
                 
                 # input.txt file copy
                 call('rm -r input.txt', shell = True)
@@ -131,7 +132,7 @@ class GradingTools(object):
                 stdOutput = open('output.txt', 'r') # student output open
             except Exception as e:
                 print e
-                return 'error'
+                DBUpdate.SubmittedRecordsOfProblems()
             
             answer = answerFile.read()
             student = stdOutput.read()
@@ -167,13 +168,13 @@ class GradingTools(object):
             call(copyCommand, shell = True)
         except Exception as e:
                 print e
-                return 'error'    
+                DBUpdate.SubmittedRecordsOfProblems()
         
         for i in range(1, self.caseCount+1):
             try:
                 copyCommand = "%s%s%s%s%i%s" % ('cp ', self.answerPath,
                                                 self.problemName, '_case', i,
-                                                '_input.in input.txt')
+                                                '_input.txt input.txt')
                 # input.txt file copy
                 call('rm -r input.txt', shell = True)
                 call(copyCommand, shell = True)
@@ -185,7 +186,7 @@ class GradingTools(object):
                 rf = open('reuslt.txt', 'r')
             except Exception as e:
                 print e
-                return 'error'
+                DBUpdate.SubmittedRecordsOfProblems()
             
             score = rf.readline()
             
@@ -209,7 +210,7 @@ class GradingTools(object):
         wf.wrtie(str(size))
             
         for i in size:
-            answerOpenCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName, '_case', _list[i], '.in')
+            answerOpenCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName, '_case', _list[i], '.txt')
             rf = open(answerOpenCommand, 'r')
             
             case = rf.readlines()

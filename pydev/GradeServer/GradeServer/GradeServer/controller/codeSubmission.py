@@ -47,10 +47,10 @@ class MakePath:
         self.problemId = problemId
         self.problemName = problemName
     def make_current_path(self):
-        result = '%s/%s_%s/%s_%s' %(self.path, self.courseId, self.courseName, self.memberId, self.problemId, self.problemName)
+        result = '%s/%s_%s/%s/%s_%s' %(self.path, self.courseId, self.courseName, self.memberId, self.problemId, self.problemName)
         return result.replace(' ', '')
     def make_temp_path(self):
-        result = '%s/%s_%s/%s_%s_tmp' %(self.path, self.courseId, self.courseName, self.memberId, self.problemId, self.problemName)
+        result = '%s/%s_%s/%s/%s_%s_tmp' %(self.path, self.courseId, self.courseName, self.memberId, self.problemId, self.problemName)
         return result.replace(' ', '')
 
 class InsertToSubmittedFiles:

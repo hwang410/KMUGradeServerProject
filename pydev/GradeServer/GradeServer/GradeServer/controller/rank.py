@@ -5,7 +5,9 @@ from flask import render_template, request
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
-from GradeServer.utils.utilQuery import select_all_user, select_rank, rank_sorted, submissions_last_submitted, select_count, select_match_member_sub
+from GradeServer.utils.utilQuery import select_all_user, select_count, select_match_member_sub, select_accept_courses
+from GradeServer.utils.utilRankQuery import select_rank, rank_sorted
+from GradeServer.utils.utilSubmissionQuery import submissions_last_submitted
 from GradeServer.utils.utilMessages import unknown_error, get_message
 
 from GradeServer.resource.enumResources import ENUMResources
@@ -32,9 +34,9 @@ def close_db_session(exception = None):
 로그인한 유저가 랭크 페이지를 눌렀을 때
 페이지 별로 보여줌
 """    
-@GradeServer.route('/rank/<sortCondition>/page<pageNum>', methods = ['GET', 'POST'])
+@GradeServer.route('/rank/<activeTabCourseId>-<sortCondition>/page<pageNum>', methods = ['GET', 'POST'])
 @login_required
-def rank(sortCondition, pageNum, error =None):
+def rank(activeTabCourseId, sortCondition, pageNum, error =None):
     
     try:
         try:
@@ -45,8 +47,7 @@ def rank(sortCondition, pageNum, error =None):
             memberRecords = []
             
         # Last Submission Max Count
-        submissions = select_rank(submissions_last_submitted().subquery()).subquery()
-        
+        submissions = select_rank(submissions_last_submitted(activeTabCourseId).subquery()).subquery()
         
         # records count
         try:
@@ -89,12 +90,22 @@ def rank(sortCondition, pageNum, error =None):
                                                 int(pageNum)).all()
         except Exception:
             rankMemberRecords = []
-            
+        
+        try:
+            myCourses = select_accept_courses().all()
+        except Exception:
+            myCourses = []
+        # myCourses Default Add ALL
+        myCourses.insert(0, OtherResources.const.ALL)
+       
         return render_template(HTMLResources.const.RANK_HTML,
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
+                               activeTabCourseId = activeTabCourseId,
                                sortCondition =  sortCondition,
                                memberRecords = memberRecords,
                                rankMemberRecords = rankMemberRecords,
+                               myCourses = myCourses,
                                pages = pages,
                                error = error) # 페이지 정보
     except Exception:

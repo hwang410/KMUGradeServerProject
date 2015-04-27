@@ -95,6 +95,7 @@ def board(activeTabCourseId, pageNum):
        
         return render_template(HTMLResources.const.BOARD_HTML,
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                articleRecords = articleRecords,
                                articleNoticeRecords =  articleNoticeRecords,
                                myCourses = myCourses,
@@ -231,6 +232,7 @@ def read(articleIndex, error = None):
             
             return render_template(HTMLResources.const.ARTICLE_READ_HTML,
                                    SETResources = SETResources,
+                                   SessionResources = SessionResources,
                                    article = articlesOnBoard,
                                    commentRecords = commentRecords,
                                    isLikeds = isLikeds,
@@ -372,6 +374,7 @@ def read(articleIndex, error = None):
 
                 return render_template(HTMLResources.const.ARTICLE_READ_HTML,
                                        SETResources = SETResources,
+                                       SessionResources = SessionResources,
                                        article = articlesOnBoard,
                                        commentRecords = commentRecords,
                                        boardReplyIndex = int(form[idIndex:]),
@@ -472,7 +475,7 @@ def write(articleIndex, error =None):
                         # Set isNotice
                         if SETResources.const.USER in session['authority']: 
                             isNotice = ENUMResources.const.FALSE
-                        newPost = ArticlesOnBoard(problemId =problemId,
+                        newPost = ArticlesOnBoard(problemId =None,
                                                   courseId = courseId,
                                                   writerId = session[SessionResources.const.MEMBER_ID],
                                                   isNotice = isNotice,
@@ -521,6 +524,7 @@ def write(articleIndex, error =None):
  
         return render_template(HTMLResources.const.ARTICLE_WRITE_HTML,
                                SETResources = SETResources,
+                               SessionResources = SessionResources,
                                myCourses = myCourses,
                                articlesOnBoard = articlesOnBoard,
                                title = title,
