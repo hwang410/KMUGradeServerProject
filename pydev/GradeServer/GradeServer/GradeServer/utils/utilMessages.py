@@ -25,6 +25,7 @@ def get_message(key ='unknown'):
                   'writtenComment': '댓글을 작성 하였습니다!!!',
                   'deletedComment': '댓글을 삭제 하였습니다!!!',
                   'writtenPost': '게시물을 작성 하였습니다!!!',
+                  'banPosting': '글을 작성 할 수 없습니다.',
                   'modifiedPost': '게시물을 수정 하였습니다!!!',
                   'modifiedComment': '댓글을 수정 하였습니다!!!',
                   'deletedPost': '게시물을 삭제 하였습니다!!!',
