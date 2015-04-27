@@ -9,7 +9,7 @@ For a school or an organization, users can be managed as a group so it's easier 
 
 Our first milestone(~2015.5) is to service for about 2K people and handle 1K of judging request.
 
-Overall coding is written with [python flask](http://flask.pocoo.org)<br>
+Overall code is written with [python flask](http://flask.pocoo.org)<br>
 And used followings<br>
 [python tornado](http://www.tornadoweb.org/en/stable) for Web access,<br>
 [redis](http://www.redis.io) for Judging server,<br>
