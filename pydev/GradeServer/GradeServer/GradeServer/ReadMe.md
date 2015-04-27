@@ -7,8 +7,8 @@
 ```
 Following is each items' description.
 #### `1. <problem name>.txt`
-  It contains <problem>'s meta information.
-  e.g. for problem "Hello World"
+  It contains <problem>'s meta information.<br>
+  e.g. for problem "Hello World"<br>
   Hello World.txt contains
   ```
   Name=Hello World, Difficulty=1, SolutionCheckType=Solution, LimitedTime=3000, LimittedMemory=128
