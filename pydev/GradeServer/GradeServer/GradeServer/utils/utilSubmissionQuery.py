@@ -12,7 +12,12 @@ from GradeServer.resource.sessionResources import SessionResources
 
 from GradeServer.database import dao
 from GradeServer.model.submissions import Submissions
-
+from GradeServer.model.problems import Problems
+from GradeServer.model.members import Members
+from GradeServer.model.departments import Departments
+from GradeServer.model.languages import Languages
+from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
+from GradeServer.model.colleges import Colleges
 
 '''
 Submissions to Last Submitted
@@ -52,7 +57,7 @@ def select_all_submission(memberId, problemId, courseId):
                                 Languages.languageName).\
                           filter(Submissions.memberId == memberId).\
                           join(Languages, 
-                                Submissions.usedLanguage == Languages.languageIndex).\
+                                Submissions.usedLanguage == Languages.languageIndex)
                                   
 '''
 Submissions Sorting Condition
