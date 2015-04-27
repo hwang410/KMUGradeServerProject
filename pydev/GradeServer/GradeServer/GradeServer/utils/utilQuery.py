@@ -59,26 +59,34 @@ def select_accept_courses():
     if SETResources.const.SERVER_ADMINISTRATOR in session[SessionResources.const.AUTHORITY]:
         myCourses = dao.query(RegisteredCourses.courseId,
                               RegisteredCourses.courseName,
-                              RegisteredCourses.endDateOfCourse).\
-                        filter(RegisteredCourses.endDateOfCourse >= datetime.now())
+                              RegisteredCourses.endDateOfCourse)
     # Class Master, User
     elif SETResources.const.COURSE_ADMINISTRATOR in session[SessionResources.const.AUTHORITY]:
         myCourses = dao.query(RegisteredCourses.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse).\
-                        filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID],
-                               RegisteredCourses.endDateOfCourse >= datetime.now())
+                        filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID])
     else:
         myCourses = dao.query(Registrations.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse).\
-                        filter(Registrations.memberId == session[SessionResources.const.MEMBER_ID],
-                               RegisteredCourses.endDateOfCourse >= datetime.now()).\
+                        filter(Registrations.memberId == session[SessionResources.const.MEMBER_ID]).\
                         join(RegisteredCourses,
                              Registrations.courseId == RegisteredCourses.courseId)
             
     return myCourses
 
+
+'''
+Select Past, Current course
+'''
+def select_past_courses(ownCoursesSub):
+    return dao.query(ownCoursesSub).\
+               filter(ownCoursesSub.c.endDateOfCourse < datetime.now())
+def select_current_courses(ownCoursesSub):
+    return dao.query(ownCoursesSub).\
+               filter(ownCoursesSub.c.endDateOfCourse >= datetime.now())
+               
            
 '''
  DB Select Notices

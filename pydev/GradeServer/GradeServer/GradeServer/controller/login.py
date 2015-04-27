@@ -20,7 +20,7 @@ from werkzeug.security import check_password_hash
 
 from GradeServer.utils.utilMessages import get_message
 from GradeServer.utils.loginRequired import login_required
-from GradeServer.utils.utilQuery import select_accept_courses, select_notices, select_match_member
+from GradeServer.utils.utilQuery import select_accept_courses, select_past_courses, select_current_courses, select_notices, select_match_member
 from GradeServer.utils.utilRankQuery import select_top_coder
 
 from GradeServer.resource.enumResources import ENUMResources
@@ -80,7 +80,9 @@ def sign_in():
                             session[SessionResources.const.OWN_CURRENT_COURSES] = []
                         try:
                             session[SessionResources.const.OWN_PAST_COURSES] = select_past_courses(ownCourses).all()
+                            print "CCCCCCCCCCCCCCCCL", len(session[SessionResources.const.OWN_PAST_COURSES])
                         except Exception:
+                            print "AAAAAAAZZZ"
                             session[SessionResources.const.OWN_PAST_COURSES] = []
                         update_recent_access_date(memberId)
                         # Commit Exception
@@ -105,15 +107,6 @@ def sign_in():
                            noticeRecords = select_notices(),
                            topCoderId = select_top_coder(),
                            error = error)
-'''
-Select Past, Current course
-'''
-def select_past_courses(ownCoursesSub):
-    return dao.query(ownCoursesSub).\
-               filter(ownCoursesSub.c.endDateOfCourse < datetime.now())
-def select_current_courses(ownCoursesSub):
-    return dao.query(ownCoursesSub).\
-               filter(ownCoursesSub.c.endDateOfCourse >= datetime.now())
                
                
 ''' 
