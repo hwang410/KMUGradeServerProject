@@ -1,5 +1,6 @@
 import glob
 import string
+import DBUpdate
 from subprocess import call
 
 class CompileTools(object):
@@ -16,8 +17,8 @@ class CompileTools(object):
                 copyCommand = "%s%s%s" % ('cp ', self.filePath, '*.py ./')
                 call(copyCommand, shell = True)
             except Exception as e:
-                print e
-                return 'ServerError'
+                print 'compile python file copy'
+                DBUpdate.SubmittedRecordsOfProblems()
             
             return True
             
@@ -30,12 +31,12 @@ class CompileTools(object):
         # check compile error
         result = self.CompileErrorCheck()
         
-        if result == False: # if compile error -> make error list
+        if result == 'CompileError': # if compile error -> make error list
             result = self.MakeErrorList()
         
         # if not make execution file
         elif len(glob.glob('./'+self.runFileName)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
-            return 'ServerError'
+            DBUpdate.SubmittedRecordsOfProblems()
         
         return result
         
@@ -44,15 +45,15 @@ class CompileTools(object):
         try:
             fp = open('error.err', 'r')
         except Exception as e:
-            print e
-            return 'ServerError'
+            print 'compile error check file open error'
+            DBUpdate.SubmittedRecordsOfProblems()
         
         errMess = fp.read()
         
         fp.close()
     
         if errMess.find('error:') > 0:  # if there is an 'error'
-            return False
+            return 'CompileError'
         
         return True
         
@@ -65,8 +66,8 @@ class CompileTools(object):
             wf = open(self.filePath + 'errorlist.txt', 'w')
             rf = open('error.err', 'r')
         except Exception as e:
-            print e
-            return 'ServerError'
+            print 'make compile error list file open error'
+            DBUpdate.SubmittedRecordsOfProblems()
         
         lines = rf.readlines()
         _list = []
