@@ -83,15 +83,25 @@ def select_accept_courses():
 '''
 Submissions to Last Submitted
 '''
-def submissions_last_submitted():
+def submissions_last_submitted(courseId):
     
-    return dao.query(Submissions.memberId,
-                     Submissions.courseId,
-                     Submissions.problemId,
-                     func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
-               group_by(Submissions.memberId,
-                        Submissions.problemId,
-                        Submissions.courseId)
+    if courseId == OtherResources.const.ALL:
+        return dao.query(Submissions.memberId,
+                         Submissions.courseId,
+                         Submissions.problemId,
+                         func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
+                   group_by(Submissions.memberId,
+                            Submissions.problemId,
+                            Submissions.courseId)
+    else:    
+        return dao.query(Submissions.memberId,
+                         Submissions.courseId,
+                         Submissions.problemId,
+                         func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
+                   filter(Submissions.courseId == courseId).\
+                   group_by(Submissions.memberId,
+                            Submissions.problemId,
+                            Submissions.courseId)    
                                                    
            
 ''' 
