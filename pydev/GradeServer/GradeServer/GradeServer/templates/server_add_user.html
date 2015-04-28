@@ -84,7 +84,7 @@ $(function() {
 		    newRow.insertCell(i).innerHTML = uploadObj;
 		}
 
-		$("#college"+numOfRow).bind("click", function(){
+		$("#college"+numOfRow).change(function(){
 			RowOnClickController(numOfRow);
 		});
 
@@ -137,7 +137,7 @@ $(function() {
 		
 	  	document.getElementById("indivisualUserForm").innerHTML = uploadObj;
 
-	  	$("#college1").bind("click", function(){
+	  	$("#college1").change(function(){
 	  		RowOnClickController(1);
 	  	});
 	});
@@ -310,51 +310,49 @@ $(function() {
 </div>
 <script>
 // For the first line of Add Indivisual User
-$("#college1").bind("click", function(){
+$("#college1").change(function(){
 	RowOnClickController(1);
 });
 function RowOnClickController(IdxOfRow){
-	$("#college"+IdxOfRow).change(function(){
-		var selectedText = $("#college"+IdxOfRow+" option:selected").text();
-		var index = selectedText.split(' ')[0];
-		var name = selectedText.split(' ')[1];
-		var initialOptions = document.getElementById("college"+IdxOfRow).innerHTML;
-		if(initialOptions.indexOf("select college") != -1){
-			var OptionsWithoutDefault = 
-				initialOptions.replace("<option> select college </option>", "");
-			
-			// remove tab spaces
-			OptionsWithoutDefault = OptionsWithoutDefault.replace(/\t/g, "");
+	var selectedText = $("#college"+IdxOfRow+" option:selected").text();
+	var index = selectedText.split(' ')[0];
+	var name = selectedText.split(' ')[1];
+	var initialOptions = document.getElementById("college"+IdxOfRow).innerHTML;
+	if(initialOptions.indexOf("select college") != -1){
+		var OptionsWithoutDefault = 
+			initialOptions.replace("<option> select college </option>", "");
+		
+		// remove tab spaces
+		OptionsWithoutDefault = OptionsWithoutDefault.replace(/\t/g, "");
 
-			// split for checking selected value
-			OptionsWithoutDefault = OptionsWithoutDefault.split(' ');
+		// split for checking selected value
+		OptionsWithoutDefault = OptionsWithoutDefault.split(' ');
 
-			var newOptions = "";
-			for(var i=0;i<OptionsWithoutDefault.length;i++){
-				// if an option's index and name are same then gives 'selected'
-				if(OptionsWithoutDefault[i].indexOf("<option>"+index) != -1 && 
-				   OptionsWithoutDefault[i+1].indexOf(name) != -1){
-					OptionsWithoutDefault[i] = OptionsWithoutDefault[i].replace("<option>", "<option selected>");
-				}
-				newOptions += OptionsWithoutDefault[i] + ' ';
+		var newOptions = "";
+		for(var i=0;i<OptionsWithoutDefault.length;i++){
+			// if an option's index and name are same then gives 'selected'
+			if(OptionsWithoutDefault[i].indexOf("<option>"+index) != -1 && 
+			   OptionsWithoutDefault[i+1].indexOf(name) != -1){
+				OptionsWithoutDefault[i] = OptionsWithoutDefault[i].replace("<option>", "<option selected>");
 			}
-			document.getElementById("college"+IdxOfRow).innerHTML = newOptions;
+			newOptions += OptionsWithoutDefault[i] + ' ';
 		}
+		document.getElementById("college"+IdxOfRow).innerHTML = newOptions;
+	}
 
-		{%- for college in allColleges %}
-		if(index == "{{ college.collegeIndex }}"){
-			document.getElementById("department"+IdxOfRow).innerHTML = "";
-			{%- for relation, collegeInfo, departmentInfo in allDepartments %}
-				{%- if relation.collegeIndex == college.collegeIndex %}
-				document.getElementById("department"+IdxOfRow).innerHTML += 
-					"<option>" +
-					"{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}" +
-					"</option>";
-				{% endif -%}
-			{% endfor -%}
-		}
+	{%- for college in allColleges %}
+	if(index == "{{ college.collegeIndex }}"){
+		document.getElementById("department"+IdxOfRow).innerHTML = "";
+		{%- for relation, collegeInfo, departmentInfo in allDepartments %}
+			{%- if relation.collegeIndex == college.collegeIndex %}
+			document.getElementById("department"+IdxOfRow).innerHTML += 
+				"<option>" +
+				"{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}" +
+				"</option>";
+			{% endif -%}
 		{% endfor -%}
-	});
+	}
+	{% endfor -%}
 }
 </script>
 {% endblock -%}
