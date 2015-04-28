@@ -70,16 +70,17 @@
 					<td>Start Date
 					<td>Finish Date
 					<td>Delete
+			<form method="post">
 			<tbody>
 				{%- for course, member in courses %}
 				<tr>
 					<td>{{ course.courseId }}
 					<td>{{ course.courseName }}
 					<td>{{ course.courseAdministratorId }} {{ member.memberName }}
-					<td>{%- for languageOfCourse, language in languagesOfCourse %}
-								{%- if course.courseId==languageOfCourse.courseId %}
+					<td>{%- for language in languagesOfCourse %}
+								{%- if course.courseId==language.courseId %}
 									{{ language.languageName }}
-									{%- if languageOfCourse.languageVersion!='0' %}
+									{%- if language.languageVersion!='0' %}
 										{{ language.languageVersion }}
 									{% endif -%}
 									<br>
@@ -90,10 +91,10 @@
 					<td>
 						<label class="checkbox-center">
 							<input class="box-check" name="{{ course.courseId }}"
-									type="checkbox" form="deleteConfirm" value="{{ course.courseId }}">
+									type="checkbox" value="{{ course.courseId }}">
 						</label>
 				{% endfor -%}
-				</form>
+			</form>
 		</table>
 	</div>
 </div>

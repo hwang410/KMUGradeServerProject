@@ -239,18 +239,20 @@ def server_manage_class():
                        order_by(RegisteredCourses.endDateOfCourse.desc())).\
                   all()
     except:
-        error = 'No courses exists'
-        print 'Empty \'RegisteredCourses\' table'
+        courses = []
+        #error = 'No courses exists'
         
     try:
-        languagesOfCourse = (dao.query(LanguagesOfCourses, 
-                                       Languages).\
+        languagesOfCourse = dao.query(LanguagesOfCourses.courseId, 
+                                      Languages.languageIndex,
+                                      Languages.languageName).\
                                  join(Languages,
-                                      LanguagesOfCourses.languageIndex == Languages.languageIndex)).\
+                                      LanguagesOfCourses.languageIndex == Languages.languageIndex).\
                             all()
     except:
-        error = 'No information of languages of courses'
-        print 'Empty \'LanguagesOfCourse\' table'
+        print "??"
+        languagesOfCourse = []
+        #error = 'No information of languages of courses'
 
     if request.method == 'POST':
         for form in request.form:
@@ -317,6 +319,7 @@ def server_add_class():
         courseIndex, courseName = request.form['courseId'].split(' ', 1)
         
         for form in request.form:
+            print form, request.form[form]
             if 'languageIndex' in form:
                 languages.append(request.form[form].split('_'))
                 
@@ -377,7 +380,7 @@ def server_add_class():
                                        courses = allCourses, 
                                        languages = allLanguages,
                                        allCourseAdministrators = allCourseAdministrators)
-                
+
             existCoursesNum = dao.query(RegisteredCourses.courseId).\
                                   all()
             newCourseNum = '%s%s%03d' % (startDateOfCourse[:4], semester, int(courseIndex)) # yyyys
@@ -387,8 +390,8 @@ def server_add_class():
                 if existCourse[0][:8] == newCourseNum:
                     NumberOfCurrentSubCourse = dao.query(func.count(RegisteredCourses.courseId).label('num')).\
                                                    filter(RegisteredCourses.courseId.like(newCourseNum+'__')).\
-                                               first().\
-                                               num
+                                                   first().\
+                                                   num
                     """
                     수정할것!!count 사용해서
                     func.count().label
@@ -397,7 +400,6 @@ def server_add_class():
                                                NumberOfCurrentSubCourse + 1) # yyyysccc
                     isNewCourse = False
                     break
-                
             # new class case
             if isNewCourse:
                 newCourseNum = '%s01' % (newCourseNum)
@@ -419,19 +421,18 @@ def server_add_class():
                                        SessionResources = SessionResources,
                                        courses = allCourses, 
                                        languages = allLanguages)
-                
+            
             # create course folder in 'CurrentCourses' folder
             courseName = courseName.replace(' ', '')
             problemPath = "%s/CurrentCourses/%s_%s" % (projectPath, newCourseNum, courseName)
             if not os.path.exists(problemPath):
                 os.makedirs(problemPath)
-            
             for language in languages:
+                print language
                 languageIndex, languageVersion = language
                 try:
                     newCourseLanguage = LanguagesOfCourses(courseId = newCourseNum, 
-                                                           languageIndex = int(languageIndex), 
-                                                           languageVersion = languageVersion)
+                                                           languageIndex = int(languageIndex))
                     dao.add(newCourseLanguage)
                     dao.commit()
                 except:
@@ -443,7 +444,6 @@ def server_add_class():
                                            SessionResources = SessionResources,
                                            courses = allCourses, 
                                            languages = allLanguages)
-                    
             return redirect(url_for('.server_manage_class'))
 
     return render_template('/server_add_class.html', 
