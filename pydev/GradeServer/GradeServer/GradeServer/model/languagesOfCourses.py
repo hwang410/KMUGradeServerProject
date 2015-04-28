@@ -23,4 +23,4 @@ class LanguagesOfCourses (Base) :
     
     courseId =Column (VARCHAR (10), ForeignKey (RegisteredCourses.courseId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
     languageIndex =Column (INTEGER (unsigned =True), ForeignKey (Languages.languageIndex, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, autoincrement =False, nullable =False)   
-    languageVersion =Column (VARCHAR (128), ForeignKey (Languages.languageVersion, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False) 
+    
