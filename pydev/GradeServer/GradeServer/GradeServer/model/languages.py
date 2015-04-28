@@ -19,6 +19,6 @@ class Languages (Base) :
     
     __tablename__ ="Languages"
     
-    languageIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, nullable =False)
+    languageIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =True, nullable =False)
     languageName =Column (VARCHAR (1024), nullable =False)
     languageVersion =Column (VARCHAR (128), primary_key =True, nullable =False)

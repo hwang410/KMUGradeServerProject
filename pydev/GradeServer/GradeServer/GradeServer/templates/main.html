@@ -177,7 +177,7 @@
 		      		{% endif %}
 			          <div class="container">
 			            <div class="carousel-caption">
-			            	<a href ="{{ url_for ('GradeServer.read',articleIndex =noticeRecord.articleIndex) }}">
+			            	<a href ="{{ url_for ('GradeServer.read', activeTabCourseId = activeTabCourseId, articleIndex =noticeRecord.articleIndex) }}">
 				            	<h3>
 				            		{% if noticeRecord.courseId %}
 				            		{{ noticeRecord.courseId }} {{ noticeRecord.courseName }}
