@@ -230,6 +230,7 @@ def update_submitted_files(memberId, courseId, problemId, fileIndex, fileName, f
 def upload(courseId, problemId):
     memberId = session[SessionResources.const.MEMBER_ID]
     fileIndex = 1
+    
     memberName = get_member_name(memberId)
     courseName = get_course_name(courseId)
     problemName = get_problem_name(problemId)
@@ -289,13 +290,12 @@ def upload(courseId, problemId):
     usedLanguageVersion = used_language_version(courseId, usedLanguage)
     subCountNum = get_submission_count(memberId, courseId, problemId)
     solCountNum = get_solution_check_count(memberId, courseId, problemId, subCountNum)
-    insert_to_sumbissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguage, usedLanguageVersion, sumOfSubmittedFileSize)
+    insert_to_submissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguage, sumOfSubmittedFileSize)
     problemPath, limitedTime, limitedMemory, solutionCheckType, problemCasesPath = get_problem_info(problemId, problemName)
-
     isAllInputCaseInOneFile = is_support_multiple_case(problemId, courseId)
     
     caseCount = get_case_count(problemCasesPath, isAllInputCaseInOneFile)
-    
+    problemIdName = '%s_%s' %(problemId, problemName)
     send_to_celery(filePath,
                    problemPath,
                    memberId,
@@ -308,7 +308,7 @@ def upload(courseId, problemId):
                    usedLanguageVersion,
                    courseId,
                    subCountNum,
-                   problemName)
+                   problemIdName)
     
     flash(OtherResources.const.SUBMISSION_SUCCESS)
     
@@ -387,13 +387,14 @@ def code(courseId, pageNum, problemId):
     usedLanguageVersion = used_language_version(courseId, usedLanguage)
     subCountNum = get_submission_count(memberId, courseId, problemId)
     solCountNum = get_solution_check_count(memberId, courseId, problemId, subCountNum)
-    insert_to_sumbissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguage, usedLanguageVersion, fileSize)
+    insert_to_submissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguage, sumOfSubmittedFileSize)
     problemPath, limitedTime, limitedMemory, solutionCheckType, problemCasesPath = get_problem_info(problemId, problemName)
 
     isAllInputCaseInOneFile = is_support_multiple_case(problemId, courseId)
     
     caseCount = get_case_count(problemCasesPath, isAllInputCaseInOneFile)
-            
+        
+    problemIdName = '%s_%s' %(problemId, problemName)
     send_to_celery(filePath,
                    problemPath,
                    memberId,
@@ -406,16 +407,14 @@ def code(courseId, pageNum, problemId):
                    usedLanguageVersion,
                    courseId,
                    subCountNum,
-                   problemName)
+                   problemIdName)
     
     flash(OtherResources.const.SUBMISSION_SUCCESS)
     return redirect(url_for(RouteResources.const.PROBLEM_LIST,
                             courseId = courseId,
                             pageNum = pageNum))
     
-def insert_to_sumbissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguage, 
-usedLanguageVersion, sumOfSubmittedFileSize):
-        
+def insert_to_submissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguage, sumOfSubmittedFileSize):
     try:
         submissions = Submissions(memberId = memberId,
                                   problemId = problemId,
@@ -425,8 +424,7 @@ usedLanguageVersion, sumOfSubmittedFileSize):
                                   status = ENUMResources.const.JUDGING,
                                   codeSubmissionDate = datetime.now(),
                                   sumOfSubmittedFileSize = sumOfSubmittedFileSize,
-                                  usedLanguage = usedLanguage,
-                                  usedLanguageVersion = usedLanguageVersion)
+                                  usedLanguage = usedLanguage)
         dao.add(submissions)
         
     except Exception as e:
@@ -453,7 +451,7 @@ def send_to_celery(filePath,
                    usedLanguageVersion,
                    courseId,
                    subCountNum,
-                   problemName): 
+                   problemIdName): 
     Grade.delay(str(filePath),
                 str(problemPath),
                 str(memberId),
@@ -466,4 +464,4 @@ def send_to_celery(filePath,
                 str(usedLanguageVersion),
                 str(courseId),
                 subCountNum,
-                str(problemName))
+                problemIdName)
