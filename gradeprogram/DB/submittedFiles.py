@@ -11,7 +11,7 @@
 
 
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy.dialects.mysql import VARCHAR, INTEGER, TEXT
+from sqlalchemy.dialects.mysql import VARCHAR, INTEGER, TEXT, ENUM
 
 from DB import Base
 from DB.members import Members
@@ -27,4 +27,5 @@ class SubmittedFiles (Base) :
     fileIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, nullable =False)
     fileName =Column (VARCHAR (50), nullable =False)
     filePath =Column (TEXT, nullable =False)
+    isDeleted =Column (ENUM ('TRUE', 'FALSE'), default = 'FALSE', nullable = False)
     fileSize =Column (INTEGER (unsigned =True), default =0, nullable =False) #Byte

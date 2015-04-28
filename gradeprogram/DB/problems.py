@@ -26,4 +26,4 @@ class Problems (Base) :
     limitedTime =Column (INTEGER (unsigned =True), default =3000, nullable =False) #ms
     limitedMemory =Column (INTEGER (unsigned =True), default =1024, nullable =False) #MB
     problemPath =Column (TEXT, nullable =True)
-    isDeleted =Column (ENUM ('Deleted', 'Not-Deleted'), default ='Not-Deleted', nullable =False)
+    isDeleted =Column (ENUM ('TRUE', 'FALSE'), default ='FALSE', nullable =False)
