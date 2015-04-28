@@ -342,7 +342,7 @@ def class_manage_user():
                                allUsers=[],
                                colleges=[],
                                departments=[])
-    
+
     # all registered users
     allUsers = (dao.query(DepartmentsDetailsOfMembers,
                           Members).\
@@ -351,16 +351,17 @@ def class_manage_user():
                     filter(Members.authority == SETResources.const.USER).\
                     order_by(DepartmentsDetailsOfMembers.memberId)).\
                all()
-    
+
     colleges = dao.query(Colleges).\
                    all()
     departments = dao.query(Departments).\
                       all()
-    
+                      
     allUsersToData = []
     userIndex = 1
     loopIndex = 0
     for departmentsDetailsOfMember,eachUser in allUsers:
+        print departmentsDetailsOfMember, eachUser
         if loopIndex == 0:
             allUsersToData.append([departmentsDetailsOfMember.memberId,
                                    eachUser.memberName,
@@ -368,7 +369,7 @@ def class_manage_user():
                                    departmentsDetailsOfMember.departmentIndex])
             print allUsersToData
         else:
-            if eachUser.memberId == allUsersToData[userIndex-1][keys['memberId']]:               
+            if eachUser.memberId == allUsersToData[userIndex-1][0]:               
                 allUsersToData[userIndex-1].append(departmentsDetailsOfMember.collegeIndex)
                 allUsersToData[userIndex-1].append(departmentsDetailsOfMember.departmentIndex)
             else:
@@ -378,7 +379,7 @@ def class_manage_user():
                                        departmentsDetailsOfMember.departmentIndex])
                 userIndex += 1
         loopIndex += 1
-        
+
     ownUsers = []
     for ownCourse in ownCourses:
         try:
@@ -777,13 +778,13 @@ def class_add_user():
                                  filter(RegisteredCourses.courseId == newUser[keys['courseId']].split()[0]).\
                                  first().\
                                  courseName
-                                 
+
                 memberPath = '%s/%s/%s_%s/%s_%s' % (projectPath,
-                                                     coursesPath,
-                                                     newUser[keys['courseId']].split()[0],
-                                                     courseName,
-                                                     newUser[keys['memberId']],
-                                                     newUser[keys['memberName']])
+                                                    coursesPath,
+                                                    newUser[keys['courseId']].split()[0],
+                                                    courseName.replace(' ', ''),
+                                                    newUser[keys['memberId']],
+                                                    newUser[keys['memberName']].replace(' ', ''))
                 
                 if not os.path.exists(memberPath):
                     os.makedirs(memberPath)
