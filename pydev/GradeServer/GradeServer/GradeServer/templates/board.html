@@ -82,7 +82,7 @@
 								Server Notice
 								{% endif %}
 							</td>
-							<td><a href= '{{ url_for ("GradeServer.read", articleIndex = articleNoticeRecord.articleIndex) }}'>{{ articleNoticeRecord.title }}</a>
+							<td><a href= '{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleNoticeRecord.articleIndex) }}'>{{ articleNoticeRecord.title }}</a>
 								{%- if articleNoticeRecord.replyCount > 0 %}
 									[{{ articleNoticeRecord.replyCount }}]
 								{% endif -%}
@@ -99,7 +99,7 @@
 						<tr>
 							<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
 							<td>{{ articleRecord.courseId}} {{ articleRecord.courseName }}</td>
-							<td><a href='{{ url_for ("GradeServer.read", articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
+							<td><a href='{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
 								{% if articleRecord.replyCount > 0 %}
 									[{{ articleRecord.replyCount }}]
 								{% endif %}
@@ -166,7 +166,7 @@
 							Server Notice
 							{% endif %}
 						</td>
-						<td><a href= '{{ url_for ("GradeServer.read", articleIndex = articleNoticeRecord.articleIndex) }}'>{{ articleNoticeRecord.title }}</a>
+						<td><a href= '{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleNoticeRecord.articleIndex) }}'>{{ articleNoticeRecord.title }}</a>
 							{%- if articleNoticeRecord.replyCount > 0 %}
 								[{{ articleNoticeRecord.replyCount }}]
 							{% endif -%}
@@ -183,7 +183,7 @@
 					<tr>
 						<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
 						<td>{{ articleRecord.courseId}} {{ articleRecord.courseName }}</td>
-						<td><a href='{{ url_for ("GradeServer.read", articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
+						<td><a href='{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
 							{% if articleRecord.replyCount > 0 %}
 								[{{ articleRecord.replyCount }}]
 							{% endif %}

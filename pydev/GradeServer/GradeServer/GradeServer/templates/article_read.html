@@ -12,14 +12,14 @@
 					<table class="table">
 						<thead>
 							<tr>
-								<td>{{ article.courseId }} {{ article.courseName }}</td>
-								<td style ='text-align:right'>{{ article.writtenDate }}</td>
+								<td>{% if articlesOnBoard.courseName %}{{ articlesOnBoard.courseId }} {{ articlesOnBoard.courseName }}{% else %}Server Noticie{% endif %}</td>
+								<td style ='text-align:right'>{{ articlesOnBoard.writtenDate }}</td>
 							</tr>
 							
 							<tr>
 							<h4>
-								<td>{{ article.title }}</td>
-								<td style ='text-align:right'>{{ article.writerId }}</tD>
+								<td>{{ articlesOnBoard.title }}</td>
+								<td style ='text-align:right'>{{ articlesOnBoard.writerId }}</tD>
 							</tr>
 						</thead>
 					</table>
@@ -32,15 +32,18 @@
 <!-- content block -->
 <div class="container">
 	<!-- put contents here -->
-	{{ article.content }}
+	{{ articlesOnBoard.content }}
 	<div style="text-align:center">
 		<form method="post">
-			<button class="btn btn-default btn-lg" type="submit" name="postLike">
-			{% if isPostLiked == 'Not-Cancelled' %} UnLike {% else %} Like {% endif %}<i class="icon-thumbs-up"></i>
+		
+			{# Article Like Case #}
+			<button class="btn btn-default btn-lg" type="submit" name="articleLike">
+				{% if isPostLike == 'FALSE' %} UnLike {% else %} Like {% endif %}<i class="icon-thumbs-up"></i>
 			</button>
-			{% if article.writerId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
-			<button href="#deletePost" class="delete btn" data-toggle="modal">Delete</button>
-			<div id="deletePost" class="modal hide fade">
+			
+			{% if articlesOnBoard.writerId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
+			<button href="#deleteArticle" class="delete btn" data-toggle="modal">Delete</button>
+			<div id="deleteArticle" class="modal hide fade">
 				<div class="modal-header">
 					<h3>Delete Post</h3>
 				</div>
@@ -49,13 +52,14 @@
 				</div>
 				<div class="modal-footer">
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-					<button href="#" class="delete btn btn-primary" name ="deletePost" type="submit">Confirm</button>
+					<button href="#" class="delete btn btn-primary" name ="deleteArticle" type="submit">Confirm</button>
 				</div>
 			</div>
 		</form>
-			<a href='{{ url_for("GradeServer.write", articleIndex = article.articleIndex) }}'><button type="button" class ="btn modify">Modify</button></a>
+		
+		{# Modify Article #}
+		<a href='{{ url_for("GradeServer.write", activeTabCourseId = activeTabCourseId, articleIndex = articlesOnBoard.articleIndex) }}'><button type="button" class ="btn modify">Modify</button></a>
 			{% endif %}
-	
 	</div>
 </div>
 <!-- end content block -->
@@ -67,58 +71,58 @@
 
 	<div style="text-align:center">
 		<form method="post">
-			<input type="textarea" name="boardCommentWrite" style="width:92%" placeholder="Comment">
+			<input type="textarea" name="writeReplytoArticle" style="width:92%" placeholder="Comment">
 			<button class="submit">Write</button>
 		</form>
 	</div>
-	<div>
-		{% for i in range (0, commentRecords|length) %}
-		<form method = "post" id="myform">
-			<a href = '{{ url_for ("GradeServer.user_history", memberId = commentRecords[i].boardReplierId, sortCondition = "submissionDate", pageNum = 1) }}'>
-				{{ commentRecords[i].boardReplierId }}
-			</a>
-			<!-- Content, WrittenDate -->
-			{% if boardReplyIndex and boardReplyIndex == commentRecords[i].boardReplyIndex %}
-				<input type="textarea" name="modifyConfirmBoardComment{{ boardReplyIndex }}" style="width:90%" value = '{{commentRecords[i].boardReplyContent }}'>
-				<button class="submit">Confirm</button>
-			{% else %}
-				: {{ commentRecords[i].boardReplyContent }} | {{ commentRecords[i].boardRepliedDate }} |
-				<!-- like button -->
-				<button class="like btn btn-link" href="#" name="boardReplyLike{{ commentRecords[i].boardReplyIndex }}" type="submit">
-				{% if isLikeds[i]['isLiked'] == 'Liked' %} 
-					UnLike 
-				{% else %} 
-					Like 
-				{% endif %}
-				</button>
-				{{ commentRecords[i].sumOfLikeCount }}
-				
-				<!-- delete button -->
-				<!-- replier and masters are availables to delete the comments -->
-				{% if commentRecords[i].boardReplierId == session['memberId'] or session['authority'] == 'ServerAdministrator' or session['authority'] == 'CourseAdministrator' %}
-				<a href="#deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
-				<div id="deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" class="modal hide fade" style="text-align:center">
-					<div class="modal-header">
-						<h3>Delete Comment</h3>
-					</div>
-					<div class="modal-body">
-						<p>Do you really want to delete it?</p>
-					</div>
-					<div class="modal-footer">
-						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-						<button href="#" class="delete btn btn-primary" name="deleteBoardComment{{ commentRecords[i].boardReplyIndex }}" type="submit">Confirm</button>
-					</div>
-				</div>
-				<!-- modify button -->
-				<!-- replier and masters are available to modify the comments -->
-				<button name ='modifyBoardComment{{ commentRecords[i].boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></button>
-				{% endif %}
+</div>	
+
+<div>
+	{% for repliesOnBoardRecord in repliesOnBoardRecords %}
+	<form method = "post" id="myform">
+		<a href = '{{ url_for ("GradeServer.user_history", memberId = repliesOnBoardRecord.boardReplierId, sortCondition = "submissionDate", pageNum = 1) }}'>
+			{{ repliesOnBoardRecord.boardReplierId }}
+		</a>
+		<!-- Content, WrittenDate -->
+		{% if boardReplyIndex and boardReplyIndex == repliesOnBoardRecord.boardReplyIndex %}
+			<input type="textarea" name="modifyConfirmArticleComment{{ boardReplyIndex }}" style="width:90%" value = '{{ repliesOnBoardRecord.boardReplyContent }}'>
+			<button class="submit">Confirm</button>
+		{% else %}
+			: {{ repliesOnBoardRecord.boardReplyContent }} | {{ repliesOnBoardRecord.boardRepliedDate }} |
+			<!-- like button -->
+			<button class="like btn btn-link" href="#" name="articleReplyLike{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">
+			{% if isLikeRecords[loop.index0]['isLiked'] == 'TRUE' %} 
+				UnLike 
+			{% else %} 
+				Like 
 			{% endif %}
-			<br>
-		</form>
-		{% endfor %}
-	</div>
-	
+			</button>
+			{{ repliesOnBoardRecord.sumOfLikeCount }}
+			
+			<!-- delete button -->
+			<!-- replier and masters are availables to delete the comments -->
+			{% if repliesOnBoardRecord.writerId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
+			<a href="#deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
+			<div id="deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" class="modal hide fade" style="text-align:center">
+				<div class="modal-header">
+					<h3>Delete Comment</h3>
+				</div>
+				<div class="modal-body">
+					<p>Do you really want to delete it?</p>
+				</div>
+				<div class="modal-footer">
+					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+					<button href="#" class="delete btn btn-primary" name="deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">Confirm</button>
+				</div>
+			</div>
+			<!-- modify button -->
+			<!-- replier and masters are available to modify the comments -->
+			<button name ='modifyArticleComment{{ repliesOnBoardRecord.boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></button>
+			{% endif %}
+		{% endif %}
+		<br>
+	</form>
+	{% endfor %}
 </div>
 <!-- end comment block -->
 {% endblock %}

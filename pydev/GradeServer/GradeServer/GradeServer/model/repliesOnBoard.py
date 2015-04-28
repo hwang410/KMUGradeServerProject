@@ -23,8 +23,8 @@ class RepliesOnBoard (Base) :
     
     __tablename__ ="RepliesOnBoard"
     
-    boardReplyIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, nullable =False)
-    articleIndex =Column (INTEGER (unsigned =True), ForeignKey (ArticlesOnBoard.articleIndex, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, autoincrement =False, nullable =False)
+    boardReplyIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =True, nullable =False)
+    articleIndex =Column (INTEGER (unsigned =True), ForeignKey (ArticlesOnBoard.articleIndex, onupdate ="CASCADE", ondelete ="CASCADE"), nullable =False)
     boardReplierId =Column (VARCHAR (20), ForeignKey (Members.memberId, onupdate ="CASCADE", ondelete ="CASCADE"), nullable =False)
     boardReplyContent =Column (TEXT, nullable =False)
     boardReplierIp =Column (VARCHAR (20), nullable =False)
