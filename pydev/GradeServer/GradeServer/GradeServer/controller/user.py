@@ -7,8 +7,8 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utilQuery import select_count, select_solved_problem_count, select_submission_count,\
-                                        select_solved_count, select_solved_count, select_wrong_answer_count,\
-                                        select_time_over_count, select_compile_error_count, select_runtime_error_count, select_server_error_count
+                                        select_solved_count, select_wrong_answer_count, select_time_over_count,\
+                                        select_compile_error_count, select_runtime_error_count, select_server_error_count
 from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_all_submission
 
 from GradeServer.resource.enumResources import ENUMResources
@@ -133,10 +133,11 @@ def id_check(select, error = None):
                     if select == 'account':
                         return redirect(url_for(RouteResources.const.EDIT_PERSONAL))
                     # server manager
-                    elif session[SessionResources.const.AUTHORITY][0] == SETResources.const.SERVER_ADMINISTRATOR:
+                    elif SETResources.const.SERVER_ADMINISTRATOR in session[SessionResources.const.AUTHORITY][0]:
                         if select == 'server_manage_collegedepartment':
                             return redirect(url_for('.server_manage_collegedepartment'))
                         elif select == 'server_manage_class':
+                            print "ABBB"
                             return redirect(url_for('.server_manage_class'))
                         elif select == 'server_manage_problem':
                             return redirect(url_for('.server_manage_problem'))
@@ -145,7 +146,7 @@ def id_check(select, error = None):
                         elif select == 'server_manage_service':
                             return redirect(url_for('.server_manage_service'))
                     # class manager
-                    elif session[SessionResources.const.AUTHORITY][0] == SETResources.const.COURSE_ADMINISTRATOR:
+                    elif SETResources.const.COURSE_ADMINISTRATOR in session[SessionResources.const.AUTHORITY][0]:
                         if select == 'user_submit':
                             return redirect(url_for('.class_user_submit'))
                         elif select == 'cm_manage_problem':
@@ -186,16 +187,17 @@ def edit_personal(error = None):
                                           Colleges.collegeName,
                                           Departments.departmentName).\
                                     filter(Members.memberId == session[SessionResources.const.MEMBER_ID]).\
-                                    join(DepartmentsDetailsOfMembers,
+                                    outerjoin(DepartmentsDetailsOfMembers,
                                          Members.memberId == DepartmentsDetailsOfMembers.memberId).\
-                                    join(Colleges,
+                                    outerjoin(Colleges,
                                          Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
-                                    join(Departments,
+                                    outerjoin(Departments,
                                          Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
                                     first()
         except Exception:
             #None Type Exception
             memberInformation = []
+        
         
         #Get Post
         if request.method == 'POST':

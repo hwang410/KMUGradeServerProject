@@ -138,13 +138,12 @@ def read(activeTabCourseId, articleIndex, error = None):
         
             # 내가 게시글에 누른 좋아요 정보
     try:
-        isPostLike = select_article_is_like(session[SessionResources.const.MEMBER_ID],
-                                             articleIndex).first().\
-                                                           isLikeCancelled
+        isPostLike = select_article_is_like(articleIndex,
+                                            session[SessionResources.const.MEMBER_ID]).first().\
+                                                                                       isLikeCancelled
     except Exception:
         # Non-Exist Case
         isPostLike = None
-        
     try:
         # replies 정보
         repliesOnBoardRecords = select_replies_on_board(articleIndex,
@@ -162,18 +161,17 @@ def read(activeTabCourseId, articleIndex, error = None):
             # 나의 댓글 좋아요 여부 적용
     subIndex = 0
     isLikeRecords = []
+    
     for i in range(0, len(repliesOnBoardRecords)):
         # 나의 댓글 좋아요 정보 비교
-        isLikeRecords.append(dict(isLikeCancelled = ENUMResources.const.FALSE))
+        isLikeRecords.extend(dict(isLikeCancelled = ENUMResources.const.TRUE))
         for j in range(subIndex, len(repliesOnBoardIsLikeRecords)):
             if repliesOnBoardRecords[i].boardReplyIndex == repliesOnBoardIsLikeRecords[j].boardReplyIndex:
-                isLikeRecords[i]['isLiked'] = ENUMResources.const.TRUE
+                isLikeRecords[i] = repliesOnBoardIsLikeRecords[j].isLikeCancelled
                                 # 다음 시작 루프 인덱스 변경
                 subIndex = j
                 
                 break 
-        
-    
     if request.method == 'GET':
                 # 읽은 횟수 카운팅
         update_view_reply_counting(articleIndex,
@@ -218,7 +216,7 @@ def read(activeTabCourseId, articleIndex, error = None):
                         isLikeCancelled = ENUMResources.const.TRUE
                     
                 update_article_like_counting(articleIndex,
-                                              LIKE_INCREASE = LIKE_INCREASE)
+                                             LIKE_INCREASE = LIKE_INCREASE)
                 if not isPostLike:
                     # Insert Like
                     dao.add(LikesOnBoard(articleIndex = articleIndex,
@@ -254,8 +252,7 @@ def read(activeTabCourseId, articleIndex, error = None):
                 idIndex = len('articleReplyLike')
                                 # 내가 게시글에 누른 좋아요 정보
                 try:
-                    isReplyLike = select_replies_on_board_is_like(articleIndex, 
-                                                                  int(form[idIndex:]),
+                    isReplyLike = select_replies_on_board_is_like(int(form[idIndex:]),
                                                                   session[SessionResources.const.MEMBER_ID]).first().\
                                                                                                              isLikeCancelled
                 except Exception:
@@ -278,8 +275,7 @@ def read(activeTabCourseId, articleIndex, error = None):
                         isLikeCancelled = ENUMResources.const.TRUE
                         
                 # Like or UnLIke
-                update_replies_on_board_like_counting(articleIndex,
-                                                      int(form[idIndex:]),
+                update_replies_on_board_like_counting(int(form[idIndex:]),
                                                       LIKE_INCREASE = LIKE_INCREASE)
                 if not isReplyLike:
                     # Insert Like
@@ -299,9 +295,8 @@ def read(activeTabCourseId, articleIndex, error = None):
             elif 'deleteArticleReply' in form:
                 idIndex = len('deleteArticleReply')
                 
-                update_replies_on_board_delete(articleIndex,
-                                               int(form[idIndex:]),
-                                               isDelete = ENUMResources.const.TRUE)
+                update_replies_on_board_delete(int(form[idIndex:]),
+                                               isDeleted = ENUMResources.const.TRUE)
                 # remove duplicated read count
                 update_view_reply_counting(articleIndex,
                                   VIEW_INCREASE = -1,
@@ -315,8 +310,7 @@ def read(activeTabCourseId, articleIndex, error = None):
                 idIndex = len('modifyConfirmArticleComment')
                 
                 #update comment
-                update_replies_on_board_modify(articleIndex,
-                                               int(form[idIndex:]),
+                update_replies_on_board_modify(int(form[idIndex:]),
                                                request.form['modifyConfirmArticleComment' + form[idIndex:]])
                 # remove duplicated read count
                 update_view_reply_counting(articleIndex,
@@ -361,14 +355,11 @@ def read(activeTabCourseId, articleIndex, error = None):
         # end Loop
         # Commit Exception
         try:
-            print "AAAAAA"
             dao.commit()
-            print "CCCCCCCCC"
             # if flash Message exist
             if flashMsg:
                 flash(flashMsg)
         except Exception:
-            print "SDFSDFDSFSDFSDF"
             dao.rollback()
             error = get_message('updateFailed')
         
