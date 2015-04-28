@@ -502,6 +502,19 @@ def server_manage_problem():
                 # read each uploaded file(zip)
                 for fileData in files:
                     tmpPath = '%s/tmp' % projectPath
+                    # if 'tmp' folder exists, there had an error before while uploading a problem.
+                    # so, check and delete before unzip
+                    if os.path.exists(tmpPath):
+                        try:
+                            subprocess.call('rm -rf tmp', shell=True)
+                        except OSError:
+                            error = 'Cannot delete \'tmp\' folder'
+                            return render_template('/server_manage_problem.html', 
+                                                   error = error, 
+                                                   SETResources = SETResources,
+                                                   SessionResources = SessionResources,
+                                                   uploadedProblems = [])
+                        
                     # unzip file
                     with zipfile.ZipFile(fileData, 'r') as z:
                         z.extractall(tmpPath)
@@ -616,8 +629,8 @@ def server_manage_problem():
                     if not os.path.exists(problemDescriptionPath):
                         os.makedirs(problemDescriptionPath)
 
-                    # after all, move the problem into 'Problems' folder
                     try:
+                        # after all, move the problem into 'Problems' folder
                         subprocess.call('mv %s/* %s/' % (tmpPath, problemPath), shell=True)
                     except OSError :
                         error = 'Error has occurred while moving new problem'
