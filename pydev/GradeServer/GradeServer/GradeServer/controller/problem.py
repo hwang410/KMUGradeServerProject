@@ -95,6 +95,7 @@ def problemList(courseId, pageNum):
 @GradeServer.route('/problem/<courseId>/<problemId>?page<pageNum>')
 @login_required
 def problem(courseId, problemId, pageNum):
+    print "AAAAAAA"
     """
     use db to get its problem page
     now, it moves to just default problem page
@@ -102,15 +103,16 @@ def problem(courseId, problemId, pageNum):
     try:
         languageName = dao.query(Languages.languageName).\
                            join(LanguagesOfCourses, 
-                                and_(Languages.languageIndex == LanguagesOfCourses.languageIndex,
-                                     Languages.languageVersion == LanguagesOfCourses.languageVersion)).\
+                                Languages.languageIndex == LanguagesOfCourses.languageIndex).\
                            filter(LanguagesOfCourses.courseId == courseId).\
                            all()
     except Exception as e:
         unknown_error("DB 에러입니다")
     try:
-        languageVersion = dao.query(LanguagesOfCourses.languageVersion).\
-                              filter(LanguagesOfCourses.courseId == courseId).\
+        languageVersion = dao.query(Languages.languageVersion).\
+                              join(LanguagesOfCourses,
+                                   and_(LanguagesOfCourses.courseId == courseId,
+                                        LanguagesOfCourses.languageIndex == Languages.languageIndex)).\
                               all()
     except Exception as e:
         unknown_error("DB 에러입니filter(LanguagesOfCourses.courseId == courseId).\
@@ -131,6 +133,7 @@ def problem(courseId, problemId, pageNum):
     
     problemName = problemInformation.problemName.replace(' ', '')
     browserName = request.user_agent.browser
+    
     return render_template(HTMLResources.const.PROBLEM_HTML,
                            SETResources = SETResources,
                            SessionResources = SessionResources,
