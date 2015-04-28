@@ -4,15 +4,15 @@ from celery import Celery
 from billiard import current_process
 
 MAX_CONTAINER_COUNT = 10
-app = Celery('tasks', broker = 'redis://192.168.0.133:6379')
+app = Celery('tasks', broker = 'redis://192.168.0.119:6379')
 
 @app.task(name = 'task.Grade')
 def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
-          limitTime, limitMemory, usingLang, version, courseNum, submitCount):
-    argsForm = '%s %s %s %s %s %i %i %i %s %s %s %i'
+          limitTime, limitMemory, usingLang, version, courseNum, submitCount, problemName):
+    argsForm = '%s %s %s %s %s %i %i %i %s %s %s %i %s'
     argsList = argsForm % (filePath, problemPath, stdNum, problemNum, gradeMethod,
                            caseCount, limitTime, limitMemory, usingLang, version,
-                           courseNum, submitCount)
+                           courseNum, submitCount, problemName)
 
     worker_num = current_process().index + 1
 
@@ -26,7 +26,8 @@ def ServerOn():
         os.system('sudo docker create --privileged -i -t --name grade_container'
                   + number + ' gradeserver:1.0 /bin/bash')
         os.system('sudo docker start grade_container' + number)
-    	os.system('sudo docker exec grade_container' + number +' mount -t nfs 192.168.0.133:/mnt/shared /mnt/shared')
+        os.system('sudo docker exec grade_container' + number + 'python -B /gradeprogram/*')
+    
 @app.task(name = 'task.ServerOff')
 def ServerOff():
     time.sleep(5)
