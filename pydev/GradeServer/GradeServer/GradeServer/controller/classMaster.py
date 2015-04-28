@@ -51,15 +51,6 @@ POST_METHOD = 'POST'
 
 newUsers = []
 newProblems = []
-keys = {'memberId':0,
-        'memberName':1,
-        'authority':2,
-        'collegeIndex':3,
-        'collegeName':4,
-        'departmentIndex':5,
-        'departmentName':6,
-        'courseId':7,
-        "closeDate":8}
         
 def get_own_problems(memberId):
     ownProblems = (dao.query(RegisteredProblems,
@@ -161,7 +152,7 @@ def class_manage_problem():
                                allProblems = allProblems,
                                ownCourses = [],
                                ownProblems = [])
-    
+
     try:
         ownProblems = get_own_problems(session[SessionResources.const.MEMBER_ID])
     except:
@@ -175,14 +166,23 @@ def class_manage_problem():
                                ownCourses = ownCourses,
                                ownProblems = [])
         
-        
     if request.method == POST_METHOD:
         isNewProblem = True
         numberOfNewProblems = (len(request.form)-1)/7
+        keys = {"courseId":0,
+                "courseName":1,
+                "problemId":2,
+                "problemName":3,
+                "multipleFiles":4,
+                "startDate":5,
+                "endDate":6,
+                "openDate":7,
+                "closeDate":8}
         
         # courseId,courseName,problemId,problemName,isAllInputCaseInOneFile,startDate,endDate,openDate,closeDate
         newProblem = [['' for i in range(9)] for j in range(numberOfNewProblems+1)]
         for form in request.form:
+
             if DELETE in form:
                 isNewProblem = False
                 courseId,problemId = form.split('_')[1:]
@@ -242,17 +242,18 @@ def class_manage_problem():
             else:
                 if form == ADD:
                     continue
+                print form
                 value,index = re.findall('\d+|\D+',form)
+                print value
                 index = int(index)
                 data = request.form[form]
                 newProblem[index-1][keys[value]] = data
         
-            
+        print isNewProblem
         # when 'add' button is pushed,insert new problem into RegisteredProblems table
         if isNewProblem:
             for index in range(numberOfNewProblems+1):
                 newProblems.append(newProblem[index])
-            
             for problem in newProblems:
                 # if openDate,closeDate are empty then same with startDate,endDate
                 if not problem[keys['openDate']]:
@@ -305,14 +306,12 @@ def class_manage_problem():
                                allProblems = allProblems,
                                ownCourses = ownCourses,
                                ownProblems = ownProblems)
-                
                 newProblems = []
                 #courseName = problem[keys['courseName']].replace(' ','')
                 #problemName = problem[keys['problemName']].replace(' ','')
                 
     
             return redirect(url_for('.class_manage_problem'))
-    
     ownProblems = get_own_problems(session[SessionResources.const.MEMBER_ID])
     return render_template('/class_manage_problem.html',
                            error = error, 
@@ -466,6 +465,14 @@ def class_add_user():
     error = None
     targetUserIdToDelete = []
     authorities = ['Course Admin','User']
+    keys = {'memberId':0,
+            'memberName':1,
+            'authority':2,
+            'collegeIndex':3,
+            'collegeName':4,
+            'departmentIndex':5,
+            'departmentName':6,
+            'courseId':7}
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
