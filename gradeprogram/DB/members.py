@@ -24,7 +24,7 @@ class Members (Base) :
     memberName =Column (VARCHAR (1024), nullable =False)
     contactNumber =Column (VARCHAR  (20), nullable =True)
     emailAddress =Column (VARCHAR  (1024), nullable =True)
-    authority =Column (SET ('ServerAdministrator', 'CourseAdministrator', 'User'), default ='User', nullable =False)
+    authority =Column (SET ('SERVER_ADMINISTRATOR', 'COURSE_ADMINISTRATOR', 'USER'), default ='USER', nullable =False)
     signedInDate =Column (DATETIME, nullable =False)
     lastAccessDate =Column (DATETIME, nullable =True)
     comment =Column (TEXT, nullable =True)   
