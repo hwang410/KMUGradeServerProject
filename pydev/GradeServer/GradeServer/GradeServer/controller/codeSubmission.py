@@ -259,7 +259,7 @@ def upload(courseId, problemId):
             try:
                 file.save(os.path.join(tempPath, fileName))
             except Exception as e:
-                errorCheck = ENUMResources.const.TRUE
+                return unknown_error('fileSaveError')
             
             fileSize = os.stat(os.path.join(tempPath, fileName)).st_size 
             getSubmittedFiles = get_submitted_files(memberId, problemId, courseId, fileIndex)
@@ -281,7 +281,6 @@ def upload(courseId, problemId):
         dao.rollback()
         os.system("rm -rf %s" % tempPath)
         return unknown_error('askToMaster')
-        
     dao.commit()
     os.system("rm -rf %s" % filePath)
     os.rename(tempPath, filePath)
@@ -384,10 +383,10 @@ def code(courseId, pageNum, problemId):
     dao.commit()
 
     usedLanguage = get_used_language(usedLanguageName)
-    usedLanguageVersion = used_language_version(courseId, usedLanguage)
+    usedLanguageVersion = used_language_version(courseId, usedLanguageIndex)
     subCountNum = get_submission_count(memberId, courseId, problemId)
     solCountNum = get_solution_check_count(memberId, courseId, problemId, subCountNum)
-    insert_to_submissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguage, sumOfSubmittedFileSize)
+    insert_to_submissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguage, fileSize)
     problemPath, limitedTime, limitedMemory, solutionCheckType, problemCasesPath = get_problem_info(problemId, problemName)
 
     isAllInputCaseInOneFile = is_support_multiple_case(problemId, courseId)
@@ -424,13 +423,15 @@ def insert_to_submissions(courseId, memberId, problemId, subCountNum, solCountNu
                                   status = ENUMResources.const.JUDGING,
                                   codeSubmissionDate = datetime.now(),
                                   sumOfSubmittedFileSize = sumOfSubmittedFileSize,
-                                  usedLanguage = usedLanguage)
+                                  usedLanguageIndex = usedLanguage)
         dao.add(submissions)
-        
     except Exception as e:
         dao.rollback()
         return unknown_error('dbError')
-    dao.commit()
+    try:
+        dao.commit()
+    except Exception as e:
+        print 'Commit Error'
     """try:
         departmentIndex = dao.query(DepartmentsDetailsOfMembers.departmentIndex).\
                               filter(DepartmentsDetailsOfMembers.memberId == memberId).\
