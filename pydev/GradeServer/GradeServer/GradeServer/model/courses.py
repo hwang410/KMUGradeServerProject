@@ -20,6 +20,6 @@ class Courses(Base) :
     __tablename__ ='Courses'
     
     courseIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =True, nullable =False)
-    courseCode =Column (VARCHAR (128), nullable =False)
+    courseCode =Column (VARCHAR (128), nullable =True)
     courseName =Column (VARCHAR (1024), nullable =False)
     
