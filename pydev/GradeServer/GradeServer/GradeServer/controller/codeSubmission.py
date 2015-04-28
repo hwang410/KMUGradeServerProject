@@ -383,7 +383,7 @@ def code(courseId, pageNum, problemId):
     dao.commit()
 
     usedLanguage = get_used_language(usedLanguageName)
-    usedLanguageVersion = used_language_version(courseId, usedLanguageIndex)
+    usedLanguageVersion = used_language_version(courseId, usedLanguage)
     subCountNum = get_submission_count(memberId, courseId, problemId)
     solCountNum = get_solution_check_count(memberId, courseId, problemId, subCountNum)
     insert_to_submissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguage, fileSize)
