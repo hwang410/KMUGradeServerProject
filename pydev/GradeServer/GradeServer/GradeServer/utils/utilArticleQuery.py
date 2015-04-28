@@ -81,10 +81,10 @@ def update_view_reply_counting(articleIndex, VIEW_INCREASE = 1, REPLY_INCREASE =
 '''
  Board IsLike
 '''
-def select_article_is_like(boardLikerId, articleIndex):
+def select_article_is_like(articleIndex, boardLikerId):
     return dao.query(LikesOnBoard).\
-               filter(LikesOnBoard.boardLikerId == boardLikerId,
-                      LikesOnBoard.articleIndex == articleIndex)
+               filter(LikesOnBoard.articleIndex == articleIndex,
+                      LikesOnBoard.boardLikerId == boardLikerId)
                
 
 '''
@@ -128,10 +128,9 @@ def select_replies_on_board(articleIndex, isDeleted = ENUMResources.const.FALSE)
 '''
 Replies on Board isLike
 '''
-def select_replies_on_board_is_like(articleIndex, boardReplyIndex, boardReplyLikerId):
+def select_replies_on_board_is_like(boardReplyIndex, boardReplyLikerId):
     return dao.query(LikesOnReplyOfBoard).\
                filter(LikesOnReplyOfBoard.boardReplyLikerId == boardReplyLikerId,
-                      LikesOnReplyOfBoard.articleIndex == articleIndex,
                       LikesOnReplyOfBoard.boardReplyIndex == boardReplyIndex)
                
 
@@ -141,8 +140,7 @@ Replies on Board isLike
 def select_replies_on_board_like(repliesOnBoard, memberId):
     return dao.query(LikesOnReplyOfBoard).\
                join(repliesOnBoard,
-                    and_(LikesOnReplyOfBoard.articleIndex == repliesOnBoard.c.articleIndex,
-                         LikesOnReplyOfBoard.boardReplyIndex == repliesOnBoard.c.boardReplyIndex,
+                    and_(LikesOnReplyOfBoard.boardReplyIndex == repliesOnBoard.c.boardReplyIndex,
                          LikesOnReplyOfBoard.boardReplyLikerId == memberId)).\
                order_by(LikesOnReplyOfBoard.boardReplyIndex.desc())
                
@@ -150,10 +148,9 @@ def select_replies_on_board_like(repliesOnBoard, memberId):
 '''
 Repllies on Board Like Counting
 '''
-def update_replies_on_board_like_counting(articleIndex, boardReplyIndex, LIKE_INCREASE = 1):
+def update_replies_on_board_like_counting(boardReplyIndex, LIKE_INCREASE = 1):
     dao.query(RepliesOnBoard).\
-        filter(RepliesOnBoard.articleIndex == articleIndex,
-               RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
+        filter(RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
         update(dict(sumOfLikeCount = RepliesOnBoard.sumOfLikeCount + LIKE_INCREASE))  
         
 '''
@@ -169,10 +166,9 @@ def update_replies_on_board_is_like(boardReplyIndex, boardReplyLikerId, isLikeCa
 '''
 Replies on Board Update
 '''
-def update_replies_on_board_modify(articleIndex, boardReplyIndex, boardReplyContent):
+def update_replies_on_board_modify(boardReplyIndex, boardReplyContent):
     dao.query(RepliesOnBoard).\
-        filter(RepliesOnBoard.articleIndex == articleIndex,
-               RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
+        filter(RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
         update(dict(boardReplyContent = boardReplyContent,
                     boardRepliedDate = datetime.now()))
         
@@ -180,8 +176,7 @@ def update_replies_on_board_modify(articleIndex, boardReplyIndex, boardReplyCont
 '''
 Repllies on Board delete
 '''
-def update_replies_on_board_delete(articleIndex, boardReplyIndex, isDelete = ENUMResources.const.TRUE):
+def update_replies_on_board_delete(boardReplyIndex, isDeleted = ENUMResources.const.TRUE):
     dao.query(RepliesOnBoard).\
-        filter(RepliesOnBoard.articleIndex == articleIndex,
-               RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
-        update(dict(isDelete = isDelete)) 
+        filter(RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
+        update(dict(isDeleted = isDeleted)) 

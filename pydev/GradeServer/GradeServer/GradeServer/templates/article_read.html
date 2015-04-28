@@ -69,60 +69,77 @@
 <div class="container">
 	<!-- put the comments here -->
 
-	<div style="text-align:center">
-		<form method="post">
-			<input type="textarea" name="writeReplytoArticle" style="width:92%" placeholder="Comment">
-			<button class="submit">Write</button>
-		</form>
-	</div>
-</div>	
+	<form method="post">
+		<div class = 'row-fluid'>
+			<div class = 'span10'>
+				<textarea class="span12" onkeyup="autoSize(this)" autocomplete="off" name="writeReplytoArticle" placeholder="Comment" row =2></textarea>
+			</div>
+			<div style = 'padding-left:10.5px'>
+				<button class="submit">Write</button>
+			</div>
+		</div>
+	</form>
 
-<div>
 	{% for repliesOnBoardRecord in repliesOnBoardRecords %}
-	<form method = "post" id="myform">
-		<a href = '{{ url_for ("GradeServer.user_history", memberId = repliesOnBoardRecord.boardReplierId, sortCondition = "submissionDate", pageNum = 1) }}'>
-			{{ repliesOnBoardRecord.boardReplierId }}
-		</a>
-		<!-- Content, WrittenDate -->
-		{% if boardReplyIndex and boardReplyIndex == repliesOnBoardRecord.boardReplyIndex %}
-			<input type="textarea" name="modifyConfirmArticleComment{{ boardReplyIndex }}" style="width:90%" value = '{{ repliesOnBoardRecord.boardReplyContent }}'>
-			<button class="submit">Confirm</button>
-		{% else %}
-			: {{ repliesOnBoardRecord.boardReplyContent }} | {{ repliesOnBoardRecord.boardRepliedDate }} |
-			<!-- like button -->
-			<button class="like btn btn-link" href="#" name="articleReplyLike{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">
-			{% if isLikeRecords[loop.index0]['isLiked'] == 'TRUE' %} 
-				UnLike 
-			{% else %} 
-				Like 
-			{% endif %}
-			</button>
-			{{ repliesOnBoardRecord.sumOfLikeCount }}
-			
-			<!-- delete button -->
-			<!-- replier and masters are availables to delete the comments -->
-			{% if repliesOnBoardRecord.writerId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
-			<a href="#deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
-			<div id="deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" class="modal hide fade" style="text-align:center">
-				<div class="modal-header">
-					<h3>Delete Comment</h3>
+	<div class = 'row-fluid'>
+		<form method = "post" id="myform">
+			<a href = '{{ url_for ("GradeServer.user_history", memberId = repliesOnBoardRecord.boardReplierId, sortCondition = "submissionDate", pageNum = 1) }}'>
+				{{ repliesOnBoardRecord.boardReplierId }}
+			</a>
+			<!-- Content, WrittenDate -->
+			{% if boardReplyIndex and boardReplyIndex == repliesOnBoardRecord.boardReplyIndex %}
+			<div class = 'row-fluid'>
+				<div class = 'span10'>
+					<textarea class="span12" onkeyup="autoSize(this)" autocomplete="off" name="writeReplytoArticle" placeholder="Comment" row =2>{{ repliesOnBoardRecord.boardReplyContent }}</textarea>
 				</div>
-				<div class="modal-body">
-					<p>Do you really want to delete it?</p>
-				</div>
-				<div class="modal-footer">
-					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-					<button href="#" class="delete btn btn-primary" name="deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">Confirm</button>
+				<div style = 'padding-left:10.5px'>
+					<button class="submit">Confirm</button>
 				</div>
 			</div>
-			<!-- modify button -->
-			<!-- replier and masters are available to modify the comments -->
-			<button name ='modifyArticleComment{{ repliesOnBoardRecord.boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></button>
+			{% else %}
+				: <textarea class="span12" disabled = 'disabled' onkeyup="autoSize(this)" autocomplete="off" name="writeReplytoArticle">{{ repliesOnBoardRecord.boardReplyContent }}</textarea>| {{ repliesOnBoardRecord.boardRepliedDate }} |
+				<!-- like button -->
+				<button class="like btn btn-link" href="#" name="articleReplyLike{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">
+				{% if isLikeRecords[loop.index0] == 'TRUE' %} 
+					Like 
+				{% else %} 
+					UnLike 
+				{% endif %}
+				</button>
+				{{ repliesOnBoardRecord.sumOfLikeCount }}
+				
+				<!-- delete button -->
+				<!-- replier and masters are availables to delete the comments -->
+				{% if repliesOnBoardRecord.writerId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
+				<a href="#deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal"><i class="icon-trash"></i></a>
+				<div id="deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" class="modal hide fade" style="text-align:center">
+					<div class="modal-header">
+						<h3>Delete Comment</h3>
+					</div>
+					<div class="modal-body">
+						<p>Do you really want to delete it?</p>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button href="#" class="delete btn btn-primary" name="deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">Confirm</button>
+					</div>
+				</div>
+				<!-- modify button -->
+				<!-- replier and masters are available to modify the comments -->
+				<button name ='modifyArticleComment{{ repliesOnBoardRecord.boardReplyIndex }}' class="btn btn-link"><i class="icon-pencil"></i></button>
+				{% endif %}
 			{% endif %}
-		{% endif %}
-		<br>
-	</form>
+			<br>
+		</form>
+	</div>
 	{% endfor %}
 </div>
+<style> textarea {width:300px;overflow:visible} </style>
+<script>
+function autoSize(obj) {
+  obj.style.height = "1px";
+  obj.style.height = (20+obj.scrollHeight)+"px";
+}
+</script>
 <!-- end comment block -->
 {% endblock %}
