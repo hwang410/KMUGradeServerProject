@@ -506,7 +506,8 @@ def server_manage_problem():
                     # so, check and delete before unzip
                     if os.path.exists(tmpPath):
                         try:
-                            subprocess.call('rm -rf tmp', shell=True)
+                            subprocess.call('rm -rf %s' % tmpPath, shell=True)
+                            print "success"
                         except OSError:
                             error = 'Cannot delete \'tmp\' folder'
                             return render_template('/server_manage_problem.html', 
