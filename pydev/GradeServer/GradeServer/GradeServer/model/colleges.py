@@ -21,7 +21,7 @@ class Colleges (Base) :
     __tablename__ ='Colleges'
     
     collegeIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =True, nullable =False)
-    collegeCode =Column (VARCHAR (128), nullable =False)
+    collegeCode =Column (VARCHAR (128), nullable =True)
     collegeName =Column (VARCHAR (1024), nullable =False)
     isAbolished =Column (ENUM (ENUMResources.const.TRUE,
                                ENUMResources.const.FALSE),
