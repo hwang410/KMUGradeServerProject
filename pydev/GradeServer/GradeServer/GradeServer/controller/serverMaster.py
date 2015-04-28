@@ -245,9 +245,8 @@ def server_manage_class():
     try:
         languagesOfCourse = (dao.query(LanguagesOfCourses, 
                                        Languages).\
-                                 join(Languages, 
-                                      and_(LanguagesOfCourses.languageIndex == Languages.languageIndex, 
-                                           LanguagesOfCourses.languageVersion == Languages.languageVersion))).\
+                                 join(Languages,
+                                      LanguagesOfCourses.languageIndex == Languages.languageIndex)).\
                             all()
     except:
         error = 'No information of languages of courses'
