@@ -44,5 +44,5 @@ class Submissions (Base) :
     sumOfSubmittedFileSize =Column (INTEGER (unsigned =True), nullable =False) # Byte
     runTime =Column (INTEGER (unsigned =True), default =0, nullable =False)
     usedMemory =Column (INTEGER (unsigned =True), default =0, nullable =False)
-    usedLanguage =Column (INTEGER (unsigned =True), ForeignKey (Languages.languageIndex, onupdate="CASCADE", ondelete ="NO ACTION"), nullable =False)
+    usedLanguageIndex =Column (INTEGER (unsigned =True), ForeignKey (Languages.languageIndex, onupdate="CASCADE", ondelete ="NO ACTION"), nullable =False)
     
