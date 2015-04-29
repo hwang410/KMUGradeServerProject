@@ -1,7 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 
 from flask import request, render_template, url_for, redirect, session, flash
-from sqlalchemy import func
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
@@ -51,7 +50,8 @@ def close_db_session(exception = None):
 def user_history(memberId, sortCondition, pageNum):
     try:       
         # 모든 제출 정보
-        submissions = select_all_submission(memberId = memberId).subquery()
+        submissions = select_all_submission(lastSubmission = None,
+                                            memberId = memberId).subquery()
         
         # List Count
         try:

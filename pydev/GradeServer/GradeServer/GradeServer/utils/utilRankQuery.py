@@ -21,10 +21,19 @@ from GradeServer.model.submissions import Submissions
  '''
 def select_rank(submissions):
     # # Total Submission Count (Rank Page Server Error Exception)
+    s = dao.query(submissions).all()
+    for a in s:
+        print a.memberId, a.solutionCheckCount
+    print  len(s)
     submissionCount = dao.query(submissions.c.memberId,
                                 func.sum(submissions.c.solutionCheckCount).label('sumOfSubmissionCounts')).\
                           group_by(submissions.c.memberId).\
                           subquery()
+                          
+    s = dao.query(submissionCount).all()
+    for a in s:
+        print a.memberId, a.sumOfSubmissionCounts
+    print  len(s)
         # 중복 제거푼 문제숫
     sumOfSolvedProblemCount = dao.query(Submissions.memberId,
                                         func.count(Submissions.memberId).label('sumOfSolvedProblemCount')).\

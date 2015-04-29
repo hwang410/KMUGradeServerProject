@@ -35,20 +35,17 @@ from itertools import count
 def problemList(courseId, pageNum):
     """ problem submitting page """
     # Get Last Submitted History
-    lastSubmissionCount = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
+    lastSubmission = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
                                                   courseId = courseId).subquery()
     # Current Submission                                      
     submissions = dao.query(Submissions.score,
                             Submissions.status,
-                            lastSubmissionCount).\
-                      join(lastSubmissionCount,
-                           and_(Submissions.memberId == lastSubmissionCount.c.memberId,
-                                Submissions.problemId == lastSubmissionCount.c.problemId,
-                                Submissions.courseId == lastSubmissionCount.c.courseId,
-                                Submissions.solutionCheckCount == lastSubmissionCount.c.solutionCheckCount)).\
-                      group_by(Submissions.memberId,
-                               Submissions.courseId,
-                               Submissions.problemId).\
+                            lastSubmission).\
+                      join(lastSubmission,
+                           and_(Submissions.memberId == lastSubmission.c.memberId,
+                                Submissions.problemId == lastSubmission.c.problemId,
+                                Submissions.courseId == lastSubmission.c.courseId,
+                                Submissions.solutionCheckCount == lastSubmission.c.solutionCheckCount)).\
                       subquery()
     
     # Get Problem Informations
@@ -70,7 +67,8 @@ def problemList(courseId, pageNum):
     try:
         problemListRecords = get_page_record(dao.query(problems,
                                                        submissions.c.score,
-                                                       submissions.c.status).\
+                                                       submissions.c.status,
+                                                       submissions.c.solutionCheckCount).\
                                                  outerjoin(submissions,
                                                            problems.c.problemId == submissions.c.problemId).\
                                                  order_by(problems.c.startDateOfSubmission.desc()),
@@ -173,33 +171,39 @@ def record(courseId, problemId, sortCondition = OtherResources().const.RUN_TIME)
     """
     navbar - class - Record of problem
     """
-    # Viiew Value Text
-    chartSubmissionDescriptions = ['Total Submit People',
+    # Chart View Value Text
+    chartSubmissionDescriptions = ['Total Submitted People',
                                    'Total Solved People',
-                                   'Total Submit Count',
+                                   'Total Submitted Count',
                                    'Solved',
                                    'Wrong Answer',
                                    'Time Over',
                                    'Compile Error',
                                    'RunTime Error']
+    
+    # last Submissions Info
+    submissions = select_all_submission(lastSubmission = select_last_submissions(memberId = None,
+                                                                                 courseId = courseId,
+                                                                                 problemId = problemId).subquery(),
+                                        memberId = None,
+                                        courseId = courseId,
+                                        problemId = problemId).subquery()
     try:
-        submissions = select_all_submission(memberId = None,
-                                            courseId = courseId,
-                                            problemId = problemId).subquery()
         # Submitted Members Count
         sumOfSubmissionPeopleCount = select_submission_people_count(submissions).subquery()
         # Solved Members Count
         sumOfSolvedPeopleCount = select_solved_people_count(submissions).subquery()
-                              
-        problemSubmittedRecords = dao.query(func.max(SubmittedRecordsOfProblems.sumOfSubmissionCount).label('sumOfSubmissionCount'),
-                                            func.max(SubmittedRecordsOfProblems.sumOfSolvedCount).label('sumOfSolvedCount'),
-                                            func.max(SubmittedRecordsOfProblems.sumOfWrongCount).label('sumOfWrongCount'),
-                                            func.max(SubmittedRecordsOfProblems.sumOfTimeOverCount).label('sumOfTimeOverCount'),
-                                            func.max(SubmittedRecordsOfProblems.sumOfCompileErrorCount).label('sumOfCompileErrorCount'),
-                                            func.max(SubmittedRecordsOfProblems.sumOfRuntimeErrorCount).label('sumOfRuntimeErrorCount')).\
+        # Problem Rrecord
+        problemSubmittedRecords = dao.query(SubmittedRecordsOfProblems.sumOfSubmissionCount,
+                                            SubmittedRecordsOfProblems.sumOfSolvedCount,
+                                            SubmittedRecordsOfProblems.sumOfWrongCount,
+                                            SubmittedRecordsOfProblems.sumOfTimeOverCount,
+                                            SubmittedRecordsOfProblems.sumOfCompileErrorCount,
+                                            SubmittedRecordsOfProblems.sumOfRuntimeErrorCount).\
                                       filter(SubmittedRecordsOfProblems.problemId == problemId,
                                              SubmittedRecordsOfProblems.courseId == courseId).\
                                       subquery()
+        # Chart SubmissionRecords
         chartSubmissionRecords = dao.query(sumOfSubmissionPeopleCount,
                                            sumOfSolvedPeopleCount,
                                            problemSubmittedRecords).\
@@ -220,19 +224,9 @@ def record(courseId, problemId, sortCondition = OtherResources().const.RUN_TIME)
         problemInformationRecords = []
     # Problem Solved Users
     try:
-        # last Submissions Info
-        lastSubmissions = select_last_submissions(memberId = None,
-                                                  courseId = courseId,
-                                                  problemId = problemId).subquery()
-       
        # Problem Solved Member
         problemSolvedMemberRecords = submissions_sorted(dao.query(submissions).\
-                                                            filter(Submissions.status == ENUMResources().const.SOLVED).\
-                                                            join(lastSubmissions,
-                                                               and_(Submissions.memberId == submissions.c.memberId,
-                                                                    Submissions.problemId == submissions.c.problemId,
-                                                                    Submissions.courseId == submissions.c.courseId,
-                                                                    Submissions.solutionCheckCount == submissions.c.solutionCheckCount)).\
+                                                            filter(submissions.c.status == ENUMResources().const.SOLVED).\
                                                             subquery(),
                                                         sortCondition = sortCondition).all()
             
