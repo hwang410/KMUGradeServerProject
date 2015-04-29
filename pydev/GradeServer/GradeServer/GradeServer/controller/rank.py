@@ -98,9 +98,9 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
         except Exception:
             myCourses = []
         # myCourses Default Add ALL
-        myCourses.insert(0, OtherResources.const.ALL)
+        myCourses.insert(0, OtherResources().const.ALL)
        
-        return render_template(HTMLResources.const.RANK_HTML,
+        return render_template(HTMLResources().const.RANK_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
                                activeTabCourseId = activeTabCourseId,

@@ -95,7 +95,7 @@ def user_history(memberId, sortCondition, pageNum):
             #None Type Exception
             submissionRecords = []
        
-        return render_template(HTMLResources.const.SUBMISSION_RECORD_HTML,
+        return render_template(HTMLResources().const.SUBMISSION_RECORD_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
                                memberId = memberId,
@@ -122,7 +122,7 @@ def id_check(select, error = None):
             error ='Password' + get_message('fillData')
         else:
             try:
-                memberId = session[SessionResources.const.MEMBER_ID]
+                memberId = session[SessionResources().const.MEMBER_ID]
                 password = request.form['password']
                 check = dao.query(Members.password).\
                             filter(Members.memberId == memberId).first()
@@ -131,9 +131,9 @@ def id_check(select, error = None):
                 if check.password == password:#check_password_hash(password, check.password):
                     # for all user
                     if select == 'account':
-                        return redirect(url_for(RouteResources.const.EDIT_PERSONAL))
+                        return redirect(url_for(RouteResources().const.EDIT_PERSONAL))
                     # server manager
-                    elif SETResources.const.SERVER_ADMINISTRATOR in session[SessionResources.const.AUTHORITY][0]:
+                    elif SETResources().const.SERVER_ADMINISTRATOR in session[SessionResources().const.AUTHORITY][0]:
                         if select == 'server_manage_collegedepartment':
                             return redirect(url_for('.server_manage_collegedepartment'))
                         elif select == 'server_manage_class':
@@ -146,7 +146,7 @@ def id_check(select, error = None):
                         elif select == 'server_manage_service':
                             return redirect(url_for('.server_manage_service'))
                     # class manager
-                    elif SETResources.const.COURSE_ADMINISTRATOR in session[SessionResources.const.AUTHORITY][0]:
+                    elif SETResources().const.COURSE_ADMINISTRATOR in session[SessionResources().const.AUTHORITY][0]:
                         if select == 'user_submit':
                             return redirect(url_for('.class_user_submit'))
                         elif select == 'cm_manage_problem':
@@ -164,7 +164,7 @@ def id_check(select, error = None):
                 Log.error(str(e))
                 raise e
                
-    return render_template(HTMLResources.const.ID_CHECK_HTML,
+    return render_template(HTMLResources().const.ID_CHECK_HTML,
                            SETResources = SETResources,
                            SessionResources = SessionResources,
                            error = error)
@@ -186,7 +186,7 @@ def edit_personal(error = None):
                                           Members.comment,
                                           Colleges.collegeName,
                                           Departments.departmentName).\
-                                    filter(Members.memberId == session[SessionResources.const.MEMBER_ID]).\
+                                    filter(Members.memberId == session[SessionResources().const.MEMBER_ID]).\
                                     outerjoin(DepartmentsDetailsOfMembers,
                                          Members.memberId == DepartmentsDetailsOfMembers.memberId).\
                                     outerjoin(Colleges,
@@ -217,7 +217,7 @@ def edit_personal(error = None):
                 
                 #Update DB
                 dao.query(Members).\
-                    filter(Members.memberId == session[SessionResources.const.MEMBER_ID]).\
+                    filter(Members.memberId == session[SessionResources().const.MEMBER_ID]).\
                     update(dict(password = password,
                                 contactNumber = contactNumber,
                                 emailAddress = emailAddress,
@@ -227,7 +227,7 @@ def edit_personal(error = None):
                     dao.commit()
                     flash(get_message('updateSucceeded'))
                     
-                    return redirect(url_for(RouteResources.const.SIGN_IN))
+                    return redirect(url_for(RouteResources().const.SIGN_IN))
                 except Exception:
                     dao.rollback()
                     error = get_message('upateFailed')
@@ -238,7 +238,7 @@ def edit_personal(error = None):
             else:
                 error = get_message('wrongPassword')
         
-        return render_template(HTMLResources.const.EDIT_PERSONAL_HTML,
+        return render_template(HTMLResources().const.EDIT_PERSONAL_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
                                memberInformation = memberInformation,

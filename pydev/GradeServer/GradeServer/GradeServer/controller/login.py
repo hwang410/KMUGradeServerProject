@@ -69,19 +69,19 @@ def sign_in():
                     if check.password == password:#check_password_hash (password, check.password)
                         flash(get_message('login'))
                         #push Session Cache 
-                        session[SessionResources.const.MEMBER_ID] = memberId
-                        session[SessionResources.const.AUTHORITY] = list(check.authority)
-                        session[SessionResources.const.LAST_ACCESS_DATE] = datetime.now()
+                        session[SessionResources().const.MEMBER_ID] = memberId
+                        session[SessionResources().const.AUTHORITY] = list(check.authority)
+                        session[SessionResources().const.LAST_ACCESS_DATE] = datetime.now()
                         ownCourses = select_accept_courses().subquery()
                         # Get My Accept Courses
                         try:
-                            session[SessionResources.const.OWN_CURRENT_COURSES] = select_current_courses(ownCourses).all()
+                            session[SessionResources().const.OWN_CURRENT_COURSES] = select_current_courses(ownCourses).all()
                         except Exception:
-                            session[SessionResources.const.OWN_CURRENT_COURSES] = []
+                            session[SessionResources().const.OWN_CURRENT_COURSES] = []
                         try:
-                            session[SessionResources.const.OWN_PAST_COURSES] = select_past_courses(ownCourses).all()
+                            session[SessionResources().const.OWN_PAST_COURSES] = select_past_courses(ownCourses).all()
                         except Exception:
-                            session[SessionResources.const.OWN_PAST_COURSES] = []
+                            session[SessionResources().const.OWN_PAST_COURSES] = []
                         update_recent_access_date(memberId)
                         # Commit Exception
                         try:
@@ -99,7 +99,7 @@ def sign_in():
                 Log.error(str(e))
             
     
-    return render_template(HTMLResources.const.MAIN_HTML,
+    return render_template(HTMLResources().const.MAIN_HTML,
                            SETResources = SETResources,
                            SessionResources = SessionResources,
                            noticeRecords = select_notices(),
@@ -126,4 +126,4 @@ def sign_out():
     # 세션 클리어
     session.clear()
     # 메인 페이지로 옮기기
-    return redirect(url_for(RouteResources.const.SIGN_IN))
+    return redirect(url_for(RouteResources().const.SIGN_IN))
