@@ -67,7 +67,7 @@ def select_all_submission(memberId = None, courseId = None, problemId = None):
                       (Submissions.problemId == problemId if problemId
                        else Submissions.problemId != None)).\
                join(Languages, 
-                    Submissions.usedLanguage == Languages.languageIndex).\
+                    Submissions.usedLanguageIndex == Languages.languageIndex).\
                join(Problems,
                     Submissions.problemId == Problems.problemId)
                                   
