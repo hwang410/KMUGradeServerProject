@@ -72,10 +72,13 @@ def select_submission_count(submissions):
 Solved Problem Counts
 '''
 def select_solved_problem_count(submissions):
-    return dao.query(func.count(submissions.c.memberId).label('sumOfSolvedProblemCount')).\
-               filter(submissions.c.status == ENUMResources().const.SOLVED).\
-               group_by(submissions.c.problemId,
-                        submissions.c.courseId)
+    submissions = dao.query(submissions).\
+                      filter(submissions.c.status == ENUMResources().const.SOLVED).\
+                      group_by(submissions.c.problemId,
+                               submissions.c.courseId).\
+                      subquery()
+                      
+    return dao.query(func.count(submissions.c.memberId).label('sumOfSolvedProblemCount'))
 
 '''
 Solved Counts
