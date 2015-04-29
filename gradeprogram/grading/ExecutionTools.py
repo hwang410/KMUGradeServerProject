@@ -112,7 +112,6 @@ class ExecutionTools(object):
             
     def WatchRunProgram(self, pid):
         usingMem = 0
-        temp = 0
         
         while True:
             wpid, status, res = os.wait4(pid,0)
@@ -128,14 +127,12 @@ class ExecutionTools(object):
                 return 'TimeOver', res[0], usingMem
             
             else:
-                temp = self.GetUsingMemory(pid)
+                usingMem = self.GetUsingMemory(pid, usingMem)
                 
-                if temp > usingMem:
-                    usingMem = temp
                 
                 ptrace.syscall(pid, 0)
                 
-    def GetUsingMemory(self, pid):
+    def GetUsingMemory(self, pid, usingMem):
         procFileOpenCommand = "%s%i%s" % ('/proc/', pid, '/status') 
         procFile = open(procFileOpenCommand, 'r')
         fileLines = procFile.readlines()
@@ -148,4 +145,7 @@ class ExecutionTools(object):
                 temp = int(words[index+1])
                 break;
         
-        return temp
+        if temp > usingMem:
+                    usingMem = temp
+        
+        return usingMem
