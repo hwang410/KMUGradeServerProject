@@ -20,7 +20,7 @@ Submissions to Last Submitted
 '''
 def select_last_submissions(memberId = None, courseId = None, problemId = None):
     
-    if courseId == OtherResources().const.ALL or (memberId and courseId and problemId):
+    if courseId == OtherResources().const.ALL or not(memberId or courseId or problemId):
         return dao.query(Submissions.memberId,
                          Submissions.courseId,
                          Submissions.problemId,
@@ -28,7 +28,7 @@ def select_last_submissions(memberId = None, courseId = None, problemId = None):
                    group_by(Submissions.memberId,
                             Submissions.problemId,
                             Submissions.courseId)
-    else:    
+    else:   
         return dao.query(Submissions.memberId,
                          Submissions.courseId,
                          Submissions.problemId,
@@ -56,6 +56,7 @@ def select_all_submission(lastSubmission = None, memberId = None, courseId = Non
                              Submissions.score,
                              Submissions.sumOfSubmittedFileSize,
                              Submissions.runTime,
+                             Submissions.usedMemory,
                              Submissions.codeSubmissionDate,
                              Languages.languageName).\
                        join(lastSubmission,
@@ -76,6 +77,7 @@ def select_all_submission(lastSubmission = None, memberId = None, courseId = Non
                          Submissions.score,
                          Submissions.sumOfSubmittedFileSize,
                          Submissions.runTime,
+                         Submissions.usedMemory,
                          Submissions.codeSubmissionDate,
                          Languages.languageName).\
                    filter((Submissions.memberId == memberId if memberId

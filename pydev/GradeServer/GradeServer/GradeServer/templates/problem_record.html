@@ -96,7 +96,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 							<tr>
 								<td style ='vertical-align: middle'>{{ loop.index }}</td>
 								<td style ='vertical-align: middle'>
-									<a href='{{ url_for("GradeServer.user_record", problemId = problemInformationRecords.problemId, courseId = courseId) }}'>
+									<a href='{{ url_for("GradeServer.submission_code", courseId = courseId, problemId = problemInformationRecords.problemId) }}'>
 									{{ problemSolvedMemberRecord.memberId }}
 									</a>
 								</td>

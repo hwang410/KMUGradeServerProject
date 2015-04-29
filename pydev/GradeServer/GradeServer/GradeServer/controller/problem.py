@@ -36,7 +36,7 @@ def problemList(courseId, pageNum):
     """ problem submitting page """
     # Get Last Submitted History
     lastSubmission = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
-                                                  courseId = courseId).subquery()
+                                             courseId = courseId).subquery()
     # Current Submission                                      
     submissions = dao.query(Submissions.score,
                             Submissions.status,
@@ -242,9 +242,9 @@ def record(courseId, problemId, sortCondition = OtherResources().const.RUN_TIME)
                            chartSubmissionDescriptions = chartSubmissionDescriptions,
                            chartSubmissionRecords = chartSubmissionRecords)
 
-@GradeServer.route('/problem/<problemId>/<courseId>')
+@GradeServer.route('/problem/<courseId>/<problemId>')
 @login_required
-def user_record(problemId, courseId):
+def submission_code(courseId, problemId):
     
     # Problem Information (LimitedTime, LimitedMemory
     try:
@@ -254,34 +254,21 @@ def user_record(problemId, courseId):
                                 problemName
     except Exception:
         problemName = None
+        
     # Problem Solved Users
     try:
-        problemSolvedUserRecords =dao.query(Submissions.memberId,
-                                            Submissions.runTime,
-                                            Submissions.sumOfSubmittedFileSize,
-                                            Submissions.codeSubmissionDate,
-                                            Submissions.usedMemory).\
-                                      filter(Submissions.problemId == problemId,
-                                             Submissions.courseId == courseId,
-                                             Submissions.memberId == session[SessionResources().const.MEMBER_ID],
-                                             Submissions.status == ENUMResources().const.SOLVED).\
-                                      group_by(Submissions.memberId,
-                                               Submissions.problemId,
-                                               Submissions.courseId).\
-                                      first()
+        # last Submissions Info
+        submissions = select_all_submission(lastSubmission = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
+                                                                                     courseId = courseId,
+                                                                                     problemId = problemId).subquery(),
+                                            memberId = session[SessionResources().const.MEMBER_ID],
+                                            courseId = courseId,
+                                            problemId = problemId).subquery()
+        problemSolvedMemberRecords = dao.query(submissions).\
+                                         filter(submissions.c.status == ENUMResources().const.SOLVED).\
+                                         first()
     except Exception:
-        problemSolvedUserRecords = []
-        
-    # Submitted Files
-    try:
-        count = dao.query(func.count(SubmittedFiles.fileIndex).label('count')).\
-                    filter(SubmittedFiles.memberId == session[SessionResources().const.MEMBER_ID],
-                           SubmittedFiles.problemId == problemId,
-                           SubmittedFiles.courseId == courseId).\
-                    first().\
-                    count
-    except Exception:
-        count = 0
+        problemSolvedMemberRecords = []
         
     # Submitted Files Information
     try:
@@ -294,9 +281,12 @@ def user_record(problemId, courseId):
         fileData = []
         for raw in submittedFileRecords:
             # Open
-            file = open(raw.filePath + raw.fileName)
+            filePath = raw.filePath + '/' +raw.fileName
+            file = open(filePath)
+            
             # Read
             data = file.read()
+            
             # Close
             file.close()
             fileData.append(data)
@@ -310,4 +300,4 @@ def user_record(problemId, courseId):
                            submittedFileRecords = submittedFileRecords,
                            fileData = fileData,
                            problemName = problemName,
-                           problemSolvedUserRecords = problemSolvedUserRecords)
+                           problemSolvedMemberRecords = problemSolvedMemberRecords)
