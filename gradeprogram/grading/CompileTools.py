@@ -1,24 +1,27 @@
 import glob
 import string
-import DBUpdate
+from DBUpdate import DBUpdate
 from subprocess import call
 
 class CompileTools(object):
-    def __init__(self, filePath, stdNum, usingLang, version, runFileName):
+    def __init__(self, filePath, stdNum, usingLang, version, runFileName,
+                 errorParaList):
         self.filePath = filePath
         self.stdNum = stdNum
         self.usingLang = usingLang
         self.version = version
         self.runFileName = runFileName
+        self.errorParaList = errorParaList
         
     def CodeCompile(self):
         if self.usingLang == 'PYTHON':
-            try:
-                copyCommand = "%s%s%s" % ('cp ', self.filePath, '*.py ./')
-                call(copyCommand, shell = True)
-            except Exception as e:
+            copyCommand = "%s%s%s" % ('cp ', self.filePath, '*.py ./')
+            call(copyCommand, shell = True)
+            
+            if len(glob.glob('*.py')) == 0:
                 print 'compile python file copy'
-                DBUpdate.SubmittedRecordsOfProblems()
+                DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
+                                           self.errorParaList[2], self.errorParaList[3])
             
             return True
             
@@ -36,7 +39,7 @@ class CompileTools(object):
         
         # if not make execution file
         elif len(glob.glob('./'+self.runFileName)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
-            DBUpdate.SubmittedRecordsOfProblems()
+            DBUpdate.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
         
         return result
         
@@ -46,7 +49,8 @@ class CompileTools(object):
             fp = open('error.err', 'r')
         except Exception as e:
             print 'compile error check file open error'
-            DBUpdate.SubmittedRecordsOfProblems()
+            DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
+                                           self.errorParaList[2], self.errorParaList[3])
         
         errMess = fp.read()
         
@@ -67,7 +71,8 @@ class CompileTools(object):
             rf = open('error.err', 'r')
         except Exception as e:
             print 'make compile error list file open error'
-            DBUpdate.SubmittedRecordsOfProblems()
+            DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
+                                           self.errorParaList[2], self.errorParaList[3])
         
         lines = rf.readlines()
         _list = []

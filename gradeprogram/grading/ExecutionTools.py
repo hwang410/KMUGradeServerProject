@@ -1,17 +1,16 @@
 import os
 import glob
-import time
 import string
 import ptrace
 import resource
-import DBUpdate
-from subprocess import call
+from DBUpdate import DBUpdate
+from shutil import copyfile
 
 RUN_COMMAND_LIST = []
 
 class ExecutionTools(object):
     def __init__(self, usingLang, limitTime, limitMemory, answerPath, version,
-                 runFileName, problemName, caseCount):
+                 runFileName, problemName, caseCount, errorParaList):
         self.usingLang = usingLang
         self.limitTime = limitTime
         self.limitMemory = limitMemory
@@ -20,16 +19,18 @@ class ExecutionTools(object):
         self.runFileName = runFileName
         self.problemName = problemName
         self.caseCount = caseCount
+        self.errorParaList = errorParaList
         
     def Execution(self):
         # copy input data
         try:
             if self.caseCount > 0:
-                copyCommand = "%s%s%s%s" % ('cp ', self.answerPath, self.problemName, '_cases_total_inputs.txt input.txt')
-                call(copyCommand, shell = True)
+                copyCommand = "%s%s%s" % (self.answerPath, self.problemName, '_cases_total_inputs.txt')
+                copyfile(copyCommand, 'input.txt')
         except Exception as e:
             print e
-            DBUpdate.SubmittedRecordsOfProblems()
+            DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
+                                           self.errorParaList[2], self.errorParaList[3])
         
         # make execution command
         self.MakeCommand()

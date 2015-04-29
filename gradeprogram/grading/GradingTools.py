@@ -1,10 +1,11 @@
 import string
-import DBUpdate
+from DBUpdate import DBUpdate
+from shutil import copyfile
 from subprocess import call
 
 class GradingTools(object):
     def __init__(self, gradeMethod, caseCount, usingLang, version, answerPath,
-                 problemName, filePath):
+                 problemName, filePath, errorParaList):
         self.gradeMethod =gradeMethod 
         self.caseCount = caseCount
         self.usingLang = usingLang
@@ -12,6 +13,7 @@ class GradingTools(object):
         self.answerPath = answerPath
         self.problemName = problemName
         self.filePath = filePath
+        self.errorParaList = errorParaList
         
     def Grade(self):
         if self.gradeMethod == 'SOLUTION':   # solution
@@ -52,7 +54,8 @@ class GradingTools(object):
             stdOutput = open('output.txt', 'r')
         except Exception as e:
             print e
-            DBUpdate.SubmittedRecordsOfProblems()
+            DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
+                                           self.errorParaList[2], self.errorParaList[3])
         
         stdLines = stdOutput.readlines()
         answerLines = answerFile.readlines()
@@ -88,12 +91,13 @@ class GradingTools(object):
         
     def CheckerSingle(self):
         try:
-            copyCommand = "%s%s%s%s" % ('cp ', self.answerPath, self.problemName, '.out checker.out')
-            call(copyCommand, shell = True)
+            copyCommand = "%s%s%s" % (self.answerPath, self.problemName, '.out')
+            copyfile(copyCommand,'checker.out')
             call('./checker.out 1>result.txt', shell = True)
         except Exception as e:
             print e
-            DBUpdate.SubmittedRecordsOfProblems()
+            DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
+                                           self.errorParaList[2], self.errorParaList[3])
         
         rf = open('result.txt', 'r')
         
@@ -114,16 +118,15 @@ class GradingTools(object):
         
         for i in range(1, self.caseCount+1):
             try:
-                copyCommand = "%s%s%s%s%i%s" % ('cp ', self.answerPath,
-                                                self.problemName, '_case',
-                                                i, '_input.txt input.txt')
+                copyCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName,
+                                              '_case', i, '_input.txt')
                 answerOpenCommand = "%s%s%s%i%s" % (self.answerPath,
                                                     self.problemName,
                                                     '_case', i, '_output.txt')
                 
                 # input.txt file copy
                 call('rm -r input.txt', shell = True)
-                call(copyCommand, shell = True)
+                copyfile(copyCommand, 'input.txt')
                 
                 # program run
                 call(command, shell = True)
@@ -132,7 +135,8 @@ class GradingTools(object):
                 stdOutput = open('output.txt', 'r') # student output open
             except Exception as e:
                 print e
-                DBUpdate.SubmittedRecordsOfProblems()
+                DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
+                                           self.errorParaList[2], self.errorParaList[3])
             
             answer = answerFile.read()
             student = stdOutput.read()
@@ -163,21 +167,20 @@ class GradingTools(object):
         command = self.MakeMulticaseCommand()
         
         try:
-            copyCommand = "%s%s%s%s" % ('cp ', self.answerPath, self.problemName,
-                                        '.out checker.out')
-            call(copyCommand, shell = True)
+            copyCommand = "%s%s%s" % (self.answerPath, self.problemName,
+                                        '.out')
+            copyfile(copyCommand, 'checker.out')
         except Exception as e:
                 print e
-                DBUpdate.SubmittedRecordsOfProblems()
+                DBUpdate.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
         
         for i in range(1, self.caseCount+1):
             try:
-                copyCommand = "%s%s%s%s%i%s" % ('cp ', self.answerPath,
-                                                self.problemName, '_case', i,
-                                                '_input.txt input.txt')
+                copyCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName,
+                                              '_case', i, '_input.txt input.txt')
                 # input.txt file copy
                 call('rm -r input.txt', shell = True)
-                call(copyCommand, shell = True)
+                copyfile(copyCommand, 'input.txt')
                 
                 # program run
                 call(command, shell = True)
@@ -186,7 +189,7 @@ class GradingTools(object):
                 rf = open('reuslt.txt', 'r')
             except Exception as e:
                 print e
-                DBUpdate.SubmittedRecordsOfProblems()
+                DBUpdate.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
             
             score = rf.readline()
             
