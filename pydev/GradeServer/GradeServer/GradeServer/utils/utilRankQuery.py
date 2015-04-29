@@ -21,22 +21,13 @@ from GradeServer.model.submissions import Submissions
  '''
 def select_rank(submissions):
     # # Total Submission Count (Rank Page Server Error Exception)
-    s = dao.query(submissions).all()
-    for a in s:
-        print a.memberId, a.solutionCheckCount
-    print  len(s)
     submissionCount = dao.query(submissions.c.memberId,
-                                func.sum(submissions.c.solutionCheckCount).label('sumOfSubmissionCounts')).\
+                                func.sum(submissions.c.solutionCheckCount).label('solutionCheckCount')).\
                           group_by(submissions.c.memberId).\
                           subquery()
                           
-    s = dao.query(submissionCount).all()
-    for a in s:
-        print a.memberId, a.sumOfSubmissionCounts
-    print  len(s)
         # 중복 제거푼 문제숫
-    sumOfSolvedProblemCount = dao.query(Submissions.memberId,
-                                        func.count(Submissions.memberId).label('sumOfSolvedProblemCount')).\
+    sumOfSolvedProblemCount = dao.query(Submissions.memberId).\
                                   join(submissions,
                                        and_(Submissions.status == ENUMResources().const.SOLVED,
                                             Submissions.memberId == submissions.c.memberId,
@@ -46,15 +37,18 @@ def select_rank(submissions):
                                            Submissions.problemId,
                                            Submissions.courseId).\
                                   subquery()
+    sumOfSolvedProblemCount = dao.query(sumOfSolvedProblemCount,
+                                        func.count(sumOfSolvedProblemCount.c.memberId).label('sumOfSolvedProblemCount')).\
+                                        group_by(sumOfSolvedProblemCount.c.memberId).\
+                                        subquery()
+    
     #SubmitCount and SolvedCount Join
-    submissions = dao.query(submissionCount.c.memberId,
-                            submissionCount.c.sumOfSubmissionCounts,
-                            sumOfSolvedProblemCount.c.sumOfSolvedProblemCount,
-                            (sumOfSolvedProblemCount.c.sumOfSolvedProblemCount / submissionCount.c.sumOfSubmissionCounts * 100).label('solvedRate')).\
-                      join(sumOfSolvedProblemCount,
-                           submissionCount.c.memberId == sumOfSolvedProblemCount.c.memberId)
-   
-    return submissions
+    return dao.query(submissionCount.c.memberId,
+                     submissionCount.c.solutionCheckCount,
+                     sumOfSolvedProblemCount.c.sumOfSolvedProblemCount,
+                     (sumOfSolvedProblemCount.c.sumOfSolvedProblemCount / submissionCount.c.solutionCheckCount * 100).label('solvedRate')).\
+               join(sumOfSolvedProblemCount,
+                    submissionCount.c.memberId == sumOfSolvedProblemCount.c.memberId)
 
 
 '''

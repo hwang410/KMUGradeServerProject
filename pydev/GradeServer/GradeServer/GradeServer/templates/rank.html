@@ -77,7 +77,7 @@ $(function() {
 							<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">{{ rankMemberRecord.memberId }}</a></td>
 							<td style ='vertical-align: middle'>{{ rankMemberRecord.comment }}</td>
 							<td style ='vertical-align: middle'>{{ rankMemberRecord.sumOfSolvedProblemCount }}</td>
-							<td style ='vertical-align: middle'>{{ rankMemberRecord.sumOfSubmissionCounts }}</td>
+							<td style ='vertical-align: middle'>{{ rankMemberRecord.solutionCheckCount }}</td>
 							<td style ='vertical-align: middle'>{{ rankMemberRecord.solvedRate }}%</td>
 						</tr>
 						{% endfor -%}
@@ -131,7 +131,7 @@ $(function() {
 							<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">{{ rankMemberRecord.memberId }}</a></td>
 							<td style ='vertical-align: middle'>{{ rankMemberRecord.comment }}</td>
 							<td style ='vertical-align: middle'>{{ rankMemberRecord.sumOfSolvedProblemCount }}</td>
-							<td style ='vertical-align: middle'>{{ rankMemberRecord.sumOfSubmissionCounts }}</td>
+							<td style ='vertical-align: middle'>{{ rankMemberRecord.solutionCheckCount }}</td>
 							<td style ='vertical-align: middle'>{{ rankMemberRecord.solvedRate }}%</td>
 						</tr>
 						{% endfor -%}

@@ -57,6 +57,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
         except Exception:
             count = 0
             
+        print count
         # Paging Pointed
         pages = get_page_pointed(pageNum = int(pageNum),
                                  count = count)

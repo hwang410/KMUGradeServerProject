@@ -62,9 +62,9 @@ def user_history(memberId, sortCondition, pageNum):
          
         try:
                         # 차트 정보
-            chartSubmissionRecords = dao.query(# 총 제출 횟수
+            chartSubmissionRecords = dao.query(# 중복 제거푼 문제숫
                                                select_solved_problem_count(submissions).subquery(),
-                                                                                               # 중복 제거푼 문제숫
+                                                                                              # 총 제출 횟수
                                                select_submission_count(submissions).subquery(),
                                                                                               # 모든 맞춘 횟수
                                                select_solved_count(submissions).subquery(),
