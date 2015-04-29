@@ -20,6 +20,8 @@ class InterfaceGrade(object):
         self.submitCount = int(args[12])
         self.problemName = args[13]
         
+        self.errorParaList = [self.stdNum, self.problemNum, self.courseNum, self.submitCount]
+        
         self.answerPath = "%s%s%s%s%s%s" % (self.problemPath, '/', self.problemName, '_', self.gradeMethod, '/')
         
         # make execution file name
@@ -29,7 +31,7 @@ class InterfaceGrade(object):
     def Compile(self):
         _compile = CompileTools.CompileTools(self.filePath, self.stdNum,
                                              self.usingLang, self.version,
-                                             self.runFileName)
+                                             self.runFileName, self.errorParaList)
         success = _compile.CodeCompile()
         
         return success, self.stdNum, self.problemNum, self.courseNum, self.submitCount
@@ -39,7 +41,8 @@ class InterfaceGrade(object):
         execution = ExecutionTools.ExecutionTools(self.usingLang, self.limitTime,
                                                  self.limitMemory, self.answerPath,
                                                  self.version, self.runFileName,
-                                                 self.problemName, self.caseCount)
+                                                 self.problemName, self.caseCount,
+                                                 self.errorParaList)
             
         success, runTime, usingMem = execution.Execution()
         
@@ -47,7 +50,7 @@ class InterfaceGrade(object):
             evaluation = GradingTools.GradingTools(self.gradeMethod, self.caseCount,
                                                    self.usingLang, self.version,
                                                    self.answerPath, self.problemName,
-                                                   self.filePath)
+                                                   self.filePath, self.errorParaList)
              
             success, score = evaluation.Grade()
         
@@ -68,9 +71,9 @@ class InterfaceGrade(object):
             
         fileList = glob.glob(self.filePath + fileExtention)
         
-        if fileList:
+        if len(fileList) > 1:
             return 'main'
         
         split = string.split
         name = split(fileList[0], '/')
-        return split(name, '.')[0]
+        return split(name[-1], '.')[0]
