@@ -22,10 +22,10 @@
 							</tr>
 						</thead>
 						<tr>
-							<td>{{ problemSolvedUserRecords.memberId }}</td>
-							<td>{{ problemSolvedUserRecords.runTime }} ms</td>
-							<td>{{ problemSolvedUserRecords.usedMemory }} MB</td>
-							<td>{{ problemSolvedUserRecords.sumOfSubmittedFileSize }} Byte</td>
+							<td>{{ problemSolvedMemberRecords.memberId }}</td>
+							<td>{{ problemSolvedMemberRecords.runTime }} ms</td>
+							<td>{{ problemSolvedMemberRecords.usedMemory }} MB</td>
+							<td>{{ problemSolvedMemberRecords.sumOfSubmittedFileSize }} Byte</td>
 							<td style="text-align: center"><button type="button" id="code-down">Download source code</button></td>
 						</tr>
 					</div>
@@ -40,12 +40,12 @@
 		<div class="tabbable">
 			<ul class="nav nav-tabs">
 				{% for fileInfo in submittedFileRecords %}
-					{% if not loop.index0 %}
+					{% if loop.index0 == 0 %}
 					<li class = 'active'>
 					{% else %}
 					<li class>
 					{% endif %}
-					<a href="#{{ loop.index0 }}" data-toggle="tab">{{ fileInfo }}</a></li>
+					<a href="#{{ loop.index0 }}" data-toggle="tab">{{ fileInfo.fileName }}</a></li>
 				{% endfor %}
 			</ul>
 		
@@ -67,7 +67,7 @@
 						<option value = "11"> textmate </option>
 						<option value = "12"> tomorrow </option>
 					</select>
-					<div id="editor{{ loop.index0 }}">{{ fileData[loop.index0] }}</div>
+					<pre id="editor{{ loop.index0 }}">{{ fileData[loop.index0] }}</pre>
 				</div>
 			{% endfor %}
 			</div>
