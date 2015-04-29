@@ -6,7 +6,7 @@
 {%- block body %}
 <div class="container">
 	<div>
-		<h3>Manage User</h3>
+		<h3>User management</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
 			<a href="{{ url_for('GradeServer.server_add_user') }}">
@@ -16,7 +16,7 @@
 		</div>
 
 		<!-- hidden modal pop -->
-		<!-- if any item choiced -->
+		<!-- if any item choosed -->
 		<div class="modal hide fade" id="deleteModal"
 			  aria-labelledby="deleteModalLabel" aria-hidden="true"
 			  role="dialog" tabindex="-1">
@@ -35,7 +35,7 @@
 				
 			</div>
 		</div>
-		<!-- no items choiced -->
+		<!-- no items choosed -->
 		<div class="modal hide fade" id="deleteNoItem"
 			  aria-labelledby="deleteModalLabel" aria-hidden="true"
 			  role="dialog" tabindex="-1">
@@ -55,15 +55,16 @@
 
 		<table class="table table-bordered" style="margin-top:10px">
 			<thead>
-				<tr><td>Index
-				<td>Id
-				<td>Department
-				<td>Name
-				<td>Phone
-				<td>E-mail
-				<td>Authority
-				<td>Last Signin
-				<td>Del
+				<tr>
+					<td>Index
+					<td>ID
+					<td>College&Department
+					<td>Name
+					<td>Phone
+					<td>E-mail
+					<td><abbr title="SA: Server Administrator, CA: Course Administrator">Authority</abbr>
+					<td>Last Access
+					<td>Check
 			<tbody>
 				<script> index = {{ index }}; </script>
 				{%- for user, college, department in users %}
@@ -74,18 +75,29 @@
 					<td>{{ user.memberName }}
 					<td>{{ user.contactNumber }}
 					<td>{{ user.emailAddress }}
+					<!-- Up to you. -->
+					<!-- Now we set USER as Student, SERVER_ADMINISTRATOR as SA, COURSE_ADMINISTRATOR  as CA -->
+					<!-- Because using meta values, not enough width -->
 					<td>{%- for authority in user.authority %}
 							{%- if authority==SETResources.const.USER %}
 								Student
 							{% elif authority==SETResources.const.SERVER_ADMINISTRATOR %}
-								Server Admin
+								SA
 							{% elif authority==SETResources.const.COURSE_ADMINISTRATOR %}
-								Course Admin
+								CA
 							{% else %}
 								Unknown
 							{% endif -%}
 						{% endfor -%}
-					<td>{{ user.lastAccessDate }}
+					<td>
+						<script>
+						var date = "{{ user.lastAccessDate }}";
+						if(date != "None"){
+							// slice from "YYYY-MM-DD hh:mm:ss" to "YY-MM-DD hh:mm"
+							date = date.substr(2,14);
+						}
+						document.write(date);
+						</script>
 					<td>
 						<label class="checkbox-center">
 							<input class="box-check" name="{{ user.memberId }}"

@@ -145,7 +145,7 @@ $(function() {
 </script>
 <div class="container">
 	<div>
-		<h3>Add User</h3>
+		<h3>User addition</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
 			<a class="btn" href="#addUserModal" data-toggle="modal" role="button">
@@ -169,7 +169,7 @@ $(function() {
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">
 				x
 				</button>
-				<h3 id="addUserModalLabel">Add User</h3>
+				<h3 id="addUserModalLabel">User addition</h3>
 			</div>
 			<div class="modal-body">
 				<div style="text-align:right">
@@ -179,10 +179,10 @@ $(function() {
 				<table class="table table-bordered" id="indivisual" style="margin-top:10px">
 					<thead>
 					<tr>
-						<td>User Id
-						<td>User Name
-						<td>College Index
-						<td>Department Index
+						<td>ID
+						<td>Name
+						<td>College
+						<td>Department
 						<td>Authority
 
 					<tbody id="indivisualUserForm">
@@ -197,7 +197,8 @@ $(function() {
 								<select class="input-medium" id="college1" name="college1">
 									<option> select college </option>
 									{%- for college in allColleges %}
-									<option >{{ college.collegeIndex }} {{ college.collegeName }} 
+									<option >
+										{{ college.collegeIndex }} {{ college.collegeName }} 
 									</option>
 									{% endfor -%}
 								</select>
@@ -206,9 +207,9 @@ $(function() {
 								</select>
 							<td>
 								<select class="input-medium" id="authority1" name="authority1">
-									{%- for authority in authorities %}
+								{%- for authority in authorities %}
 									<option> {{ authority }} </option>
-									{% endfor -%}
+								{% endfor -%}
 								</select>
 				</table>
 			</div>
@@ -225,7 +226,7 @@ $(function() {
 			<form method="post" enctype="multipart/form-data">
 				<div class="modal-header">
 					<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
-					<h3 id="addGroupModalLabel">Add User</h3>
+					<h3 id="addGroupModalLabel">User addition</h3>
 				</div>
 				<div class="modal-body">
 					<p>default authority is "User(student)"</p>
@@ -240,12 +241,12 @@ $(function() {
 		</div>
 
 		<!-- ///// Delete case /////
-				if any item choiced -->
+				if any item choosed -->
 		<div class="modal hide fade" id="deleteModal" 
 			  aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">Delete User</h3>
+				<h3 id="deleteModalLabel">User deletion</h3>
 			</div>
 			<div class="modal-body">
 				<p>Do you really want to delete it?</p>
@@ -257,15 +258,15 @@ $(function() {
 				</form>
 			</div>
 		</div>
-		<!-- no items choiced -->
+		<!-- no items choosed -->
 		<div class="modal hide fade" id="deleteNoItem" 
 			  aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">Delete User</h3>
+				<h3 id="deleteModalLabel">User deletion</h3>
 			</div>
 			<div class="modal-body">
-				<p>No items choiced</p>
+				<p>No items choosed</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
@@ -277,8 +278,8 @@ $(function() {
 				<thead>
 					<tr>
 						<td>Index
-						<td>User Id
-						<td>User Name
+						<td>ID
+						<td>Name
 						<td>Authority
 						<td>College
 						<td>Department
