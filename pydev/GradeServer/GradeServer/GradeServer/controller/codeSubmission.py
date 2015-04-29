@@ -299,6 +299,7 @@ def upload(courseId, problemId):
     caseCount = get_case_count(problemCasesPath, isAllInputCaseInOneFile)
     problemFullName = make_problem_full_name(problemId, problemName)
 
+
     send_to_celery(filePath,
                    problemPath,
                    memberId,
@@ -398,6 +399,7 @@ def code(courseId, pageNum, problemId):
     
     caseCount = get_case_count(problemCasesPath, isAllInputCaseInOneFile)
     problemFullName = make_problem_full_name(problemId, problemName)
+    
     send_to_celery(filePath,
                    problemPath,
                    memberId,
