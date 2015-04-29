@@ -24,7 +24,7 @@ Submissions to Last Submitted
 '''
 def select_last_submissions(memberId = None, courseId = None, problemId = None):
     
-    if courseId == OtherResources.const.ALL or not courseId:
+    if courseId == OtherResources().const.ALL or not courseId:
         return dao.query(Submissions.memberId,
                          Submissions.courseId,
                          Submissions.problemId,
@@ -75,21 +75,21 @@ def select_all_submission(memberId = None, courseId = None, problemId = None):
 '''
 Submissions Sorting Condition
 '''
-def submissions_sorted(submissions, sortCondition = OtherResources.const.SUBMISSION_DATE):
+def submissions_sorted(submissions, sortCondition = OtherResources().const.SUBMISSION_DATE):
     
     print "CCCCCC", sortCondition
         # 제출날짜순 정렬
-    if sortCondition == OtherResources.const.SUBMISSION_DATE:
+    if sortCondition == OtherResources().const.SUBMISSION_DATE:
         print "DDDDD"
         submissionRecords = dao.query(submissions).\
                                 order_by(submissions.c.codeSubmissionDate.desc())
         print "EEEEE"
          # 실행 시간 순 정렬
-    elif sortCondition == OtherResources.const.RUN_TIME:
+    elif sortCondition == OtherResources().const.RUN_TIME:
         submissionRecords = dao.query(submissions).\
                                 order_by(submissions.c.runTime.asc())
          # 코드 길이별 정렬         
-    elif sortCondition == OtherResources.const.CODE_LENGTH:
+    elif sortCondition == OtherResources().const.CODE_LENGTH:
         submissionRecords = dao.query(submissions).\
                                 order_by(submissions.c.sumOfSubmittedFileSize.asc())  
                                  

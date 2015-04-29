@@ -26,7 +26,7 @@ def select_all_user():
         # 자동 완성을 위한 모든 유저기록
     return dao.query(Members.memberId,
                      Members.memberName).\
-               filter(Members.authority == SETResources.const.USER)
+               filter(Members.authority == SETResources().const.USER)
     
     
 '''
@@ -62,7 +62,7 @@ Sum Of Solved People Counts
 '''
 def select_solved_people_count(submissions):
     return dao.query(func.count(submissions.c.memberId.distinct()).label('sumOfSolvedPeopleCount')).\
-               filter(submissions.c.status == ENUMResources.const.SOLVED).\
+               filter(submissions.c.status == ENUMResources().const.SOLVED).\
                group_by(submissions.c.memberId,
                         submissions.c.problemId,
                         submissions.c.courseId,
@@ -79,7 +79,7 @@ Solved Problem Counts
 '''
 def select_solved_problem_count(submissions):
     return dao.query(func.count(submissions.c.memberId).label('sumOfSolvedProblemCount')).\
-               filter(submissions.c.status == ENUMResources.const.SOLVED).\
+               filter(submissions.c.status == ENUMResources().const.SOLVED).\
                group_by(submissions.c.problemId,
                         submissions.c.courseId)
 
@@ -88,42 +88,42 @@ Solved Counts
 '''
 def select_solved_count(submissions):
     return dao.query(func.count(submissions.c.memberId).label('sumOfSolvedCount')).\
-               filter(submissions.c.status == ENUMResources.const.SOLVED)
+               filter(submissions.c.status == ENUMResources().const.SOLVED)
                
 '''
 Wrong Answer Counts
 '''
 def select_wrong_answer_count(submissions):
     return dao.query(func.count(submissions.c.memberId).label('sumOfWrongAnswerCount')).\
-               filter(submissions.c.status == ENUMResources.const.WRONG_ANSWER)
+               filter(submissions.c.status == ENUMResources().const.WRONG_ANSWER)
 
 '''
 Time Over Counts
 '''
 def select_time_over_count(submissions):
     return dao.query(func.count(submissions.c.memberId).label('sumOfTimeOverCount')).\
-               filter(submissions.c.status == ENUMResources.const.TIME_OVER)
+               filter(submissions.c.status == ENUMResources().const.TIME_OVER)
                
 '''
 Compile Error Counts
 '''
 def select_compile_error_count(submissions):
     return dao.query(func.count(submissions.c.memberId).label('sumOfCompileErrorCount')).\
-               filter(submissions.c.status == ENUMResources.const.COMPILE_ERROR)
+               filter(submissions.c.status == ENUMResources().const.COMPILE_ERROR)
                
 '''
 RunTime Error Counts
 '''
 def select_runtime_error_count(submissions):
     return dao.query(func.count(submissions.c.memberId).label('sumOfRunTimeErrorCount')).\
-               filter(submissions.c.status == ENUMResources.const.RUNTIME_ERROR)
+               filter(submissions.c.status == ENUMResources().const.RUNTIME_ERROR)
 
 '''
 Server Error Counts
 '''
 def select_server_error_count(submissions):
     return dao.query(func.count(submissions.c.memberId).label('sumOfServerErrorCount')).\
-               filter(submissions.c.status == ENUMResources.const.SERVER_ERROR)
+               filter(submissions.c.status == ENUMResources().const.SERVER_ERROR)
                
 
 '''
@@ -132,21 +132,21 @@ def select_server_error_count(submissions):
 def select_accept_courses():
     # 서버 마스터는 모든 과목에 대해서, 그 외에는 지정된 과목에 대해서
     # Server Master
-    if SETResources.const.SERVER_ADMINISTRATOR in session[SessionResources.const.AUTHORITY]:
+    if SETResources().const.SERVER_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
         myCourses = dao.query(RegisteredCourses.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse)
     # Class Master, User
-    elif SETResources.const.COURSE_ADMINISTRATOR in session[SessionResources.const.AUTHORITY]:
+    elif SETResources().const.COURSE_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
         myCourses = dao.query(RegisteredCourses.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse).\
-                        filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID])
+                        filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID])
     else:
         myCourses = dao.query(Registrations.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse).\
-                        filter(Registrations.memberId == session[SessionResources.const.MEMBER_ID]).\
+                        filter(Registrations.memberId == session[SessionResources().const.MEMBER_ID]).\
                         join(RegisteredCourses,
                              Registrations.courseId == RegisteredCourses.courseId)
             
@@ -175,20 +175,20 @@ def select_notices():
     if session:
         try:
                          # 서버 관리자는 모든 공지
-            if SETResources.const.SERVER_ADMINISTRATOR in session[SessionResources.const.AUTHORITY]:
+            if SETResources().const.SERVER_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
                 noticeRecords = select_simple_notice(dao.query(ArticlesOnBoard).\
                                                          subquery()).all()
                        # 과목 관리자 및 유저는 담당 과목 공지
             else:
                 # Course Administrator
-                if SETResources.const.COURSE_ADMINISTRATOR in session[SessionResources.const.AUTHORITY]:
+                if SETResources().const.COURSE_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
                     registeredCoursesId = dao.query(RegisteredCourses.courseId).\
-                                             filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID]).\
+                                             filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID]).\
                                              subquery()
                                  # 학생인 경우
                 else: # elif User in session['authority']
                     registeredCoursesId = dao.query(Registrations.courseId).\
-                                             filter(Registrations.memberId == session[SessionResources.const.MEMBER_ID]).\
+                                             filter(Registrations.memberId == session[SessionResources().const.MEMBER_ID]).\
                                              subquery()
                 
                                 # 해당 과목 추려내기
@@ -202,7 +202,7 @@ def select_notices():
                                                     order_by(noticeRecords.c.writtenDate.desc()),
                                                     
                                                 int(1),
-                                                OtherResources.const.NOTICE_LIST).all()   
+                                                OtherResources().const.NOTICE_LIST).all()   
         except Exception:
             noticeRecords = []
     # Not Login     
@@ -211,7 +211,7 @@ def select_notices():
         try:
             try:
                 serverAdministratorId = dao.query(Members.memberId).\
-                                            filter(Members.authority == SETResources.const.SERVER_ADMINISTRATOR).\
+                                            filter(Members.authority == SETResources().const.SERVER_ADMINISTRATOR).\
                                             first().\
                                             memberId
             except:
@@ -231,7 +231,7 @@ Ger SErverNotices
 def select_server_notice(serverAdministratorId):
     return dao.query(ArticlesOnBoard).\
                filter(ArticlesOnBoard.writerId == serverAdministratorId,
-                      ArticlesOnBoard.isNotice == ENUMResources.const.TRUE)
+                      ArticlesOnBoard.isNotice == ENUMResources().const.TRUE)
                
                
 ''' 
@@ -244,6 +244,6 @@ def select_simple_notice(articlesSub):
                join(RegisteredCourses,
                     or_(articlesSub.c.courseId == RegisteredCourses.courseId,
                         articlesSub.c.courseId == None)).\
-               filter(articlesSub.c.isNotice == ENUMResources.const.TRUE)
+               filter(articlesSub.c.isNotice == ENUMResources().const.TRUE)
 
                                                     

@@ -29,7 +29,7 @@ def select_rank(submissions):
     sumOfSolvedProblemCount = dao.query(Submissions.memberId,
                                         func.count(Submissions.memberId).label('sumOfSolvedProblemCount')).\
                                   join(submissions,
-                                       and_(Submissions.status == ENUMResources.const.SOLVED,
+                                       and_(Submissions.status == ENUMResources().const.SOLVED,
                                             Submissions.memberId == submissions.c.memberId,
                                             Submissions.problemId == submissions.c.problemId,
                                             Submissions.courseId == submissions.c.courseId)).\
@@ -51,17 +51,17 @@ def select_rank(submissions):
 '''
 Rank Sorting Condition
 '''
-def rank_sorted(ranks, sortCondition = OtherResources.const.RATE):
+def rank_sorted(ranks, sortCondition = OtherResources().const.RATE):
     #Get Comment
     # rate 정렬
-    if sortCondition == OtherResources.const.RATE:
+    if sortCondition == OtherResources().const.RATE:
         rankMemberRecords = dao.query(ranks,
                                       Members.comment).\
                                 join(Members,
                                      Members.memberId == ranks.c.memberId).\
                                 order_by(ranks.c.solvedRate.asc())
     # Solved Problem Sorted
-    elif sortCondition == OtherResources.const.SOLVED_PROBLEM:
+    elif sortCondition == OtherResources().const.SOLVED_PROBLEM:
         rankMemberRecords = dao.query(ranks,
                                       Members.comment).\
                                 join(Members,
