@@ -46,7 +46,7 @@
 							 style="margin-top:10px">
 					<thead>
 						<tr>
-							<td>Course Id
+							<td>Course ID
 							<td>Problem Name
 							<td><abbr title="Multiple Input/Output Files">MF</abbr>
 							<td>Start Date
@@ -106,7 +106,7 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<td>Course Id
+							<td>Course ID
 							<td>Class Name
 							<td>Problem Name
 							<td><abbr title="Number Of each input/output Files">NOF</abbr>
@@ -127,18 +127,20 @@
 							<td id="isAllInputCaseInOneFile_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}"
 								ondblclick="modifySelector(this.id)">
 									{{ registeredProblem.isAllInputCaseInOneFile }}
+							<!-- @To do -->
+							<!-- When the script code was function call, it was not working. and don't know why. -->
 							<td id="startDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
-									{{ registeredProblem.startDateOfSubmission }}
+									<script>var newDate = "{{ registeredProblem.startDateOfSubmission }}"; document.write(newDate.split(' ')[0]);</script>
 							<td id="endDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
-									{{ registeredProblem.endDateOfSubmission }}
+									<script>var newDate = "{{ registeredProblem.endDateOfSubmission }}"; document.write(newDate.split(' ')[0]);</script>
 							<td id="openDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}"
 								ondblclick="modifySelector(this.id)">
-									{{ registeredProblem.openDate }}
+									<script>var newDate = "{{ registeredProblem.openDate }}"; document.write(newDate.split(' ')[0]);</script>
 							<td id="closeDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}"
 								ondblclick="modifySelector(this.id)">
-									{{ registeredProblem.closeDate }}
+									<script>var newDate = "{{ registeredProblem.closeDate }}"; document.write(newDate.split(' ')[0]);</script>
 							<td>
 								<label class="checkbox-center">
 									<input type="checkbox"
