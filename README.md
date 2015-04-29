@@ -7,7 +7,7 @@ You can choose a problem that you want to solve and you can see the result direc
 
 For a school or an organization, users can be managed as a group so it's easier to overview their activities.
 
-Our first milestone(~2015.5) is to service for about 2K people at the same tiem and handle 300 of judging requests per second.
+Our first milestone(~2015.5) is to service for about 2K people at the same time and handle 300 of judging requests/sec.
 
 Overall code is written with [python flask](http://flask.pocoo.org)<br>
 And used followings<br>
