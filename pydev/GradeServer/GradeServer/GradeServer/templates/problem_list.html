@@ -37,7 +37,7 @@
 				{% if problemListRecord.solutionCheckCount %}{{ problemListRecord.solutionCheckCount }}{% else %}0{% endif %}
 			</td>
 			<td style ='vertical-align: middle'>
-				<a href="{{ url_for('GradeServer.record', courseId = courseRecords.courseId, problemId = problemListRecord.problemId, sortCondition = 'submissionDate') }}" onclick="setLegend()">
+				<a href="{{ url_for('GradeServer.problem_record', courseId = courseRecords.courseId, problemId = problemListRecord.problemId, sortCondition = 'submissionDate') }}" onclick="setLegend()">
 					Problem Record
 				</a>
 			</td>

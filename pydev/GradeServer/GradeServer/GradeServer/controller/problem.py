@@ -167,7 +167,7 @@ def submit():
 
 @GradeServer.route('/record/<courseId>/<problemId>-<sortCondition>')
 @login_required
-def record(courseId, problemId, sortCondition = OtherResources().const.RUN_TIME):
+def problem_record(courseId, problemId, sortCondition = OtherResources().const.RUN_TIME):
     """
     navbar - class - Record of problem
     """

@@ -58,6 +58,7 @@ def select_all_submission(lastSubmission = None, memberId = None, courseId = Non
                              Submissions.runTime,
                              Submissions.usedMemory,
                              Submissions.codeSubmissionDate,
+                             Submissions.viewCount,
                              Languages.languageName).\
                        join(lastSubmission,
                             and_(Submissions.solutionCheckCount == lastSubmission.c.solutionCheckCount,
