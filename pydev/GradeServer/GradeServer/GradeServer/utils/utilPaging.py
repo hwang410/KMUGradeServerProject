@@ -7,7 +7,7 @@ from GradeServer.resource.otherResources import OtherResources
 """
 페이징에 필요한 정보들을 구하는 모듈
 """
-def get_page_pointed(pageNum, count, BLOCK = OtherResources.const.BLOCK, LIST = OtherResources.const.LIST):
+def get_page_pointed(pageNum, count, BLOCK = OtherResources().const.BLOCK, LIST = OtherResources().const.LIST):
     
     #Show List
     startList = (pageNum - 1) * LIST
@@ -34,7 +34,7 @@ def get_page_pointed(pageNum, count, BLOCK = OtherResources.const.BLOCK, LIST = 
 '''
 Page Number Case Record
 '''
-def get_page_record(recordsSub, pageNum, LIST = OtherResources.const.LIST):
+def get_page_record(recordsSub, pageNum, LIST = OtherResources().const.LIST):
         
     return recordsSub.slice((pageNum - 1) * LIST,
                             pageNum * LIST)

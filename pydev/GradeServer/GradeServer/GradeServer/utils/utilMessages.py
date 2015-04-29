@@ -54,7 +54,7 @@ def unknown_error(error = get_message()):
     from GradeServer.utils.utilQuery import select_notices
     from GradeServer.utils.utilRankQuery import select_top_coder
     
-    return render_template(HTMLResources.const.MAIN_HTML,
+    return render_template(HTMLResources().const.MAIN_HTML,
                            SessionResources = SessionResources,
                            SETResources = SETResources,
                            notices = select_notices (),
