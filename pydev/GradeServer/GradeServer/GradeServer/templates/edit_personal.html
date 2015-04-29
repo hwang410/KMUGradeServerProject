@@ -6,33 +6,45 @@
 {%- block body %}
 <div class="container">
 	<h3>Edit Personal Information</h3>
-	<div class = 'span12'>
+	<div class='span12'>
 		<h4>
 			<div class="row-fluid">
-				<div class="span3">User Id</div>
-				<div class="span8">{{ memberInformation.memberId }}</div>
+				<div class="span3">
+					User Id
+				</div>
+				<div class="span8">
+					{{ memberInformation.memberId }}
+				</div>
 			</div>
 		</h4>
 		<form method="post">
 			<h4>
 				<div class="row-fluid">
-					<div class="span3">Password</div>
+					<div class="span3">
+						Password
+					</div>
 					<div class="span2">
-						<input type="password" name="password" class="input-large" autofocus ="autofocus" placeholder = "Input new password">
+						<input type="password" name="password" class="input-large"
+								placeholder="Input password" autofocus>
 					</div>
 				</div>
 			</h4>
 			<h4>
 				<div class="row-fluid">
-					<div class="span3">Password(confirm)</div>
+					<div class="span3">
+						Password(confirm)
+					</div>
 					<div class="span8">
-						<input type="password" name="passwordConfirm" class="input-large" placeholder = "Confirm new password">
+						<input type="password" name="passwordConfirm" class="input-large"
+								placeholder="Confirm password">
 					</div>
 				</div>
 			</h4>
 			<h4>
 				<div class="row-fluid">
-					<div class="span3">Department</div>
+					<div class="span3">
+						Department
+					</div>
 					<div class="span8">
 						{{ memberInformation.departmentName }}
 					</div>
@@ -40,7 +52,9 @@
 			</h4>
 			<h4>
 				<div class="row-fluid">
-					<div class="span3">Name</div>
+					<div class="span3">
+						Name
+					</div>
 					<div class="span8">
 						{{ memberInformation.memberName }}
 					</div>
@@ -48,28 +62,43 @@
 			</h4>
 			<h4>
 				<div class="row-fluid">
-					<div class="span3">contactNumber</div>
+					<div class="span3">
+						Contact number
+					</div>
 					<div class="span8">
-						<input type="text" class="input-large" name="contactNumber" placeholder = "Input your ContactNumber"
-							{% if memberInformation.contactNumber %} value="{{ memberInformation.contactNumber }}"{% endif -%}>
+						<input type="text" class="input-large" name="contactNumber"
+								placeholder="Contact number"
+								{% if memberInformation.contactNumber %}
+									value="{{ memberInformation.contactNumber }}"
+								{% endif -%}>
 					</div>
 				</div>
 			</h4>
 			<h4>
 				<div class="row-fluid">
-					<div class="span3">E-mail</div>
+					<div class="span3">
+						E-mail
+					</div>
 					<div class="span8">
-						<input type="text" class="input-large" name="emailAddress" placeholder = "Input your E-mail"
-								{% if memberInformation.emailAddress %} value="{{ memberInformation.emailAddress }}"{% endif -%}>
+						<input type="text" class="input-large" name="emailAddress"
+								placeholder="E-mail"
+								{% if memberInformation.emailAddress %}
+									value="{{ memberInformation.emailAddress }}"
+								{% endif -%}>
 					</div>
 				</div>
 			</h4>
 			<h4>
 				<div class="row-fluid">
-					<div class="span3">Comment</div>
+					<div class="span3">
+						Comment
+					</div>
 					<div class="span8">
-						<input type="text" class="input-xxlarge" name="comment" placeholder = "Input Short Comment"
-							{% if memberInformation.comment %} value="{{ memberInformation.comment }}"{% endif -%}>
+						<input type="text" class="input-xxlarge" name="comment"
+								placeholder="Short comment"
+								{% if memberInformation.comment %}
+									value="{{ memberInformation.comment }}"
+								{% endif -%}>
 					</div>
 				</div>
 			</h4>

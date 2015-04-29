@@ -6,7 +6,7 @@
 {%- block body %}
 <div class="container">
 	<div>
-		<h3>Manage Class</h3>
+		<h3>Course management</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
 			<a href="{{ url_for('GradeServer.server_add_class') }}">
@@ -17,14 +17,14 @@
 		</div>
 
 		<!-- hidden modal pop -->
-		<!-- if any item choiced -->
+		<!-- if any item choosed -->
 		<div class="modal hide fade" id="deleteModal"
 			  aria-labelledby="deleteModalLabel" aria-hidden="true"
 			  role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
 						  type="button" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">Delete Class</h3>
+				<h3 id="deleteModalLabel">Course deletion</h3>
 			</div>
 			<div class="modal-body">
 				<p>Do you really want to delete it?</p>
@@ -40,17 +40,17 @@
 				
 			</div>
 		</div>
-		<!-- no items choiced -->
+		<!-- no items choosed -->
 		<div class="modal hide fade" id="deleteNoItem"
 			  aria-labelledby="deleteModalLabel" aria-hidden="true"
 			  role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
 						  type="button" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">Delete Class</h3>
+				<h3 id="deleteModalLabel">Course deletion</h3>
 			</div>
 			<div class="modal-body">
-				<p>No items choiced</p>
+				<p>No items choosed</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn" data-dismiss="modal" aria-hidden="true">
@@ -63,9 +63,9 @@
 		<table class="table table-bordered" style="margin-top:10px">
 			<thead>
 				<tr>
-					<td>Class Number
-					<td>Class Name
-					<td>Manager Name
+					<td>Number
+					<td>Name
+					<td>Administrator
 					<td>Language
 					<td>Start Date
 					<td>Finish Date

@@ -5,70 +5,132 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <script>
+// auto complete data for course administrator form
 $(function() {
 	var administrators = [
 		{%- for courseAdministrator in allCourseAdministrators %}
-			{ value: "{{ courseAdministrator.memberId }} {{ courseAdministrator.memberName }}", data: ""},
+			{ value: "{{ courseAdministrator.memberId }} {{ courseAdministrator.memberName }}",
+			  data: "{{ courseAdministrator.memberId}}"},
 		{% endfor -%}
 		{ value: "", data: "" }
 	];
 	$("#search-administrator").autocomplete({
 		lookup: administrators,
 		onSelect: function(suggestion){
-		}	
+			var userId = suggestion.data.split(" ")[0];
+			// doesn't show id, name both but only id
+			document.getElementById(this.id).value = userId;
+		}
 	});	
 });
 </script>
 <div class="container">
 	<div>
-	<form id="addCourse" method="post">
-		<h3>Manage Class</h3>
-		<h4>Class Name : 
-			<select class="input-large span2" id="courseId" name="courseId" type="text" form="addCourse">
-			{%- for course in courses %}
-				{%- if course.courseIndex|int == courseIndex|int %}
-					<option class="{{ course.courseIndex }}" selected="selected">
-				{%- else %}
-					<option class="{{ course.courseIndex }}">
-				{% endif -%}
-				{{ course.courseIndex }} {{ course.courseName }}</option>
-			{% endfor -%}
-			</select>
-		</h4>
-		<h4 style="display:inline">Class Manager : 
-			<div id="searchfield" style="display:inline">
-				<input class="input-large" id="search-administrator" name="courseAdministrator" type="text" form="addCourse" value="{%- if courseAdministrator %}{{ courseAdministrator }}{% endif -%}">
-			</div>
-		</h4>
-		<h4>Semester : 
-			<script>
-			var keys = ["1st", "Summer", "2nd", "Winter"];
-			for(var i=1;i<=4;i++){
-				document.write('<label class="radio inline"><input id="' + keys[i-1] + '" name="semester" type="radio" value="' + i + '"  form="addCourse"');
-				if(i == {{ semester|int }}){
-					document.write(' checked')
-				}
-				document.write('>' + keys[i-1] + '</label>')
-			}
-			</script>
-		</h4>
-		<h4>Language : 
-		{%- for language in languages %}
-			<label style="display:inline" class="checkbox-center">
-				<script>
-				document.write('<input class="box-check" name="languageIndex_{{ language.languageIndex }}_{{ language.languageVersion }}" type="checkbox" value="{{ language.languageIndex }}_{{ language.languageVersion }}" form="addCourse"');
-				{%- for choosedLanguage in choosedLanguages %}
-					{%- if language.languageIndex|string == choosedLanguage[0]|string and language.languageVersion|string == choosedLanguage[1]|string %}
-						document.write(' checked');
-					{% endif -%}
-				{% endfor -%}
-				document.write('>{{ language.languageName }}{%- if language.languageVersion != '0' %}{{ language.languageVersion }}{% endif -%}');
-				</script>
-			</label>
-		{% endfor -%}
-		</h4>
-		<h4>Class Description : <input class="input-xlarge" name="courseDescription" type="text" autocomplete="off" form="addCourse" value="{%- if courseDescription %}{{ courseDescription }}{% endif -%}"></h4> 
+		<form id="addCourse" method="post">
+		<h3>Course addition</h3>
+		<div class="row-fluid">
+			<h4>
+				<div class="span3">
+					Course Name
+				</div>
+				<div class="span9">
+					<select class="input-large" id="courseId"
+							 name="courseId" type="text" form="addCourse">
+					{%- for course in courses %}
+						{%- if course.courseIndex|int==courseIndex|int %}
+						<option class="{{ course.courseIndex }}" selected="selected">
+						{%- else %}
+						<option class="{{ course.courseIndex }}">
+						{% endif -%}
+						{{ course.courseIndex }} {{ course.courseName }}</option>
+					{% endfor -%}
+					</select>
+				</div>
+			</h4>
+		</div>
+		<div class="row-fluid">
+			<h4>
+				<div class="span3">
+					Course Administrator
+				</div>
+				<div class="span9">
+					<div id="searchfield" style="display:inline">
+						<input class="input-large" id="search-administrator" name="courseAdministrator"
+								type="text" form="addCourse"
+								value="{%- if courseAdministrator %}{{ courseAdministrator }}{% endif -%}">
+					</div>
+				</div>
+			</h4>
+		</div>
+		<div class="row-fluid">
+			<h4>
+				<div class="span3">
+					Semester
+				</div>
+				<div class="span9">
+					<script>
+					// @To do
+					// It should be more options for other organizations
+					var keys = ["1st", "Summer", "2nd", "Winter"]; // now for college
+
+					for(var i=1;i<=keys.length;i++){
+						document.write('<label class="radio inline"><input id="'+keys[i-1]+
+												'"name="semester" type="radio" value="'+i+
+												'"form="addCourse"');
+						if(i=={{ semester|int }}){
+							document.write(' checked')
+						}
+						document.write('>'+keys[i-1]+'</label>')
+					}
+					</script>
+				</div>
+			</h4>
+		</div>
+		<div class="row-fluid">
+			<h4>
+				<div class="span3">
+					Language
+				</div>
+				<div class="span9">
+					{%- for language in languages %}
+					<label style="display:inline" class="checkbox-center">
+						<script>
+						// used script for setting the information of each language
+						document.write('<input class="box-check" name="languageIndex_'+
+										  '{{ language.languageIndex }}_{{ language.languageVersion }}"'+
+										  'type="checkbox" value="{{ language.languageIndex }}_'+
+										  '{{ language.languageVersion }}" form="addCourse"');
+						{%- for choosedLanguage in choosedLanguages %}
+							{%- if language.languageIndex|string==
+								   choosedLanguage[0]|string and language.languageVersion|string==
+								   choosedLanguage[1]|string %}
+								document.write(' checked');
+							{% endif -%}
+						{% endfor -%}
+						document.write('>{{ language.languageName }}'+
+										  '{%- if language.languageVersion != '0' %}'+
+										  	'{{ language.languageVersion }}'+
+										  '{% endif -%}&nbsp;');
+						</script>
+					</label>
+					{% endfor -%}
+				</div>
+			</h4>
+		</div>
+		<div class="row-fluid">
+			<h4>
+				<div class="span3">
+					Class Description
+				</div>
+				<div class="span9">
+					<input class="input-xlarge" name="courseDescription" type="text"
+							autocomplete="off" form="addCourse" placeholder="about course"
+							value="{%- if courseDescription %}{{ courseDescription }}{% endif -%}">
+				</div>
+			</h4>
+		</div> 
 		<script>
+		// date picker for start/end date
 		$(function() {
 		    	if (!Modernizr.inputtypes['date']) {
 		        	$('input[type=date]').datepicker({
@@ -77,14 +139,34 @@ $(function() {
 		    	}
 		});
 		</script>
-		<h4>Start Date : 
-			<input class="datepicker input-large" id="startDateOfCourse" name="startDateOfCourse" type="date" data-date-format="yyyy-mm-dd" autocomplete="off" form="addCourse" placeholder="click and choose" value="{%- if startDateOfCourse %}{{ startDateOfCourse }}{% endif -%}">
-		</h4>
-		<h4>End Date : 
-			<input class="datepicker input-large" id="endDateOfCourse" name="endDateOfCourse" type="date" data-date-format="yyyy-mm-dd" autocomplete="off" form="addCourse" placeholder="click and choose" value="{%- if endDateOfCourse %}{{ endDateOfCourse }}{% endif -%}">
-		</h4>
-		
-			<button class="btn" type="submit">Done</button>
+		<div class="row-fluid">
+			<h4>
+				<div class="span3">
+					Start Date
+				</div>
+				<div class="span9">
+					<input class="datepicker input-large" id="startDateOfCourse"
+							name="startDateOfCourse" type="date" data-date-format="yyyy-mm-dd"
+							autocomplete="off" form="addCourse" placeholder="click and choose"
+							value="{%- if startDateOfCourse %}{{ startDateOfCourse }}{% endif -%}">
+				</div>
+			</h4>
+		</div>
+		<div class="row-fluid">
+			<h4>
+				<div class="span3">
+					End Date
+				</div>
+				<div class="span9">
+					<input class="datepicker input-large" id="endDateOfCourse"
+							name="endDateOfCourse" type="date" data-date-format="yyyy-mm-dd"
+							autocomplete="off" form="addCourse" placeholder="click and choose"
+							value="{%- if endDateOfCourse %}{{ endDateOfCourse }}{% endif -%}">
+				</div>
+			</h4>
+		</div>
+		<br>
+		<button class="btn" type="submit">Done</button>
 		</form>
 	</div>
 </div>
