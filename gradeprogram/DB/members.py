@@ -15,6 +15,8 @@ from sqlalchemy.dialects.mysql import DATETIME, VARCHAR, TEXT, SET
 
 from DB import Base
 
+from gradingResource.setResources import SETResources
+
 class Members (Base) :
     
     __tablename__ ='Members'
@@ -24,7 +26,11 @@ class Members (Base) :
     memberName =Column (VARCHAR (1024), nullable =False)
     contactNumber =Column (VARCHAR  (20), nullable =True)
     emailAddress =Column (VARCHAR  (1024), nullable =True)
-    authority =Column (SET ('SERVER_ADMINISTRATOR', 'COURSE_ADMINISTRATOR', 'USER'), default ='USER', nullable =False)
+    authority =Column (SET (SETResources.const.SERVER_ADMINISTRATOR,
+                            SETResources.const.COURSE_ADMINISTRATOR,
+                            SETResources.const.USER),
+                       default = SETResources.const.USER,
+                       nullable =False)
     signedInDate =Column (DATETIME, nullable =False)
     lastAccessDate =Column (DATETIME, nullable =True)
     comment =Column (TEXT, nullable =True)   

@@ -14,7 +14,7 @@ class GradingTools(object):
         self.filePath = filePath
         
     def Grade(self):
-        if self.gradeMethod == 'Solution':   # solution
+        if self.gradeMethod == 'SOLUTION':   # solution
             if self.caseCount > 1:
                 result, score = self.SolutionMulti()
                 
@@ -95,7 +95,7 @@ class GradingTools(object):
             print e
             DBUpdate.SubmittedRecordsOfProblems()
         
-        rf = open('reuslt.txt', 'r')
+        rf = open('result.txt', 'r')
         
         score = rf.readline()
         

@@ -17,14 +17,18 @@ from DB import Base
 from DB.problems import Problems
 from DB.registeredCourses import RegisteredCourses
 
+from gradingResource.enumResources import ENUMResources
+
 class RegisteredProblems (Base) :
     
     __tablename__ ="RegisteredProblems"
     
     problemId =Column (INTEGER, ForeignKey (Problems.problemIndex, onupdate ="CASCADE", ondelete ="CASCADE"), autoincrement =False, primary_key =True, nullable =False)
     courseId =Column (VARCHAR (10), ForeignKey (RegisteredCourses.courseId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
-    solutionCheckType =Column (ENUM ('Solution', 'Checker'), default ='Solution', nullable =False)
-    isAllInputCaseInOneFile =Column (ENUM ('OneFile', 'MultipleFiles'), default ='OneFile', nullable =False)
+    isAllInputCaseInOneFile =Column (ENUM (ENUMResources.const.TRUE, 
+                                           ENUMResources.const.FALSE), 
+                                     default =ENUMResources.const.TRUE, 
+                                     nullable =False)
     limittedFileSize =Column (INTEGER (unsigned =True), default =1024, nullable =False) #MB
     openDate =Column (DATETIME, nullable =False)
     closeDate =Column (DATETIME, nullable =False)

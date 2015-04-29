@@ -20,5 +20,4 @@ class ProblemSets (Base) :
     __tablename__ ="ProblemSets"
     
     problemSetIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =True, nullable =False)
-    problemSetName =Column (VARCHAR (1024), nullable =False)
-    
+    problemSetName =Column (VARCHAR (1024), nullable =False)   
