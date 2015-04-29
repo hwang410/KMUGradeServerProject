@@ -7,6 +7,7 @@ encoding//GradeServer/GradeServer/cache_session.py=utf-8
 encoding//GradeServer/GradeServer/controller/__init__.py=utf-8
 encoding//GradeServer/GradeServer/controller/board.py=utf-8
 encoding//GradeServer/GradeServer/controller/classMaster.py=utf-8
+encoding//GradeServer/GradeServer/controller/codeSubmission.py=utf-8
 encoding//GradeServer/GradeServer/controller/login.py=utf-8
 encoding//GradeServer/GradeServer/controller/problem.py=utf-8
 encoding//GradeServer/GradeServer/controller/rank.py=utf-8
