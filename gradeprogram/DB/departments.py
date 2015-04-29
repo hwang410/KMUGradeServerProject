@@ -14,6 +14,7 @@ from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import VARCHAR, INTEGER, ENUM
 
 from DB import Base
+from gradingResource.enumResources import ENUMResources
 
 class Departments(Base) :
     
@@ -22,5 +23,7 @@ class Departments(Base) :
     departmentIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =True, nullable =False)
     departmentCode =Column (VARCHAR (128), nullable =True)
     departmentName =Column (VARCHAR (1024), nullable =False)
-    isAbolished =Column (ENUM ('Abolished', 'Not-Abolished'), default ='Not-Abolished', nullable =False)
-    
+    isAbolished =Column (ENUM (ENUMResources.const.TRUE,
+                               ENUMResources.const.FALSE),
+                         default = ENUMResources.const.FALSE,
+                         nullable =False)

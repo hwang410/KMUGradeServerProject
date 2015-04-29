@@ -17,6 +17,8 @@ from DB import Base
 from DB.members import Members
 from DB.registeredProblems import RegisteredProblems
 
+from gradingResource.enumResources import ENUMResources
+
 class SubmittedFiles (Base) :
     
     __tablename__ ="SubmittedFiles"
@@ -27,5 +29,8 @@ class SubmittedFiles (Base) :
     fileIndex =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, nullable =False)
     fileName =Column (VARCHAR (50), nullable =False)
     filePath =Column (TEXT, nullable =False)
-    isDeleted =Column (ENUM ('TRUE', 'FALSE'), default = 'FALSE', nullable = False)
     fileSize =Column (INTEGER (unsigned =True), default =0, nullable =False) #Byte
+    isDeleted = Column(ENUM(ENUMResources.const.TRUE,
+                            ENUMResources.const.FALSE),
+                       default = ENUMResources.const.FALSE,
+                       nullable = False)
