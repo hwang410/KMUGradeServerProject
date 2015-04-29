@@ -77,19 +77,27 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 							<thead>
 								<tr>
 									<td style ='vertical-align: middle'>Rank</td>
-									<td style ='vertical-align: middle'>Member Id</td>
-									<td style ='vertical-align: middle'><a href = '{{ url_for("GradeServer.record", 
-																						courseId = courseId, 
-																						problemId = problemInformationRecords.problemId, 
-																						sortCondition = "runTime") }}'>Run Time</a></td>
-									<td style ='vertical-align: middle'><a href = '{{ url_for("GradeServer.record", 
-																						courseId = courseId, 
-																						problemId = problemInformationRecords.problemId, 
-																						sortCondition = "codeLength") }}'>Code Length</td>
-									<td style ='vertical-align: middle'><a href = '{{ url_for("GradeServer.record", 
-																						courseId = courseId, 
-																						problemId = problemInformationRecords.problemId, 
-																						sortCondition = "submissionDate") }}'>Sumission Date</td>
+									<td style ='vertical-align: middle'>
+										<a href = '{{ url_for("GradeServer.problem_record", 
+																					courseId = courseId, 
+																					problemId = problemInformationRecords.problemId, 
+																					sortCondition = "memberId") }}'>Member Id</td>
+									<td style ='vertical-align: middle'>
+										<a href = '{{ url_for("GradeServer.problem_record", 
+																					courseId = courseId, 
+																					problemId = problemInformationRecords.problemId, 
+																					sortCondition = "runTime") }}'>Run Time</a></td>
+									<td style ='vertical-align: middle'>
+										<a href = '{{ url_for("GradeServer.problem_record", 
+																					courseId = courseId, 
+																					problemId = problemInformationRecords.problemId, 
+																					sortCondition = "codeLength") }}'>Code Length</td>
+									<td style ='vertical-align: middle'>
+										<a href = '{{ url_for("GradeServer.problem_record", 
+																					courseId = courseId, 
+																					problemId = problemInformationRecords.problemId, 
+																					sortCondition = "submissionDate") }}'>Sumission Date</td>
+									<td style ='vertical-align: middle'>View Count</td>
 								</tr>
 							</thead>
 							{% for problemSolvedMemberRecord in problemSolvedMemberRecords %}
@@ -103,6 +111,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.runTime }} ms</td>
 								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.sumOfSubmittedFileSize }} Byte</td>
 								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.codeSubmissionDate }}</td>
+								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.viewCount }}</td>
 							</tr>
 							{% endfor %}
 						</table>
