@@ -63,21 +63,21 @@ def user_history(memberId, sortCondition, pageNum):
         try:
                         # 차트 정보
             chartSubmissionRecords = dao.query(# 총 제출 횟수
-                                               select_solved_problem_count().subquery(),
+                                               select_solved_problem_count(submissions).subquery(),
                                                                                                # 중복 제거푼 문제숫
-                                               select_submission_count().subquery(),
+                                               select_submission_count(submissions).subquery(),
                                                                                               # 모든 맞춘 횟수
-                                               select_solved_count().subquery(),
+                                               select_solved_count(submissions).subquery(),
                                                                                               # 틀린 횟수
-                                               select_wrong_answer_count().subquery(),
+                                               select_wrong_answer_count(submissions).subquery(),
                                                                                               # 타임 오버 횟수
-                                               select_time_over_count().subquery(),
+                                               select_time_over_count(submissions).subquery(),
                                                                                               # 컴파일 에러 횟수
-                                               select_compile_error_count().subquery(),
+                                               select_compile_error_count(submissions).subquery(),
                                                                                               # 런타임 에러 횟수
-                                               select_runtime_error_count().subquery(),
+                                               select_runtime_error_count(submissions).subquery(),
                                                                                               # 서버 에러 횟수
-                                               select_server_error_count().subquery()).\
+                                               select_server_error_count(submissions).subquery()).\
                                          first()
         except Exception:
             #None Type Exception
