@@ -52,21 +52,15 @@ def select_count(keySub):
 Sum Of Submitted People Counts
 '''
 def select_submission_people_count(submissions):
-    return dao.query(func.count(submissions.c.memberId).label('sumOfSubmissionPeopleCount')).\
-               group_by(submissions.c.memberId,
-                        submissions.c.problemId,
-                        submissions.c.courseId)
-               
+    return dao.query(func.count(submissions.c.memberId).label('sumOfSubmissionPeopleCount'))
+      
 '''
 Sum Of Solved People Counts
 '''
 def select_solved_people_count(submissions):
-    return dao.query(func.count(submissions.c.memberId.distinct()).label('sumOfSolvedPeopleCount')).\
-               filter(submissions.c.status == ENUMResources().const.SOLVED).\
-               group_by(submissions.c.memberId,
-                        submissions.c.problemId,
-                        submissions.c.courseId,
-                        submissions.c.status)
+    
+    return dao.query(func.count(submissions.c.memberId).label('sumOfSolvedPeopleCount')).\
+               filter(submissions.c.status == ENUMResources().const.SOLVED)
 
 '''
 Submissions Count

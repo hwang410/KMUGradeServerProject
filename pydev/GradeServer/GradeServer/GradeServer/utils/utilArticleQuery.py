@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-from sqlalchemy import func, or_, and_
+from sqlalchemy import or_, and_
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
@@ -15,8 +15,6 @@ from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 from GradeServer.model.likesOnBoard import LikesOnBoard
 from GradeServer.model.repliesOnBoard import RepliesOnBoard
 from GradeServer.model.likesOnReplyOfBoard import LikesOnReplyOfBoard
-from GradeServer.model.problems import Problems
-from GradeServer.model.members import Members
 
 from GradeServer.database import dao
 
@@ -33,10 +31,10 @@ def join_course_name(articlesOnBoard, myCourses):
 '''
 Board Articles
 '''
-def select_articles(activeTabCourseId, isDeleted = ENUMResources.const.FALSE):
+def select_articles(activeTabCourseId, isDeleted = ENUMResources().const.FALSE):
     
     # activate Tab Select
-    if activeTabCourseId == OtherResources.const.ALL:
+    if activeTabCourseId == OtherResources().const.ALL:
         return dao.query(ArticlesOnBoard).\
                    filter(ArticlesOnBoard.isDeleted == isDeleted)
     else:
@@ -49,7 +47,7 @@ def select_articles(activeTabCourseId, isDeleted = ENUMResources.const.FALSE):
 '''
 Board Article
 '''
-def select_article(articleIndex, isDeleted = ENUMResources.const.FALSE):   
+def select_article(articleIndex, isDeleted = ENUMResources().const.FALSE):   
       
     return dao.query(ArticlesOnBoard).\
                filter(ArticlesOnBoard.articleIndex == articleIndex,
@@ -59,11 +57,11 @@ def select_article(articleIndex, isDeleted = ENUMResources.const.FALSE):
 '''
 Board Notice Classification
 '''
-def select_sorted_articles(articlesOnBoard, isNotice = ENUMResources.const.FALSE):
+def select_sorted_articles(articlesOnBoard, isNotice = ENUMResources().const.FALSE):
     return dao.query(articlesOnBoard).\
            filter(articlesOnBoard.c.isNotice == isNotice,
                   (or_(articlesOnBoard.c.courseName == None,
-                       articlesOnBoard.c.courseName != None) if isNotice == ENUMResources.const.TRUE
+                       articlesOnBoard.c.courseName != None) if isNotice == ENUMResources().const.TRUE
                    else articlesOnBoard.c.courseName != None)).\
            order_by(articlesOnBoard.c.articleIndex.desc())
            
@@ -99,7 +97,7 @@ def update_article_like_counting(articleIndex, LIKE_INCREASE = 1):
 '''
 Board Article isLike update
 '''
-def update_article_is_like(articleIndex, boardLikerId, isLikeCancelled = ENUMResources.const.FALSE):
+def update_article_is_like(articleIndex, boardLikerId, isLikeCancelled = ENUMResources().const.FALSE):
     dao.query(LikesOnBoard).\
         filter(LikesOnBoard.articleIndex == articleIndex,
                LikesOnBoard.boardLikerId == boardLikerId).\
@@ -109,7 +107,7 @@ def update_article_is_like(articleIndex, boardLikerId, isLikeCancelled = ENUMRes
 '''
 Board Article delete
 '''
-def update_article_delete(articleIndex, isDeleted = ENUMResources.const.TRUE): 
+def update_article_delete(articleIndex, isDeleted = ENUMResources().const.TRUE): 
     dao.query(ArticlesOnBoard).\
         filter(ArticlesOnBoard.articleIndex == articleIndex).\
         update(dict(isDeleted = isDeleted))  
@@ -118,10 +116,10 @@ def update_article_delete(articleIndex, isDeleted = ENUMResources.const.TRUE):
 '''
 Replies on Board
 '''
-def select_replies_on_board(articleIndex, isDeleted = ENUMResources.const.FALSE):
+def select_replies_on_board(articleIndex, isDeleted = ENUMResources().const.FALSE):
     return dao.query(RepliesOnBoard).\
                filter(RepliesOnBoard.articleIndex == articleIndex,
-                      RepliesOnBoard.isDeleted == ENUMResources.const.FALSE).\
+                      RepliesOnBoard.isDeleted == ENUMResources().const.FALSE).\
                order_by(RepliesOnBoard.boardReplyIndex.desc())
                
 
@@ -156,7 +154,7 @@ def update_replies_on_board_like_counting(boardReplyIndex, LIKE_INCREASE = 1):
 '''
 REplies on Board is LIke
 '''
-def update_replies_on_board_is_like(boardReplyIndex, boardReplyLikerId, isLikeCancelled = ENUMResources.const.FALSE):
+def update_replies_on_board_is_like(boardReplyIndex, boardReplyLikerId, isLikeCancelled = ENUMResources().const.FALSE):
     dao.query(LikesOnReplyOfBoard).\
         filter(LikesOnReplyOfBoard.boardReplyIndex == boardReplyIndex,
                LikesOnReplyOfBoard.boardReplyLikerId == boardReplyLikerId).\
@@ -176,7 +174,7 @@ def update_replies_on_board_modify(boardReplyIndex, boardReplyContent):
 '''
 Repllies on Board delete
 '''
-def update_replies_on_board_delete(boardReplyIndex, isDeleted = ENUMResources.const.TRUE):
+def update_replies_on_board_delete(boardReplyIndex, isDeleted = ENUMResources().const.TRUE):
     dao.query(RepliesOnBoard).\
         filter(RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
         update(dict(isDeleted = isDeleted)) 
