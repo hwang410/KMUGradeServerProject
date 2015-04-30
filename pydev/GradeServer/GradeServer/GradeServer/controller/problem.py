@@ -246,58 +246,61 @@ def problem_record(courseId, problemId, sortCondition = OtherResources().const.R
 @login_required
 def submission_code(courseId, problemId):
     
-    # Problem Information (LimitedTime, LimitedMemory
-    try:
-        problemName = dao.query(Problems.problemName).\
-                                filter(Problems.problemId == problemId).\
-                                first().\
-                                problemName
-    except Exception:
-        problemName = None
-        
-    # Problem Solved Users
-    try:
-        # last Submissions Info
-        submissions = select_all_submission(lastSubmission = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
-                                                                                     courseId = courseId,
-                                                                                     problemId = problemId).subquery(),
-                                            memberId = session[SessionResources().const.MEMBER_ID],
-                                            courseId = courseId,
-                                            problemId = problemId).subquery()
-        problemSolvedMemberRecords = dao.query(submissions).\
-                                         filter(submissions.c.status == ENUMResources().const.SOLVED).\
-                                         first()
-    except Exception:
-        problemSolvedMemberRecords = []
-        
-    # Submitted Files Information
-    try:
-        submittedFileRecords = dao.query(SubmittedFiles.fileName,
-                                         SubmittedFiles.filePath).\
-                                   filter(SubmittedFiles.memberId == session[SessionResources().const.MEMBER_ID],
-                                          SubmittedFiles.problemId == problemId,
-                                          SubmittedFiles.courseId == courseId).\
-                                   all()
-        fileData = []
-        for raw in submittedFileRecords:
-            # Open
-            filePath = raw.filePath + '/' +raw.fileName
-            file = open(filePath)
+    # are Not an Administrator and endOfSubmission ago
+    if SETResources().const.SERVER_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]\
+       or SETResources().const.COURSE_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
+        # Problem Information (LimitedTime, LimitedMemory
+        try:
+            problemName = dao.query(Problems.problemName).\
+                                    filter(Problems.problemId == problemId).\
+                                    first().\
+                                    problemName
+        except Exception:
+            problemName = None
             
-            # Read
-            data = file.read()
+        # Problem Solved Users
+        try:
+            # last Submissions Info
+            submissions = select_all_submission(lastSubmission = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
+                                                                                         courseId = courseId,
+                                                                                         problemId = problemId).subquery(),
+                                                memberId = session[SessionResources().const.MEMBER_ID],
+                                                courseId = courseId,
+                                                problemId = problemId).subquery()
+            problemSolvedMemberRecords = dao.query(submissions).\
+                                             filter(submissions.c.status == ENUMResources().const.SOLVED).\
+                                             first()
+        except Exception:
+            problemSolvedMemberRecords = []
             
-            # Close
-            file.close()
-            fileData.append(data)
-    except Exception:
-        submittedFileRecords = []
-        fileData = []
-   
-    return render_template(HTMLResources().const.SUBMISSION_CODE_HTML,
-                           SETResources = SETResources,
-                           SessionResources = SessionResources,
-                           submittedFileRecords = submittedFileRecords,
-                           fileData = fileData,
-                           problemName = problemName,
-                           problemSolvedMemberRecords = problemSolvedMemberRecords)
+        # Submitted Files Information
+        try:
+            submittedFileRecords = dao.query(SubmittedFiles.fileName,
+                                             SubmittedFiles.filePath).\
+                                       filter(SubmittedFiles.memberId == session[SessionResources().const.MEMBER_ID],
+                                              SubmittedFiles.problemId == problemId,
+                                              SubmittedFiles.courseId == courseId).\
+                                       all()
+            fileData = []
+            for raw in submittedFileRecords:
+                # Open
+                filePath = raw.filePath + '/' +raw.fileName
+                file = open(filePath)
+                
+                # Read
+                data = file.read()
+                
+                # Close
+                file.close()
+                fileData.append(data)
+        except Exception:
+            submittedFileRecords = []
+            fileData = []
+       
+        return render_template(HTMLResources().const.SUBMISSION_CODE_HTML,
+                               SETResources = SETResources,
+                               SessionResources = SessionResources,
+                               submittedFileRecords = submittedFileRecords,
+                               fileData = fileData,
+                               problemName = problemName,
+                               problemSolvedMemberRecords = problemSolvedMemberRecords)
