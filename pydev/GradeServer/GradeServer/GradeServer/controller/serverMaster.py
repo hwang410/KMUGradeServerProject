@@ -304,10 +304,10 @@ def server_add_class():
     
     try:               
         allCourseAdministrators = dao.query(Members).\
-                                      filter(Members.authority==SETResources.const.COURSE_ADMINISTRATOR).\
+                                      filter(Members.authority==SETResources().const.COURSE_ADMINISTRATOR).\
                                       all()
     except:
-         error = 'Error has been occurred while searching course administrators'
+        error = 'Error has been occurred while searching course administrators'
                         
     if request.method == 'POST':
         courseAdministrator = request.form['courseAdministrator']
@@ -318,7 +318,6 @@ def server_add_class():
         courseIndex, courseName = request.form['courseId'].split(' ', 1)
         
         for form in request.form:
-            print form, request.form[form]
             if 'languageIndex' in form:
                 languages.append(request.form[form].split('_'))
                 
@@ -359,7 +358,7 @@ def server_add_class():
             
             try:
                 dao.query(Members).\
-                    filter(and_(Members.authority == SETResources.const.COURSE_ADMINISTRATOR,
+                    filter(and_(Members.authority == SETResources().const.COURSE_ADMINISTRATOR,
                                 Members.memberId == courseAdministrator.split()[0])).\
                     first().memberId
             except:
@@ -427,7 +426,6 @@ def server_add_class():
             if not os.path.exists(problemPath):
                 os.makedirs(problemPath)
             for language in languages:
-                print language
                 languageIndex, languageVersion = language
                 try:
                     newCourseLanguage = LanguagesOfCourses(courseId = newCourseNum, 
@@ -471,7 +469,6 @@ def server_manage_problem():
     if request.method == 'POST':
         for form in request.form:
             if form == 'upload':
-
                 files = request.files.getlist("files")
                 if not list(files)[0].filename:
                     error = 'Uploading file error'
@@ -506,7 +503,6 @@ def server_manage_problem():
                     if os.path.exists(tmpPath):
                         try:
                             subprocess.call('rm -rf %s' % tmpPath, shell=True)
-                            print "success"
                         except OSError:
                             error = 'Cannot delete \'tmp\' folder'
                             return render_template('/server_manage_problem.html', 
@@ -514,7 +510,7 @@ def server_manage_problem():
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
                                                    uploadedProblems = [])
-                        
+
                     # unzip file
                     with zipfile.ZipFile(fileData, 'r') as z:
                         z.extractall(tmpPath)
@@ -539,7 +535,8 @@ def server_manage_problem():
                         elif key == 'Difficulty':
                             difficulty = int(value)
                         elif key == 'SolutionCheckType':
-                            solutionCheckType = value
+                            print value
+                            solutionCheckType = ENUMResources().const.SOLUTION if value == "Solution" else ENUMResources().const.CHECKER
                         elif key == 'LimitedTime':
                             limitedTime = int(value)
                         elif key == 'LimitedMemory':
@@ -569,12 +566,11 @@ def server_manage_problem():
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
                                                uploadedProblems = [])
-
+                    
                     # rename new problem folder
                     os.chdir('%s/%s_%s' % (tmpPath, 
                                            problemName, 
                                            solutionCheckType))
-
                     # remove space on file/directory names
                     try:
                         subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
@@ -585,7 +581,8 @@ def server_manage_problem():
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
                                                uploadedProblems = [])
-
+                    
+                    # put problemId ahead
                     try:
                         subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
                     except OSError:
@@ -595,10 +592,9 @@ def server_manage_problem():
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
                                                uploadedProblems = [])
+                        
+                    problemName = problemName.replace(' ', '')
                     
-                    # change problems information files name
-                    os.chdir('%s/' % (tmpPath))
-
                     # remove space on file/directory names
                     try:
                         subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
@@ -654,7 +650,7 @@ def server_manage_problem():
                 try:
                     dao.query(Problems).\
                         filter(Problems.problemId == int(form)).\
-                        update(dict(isDeleted = ENUMResources.const.TRUE))
+                        update(dict(isDeleted = ENUMResources().const.TRUE))
                     dao.commit()
                 except:
                     dao.rollback()
@@ -670,7 +666,7 @@ def server_manage_problem():
     else:
         try:
             uploadedProblems = dao.query(Problems).\
-                                   filter(Problems.isDeleted == ENUMResources.const.FALSE).\
+                                   filter(Problems.isDeleted == ENUMResources().const.FALSE).\
                                    all()
         except:
             uploadedProblems = []
@@ -740,8 +736,6 @@ def server_manage_user():
                                          department.departmentName])
                 userIndex += 1
         loopIndex += 1
-    for a in combineSameUsers:
-        print a
         
     if request.method == 'POST':
         for form in request.form:
@@ -825,8 +819,7 @@ def server_add_user():
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
             numberOfUsers = (len(request.form) - 1) / 5
-            newUser = [['' for i in range(7)] for j in range(numberOfUsers + 1)]
-            print "in", request.form
+            newUser = [['' for _ in range(7)] for _ in range(numberOfUsers + 1)]
             for form in request.form:
                 if form != 'addIndivisualUser':
                     value, index = re.findall('\d+|\D+', form)
@@ -876,7 +869,6 @@ def server_add_user():
                                                    newUsers = newUsers)
                         
             for index in range(numberOfUsers+1):
-                print newUser[index]
                 valid = True
                 # check for empty row
                 for col in range(7):
@@ -989,9 +981,9 @@ def server_add_user():
             for newUser in newUsers:
                 try:
                     if newUser[keys['authority']] == 'Course Admin':
-                        newUser[keys['authority']] = SETResources.const.COURSE_ADMINISTRATOR
+                        newUser[keys['authority']] = SETResources().const.COURSE_ADMINISTRATOR
                     elif newUser[keys['authority']] == 'User':
-                        newUser[keys['authority']] = SETResources.const.USER
+                        newUser[keys['authority']] = SETResources().const.USER
                     else: # wrong access
                         error = 'Wrong access'
                         return render_template('/server_add_user.html', 

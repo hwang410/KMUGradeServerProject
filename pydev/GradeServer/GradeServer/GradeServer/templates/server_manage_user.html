@@ -9,9 +9,7 @@
 		<h3>User management</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
-			<a href="{{ url_for('GradeServer.server_add_user') }}">
-				<button class="btn" type="button">Add</button>
-			</a>
+			<a href="{{ url_for('GradeServer.server_add_user') }}" class="btn">Add</a>
 			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">Delete</a>
 		</div>
 
