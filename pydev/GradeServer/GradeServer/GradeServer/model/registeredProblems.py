@@ -25,11 +25,14 @@ class RegisteredProblems (Base) :
     
     problemId =Column (INTEGER, ForeignKey (Problems.problemIndex, onupdate ="CASCADE", ondelete ="CASCADE"), autoincrement =False, primary_key =True, nullable =False)
     courseId =Column (VARCHAR (10), ForeignKey (RegisteredCourses.courseId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
-    isAllInputCaseInOneFile =Column (ENUM (ENUMResources.const.TRUE, 
-                                           ENUMResources.const.FALSE), 
-                                     default =ENUMResources.const.TRUE, 
+    isAllInputCaseInOneFile =Column (ENUM (ENUMResources().const.TRUE, 
+                                           ENUMResources().const.FALSE), 
+                                     default =ENUMResources().const.TRUE, 
                                      nullable =False)
     limittedFileSize =Column (INTEGER (unsigned =True), default =1024, nullable =False) #MB
+    numberOfTestCase  = Column(INTEGER(unsigned = True),
+                           default = 0,
+                           nullable = False)
     openDate =Column (DATETIME, nullable =False)
     closeDate =Column (DATETIME, nullable =False)
     startDateOfSubmission =Column (DATETIME, nullable =False)

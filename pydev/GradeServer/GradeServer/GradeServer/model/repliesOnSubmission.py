@@ -31,9 +31,9 @@ class RepliesOnSubmission (Base) :
     codeReplyContent =Column (TEXT, nullable =False)
     codeReplierIp =Column (VARCHAR (20), nullable =False)
     codeRepliedDate =Column (DATETIME, nullable =False)
-    isDeleted =Column (ENUM (ENUMResources.const.true,
-                             ENUMResources.const.false),
-                       default = ENUMResources.const.false,
+    isDeleted =Column (ENUM (ENUMResources().const.true,
+                             ENUMResources().const.false),
+                       default = ENUMResources().const.false,
                        nullable =False)
     sumOfLikeCount =Column (INTEGER (unsigned =True), default =0, nullable =False)
     

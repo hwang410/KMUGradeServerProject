@@ -27,9 +27,9 @@ class LikesOnSubmission(Base) :
     problemId =Column(INTEGER (unsigned =True), ForeignKey (Submissions.problemId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, autoincrement =False, nullable =False)
     courseId =Column(VARCHAR (10), ForeignKey (Submissions.courseId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
     codeLikerId =Column(VARCHAR (20), ForeignKey (Members.memberId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
-    isLikeCancelled =Column(ENUM (ENUMResources.const.true,
-                                  ENUMResources.const.false),
-                            default = ENUMResources.const.false,
+    isLikeCancelled =Column(ENUM (ENUMResources().const.true,
+                                  ENUMResources().const.false),
+                            default = ENUMResources().const.false,
                             nullable =False)
     
     

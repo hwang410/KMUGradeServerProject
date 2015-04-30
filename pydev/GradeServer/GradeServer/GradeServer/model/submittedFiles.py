@@ -30,7 +30,7 @@ class SubmittedFiles (Base) :
     fileName =Column (VARCHAR (50), nullable =False)
     filePath =Column (TEXT, nullable =False)
     fileSize =Column (INTEGER (unsigned =True), default =0, nullable =False) #Byte
-    isDeleted = Column(ENUM(ENUMResources.const.TRUE,
-                            ENUMResources.const.FALSE),
-                       default = ENUMResources.const.FALSE,
+    isDeleted = Column(ENUM(ENUMResources().const.TRUE,
+                            ENUMResources().const.FALSE),
+                       default = ENUMResources().const.FALSE,
                        nullable = False)
