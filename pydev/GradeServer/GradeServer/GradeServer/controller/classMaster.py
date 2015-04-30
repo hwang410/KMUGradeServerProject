@@ -37,8 +37,11 @@ from GradeServer.resource.otherResources import OtherResources
 
 import os
 import re
+import glob
+from __builtin__ import False
 
 projectPath = '/mnt/shared'
+problemsPath = '%s/Problems' % projectPath
 coursesPath = 'CurrentCourses'
 limitedFileSize = 1024
 DELETE = 'delete'
@@ -51,7 +54,17 @@ POST_METHOD = 'POST'
 
 newUsers = []
 newProblems = []
-        
+
+def get_case_count(problemCasesPath, multipleFiles):
+    caseCount = len(glob.glob(os.path.join(problemCasesPath, '*.*')))/2
+    
+    if caseCount > 1:
+        if multipleFiles == ENUMResources().const.FALSE:
+            caseCount -= 1
+        else:
+            caseCount = 1
+    return caseCount
+
 def get_own_problems(memberId):
     ownProblems = (dao.query(RegisteredProblems,
                              RegisteredCourses,
@@ -173,7 +186,7 @@ def class_manage_problem():
                 "courseName":1,
                 "problemId":2,
                 "problemName":3,
-                "multipleFiles":4,
+                "isAllInputCaseInOneFile":4,
                 "startDate":5,
                 "endDate":6,
                 "openDate":7,
@@ -242,14 +255,11 @@ def class_manage_problem():
             else:
                 if form == ADD:
                     continue
-                print form
                 value,index = re.findall('\d+|\D+',form)
-                print value
                 index = int(index)
                 data = request.form[form]
                 newProblem[index-1][keys[value]] = data
         
-        print isNewProblem
         # when 'add' button is pushed,insert new problem into RegisteredProblems table
         if isNewProblem:
             for index in range(numberOfNewProblems+1):
@@ -260,18 +270,52 @@ def class_manage_problem():
                     problem[keys['openDate']] = problem[keys['startDate']]
                 if not problem[keys['closeDate']]:
                     problem[keys['closeDate']] = problem[keys['endDate']]
-                if not problem[keys['multipleFiles']]:
-                    problem[keys['multipleFiles']] = ENUMResources().const.TRUE
+                if not problem[keys['isAllInputCaseInOneFile']]:
+                    problem[keys['isAllInputCaseInOneFile']] = ENUMResources().const.FALSE
                 else:
-                    problem[keys['multipleFiles']] = ENUMResources().const.FALSE
-                problem[keys['courseId']],problem[keys['courseName']] = problem[keys['courseId']].split(' ',1)
-                problem[keys['problemId']],problem[keys['problemName']] = problem[keys['problemId']].split(' ',1)
+                    problem[keys['isAllInputCaseInOneFile']] = ENUMResources().const.TRUE
+                if problem[keys['courseId']]:
+                    problem[keys['courseId']],problem[keys['courseName']] = problem[keys['courseId']].split(' ',1)
+                if problem[keys['problemId']]:
+                    problem[keys['problemId']],problem[keys['problemName']] = problem[keys['problemId']].split(' ',1)
+                    try:
+                        solutionCheckType = dao.query(Problems).\
+                                                filter(Problems.problemId == problem[keys['problemId']]).\
+                                                first().solutionCheckType
+                    except:
+                        error = "error has been occurred while getting solution check type"
+                        return render_template('/class_manage_problem.html',
+                                               error = error, 
+                                               SETResources = SETResources,
+                                               SessionResources = SessionResources,
+                                               modalError = modalError,
+                                               allProblems = allProblems,
+                                               ownCourses = ownCourses,
+                                               ownProblems = ownProblems)
+                    
+                    pathOfTestCase = '%s/%s_%s/%s_%s' % (problemsPath,
+                                                         problem[keys['problemId']],
+                                                         problem[keys['problemName']],
+                                                         problem[keys['problemName']],
+                                                         solutionCheckType)
                 
+                    numberOfTestCase = get_case_count(pathOfTestCase, problem[keys['isAllInputCaseInOneFile']])
+                    
+                # validation check before insert new problem
+                isValid = True
+                for key in problem:
+                    if not key:
+                        isValid = False
+                        break
+                if not isValid:
+                    continue
+
                 try:
                     newProblem = RegisteredProblems(problemId = problem[keys['problemId']],
                                                     courseId = problem[keys['courseId']],
-                                                    isAllInputCaseInOneFile = problem[keys['multipleFiles']],
+                                                    isAllInputCaseInOneFile = problem[keys['isAllInputCaseInOneFile']],
                                                     limittedFileSize = limitedFileSize,
+                                                    numberOfTestCase = numberOfTestCase,
                                                     startDateOfSubmission = problem[keys['startDate']],
                                                     endDateOfSubmission = problem[keys['endDate']],
                                                     openDate = problem[keys['openDate']],
@@ -290,6 +334,7 @@ def class_manage_problem():
                                            allProblems = allProblems,
                                            ownCourses = ownCourses,
                                            ownProblems = ownProblems)
+
                 try:
                     newProblemRecord = SubmittedRecordsOfProblems(problemId = problem[keys['problemId']],
                                                                   courseId = problem[keys['courseId']])
@@ -306,12 +351,11 @@ def class_manage_problem():
                                allProblems = allProblems,
                                ownCourses = ownCourses,
                                ownProblems = ownProblems)
-                newProblems = []
-                #courseName = problem[keys['courseName']].replace(' ','')
-                #problemName = problem[keys['problemName']].replace(' ','')
+
+            newProblems = []
                 
-    
             return redirect(url_for('.class_manage_problem'))
+        
     ownProblems = get_own_problems(session[SessionResources().const.MEMBER_ID])
     return render_template('/class_manage_problem.html',
                            error = error, 
@@ -361,13 +405,11 @@ def class_manage_user():
     userIndex = 1
     loopIndex = 0
     for departmentsDetailsOfMember,eachUser in allUsers:
-        print departmentsDetailsOfMember, eachUser
         if loopIndex == 0:
             allUsersToData.append([departmentsDetailsOfMember.memberId,
                                    eachUser.memberName,
                                    departmentsDetailsOfMember.collegeIndex,
                                    departmentsDetailsOfMember.departmentIndex])
-            print allUsersToData
         else:
             if eachUser.memberId == allUsersToData[userIndex-1][0]:               
                 allUsersToData[userIndex-1].append(departmentsDetailsOfMember.collegeIndex)
