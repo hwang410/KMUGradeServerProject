@@ -250,7 +250,6 @@ def server_manage_class():
                                       LanguagesOfCourses.languageIndex == Languages.languageIndex).\
                             all()
     except:
-        print "??"
         languagesOfCourse = []
         #error = 'No information of languages of courses'
 
@@ -697,7 +696,7 @@ def server_manage_user():
                           Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
                      join(Departments, 
                           Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
-                     order_by(Members.signedInDate.desc())).\
+                     order_by(Members.memberId)).\
                 all()
                 
     except:
@@ -708,7 +707,42 @@ def server_manage_user():
                                SessionResources = SessionResources,
                                users = [], 
                                index = len(users))
-              
+    
+    combineSameUsers = []
+    userIndex = 1
+    loopIndex = 0
+    # if member in multiple department,
+    # will be [member] [college] [department] [college] [department] ...
+    for user, college, department in users:
+        if loopIndex==0:
+            combineSameUsers.append([user.memberId,
+                                     user.memberName,
+                                     user.contactNumber,
+                                     user.emailAddress,
+                                     user.authority,
+                                     user.signedInDate,
+                                     user.lastAccessDate,
+                                     college.collegeName,
+                                     department.departmentName])
+        else:
+            if user.memberId==combineSameUsers[userIndex-1][0]:
+                combineSameUsers[userIndex-1].append(college.collegeName)
+                combineSameUsers[userIndex-1].append(department.departmentName)
+            else:
+                combineSameUsers.append([user.memberId,
+                                         user.memberName,
+                                         user.contactNumber,
+                                         user.emailAddress,
+                                         user.authority,
+                                         user.signedInDate,
+                                         user.lastAccessDate,
+                                         college.collegeName,
+                                         department.departmentName])
+                userIndex += 1
+        loopIndex += 1
+    for a in combineSameUsers:
+        print a
+        
     if request.method == 'POST':
         for form in request.form:
             try:
@@ -725,16 +759,16 @@ def server_manage_user():
                                        error = error, 
                                        SETResources = SETResources,
                                        SessionResources = SessionResources,
-                                       users = users, 
+                                       users = combineSameUsers, 
                                        index = len(users))
                 
         return redirect(url_for('.server_manage_user'))
 
     return render_template('/server_manage_user.html', 
-                           error = error, 
+                           error = error,
                            SETResources = SETResources,
                            SessionResources = SessionResources,
-                           users = users, 
+                           users = combineSameUsers, 
                            index = len(users))
 
 
@@ -1028,4 +1062,5 @@ def server_manage_service():
     error = None
     return render_template('/server_manage_service.html',
                            error = error,
-                           SETResources = SETResources)
+                           SETResources = SETResources,
+                           SessionResources = SessionResources)

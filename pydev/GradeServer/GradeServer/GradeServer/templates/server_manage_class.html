@@ -9,8 +9,8 @@
 		<h3>Course management</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
-			<a href="{{ url_for('GradeServer.server_add_class') }}">
-				<button class="btn" type="button">Add</button>
+			<a class="btn" href="{{ url_for('GradeServer.server_add_class') }}">
+				Add
 			</a>
 			<a class="btn" data-toggle="modal" role="button" 
 				onclick="showingDeleteModal()">Delete</a>
@@ -69,14 +69,14 @@
 					<td>Language
 					<td>Start Date
 					<td>Finish Date
-					<td>Delete
+					<td>Check
 			<form method="post">
 			<tbody>
 				{%- for course, member in courses %}
 				<tr>
 					<td>{{ course.courseId }}
 					<td>{{ course.courseName }}
-					<td>{{ course.courseAdministratorId }} {{ member.memberName }}
+					<td>{{ course.courseAdministratorId }}
 					<td>{%- for language in languagesOfCourse %}
 								{%- if course.courseId==language.courseId %}
 									{{ language.languageName }}
@@ -86,8 +86,10 @@
 									<br>
 								{% endif -%}
 							{% endfor -%}
-					<td>{{ course.startDateOfCourse }}
-					<td>{{ course.endDateOfCourse }}
+					<td>
+						<script>var newDate = "{{ course.startDateOfCourse }}"; document.write(newDate.split(' ')[0]);</script>
+					<td>
+						<script>var newDate = "{{ course.endDateOfCourse }}"; document.write(newDate.split(' ')[0]);</script>
 					<td>
 						<label class="checkbox-center">
 							<input class="box-check" name="{{ course.courseId }}"

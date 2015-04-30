@@ -110,20 +110,18 @@
 							<td>Index
 							<td>Code
 							<td>Name
-							<td>IsAbolished
 							<td>Check
 					<tbody>
-					{%- for college in allColleges %}
+						{%- for college in allColleges %}
 						<tr>
 							<td>{{ loop.index }}
 							<td>{{ college.collegeCode }}
 							<td>{{ college.collegeName }}
-							<td>{{ college.isAbolished }}
 							<td>
 								<input class="college-box-check"
 									     name="college{{ college.collegeIndex }}"
 									     type="checkbox">
-					{% endfor -%}
+						{% endfor -%}
 				</table>
 			</div>
 			<!-- ///// College Modal ///// -->
@@ -178,21 +176,19 @@
 							<td>College
 							<td>Code
 							<td>Name
-							<td>IsAbolished
 							<td>Check
 					<tbody>
-					{%- for relation, college, department in allDepartments %}
+						{%- for relation, college, department in allDepartments %}
 						<tr>
 							<td>{{ loop.index }}
 							<td>{{ college.collegeName }}
 							<td>{{ department.departmentCode }}
 							<td>{{ department.departmentName }}
-							<td>{{ department.isAbolished }}
 							<td>
 								<input class="department-box-check"
 										name="department{{ department.departmentIndex }}"
 									  	type="checkbox">
-					{% endfor -%}
+						{% endfor -%}
 				</table>
 			</div>
 		</div>

@@ -5,7 +5,8 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
-	<h3>Submission management</h3><h5>Detail mode</h5>
+	<h3 style="display:inline-block">Submission management</h3>
+	<h4 style="display:inline-block"> - Detail mode</h4>
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
 			<li class="active">
@@ -22,7 +23,7 @@
 			{% endfor -%}
 			<div style="text-align:right">
 				<a href="{{ url_for('GradeServer.user_submit_summary') }}">
-					<button id="summary" type="button" style="display:none">
+					<button id="summary" type="submit" style="display:none">
 						Summary
 					</button>
 				</a>
@@ -32,55 +33,59 @@
 		<div class="tab-content">
 			<div class="tab-pane active" id="all">
 				<table class="table">
-					<tr>
-						<td>Course ID
-						<td>Course Name
-						<td>Problem Name
-						<td>Member ID
-						<td>Status
-						<td>Submission Count
-						<td>Submission Date
-					{%- for submission, registeredCourse, problem in submissions %}
-					<tr>
-						<td>{{ submission.courseId }}
-						<td>{{ registeredCourse.courseName }}
-						<td>
-							<a href="{{ url_for('GradeServer.class_user_submit') }}">
-								{{ problem.problemName }}
-							</a>
-						<td>{{ submission.memberId }}
-						<td>{{ submission.status }}
-						<td>{{ submission.submissionCount }}
-						<td>{{ submission.codeSubmittedDate }}
-					{% endfor -%}
+					<thead>
+						<tr>
+							<td>Course ID
+							<td>Course Name
+							<td>Problem Name
+							<td>Member ID
+							<td>Status
+							<td>Submission Count
+							<td>Submission Date
+					<tbody>
+						{%- for submission, registeredCourse, problem in submissions %}
+						<tr>
+							<td>{{ submission.courseId }}
+							<td>{{ registeredCourse.courseName }}
+							<td>
+								<a href="{{ url_for('GradeServer.class_user_submit') }}">
+									{{ problem.problemName }}
+								</a>
+							<td>{{ submission.memberId }}
+							<td>{{ submission.status }}
+							<td>{{ submission.submissionCount }}
+							<td>{{ submission.codeSubmittedDate }}
+						{% endfor -%}
 				</table>
 			</div>
 			{%- for ownCourse in ownCourses %}
 			<div class="tab-pane" id="{{ ownCourse.courseId}}">
 				<table class="table">
-					<tr>
-						<td>Course ID
-						<td>Course Name
-						<td>Problem Name
-						<td>Member ID
-						<td>Status
-						<td>Submission Count
-						<td>Submission Date
-					{%- for submission, registeredCourse, problem in submissions %}
-					{%- if submission.courseId == ownCourse.courseId %}
-					<tr>
-						<td>{{ submission.courseId }}
-						<td>{{ registeredCourse.courseName }}
-						<td>
-							<a href="{{ url_for('GradeServer.class_user_submit') }}">
-								{{ problem.problemName }}
-							</a>
-						<td>{{ submission.memberId }}
-						<td>{{ submission.status }}
-						<td>{{ submission.submissionCount }}
-						<td>{{ submission.codeSubmittedDate }}
-					{% endif -%}
-					{% endfor -%}
+					<thead>
+						<tr>
+							<td>Course ID
+							<td>Course Name
+							<td>Problem Name
+							<td>Member ID
+							<td>Status
+							<td>Submission Count
+							<td>Submission Date
+					<tbody>
+						{%- for submission, registeredCourse, problem in submissions %}
+						{%- if submission.courseId == ownCourse.courseId %}
+						<tr>
+							<td>{{ submission.courseId }}
+							<td>{{ registeredCourse.courseName }}
+							<td>
+								<a href="{{ url_for('GradeServer.class_user_submit') }}">
+									{{ problem.problemName }}
+								</a>
+							<td>{{ submission.memberId }}
+							<td>{{ submission.status }}
+							<td>{{ submission.submissionCount }}
+							<td>{{ submission.codeSubmittedDate }}
+						{% endif -%}
+						{% endfor -%}
 				</table>
 			</div>
 			{% endfor -%}
