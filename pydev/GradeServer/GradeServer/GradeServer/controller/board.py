@@ -136,7 +136,7 @@ def read(activeTabCourseId, articleIndex, error = None):
     except Exception:
         articlesOnBoard = []
         
-            # 내가 게시글에 누른 좋아요 정보
+         # 내가 게시글에 누른 좋아요 정보
     try:
         isPostLike = select_article_is_like(articleIndex,
                                             session[SessionResources().const.MEMBER_ID]).first().\
