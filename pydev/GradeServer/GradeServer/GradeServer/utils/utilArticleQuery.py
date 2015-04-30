@@ -57,14 +57,44 @@ def select_article(articleIndex, isDeleted = ENUMResources().const.FALSE):
 '''
 Board Notice Classification
 '''
-def select_sorted_articles(articlesOnBoard, isNotice = ENUMResources().const.FALSE):
+def select_sorted_articles(articlesOnBoard, isNotice = ENUMResources().const.FALSE, filterCondition = None, keyWord = None):
+    articlesOnBoard = dao.query(articlesOnBoard).\
+                          filter(articlesOnBoard.c.isNotice == isNotice,
+                                 (or_(articlesOnBoard.c.courseName == None,
+                                      articlesOnBoard.c.courseName != None) if isNotice == ENUMResources().const.TRUE
+                                  else articlesOnBoard.c.courseName != None)).\
+                          subquery()
+    # Filter Case
+    if filterCondition: 
+        articlesOnBoard = search_articles(articlesOnBoard,
+                                          filterCondition = filterCondition,
+                                          keyWord = keyWord).subquery()
+        
     return dao.query(articlesOnBoard).\
-           filter(articlesOnBoard.c.isNotice == isNotice,
-                  (or_(articlesOnBoard.c.courseName == None,
-                       articlesOnBoard.c.courseName != None) if isNotice == ENUMResources().const.TRUE
-                   else articlesOnBoard.c.courseName != None)).\
-           order_by(articlesOnBoard.c.articleIndex.desc())
-           
+               order_by(articlesOnBoard.c.articleIndex.desc())
+'''
+게시판 검색
+'''
+def search_articles(articlesOnBoard, filterCondition, keyWord =''):
+    # condition은 All, Id, Title&Content로 나누어서 검새
+    if filterCondition == '모두': # Filters[0] is '모두'
+        print filterCondition, keyWord
+        articlesOnBoard = dao.query(articlesOnBoard).\
+                             filter(or_(articlesOnBoard.c.writerId.like('%' + keyWord + '%'), 
+                                        articlesOnBoard.c.title.like('%' + keyWord + '%'),
+                                        articlesOnBoard.c.content.like('%' + keyWord + '%')))
+    elif filterCondition == '작성자': # Filters[1] is '작성자'
+        articlesOnBoard = dao.query(articlesOnBoard).\
+                              filter(articlesOnBoard.c.writerId.like('%' + keyWord + '%'))
+    else: # Filters[2] is '제목&내용'
+        articlesOnBoard = dao.query(articlesOnBoard).\
+                              filter(or_(articlesOnBoard.c.title.like('% '+ keyWord + '%'), 
+                                         articlesOnBoard.c.content.like('%' + keyWord + '%')))
+
+    return articlesOnBoard
+                       
+
+
 '''
 Article View Counting
 '''
