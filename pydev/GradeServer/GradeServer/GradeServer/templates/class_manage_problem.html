@@ -48,7 +48,7 @@
 						<tr>
 							<td>Course ID
 							<td>Problem Name
-							<td><abbr title="Multiple Input/Output Files">MF</abbr>
+							<td><abbr title="All Input cases in One File">AIOF</abbr>
 							<td>Start Date
 							<td>End Date
 							<td>Open Date
@@ -71,8 +71,8 @@
 								</select>
 							<td>
 								<label class="checkbox-center">
-									<input class="box-check" id="multipleFiles1"
-										 	name="multipleFiles1" type="checkbox">
+									<input class="box-check" id="isAllInputCaseInOneFile1"
+										 	name="isAllInputCaseInOneFile1" type="checkbox">
 								</label>
 							<td>
 								<input class="datepicker input-usmall" id="startDate1"
@@ -109,7 +109,7 @@
 							<td>Course ID
 							<td>Class Name
 							<td>Problem Name
-							<td><abbr title="is this problem has only one input file?">MF</abbr>
+							<td><abbr title="All Input cases in One File">AIOF</abbr>
 							<td>Start Date
 							<td>End Date
 							<td>Open Date
@@ -366,7 +366,7 @@ $("#addline_problem").bind('click', function(){
 	reset_val=function(){
 		$("#courseId1").val("");
 		$("#problemId1").val("");
-		$("#multipleFiles1").attr("checked", false);
+		$("#isAllInputCaseInOneFile1").attr("checked", false);
 		$("#startDate1").val("");
 		$("#openDate1").val("");
 		$("#endDate1").val("");
@@ -375,7 +375,7 @@ $("#addline_problem").bind('click', function(){
 	
 	var newRow=targetTable.insertRow(2);
 	var uploadObj;
-	var keys=['courseId', 'problemId', 'multipleFiles',
+	var keys=['courseId', 'problemId', 'isAllInputCaseInOneFile',
 				'startDate', 'endDate', 'openDate', 'closeDate'];
 	var placeholders=['course name', 'problem name', '', 
 						'click', 'click', 'click', 'click'];
@@ -416,7 +416,7 @@ $("#addline_problem").bind('click', function(){
 			uploadObj+="</select>";
 		}
 		else if(i == 2){
-			var val_mf=document.getElementById('multipleFiles1');
+			var val_mf=document.getElementById('isAllInputCaseInOneFile1');
 			uploadObj+="<td>";
 			if(val_mf.checked == true){
 				uploadObj+="<label class='"+formsize[i]+"'>"+
@@ -476,8 +476,8 @@ $("#resetAddProblemForm").bind('click', function(){
 				'</select>'+
 			'<td>'+
 				'<label class="checkbox-center">'+
-					'<input class="box-check" id="multipleFiles1"'+
-							'name="multipleFiles1" type="checkbox">'+
+					'<input class="box-check" id="isAllInputCaseInOneFile1"'+
+							'name="isAllInputCaseInOneFile1" type="checkbox">'+
 				'</label>'+
 			'<td>'+
 				'<input class="datepicker input-usmall" id="startDate1"'+
