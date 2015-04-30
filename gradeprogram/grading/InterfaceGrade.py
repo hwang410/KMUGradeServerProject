@@ -53,9 +53,6 @@ class InterfaceGrade(object):
                                                    self.filePath, self.errorParaList)
              
             success, score = evaluation.Grade()
-        
-        if success == 'error':
-            return 'ServerError', 0, 0, 0
             
         return success, score, runTime, usingMem
     

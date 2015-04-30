@@ -1,3 +1,4 @@
+import os
 import glob
 import string
 from DBUpdate import DBUpdate
@@ -32,32 +33,14 @@ class CompileTools(object):
         call(command, shell = True)
         
         # check compile error
-        result = self.CompileErrorCheck()
-        
-        if result == 'CompileError': # if compile error -> make error list
-            result = self.MakeErrorList()
+        if os.path.getsize('error.err') > 0:
+            self.MakeErrorList()
+            return 'CompileError'
         
         # if not make execution file
         elif len(glob.glob('./'+self.runFileName)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
-            DBUpdate.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
-        
-        return result
-        
-    def CompileErrorCheck(self):
-        # if exist error message in file, compile error
-        try:
-            fp = open('error.err', 'r')
-        except Exception as e:
-            print 'compile error check file open error'
             DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                           self.errorParaList[2], self.errorParaList[3])
-        
-        errMess = fp.read()
-        
-        fp.close()
-    
-        if errMess.find('error:') > 0:  # if there is an 'error'
-            return 'CompileError'
+                                       self.errorParaList[2], self.errorParaList[3])
         
         return True
         
@@ -72,7 +55,7 @@ class CompileTools(object):
         except Exception as e:
             print 'make compile error list file open error'
             DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                           self.errorParaList[2], self.errorParaList[3])
+                                       self.errorParaList[2], self.errorParaList[3])
         
         lines = rf.readlines()
         _list = []
