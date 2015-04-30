@@ -26,7 +26,7 @@ class Teams (Base) :
                       ForeignKey(RegisteredCourses.courseId,
                                  onupdate ="CASCADE",
                                  ondelete ="CASCADE"),
-                      nullaable = False)
+                      nullable = False)
     teamDescription =Column (TEXT, nullable =True)
     isDeleted =Column (ENUM (ENUMResources().const.TRUE,
                              ENUMResources().const.FALSE),

@@ -24,14 +24,14 @@ class Problems (Base) :
     problemIndex = Column (INTEGER (unsigned =True), nullable =False)
     problemId =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, nullable =False)
     problemName =Column (VARCHAR (1024), nullable =False)
-    solutionCheckType =Column (ENUM (ENUMResources()().const.SOLUTION,
-                                     ENUMResources()().const.CHECKER),
-                               default = ENUMResources()().const.CHECKER,
+    solutionCheckType =Column (ENUM (ENUMResources().const.SOLUTION,
+                                     ENUMResources().const.CHECKER),
+                               default = ENUMResources().const.CHECKER,
                                nullable =False)
     limitedTime =Column (INTEGER (unsigned =True), default =3000, nullable =False) #ms
     limitedMemory =Column (INTEGER (unsigned =True), default =1024, nullable =False) #MB
     problemPath =Column (TEXT, nullable =True)
-    isDeleted =Column (ENUM (ENUMResources()().const.TRUE,
-                            ENUMResources()().const.FALSE),
-                       default =ENUMResources()().const.FALSE,
+    isDeleted =Column (ENUM (ENUMResources().const.TRUE,
+                            ENUMResources().const.FALSE),
+                       default =ENUMResources().const.FALSE,
                        nullable =False)
