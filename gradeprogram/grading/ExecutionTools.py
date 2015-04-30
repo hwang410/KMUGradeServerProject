@@ -30,7 +30,7 @@ class ExecutionTools(object):
         except Exception as e:
             print e
             DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                           self.errorParaList[2], self.errorParaList[3])
+                                       self.errorParaList[2], self.errorParaList[3])
         
         # make execution command
         self.MakeCommand()

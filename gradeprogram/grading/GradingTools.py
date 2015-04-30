@@ -55,7 +55,7 @@ class GradingTools(object):
         except Exception as e:
             print e
             DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                           self.errorParaList[2], self.errorParaList[3])
+                                       self.errorParaList[2], self.errorParaList[3])
         
         stdLines = stdOutput.readlines()
         answerLines = answerFile.readlines()
@@ -97,7 +97,7 @@ class GradingTools(object):
         except Exception as e:
             print e
             DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                           self.errorParaList[2], self.errorParaList[3])
+                                       self.errorParaList[2], self.errorParaList[3])
         
         rf = open('result.txt', 'r')
         
@@ -105,7 +105,7 @@ class GradingTools(object):
         
         rf.close()
         
-        return int(score)
+        return int(score[0])
     
     def SolutionMulti(self):
         count = 0
@@ -172,7 +172,8 @@ class GradingTools(object):
             copyfile(copyCommand, 'checker.out')
         except Exception as e:
                 print e
-                DBUpdate.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
+                DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
+                                           self.errorParaList[2], self.errorParaList[3])
         
         for i in range(1, self.caseCount+1):
             try:
@@ -189,13 +190,14 @@ class GradingTools(object):
                 rf = open('reuslt.txt', 'r')
             except Exception as e:
                 print e
-                DBUpdate.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
+                DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
+                                           self.errorParaList[2], self.errorParaList[3])
             
             score = rf.readline()
             
             rf.close()
             
-            if int(score) != 100:
+            if int(score[0]) != 100:
                 count += 1
                 append(i)
            
