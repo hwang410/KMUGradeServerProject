@@ -36,13 +36,13 @@
 							<td>College Code
 							<td>College Name
 					<tbody id="addCollegeForm">
-					<tr>
-						<td>
-							<input class="input-medium" id="collegeCode1" name="collegeCode1"
-									type="text" placeholder="Optional">
-						<td>
-							<input class="input-medium" id="collegeName1" name="collegeName1"
-									type="text" placeholder="College Name">
+						<tr>
+							<td>
+								<input class="input-medium" id="collegeCode1" name="collegeCode1"
+										type="text" placeholder="Optional">
+							<td>
+								<input class="input-medium" id="collegeName1" name="collegeName1"
+										type="text" placeholder="College Name">
 				</table>
 			</div>
 			<div class="modal-footer">
@@ -76,20 +76,21 @@
 							<td>Department Code
 							<td>Department Name
 					<tbody id="addDepartmentForm">
-
-					<tr>
-						<td>
-							<select id="collegeIndex1" name="collegeIndex1" style="width:115px">
-				                  {%- for college in allColleges %}
-				                  <option>
-				                    {{ college.collegeIndex }} {{ college.collegeName }}
-				                  </option>
-				                  {% endfor -%}
-				                </select>
-						<td><input class="input-medium" name="departmentCode1"
-								      type="text" placeholder="Optional">
-						<td><input class="input-medium" name="departmentName1"
-									 type="text" placeholder="Department Name">
+						<tr>
+							<td>
+								<select id="collegeIndex1" name="collegeIndex1" style="width:115px">
+					                  {%- for college in allColleges %}
+					                  <option>
+					                    {{ college.collegeIndex }} {{ college.collegeName }}
+					                  </option>
+					                  {% endfor -%}
+					                </select>
+							<td>
+								<input class="input-medium" name="departmentCode1"
+									     type="text" placeholder="Optional">
+							<td>
+								<input class="input-medium" name="departmentName1"
+										type="text" placeholder="Department Name">
 				</table>
 			</div>
 			<div class="modal-footer">
@@ -148,8 +149,8 @@
 			</div>
 			<!-- no items choiced -->
 			<div class="modal hide fade" id="deleteNoCollegeItem"
-					 role="dialog" aria-labelledby="deleteModalLabel"
-					 aria-hidden="true" tabindex="-1">
+				  role="dialog" aria-labelledby="deleteModalLabel"
+				  aria-hidden="true" tabindex="-1">
 				<div class="modal-header">
 					<button class="close" type="button" data-dismiss="modal"
 							  aria-hidden="true">x</button>
@@ -241,6 +242,7 @@
 	</div>
 </div>
 <script>
+// change the button up to current tab
 var currentTab="{{ currentTab }}";
 document.getElementById(currentTab).className="tab-pane active";
 
@@ -287,6 +289,8 @@ function changeOnClickEvent(tab){
 	document.getElementById('deleteButton').innerHTML=newinnerhtml;
 }
 
+// College
+// Add line button event
 $("#addline_college").bind("click", function(){
 	var targetTable=document.getElementById("Colleges");
 	var numOfRow=targetTable.rows.length;
@@ -315,6 +319,7 @@ $("#addline_college").bind("click", function(){
 	reset_values();
 });
 
+// Close button event
 $("#resetAddCollegeForm").bind("click", function(){
 	var keys=['collegeCode', 'collegeName'];
 	var placeholders=['Optional', 'College Name'];
@@ -331,6 +336,8 @@ $("#resetAddCollegeForm").bind("click", function(){
 	document.getElementById("addCollegeForm").innerHTML=newInnerHTML;
 });
 
+// Department
+// Add line button event
 $("#addline_department").bind("click", function(){
 	var targetTable=document.getElementById("Departments");
 	var numOfRow=targetTable.rows.length;
@@ -372,6 +379,7 @@ $("#addline_department").bind("click", function(){
 	reset_values();
 });
 
+// Close button event
 $("#resetAddDepartmentForm").bind("click", function(){
 	var keys=['departmentCode', 'departmentName'];
 	var placeholders=['Optional', 'Department Name'];

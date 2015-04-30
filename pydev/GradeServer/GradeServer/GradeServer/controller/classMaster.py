@@ -61,7 +61,7 @@ def get_own_problems(memberId):
                        join(Problems,
                             Problems.problemId == RegisteredProblems.problemId).\
                        filter(and_(RegisteredCourses.courseAdministratorId == memberId,
-                                   Problems.isDeleted == ENUMResources.const.FALSE))).\
+                                   Problems.isDeleted == ENUMResources().const.FALSE))).\
                   all()
     return ownProblems
 
@@ -77,7 +77,7 @@ def class_user_submit():
     error = None
     
     try:
-        ownCourses = get_own_courses(session[SessionResources.const.MEMBER_ID])
+        ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
     except:
         error = 'Error has been occurred while searching registered courses.'
         return render_template('/class_user_submit.html',
@@ -127,7 +127,7 @@ def class_manage_problem():
     
     try:
         allProblems = dao.query(Problems).\
-                          filter(Problems.isDeleted == ENUMResources.const.FALSE).\
+                          filter(Problems.isDeleted == ENUMResources().const.FALSE).\
                           all()
     except:
         error = 'Error has been occurred while searching problems'
@@ -141,7 +141,7 @@ def class_manage_problem():
                                ownProblems = [])
     
     try:
-        ownCourses = get_own_courses(session[SessionResources.const.MEMBER_ID])
+        ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
     except:
         error = 'Error has been occurred while searching registered courses'
         return render_template('/class_manage_problem.html',
@@ -154,7 +154,7 @@ def class_manage_problem():
                                ownProblems = [])
 
     try:
-        ownProblems = get_own_problems(session[SessionResources.const.MEMBER_ID])
+        ownProblems = get_own_problems(session[SessionResources().const.MEMBER_ID])
     except:
         error = 'Error has been occurred while searching own problems'
         return render_template('/class_manage_problem.html',
@@ -261,9 +261,9 @@ def class_manage_problem():
                 if not problem[keys['closeDate']]:
                     problem[keys['closeDate']] = problem[keys['endDate']]
                 if not problem[keys['multipleFiles']]:
-                    problem[keys['multipleFiles']] = ENUMResources.const.TRUE
+                    problem[keys['multipleFiles']] = ENUMResources().const.TRUE
                 else:
-                    problem[keys['multipleFiles']] = ENUMResources.const.FALSE
+                    problem[keys['multipleFiles']] = ENUMResources().const.FALSE
                 problem[keys['courseId']],problem[keys['courseName']] = problem[keys['courseId']].split(' ',1)
                 problem[keys['problemId']],problem[keys['problemName']] = problem[keys['problemId']].split(' ',1)
                 
@@ -312,7 +312,7 @@ def class_manage_problem():
                 
     
             return redirect(url_for('.class_manage_problem'))
-    ownProblems = get_own_problems(session[SessionResources.const.MEMBER_ID])
+    ownProblems = get_own_problems(session[SessionResources().const.MEMBER_ID])
     return render_template('/class_manage_problem.html',
                            error = error, 
                            SETResources = SETResources,
@@ -329,7 +329,7 @@ def class_manage_user():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID]).\
+                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID]).\
                          all()
     except:
         error = 'Error has been occurred while searching own courses'
@@ -348,7 +348,7 @@ def class_manage_user():
                           Members).\
                     join(Members,
                          Members.memberId == DepartmentsDetailsOfMembers.memberId).\
-                    filter(Members.authority == SETResources.const.USER).\
+                    filter(Members.authority == SETResources().const.USER).\
                     order_by(DepartmentsDetailsOfMembers.memberId)).\
                all()
 
@@ -477,7 +477,7 @@ def class_add_user():
     
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID]).\
+                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID]).\
                          all()
     except:
         error = 'Error has been occurred while searching own courses'
@@ -493,8 +493,8 @@ def class_add_user():
                                newUsers = newUsers)
     try:
         allUsers = dao.query(Members).\
-                       filter(or_(Members.authority == SETResources.const.USER,
-                                  Members.authority == SETResources.const.COURSE_ADMINISTRATOR))
+                       filter(or_(Members.authority == SETResources().const.USER,
+                                  Members.authority == SETResources().const.COURSE_ADMINISTRATOR))
     except:
         error = 'Error has been occurred while searching all users'
         return render_template('/class_add_user.html',
@@ -614,7 +614,7 @@ def class_add_user():
                         newUser = [''] * 8
                         
                         # all authority is user in adding user from text file
-                        newUser[keys['authority']] = SETResources.const.USER
+                        newUser[keys['authority']] = SETResources().const.USER
                         newUser[keys['courseId']] = courseId
                         
                         for eachData in userInformation:
@@ -704,7 +704,7 @@ def class_add_user():
                 if not isExist:
                     try:
                         if newUser[keys['authority']] == 'Course Admin':
-                            newUser[keys['authority']] = SETResources.const.COURSE_ADMINISTRATOR
+                            newUser[keys['authority']] = SETResources().const.COURSE_ADMINISTRATOR
                                 
                         # at first insert to 'Members'. Duplicated tuple will be ignored.
                         freshman = Members(memberId = newUser[keys['memberId']],
@@ -829,7 +829,7 @@ def user_submit_summary():
 
     try:
         ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID]).\
+                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID]).\
                          all()
     except:
         return render_template('/class_user_submit_summary.html',
@@ -844,7 +844,7 @@ def user_submit_summary():
         ownProblems = dao.query(RegisteredProblems).\
                           join(RegisteredCourses,
                                RegisteredProblems.courseId == RegisteredCourses.courseId).\
-                          filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID]).\
+                          filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID]).\
                           all()
     except:
         return render_template('/class_user_submit_summary.html',
@@ -859,7 +859,7 @@ def user_submit_summary():
         ownMembers = dao.query(Registrations).\
                          join(RegisteredCourses,
                               RegisteredCourses.courseId == Registrations.courseId).\
-                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources.const.MEMBER_ID]).\
+                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID]).\
                          all()
     except:
         return render_template('/class_user_submit_summary.html',
