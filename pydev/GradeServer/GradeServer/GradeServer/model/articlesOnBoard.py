@@ -27,9 +27,9 @@ class ArticlesOnBoard (Base) :
                           primary_key =True,
                           autoincrement =True,
                           nullable =False) 
-    isNotice =Column (ENUM (ENUMResources.const.TRUE,
-                            ENUMResources.const.FALSE),
-                            default = ENUMResources.const.FALSE,
+    isNotice =Column (ENUM (ENUMResources().const.TRUE,
+                            ENUMResources().const.FALSE),
+                            default = ENUMResources().const.FALSE,
                             nullable =False)    # checker for notice
     writerId =Column (VARCHAR (20),
                       ForeignKey(Members.memberId,
@@ -58,9 +58,9 @@ class ArticlesOnBoard (Base) :
     writerIp =Column (VARCHAR (20),
                       nullable =False)
     writtenDate =Column (DATETIME, nullable =False)
-    isDeleted =Column (ENUM (ENUMResources.const.TRUE,
-                             ENUMResources.const.FALSE),
-                       default = ENUMResources.const.FALSE,
+    isDeleted =Column (ENUM (ENUMResources().const.TRUE,
+                             ENUMResources().const.FALSE),
+                       default = ENUMResources().const.FALSE,
                        nullable =False)
     sumOfLikeCount =Column (INTEGER (unsigned =True), default =0, nullable =False)
     

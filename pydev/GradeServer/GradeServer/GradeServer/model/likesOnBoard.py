@@ -24,8 +24,8 @@ class LikesOnBoard (Base) :
     
     articleIndex =Column (INTEGER (unsigned =True), ForeignKey (ArticlesOnBoard.articleIndex, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, autoincrement =False, nullable =False)
     boardLikerId =Column (VARCHAR (20), ForeignKey (Members.memberId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
-    isLikeCancelled =Column (ENUM (ENUMResources.const.TRUE,
-                                   ENUMResources.const.FALSE),
-                             default = ENUMResources.const.FALSE,
+    isLikeCancelled =Column (ENUM (ENUMResources().const.TRUE,
+                                   ENUMResources().const.FALSE),
+                             default = ENUMResources().const.FALSE,
                              nullable =False)
     

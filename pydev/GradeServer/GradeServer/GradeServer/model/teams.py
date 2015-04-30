@@ -10,11 +10,11 @@
 """
 
 
-from sqlalchemy import Column
+from sqlalchemy import Column, ForeignKey
 from sqlalchemy.dialects.mysql import VARCHAR, TEXT, ENUM
 
 from GradeServer.model import Base
-
+from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.resource.enumResources import ENUMResources
 
 class Teams (Base) :
@@ -22,9 +22,14 @@ class Teams (Base) :
     __tablename__ ="Teams"
     
     teamName =Column (VARCHAR (128), primary_key =True, nullable =False)
+    courseId = Column(VARCHAR(10),
+                      ForeignKey(RegisteredCourses.courseId,
+                                 onupdate ="CASCADE",
+                                 ondelete ="CASCADE"),
+                      nullaable = False)
     teamDescription =Column (TEXT, nullable =True)
-    isDeleted =Column (ENUM (ENUMResources.const.TRUE,
-                             ENUMResources.const.FALSE),
-                       default = ENUMResources.const.FALSE,
+    isDeleted =Column (ENUM (ENUMResources().const.TRUE,
+                             ENUMResources().const.FALSE),
+                       default = ENUMResources().const.FALSE,
                        nullable =False)
     

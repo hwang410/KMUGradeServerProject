@@ -26,13 +26,12 @@ class RegisteredTeamMembers (Base) :
     
     teamName =Column (VARCHAR (128), ForeignKey (Teams.teamName, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
     teamMemberId =Column (VARCHAR (20), ForeignKey (Members.memberId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
-    courseId =Column (VARCHAR (10), ForeignKey (RegisteredCourses.courseId, onupdate ="CASCADE", ondelete ="CASCADE"), nullable =True)
-    isTeamMaster =Column (ENUM (ENUMResources.const.TRUE,
-                                ENUMResources.const.FALSE),
-                          default = ENUMResources.const.FALSE,
+    isTeamMaster =Column (ENUM (ENUMResources().const.TRUE,
+                                ENUMResources().const.FALSE),
+                          default = ENUMResources().const.FALSE,
                           nullable =False)
-    isDeleted =Column (ENUM (ENUMResources.const.TRUE,
-                             ENUMResources.const.FALSE),
-                       default = ENUMResources.const.FALSE,
+    isDeleted =Column (ENUM (ENUMResources().const.TRUE,
+                             ENUMResources().const.FALSE),
+                       default = ENUMResources().const.FALSE,
                        nullable =False)
     

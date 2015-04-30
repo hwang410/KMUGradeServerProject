@@ -28,15 +28,15 @@ class Submissions (Base) :
     courseId =Column (VARCHAR (10), ForeignKey (SubmittedFiles.courseId, onupdate ="CASCADE", ondelete ="NO ACTION"), primary_key =True, nullable = False)
     submissionCount =Column (INTEGER (unsigned =True), primary_key =True, autoincrement =False, default =0, nullable =False)
     solutionCheckCount =Column (INTEGER (unsigned =True), default = 0, nullable =False)
-    status =Column (ENUM (ENUMResources.const.NEVER_SUBMITTED,
-                          ENUMResources.const.JUDGING,
-                          ENUMResources.const.SOLVED,
-                          ENUMResources.const.TIME_OVER,
-                          ENUMResources.const.WRONG_ANSWER,
-                          ENUMResources.const.COMPILE_ERROR,
-                          ENUMResources.const.RUNTIME_ERROR,
-                          ENUMResources.const.SERVER_ERROR),
-                    default = ENUMResources.const.NEVER_SUBMITTED,
+    status =Column (ENUM (ENUMResources().const.NEVER_SUBMITTED,
+                          ENUMResources().const.JUDGING,
+                          ENUMResources().const.SOLVED,
+                          ENUMResources().const.TIME_OVER,
+                          ENUMResources().const.WRONG_ANSWER,
+                          ENUMResources().const.COMPILE_ERROR,
+                          ENUMResources().const.RUNTIME_ERROR,
+                          ENUMResources().const.SERVER_ERROR),
+                    default = ENUMResources().const.NEVER_SUBMITTED,
                     nullable =False)
     score =Column (INTEGER (unsigned =True), default =0, nullable =False)
     codeSubmissionDate =Column (DATETIME, nullable =False)

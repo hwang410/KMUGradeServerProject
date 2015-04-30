@@ -29,9 +29,9 @@ class RepliesOnBoard (Base) :
     boardReplyContent =Column (TEXT, nullable =False)
     boardReplierIp =Column (VARCHAR (20), nullable =False)
     boardRepliedDate =Column (DATETIME, nullable =False)
-    isDeleted =Column (ENUM (ENUMResources.const.TRUE,
-                             ENUMResources.const.FALSE),
-                       default = ENUMResources.const.FALSE,
+    isDeleted =Column (ENUM (ENUMResources().const.TRUE,
+                             ENUMResources().const.FALSE),
+                       default = ENUMResources().const.FALSE,
                        nullable =False)
     sumOfLikeCount =Column (INTEGER (unsigned =True), default =0, nullable =False)
     

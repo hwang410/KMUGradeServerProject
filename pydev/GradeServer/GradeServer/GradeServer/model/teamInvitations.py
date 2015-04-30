@@ -25,7 +25,7 @@ class TeamInvitations (Base) :
     
     teamName =Column (VARCHAR (128), ForeignKey (Teams.teamName, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
     inviteeId =Column (VARCHAR (20), ForeignKey (Members.memberId, onupdate ="CASCADE", ondelete ="CASCADE"), primary_key =True, nullable =False)
-    isDeleted =Column (ENUM (ENUMResources.const.TRUE,
-                             ENUMResources.const.FALSE),
-                       default = ENUMResources.const.FALSE,
+    isDeleted =Column (ENUM (ENUMResources().const.TRUE,
+                             ENUMResources().const.FALSE),
+                       default = ENUMResources().const.FALSE,
                        nullable =False)
