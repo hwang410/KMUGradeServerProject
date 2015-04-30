@@ -2,22 +2,27 @@
 {%- block body %}
 <div class="container">
 	<div>
-		<h3>Manage Service</h3>
-		<table class="table">
-			<tr>
-				<td>Server
-				<td><label class="radio inline"><input id="serveron" name="serveron" type="radio" value="serveron" checked>On</label>
-						<label class="radio inline"><input id="serveroff" name="serveroff" type="radio" value="serveroff">Off</label>
-			<tr>
-				<td>Judge
-				<td><label class="radio inline"><input id="judgeon" name="judgeon" type="radio" value="judgeon" checked>On</label>
-						<label class="radio inline"><input id="judgeoff" name="judgeoff" type="radio" value="judgeoff">Off</label>
-			<tr>
-				<td>Board
-				<td><label class="radio inline"><input id="boardon" name="boardon" type="radio" value="boardon" checked>On</label>
-						<label class="radio inline"><input id="boardoff" name="boardoff" type="radio" value="boardoff">Off</label>
-		</table>
-		<a href="#"><button class="btn" type="button">Done</button></a>
+		<h3>Service management</h3>
+		<form method="post">
+			<table class="table">
+				<tr>
+					<td>Server
+					<td>
+						<label class="radio inline"><input id="serveron" name="server" type="radio" value="serveron" checked>On</label>
+						<label class="radio inline"><input id="serveroff" name="server" type="radio" value="serveroff">Off</label>
+				<tr>
+					<td>Judging
+					<td>
+						<label class="radio inline"><input id="judgeon" name="judge" type="radio" value="judgeon" checked>On</label>
+						<label class="radio inline"><input id="judgeoff" name="judge" type="radio" value="judgeoff">Off</label>
+				<tr>
+					<td>Board
+					<td>
+						<label class="radio inline"><input id="boardon" name="board" type="radio" value="boardon" checked>On</label>
+						<label class="radio inline"><input id="boardoff" name="board" type="radio" value="boardoff">Off</label>
+			</table>
+			<button class="btn" type="submit">Done</button></a>
+		</form>
 	</div>
 </div>
 {% endblock -%}

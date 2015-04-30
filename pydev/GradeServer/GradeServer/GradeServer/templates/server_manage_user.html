@@ -60,25 +60,33 @@
 					<td>ID
 					<td>College&Department
 					<td>Name
-					<td>Phone
+					<!-- <td>Phone -->
 					<td>E-mail
 					<td><abbr title="SA: Server Administrator, CA: Course Administrator">Authority</abbr>
 					<td>Last Access
 					<td>Check
 			<tbody>
 				<script> index = {{ index }}; </script>
-				{%- for user, college, department in users %}
+				{%- for user in users %}
 				<tr>
 					<td><script> document.write(index--); </script>
-					<td>{{ user.memberId }}
-					<td>{{ college.collegeName }} {{ department.departmentName }}
-					<td>{{ user.memberName }}
-					<td>{{ user.contactNumber }}
-					<td>{{ user.emailAddress }}
+					<td>{{ user[0] }} <!-- member ID -->
+					<td> <!-- college & department information -->
+						{%- for index in range(7, user|length) %}
+							{{ user[index] }}
+							{%- if index % 2 == 0 %}
+							<br>
+							{% endif -%}
+						{% endfor -%}		
+					
+					<td>{{ user[1] }} <!-- member name -->
+					<!-- <td>{{ user[2] }} --><!-- member contact number -->
+					<td>{{ user[3] }} <!-- member email address -->
 					<!-- Up to you. -->
 					<!-- Now we set USER as Student, SERVER_ADMINISTRATOR as SA, COURSE_ADMINISTRATOR  as CA -->
 					<!-- Because using meta values, not enough width -->
-					<td>{%- for authority in user.authority %}
+					<td><!-- member authority -->
+						{%- for authority in user[4] %}
 							{%- if authority==SETResources.const.USER %}
 								Student
 							{% elif authority==SETResources.const.SERVER_ADMINISTRATOR %}
@@ -89,12 +97,15 @@
 								Unknown
 							{% endif -%}
 						{% endfor -%}
-					<td>
+					<td><!-- member last access date -->
 						<script>
-						var date = "{{ user.lastAccessDate }}";
+						var date = "{{ user[6] }}"; //  user[5] is signed in date.
 						if(date != "None"){
 							// slice from "YYYY-MM-DD hh:mm:ss" to "YY-MM-DD hh:mm"
 							date = date.substr(2,14);
+						}
+						else{
+							date = "Never";
 						}
 						document.write(date);
 						</script>

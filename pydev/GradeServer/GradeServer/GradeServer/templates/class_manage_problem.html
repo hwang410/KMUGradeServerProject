@@ -33,7 +33,7 @@
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
 						  type="button" aria-hidden="true">x</button>
-				<h3 id="addProblemModalLabel">Add Problem</h3>
+				<h3 id="addProblemModalLabel">Problem addition</h3>
 			</div>
 			<div class="modal-body">
 				<p>If you don't choose open/close date, then the dates will be same with start/end date<br>
@@ -46,7 +46,7 @@
 							 style="margin-top:10px">
 					<thead>
 						<tr>
-							<td>Course Id
+							<td>Course ID
 							<td>Problem Name
 							<td><abbr title="Multiple Input/Output Files">MF</abbr>
 							<td>Start Date
@@ -106,10 +106,10 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<td>Course Id
+							<td>Course ID
 							<td>Class Name
 							<td>Problem Name
-							<td><abbr title="Number Of each input/output Files">NOF</abbr>
+							<td><abbr title="is this problem has only one input file?">MF</abbr>
 							<td>Start Date
 							<td>End Date
 							<td>Open Date
@@ -127,25 +127,27 @@
 							<td id="isAllInputCaseInOneFile_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}"
 								ondblclick="modifySelector(this.id)">
 									{{ registeredProblem.isAllInputCaseInOneFile }}
+							<!-- @To do -->
+							<!-- When the script code was function call, it was not working. and don't know why. -->
 							<td id="startDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
-									{{ registeredProblem.startDateOfSubmission }}
+								<script>var newDate = "{{ registeredProblem.startDateOfSubmission }}"; document.write(newDate.split(' ')[0]);</script>
 							<td id="endDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
-									{{ registeredProblem.endDateOfSubmission }}
+								<script>var newDate = "{{ registeredProblem.endDateOfSubmission }}"; document.write(newDate.split(' ')[0]);</script>
 							<td id="openDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}"
 								ondblclick="modifySelector(this.id)">
-									{{ registeredProblem.openDate }}
+								<script>var newDate = "{{ registeredProblem.openDate }}"; document.write(newDate.split(' ')[0]);</script>
 							<td id="closeDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}"
 								ondblclick="modifySelector(this.id)">
-									{{ registeredProblem.closeDate }}
+								<script>var newDate = "{{ registeredProblem.closeDate }}"; document.write(newDate.split(' ')[0]);</script>
 							<td>
 								<label class="checkbox-center">
 									<input type="checkbox"
 											name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}"
 											class="box-check">
 								</label>
-						<!-- this is for getting NOF value when it's changed -->
+						<!-- this is for getting MF value when it's changed -->
 						<div id="isAllInputCaseInOneFile_{{registeredProblem.courseId}}_{{registeredProblem.problemId}}">
 						</div>
 						{% endfor %}
@@ -160,7 +162,7 @@
 							<td>Course Id
 							<td>Class Name
 							<td>Problem Name
-							<td><abbr title="Number Of each input/output Files">NOF</abbr>
+							<td><abbr title="is this problem has only one input file?">MF</abbr>
 							<td>Start Date
 							<td>End Date
 							<td>Open Date
@@ -181,16 +183,16 @@
 								{{ registeredProblem.isAllInputCaseInOneFile }}
 							<td id="startDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
-								{{ registeredProblem.startDateOfSubmission }}
+								<script>var newDate = "{{ registeredProblem.startDateOfSubmission }}"; document.write(newDate.split(' ')[0]);</script>
 							<td id="endDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
-								{{ registeredProblem.endDateOfSubmission }}
+								<script>var newDate = "{{ registeredProblem.endDateOfSubmission }}"; document.write(newDate.split(' ')[0]);</script>
 							<td id="openDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}"
 								ondblclick="modifySelector(this.id)">
-								{{ registeredProblem.openDate }}
+								<script>var newDate = "{{ registeredProblem.openDate }}"; document.write(newDate.split(' ')[0]);</script>
 							<td id="closeDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}"
 								ondblclick="modifySelector(this.id)">
-								{{ registeredProblem.closeDate }}
+								<script>var newDate = "{{ registeredProblem.closeDate }}"; document.write(newDate.split(' ')[0]);</script>
 							<td>
 								<label class="checkbox-center">
 									<input class="box-check" 
@@ -211,7 +213,7 @@
 	<div style="text-align:right">		
 		<label for="hidden_editButton" style="display:inline">
 			<button class="btn" id="editButton" style="display:None"> <!-- real submit tag -->
-				Confirm Edit
+				Confirm
 			</button> 
 		</label>
 		<a class="btn" data-toggle="modal" role="button"
@@ -225,7 +227,7 @@
 		<div class="modal-header">
 			<button class="close" type="button"
 					  data-dismiss="modal" aria-hidden="true">x</button>
-			<h3 id="deleteProblemModalLabel">Delete Problem</h3>
+			<h3 id="deleteProblemModalLabel">Problem deletion</h3>
 		</div>
 		<div class="modal-body">
 			<p>Do you really want to delete it?</p>
@@ -233,7 +235,7 @@
 		<div class="modal-footer">
 			<label for="hidden_deleteButton" style="display:inline">
 				<button class="btn" id="deleteButton"> 
-					Save changes
+					Confirm
 				</button>
 			</label>
 			<button class="btn" data-dismiss="modal" aria-hidden="true">
@@ -241,17 +243,17 @@
 			</button>
 		</div>
 	</div>
-	<!-- no items choiced -->
+	<!-- no items choosed -->
 	<div class="modal hide fade" id="deleteNoItem"
 		  role="dialog" aria-labelledby="deleteModalLabel"
 		  aria-hidden="true" tabindex="-1">
 		<div class="modal-header">
 			<button class="close" type="button"
 					  data-dismiss="modal" aria-hidden="true">x</button>
-			<h3 id="deleteModalLabel">Delete Problem</h3>
+			<h3 id="deleteModalLabel">Problem deletion</h3>
 		</div>
 		<div class="modal-body">
-			<p>No items choiced</p>
+			<p>No items choosed</p>
 		</div>
 		<div class="modal-footer">
 			<button class="btn" data-dismiss="modal" aria-hidden="true">
@@ -321,11 +323,11 @@ function modifySelector(target){
 	}
 	if(target.split("_")[0] == "isAllInputCaseInOneFile" || 
 	   target.split("_")[0] == "isAllInputCaseInOneFileTab"){
-		if(targetValue.indexOf("OneFile")!=-1){
-			targetValue=document.getElementById(target).innerHTML="MultipleFiles";
+		if(targetValue.indexOf("TRUE")!=-1){
+			targetValue=document.getElementById(target).innerHTML="FALSE";
 		}
 		else{
-			targetValue=document.getElementById(target).innerHTML="OneFile";
+			targetValue=document.getElementById(target).innerHTML="TRUE";
 		}
 		document.getElementById(target.split("_")[0]+'_'+
 									 target.split("_")[1]+'_'+

@@ -5,11 +5,32 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
-	<h3>Identification Check</h3>
-	<h4>User Id : {{ session['memberId'] }}</h4>
-	<form method="post">
-		<h4>Password : <input type="password" class="input-small" name="password", autofocus ="autofocus"></h4>
-		<button class="btn" type="submit">Confirm</button>
-	</form>
+	<div width="100%" align="center" style="position:absolute;left: 50%;margin-left:-125px;width:250px">
+		<h3>Identification Check</h3>
+		<div class="row-fluid">
+			<h4>
+				<div class="span6">
+					User ID
+				</div>
+				<div class="span6">
+					{{ session['memberId'] }}
+				</div>
+			</h4>
+		</div>
+		<form method="post">	
+			<div class="row-fluid">
+				<h4>
+					<div class="span6">
+						Password
+					</div>
+					<div class="span6">
+						<input type="password" class="input-small" name="password", autofocus ="autofocus">
+					</div>
+				</h4>
+			</div>
+			<br>
+			<button class="btn" type="submit">Confirm</button>
+		</form>
+	</div>
 </div>
 {% endblock -%}
