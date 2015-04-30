@@ -68,19 +68,6 @@ def board(activeTabCourseId, pageNum):
                                            select_articles(activeTabCourseId,
                                                            isDeleted = ENUMResources().const.FALSE).subquery(),
                                            myCourses).subquery()
-                # 과목 게시글
-        try:
-            articlesOnBoardSub = select_sorted_articles(articlesOnBoard,
-                                                        isNotice = ENUMResources().const.FALSE)
-            count = select_count(articlesOnBoardSub.subquery().\
-                                                    c.articleIndex).first().\
-                                                                    count
-            articleRecords = get_page_record(articlesOnBoardSub,
-                                             pageNum = int(pageNum)).all()
-        except Exception:
-            count = 0
-            articleRecords = []
-        
                 # 과목 공지글    
         try:  
             articleNoticeRecords = get_page_record((select_sorted_articles(articlesOnBoard,
@@ -89,7 +76,35 @@ def board(activeTabCourseId, pageNum):
                                                    LIST = OtherResources().const.NOTICE_LIST).all()
         except Exception:
             articleNoticeRecords = []
-       
+                # 과목 게시글
+        try:
+            if request.method == 'POST':
+                try:
+                    for form in request.form:
+                        # FilterCondition
+                        if 'keyWord' != form:
+                            filterCondition = form
+                            keyWord = request.form['keyWord']
+                except Exception:
+                    filterCondition = None
+                    keyWord = None
+            else:
+                filterCondition = None
+                keyWord = None
+                
+            articlesOnBoardSub = select_sorted_articles(articlesOnBoard,
+                                                        isNotice = ENUMResources().const.FALSE,
+                                                        filterCondition = filterCondition,
+                                                        keyWord = keyWord)
+            count = select_count(articlesOnBoardSub.subquery().\
+                                                    c.articleIndex).first().\
+                                                                    count
+            articleRecords = get_page_record(articlesOnBoardSub,
+                                             pageNum = int(pageNum)).all()
+        except Exception:
+            count = 0
+            articleRecords = []
+            
         try:
             myCourses = dao.query(myCourses).all()
         except Exception:
@@ -492,25 +507,3 @@ def write(activeTabCourseId, articleIndex, error =None):
     except Exception:
         # Unknown Error
         return unknown_error()
-
-
-               
-'''
-게시판 검색
-'''
-def search_articles(Filters, articlesOnBoard, filterCondition, keyWord =''):
-    # condition은 All, Id, Title&Content로 나누어서 검새
-        
-    if filterCondition == Filters[0]: # Filters[0] is '모두'
-        articlesOnBoard =dao.query(articlesOnBoard).\
-            filter(or_(articlesOnBoard.c.writerId.like('%'+keyWord+'%'), 
-                         articlesOnBoard.c.title.like('%'+keyWord+'%'), articlesOnBoard.c.content.like('%'+keyWord+'%')))
-    elif filterCondition == Filters[1]: # Filters[1] is '작성자'
-        articlesOnBoard =dao.query(articlesOnBoard).\
-            filter(articlesOnBoard.c.writerId.like('%'+keyWord+'%'))
-    else: # Filters[2] is '제목&내용'
-        articlesOnBoard =dao.query(articlesOnBoard).\
-            filter(or_(articlesOnBoard.c.title.like('%'+keyWord+'%'), articlesOnBoard.c.content.like('%'+keyWord+'%')))
-
-    return articlesOnBoard
-            
