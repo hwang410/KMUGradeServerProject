@@ -229,6 +229,11 @@ def server_manage_collegedepartment():
 @GradeServer.route('/master/manage_class', methods = ['GET', 'POST'])
 @login_required
 def server_manage_class():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "manage_class":
+        error = "invalid access"
+        print error
+        
     error = None
     
     try:
@@ -279,6 +284,11 @@ def server_manage_class():
 @GradeServer.route('/master/add_class', methods = ['GET', 'POST'])
 @login_required
 def server_add_class():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "add_class":
+        error = "invalid access"
+        print error
+        
     global projectPath
     error = None
     courseAdministrator = ''
@@ -462,6 +472,11 @@ def server_add_class():
 @GradeServer.route('/master/manage_problem', methods=['GET', 'POST'])
 @login_required
 def server_manage_problem():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "manage_problem":
+        error = "invalid access"
+        print error
+        
     global projectPath
     global numberOfDifficulty
     error = None
@@ -680,6 +695,11 @@ def server_manage_problem():
 @GradeServer.route('/master/manage_users', methods = ['GET', 'POST'])
 @login_required
 def server_manage_user():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "manage_users":
+        error = "invalid access"
+        print error
+        
     error = None
 
     try:
@@ -770,6 +790,11 @@ def server_manage_user():
 @GradeServer.route('/master/addUser', methods = ['GET', 'POST'])
 @login_required
 def server_add_user():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "addUser":
+        error = "invalid access"
+        print error
+        
     global newUsers
     error = None
     targetUserIdToDelete = []
@@ -1051,6 +1076,11 @@ def server_add_user():
 @GradeServer.route('/master/manage_service')
 @login_required
 def server_manage_service():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "manage_service":
+        error = "invalid access"
+        print error
+        
     error = None
     return render_template('/server_manage_service.html',
                            error = error,

@@ -87,6 +87,11 @@ def get_own_courses(memberId):
 @GradeServer.route('/classmaster/user_submit')
 @login_required
 def class_user_submit():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "user_submit":
+        error = "invalid access"
+        print error
+        
     error = None
     
     try:
@@ -132,6 +137,11 @@ def class_user_submit():
 @GradeServer.route('/classmaster/cm_manage_problem',methods=['GET','POST'])
 @login_required
 def class_manage_problem():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "cm_manage_problem":
+        error = "invalid access"
+        print error
+        
     global projectPath
     global newProblems
     
@@ -369,6 +379,11 @@ def class_manage_problem():
 @GradeServer.route('/classmaster/cm_manage_user',methods=['GET','POST'])
 @login_required
 def class_manage_user():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "cm_manage_user":
+        error = "invalid access"
+        print error
+        
     error = None
     
     try:
@@ -504,6 +519,11 @@ def class_manage_user():
 @GradeServer.route('/classmaster/add_user',methods=['GET','POST'])
 @login_required
 def class_add_user():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "add_user":
+        error = "invalid access"
+        print error
+        
     global newUsers
     error = None
     targetUserIdToDelete = []
@@ -867,6 +887,11 @@ def class_add_user():
 @GradeServer.route('/classmaster/user_submit/summary')
 @login_required
 def user_submit_summary():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "user_submit/summary":
+        error = "invalid access"
+        print error
+        
     error = None
 
     try:
@@ -939,6 +964,11 @@ def user_submit_summary():
 @GradeServer.route('/classmaster/manage_service')
 @login_required
 def class_manage_service():
+    # moved from URL, error will occur
+    if request.referrer.rsplit('/', 1)[1] != "manage_service":
+        error = "invalid access"
+        print error
+        
     # To do
     error = None
     return render_template('/class_manage_service.html',
