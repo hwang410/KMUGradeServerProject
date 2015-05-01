@@ -41,6 +41,7 @@ def problemList(courseId, pageNum):
     # Get Last Submitted History
     lastSubmission = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
                                              courseId = courseId).subquery()
+    print len(dao.query(lastSubmission).all())
     # Current Submission                                      
     submissions = dao.query(Submissions.score,
                             Submissions.status,
@@ -52,6 +53,7 @@ def problemList(courseId, pageNum):
                                 Submissions.solutionCheckCount == lastSubmission.c.solutionCheckCount)).\
                       subquery()
     
+    print len(dao.query(submissions).all())
     # Get Problem Informations
     problems = join_problem_name(select_problem(courseId = courseId).subquery()).subquery()
     
@@ -61,6 +63,7 @@ def problemList(courseId, pageNum):
                                                    count
     except Exception:
         count = 0
+    print count
     # Get ProblemListRecords OuterJoin
     try:
         problemListRecords = get_page_record(dao.query(problems,

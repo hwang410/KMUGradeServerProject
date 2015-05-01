@@ -25,6 +25,7 @@ def select_last_submissions(memberId = None, courseId = None, problemId = None):
         return dao.query(Submissions.memberId,
                          Submissions.courseId,
                          Submissions.problemId,
+                         func.max(Submissions.submissionCount).label('submissionCount'),
                          func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
                    group_by(Submissions.memberId,
                             Submissions.problemId,
@@ -33,6 +34,7 @@ def select_last_submissions(memberId = None, courseId = None, problemId = None):
         return dao.query(Submissions.memberId,
                          Submissions.courseId,
                          Submissions.problemId,
+                         func.max(Submissions.submissionCount).label('submissionCount'),
                          func.max(Submissions.solutionCheckCount).label('solutionCheckCount')).\
                    filter((Submissions.courseId == courseId if courseId
                           else Submissions.courseId != None),
