@@ -178,7 +178,7 @@ def select_server_error_count(submissions):
 '''
 User Chart Information
 '''
-def select_user_chart_submission(submissions):
+def select_member_chart_submission(submissions):
     return dao.query(select_solved_problem_count(submissions).subquery(),# 중복 제거푼 문제숫
                      select_submission_count(submissions).subquery(),# 총 제출 횟수
                      select_solved_count(submissions).subquery(),# 모든 맞춘 횟수
