@@ -7,6 +7,7 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilQuery import select_submission_people_count, select_solved_people_count, select_count
 from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_last_submissions, select_all_submission
+from GradeServer.utils.utilProblemQuery import join_problem_name, select_problem
 from GradeServer.utils.utilMessages import unknown_error
 
 from GradeServer.resource.enumResources import ENUMResources
@@ -33,6 +34,7 @@ from itertools import count
 @GradeServer.route('/problemList/<courseId>/page<pageNum>')
 @login_required
 def problemList(courseId, pageNum):
+        
     """ problem submitting page """
     # Get Last Submitted History
     lastSubmission = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
@@ -49,14 +51,8 @@ def problemList(courseId, pageNum):
                       subquery()
     
     # Get Problem Informations
-    problems = dao.query(RegisteredProblems.problemId,
-                         RegisteredProblems.startDateOfSubmission,
-                         RegisteredProblems.endDateOfSubmission,
-                         Problems.problemName).\
-                   filter(RegisteredProblems.courseId == courseId).\
-                   join(Problems,
-                        RegisteredProblems.problemId == Problems.problemId).\
-                   subquery()
+    problems = join_problem_name(select_problem(courseId = courseId).subquery()).subquery()
+    
     # Get ProblemList Count
     try:
         count = select_count(problems.c.problemId).first().\

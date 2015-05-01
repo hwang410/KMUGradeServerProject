@@ -19,6 +19,8 @@ from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.model.registrations import Registrations
 from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 
+        
+        
 '''
  DB Select All Members to User in Authority
  '''
