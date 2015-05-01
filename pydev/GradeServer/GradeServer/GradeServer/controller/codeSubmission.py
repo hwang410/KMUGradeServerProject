@@ -56,6 +56,8 @@ def file_save_with_insert_to_SubmittedFiles(memberId, courseId, problemId, uploa
         delete_submitted_files_data(memberId, problemId, courseId)
         for file in uploadFiles:
             fileName = secure_filename(file.filename)
+            if len(fileName) == 1:
+                fileName = file.filename.decode()
             try:
                 file.save(os.path.join(tempPath, fileName))
             except Exception as e:
@@ -83,7 +85,7 @@ def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, used
         problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, numberOfTestCase, problemCasesPath = get_problem_info(problemId, problemName)
         problemFullName = make_problem_full_name(problemId, problemName)
         
-        Grade.delay(str(filePath),
+        """Grade.delay(str(filePath),
                     str(problemPath),
                     str(memberId),
                     str(problemId),
@@ -95,7 +97,7 @@ def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, used
                     str(usedLanguageVersion),
                     str(courseId),
                     subCountNum,
-                    str(problemFullName))
+                    str(problemFullName))"""
 
                        
         flash(OtherResources.const.SUBMISSION_SUCCESS)
