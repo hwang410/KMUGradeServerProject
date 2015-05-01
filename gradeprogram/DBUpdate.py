@@ -2,7 +2,6 @@ import sys
 from DBManager import dao
 from DB.submissions import Submissions
 from DB.submittedRecordsOfProblems import SubmittedRecordsOfProblems
-    
 STATUS = ['grading status', 'NeverSubmitted', 'Judging', 'Solved', 'TimeOver',
           'WrongAnswer', 'CompileError', 'RunTimeError', 'ServerError']
 
@@ -26,10 +25,9 @@ class DBUpdate(object):
                             usedMemory = usingMem,
                             solutionCheckCount = Submissions.solutionCheckCount+1))
             
-            dao.commit()
         except Exception as e:
             dao.rollback()
-            self.UpdateServerError()
+            self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
         
     def SubmittedRecordsOfProblems_CompileError(self):
         try:
@@ -102,20 +100,20 @@ class DBUpdate(object):
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
 
     @staticmethod        
-    def UpdateServerError(self):
+    def UpdateServerError(stdNum, problemNum, courseNum, submitCount):
         try :
             dao.query(Submissions).\
-                filter_by(memberId = self.stdNum,
-                          problemId = self.problemNum,
-                          courseId = self.courseNum,
-                          submissionCount = self.submitCount).\
+                filter_by(memberId = stdNum,
+                          problemId = problemNum,
+                          courseId = courseNum,
+                          submissionCount = submitCount).\
                 update(dict(status = 8,
                             score = 0,
                             runTime = 0,
                             usedMemory = 0))
             dao.commit()
-            sys.exit()
             print '...server error...'
+            sys.exit()
         except Exception as e:
             dao.rollback()
             raise e
