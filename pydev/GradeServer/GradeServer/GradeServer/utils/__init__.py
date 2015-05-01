@@ -11,6 +11,7 @@
 
 __all__ = ['checkInvalidAccess',
            'loginRequired',
+           'utilCodeSubmissionQuery'
            'utilMessages',
            'utilPaging',
            'utilRankQuery',
