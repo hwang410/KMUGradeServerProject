@@ -13,13 +13,13 @@
 						<thead>
 							<tr>
 								<td>{% if articlesOnBoard.courseName %}{{ articlesOnBoard.courseId }} {{ articlesOnBoard.courseName }}{% else %}Server Noticie{% endif %}</td>
-								<td style ='text-align:right'>{{ articlesOnBoard.writtenDate }}</td>
+								<td style ='text-align:right'>{% if articlesOnBoard.writtenDate %}{{ articlesOnBoard.writtenDate }}{% endif %}</td>
 							</tr>
 							
 							<tr>
 							<h4>
-								<td>{{ articlesOnBoard.title }}</td>
-								<td style ='text-align:right'>{{ articlesOnBoard.writerId }}</tD>
+								<td>{% if articlesOnBoard.title %}{{ articlesOnBoard.title }}{% endif %}</td>
+								<td style ='text-align:right'>{% if articlesOnBoard.writerId %}{{ articlesOnBoard.writerId }}{% endif %}</td>
 							</tr>
 						</thead>
 					</table>
@@ -32,7 +32,7 @@
 <!-- content block -->
 <div class="container">
 	<!-- put contents here -->
-	<PRE style ="background-color: rgba(255, 255, 255, 0)">{{ articlesOnBoard.content }}</PRE>
+	<PRE style ="background-color: rgba(255, 255, 255, 0)">{% if articlesOnBoard.content %}{{ articlesOnBoard.content }}{% endif %}</PRE>
 	<div style="text-align:center">
 		<form method="post">
 		
@@ -84,21 +84,21 @@
 	<div class = 'row-fluid'>
 		<form method = "post" id="myform">
 			<a href = '{{ url_for ("GradeServer.user_history", memberId = repliesOnBoardRecord.boardReplierId, sortCondition = "submissionDate", pageNum = 1) }}'>
-				{{ repliesOnBoardRecord.boardReplierId }}
+				{% if repliesOnBoardRecord.boardReplierId %}{{ repliesOnBoardRecord.boardReplierId }}{% endif %}
 			</a>
 			<!-- Content, WrittenDate -->
 			{% if boardReplyIndex and boardReplyIndex == repliesOnBoardRecord.boardReplyIndex %}
 			<div class = 'row-fluid'>
 				<div class = 'span10'>
-					<textarea class="span12" autofocus = "autofocus" onfocus="autoSize(this)" onkeyup="autoSize(this)" autocomplete="off" name="writeReplytoArticle" placeholder="Comment" rows = 6>{{ repliesOnBoardRecord.boardReplyContent }}</textarea>
+					<textarea class="span12" autofocus = "autofocus" onfocus="autoSize(this)" onkeyup="autoSize(this)" autocomplete="off" name="modifyConfirmArticleComment{{ boardReplyIndex }}" placeholder="Comment" rows = 6>{% if repliesOnBoardRecord.boardReplyContent %}{{ repliesOnBoardRecord.boardReplyContent }}{% endif %}</textarea>
 				</div>
 				<div style = 'padding-left:10.5px'>
 					<button class="submit">Confirm</button>
 				</div>
 			</div>
 			{% else %}
-			:  <textarea class="span12" readonly ="reaonly" onclick="autoSize(this)" name="writeReplytoArticle" rows = 6>{{ repliesOnBoardRecord.boardReplyContent }}</textarea>
-			| {{ repliesOnBoardRecord.boardRepliedDate }}
+			:  <textarea class="span12" readonly ="reaonly" onclick="autoSize(this)" rows = 6>{% if repliesOnBoardRecord.boardReplyContent %}{{ repliesOnBoardRecord.boardReplyContent }}{% endif %}</textarea>
+			| {% if repliesOnBoardRecord.boardRepliedDate %}{{ repliesOnBoardRecord.boardRepliedDate }}{% endif %}
 			<!-- like button -->
 			<button class="like btn btn-link" href="#" name="articleReplyLike{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">
 				{% if isLikeRecords[loop.index0] == 'TRUE' %} 
@@ -107,7 +107,7 @@
 				UnLike 
 				{% endif %}
 			</button>
-			{{ repliesOnBoardRecord.sumOfLikeCount }}
+			{% if repliesOnBoardRecord.sumOfLikeCount %}{{ repliesOnBoardRecord.sumOfLikeCount }}{% endif %}
 			
 			<!-- delete button -->
 			<!-- replier and masters are availables to delete the comments -->

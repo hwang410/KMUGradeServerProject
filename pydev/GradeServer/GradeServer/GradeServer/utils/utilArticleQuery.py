@@ -74,7 +74,6 @@ def select_sorted_articles(articlesOnBoard, isNotice = ENUMResources().const.FAL
 def search_articles(articlesOnBoard, filterCondition, keyWord =''):
     # condition은 All, Id, Title&Content로 나누어서 검새
     if filterCondition == '모두': # Filters[0] is '모두'
-        print filterCondition, keyWord
         articlesOnBoard = dao.query(articlesOnBoard).\
                              filter(or_(articlesOnBoard.c.writerId.like('%' + keyWord + '%'), 
                                         articlesOnBoard.c.title.like('%' + keyWord + '%'),
