@@ -18,6 +18,7 @@ from sqlalchemy import or_
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilArticleQuery import join_course_name, select_articles, select_article, select_sorted_articles, select_article_is_like,\
                                                select_replies_on_board, select_replies_on_board_is_like, select_replies_on_board_like, update_view_reply_counting,\
                                                update_article_like_counting, update_article_is_like, update_replies_on_board_like_counting,\
@@ -54,6 +55,7 @@ def close_db_session(exception = None):
 보여주는 페이지
 '''
 @GradeServer.route('/board/<activeTabCourseId>/page<pageNum>', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def board(activeTabCourseId, pageNum):    
     try:
@@ -133,6 +135,7 @@ def board(activeTabCourseId, pageNum):
 글 내용을 보여주는 페이지
 '''
 @GradeServer.route('/board/<activeTabCourseId>/<articleIndex>', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def read(activeTabCourseId, articleIndex, error = None):
     ''' when you push a title of board content '''
@@ -394,6 +397,7 @@ def read(activeTabCourseId, articleIndex, error = None):
 게시판에 글을 쓰는 페이지
 '''
 @GradeServer.route('/board/write-<activeTabCourseId>/<articleIndex>', methods=['GET', 'POST'])
+@check_invalid_access
 @login_required
 def write(activeTabCourseId, articleIndex, error =None):
     title, content, articlesOnBoard = None, None, None

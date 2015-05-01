@@ -6,6 +6,7 @@ from flask import render_template, redirect, url_for, session, request, flash
 from sqlalchemy import func
 
 from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utilQuery import select_all_user, select_match_member
@@ -36,6 +37,7 @@ def close_db_session(exception = None):
         
         
 @GradeServer.route('/team/page<pageNum>')
+@check_invalid_access
 @login_required
 def team(pageNum = 1, error = None):
     """ team main page """
@@ -110,6 +112,7 @@ def team(pageNum = 1, error = None):
     
     
 @GradeServer.route('/team_invitation/<teamName>/<accept>')
+@check_invalid_access
 @login_required
 def team_invitation(teamName, accept, error = None):
     """
@@ -156,6 +159,7 @@ gTeamMembersId  =[]
 # 팀 명, 팀 설명
 gTeamName, gTeamDescription = None, None
 @GradeServer.route('/team/make', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def make_team(error = None):
     """ 
@@ -286,6 +290,7 @@ def make_team(error = None):
         return unknown_error()
 
 @GradeServer.route('/team_information/<teamName>')
+@check_invalid_access
 @login_required
 def team_information(teamName, error = None):
     """
@@ -322,6 +327,7 @@ def team_information(teamName, error = None):
 
 
 @GradeServer.route('/team/record/<teamName>')
+@check_invalid_access
 @login_required
 def team_record(teamName, error = None):
     """
@@ -340,6 +346,7 @@ def team_record(teamName, error = None):
 
 
 @GradeServer.route('/team/manage/<teamName>', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def team_manage(teamName, error = None):
     """

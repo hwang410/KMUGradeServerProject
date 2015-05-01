@@ -4,6 +4,7 @@
 from flask import render_template, request
 
 from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilQuery import select_all_user, select_count, select_match_member_sub, select_accept_courses
 from GradeServer.utils.utilRankQuery import select_rank, rank_sorted
@@ -35,6 +36,7 @@ def close_db_session(exception = None):
 페이지 별로 보여줌
 """    
 @GradeServer.route('/rank/<activeTabCourseId>-<sortCondition>/page<pageNum>', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def rank(activeTabCourseId, sortCondition, pageNum, error =None):
     

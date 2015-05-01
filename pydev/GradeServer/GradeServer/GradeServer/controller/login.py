@@ -119,7 +119,9 @@ def update_recent_access_date(memberId):
 """
 로그아웃
 """
+from GradeServer.utils.checkInvalidAccess import check_invalid_access
 @GradeServer.route ('/signout')
+@check_invalid_access
 @login_required
 def sign_out():
     """ Log Out """ 
