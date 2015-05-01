@@ -6,8 +6,8 @@ from flask import render_template, request
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
-from GradeServer.utils.utilQuery import select_all_user, select_count, select_match_member_sub, select_accept_courses
-from GradeServer.utils.utilRankQuery import select_rank, rank_sorted
+from GradeServer.utils.utilQuery import select_all_users, select_count, select_match_member_sub, select_accept_courses
+from GradeServer.utils.utilRankQuery import select_ranks, ranks_sorted
 from GradeServer.utils.utilSubmissionQuery import select_last_submissions
 from GradeServer.utils.utilMessages import unknown_error, get_message
 
@@ -41,14 +41,13 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
     try:
         try:
             # Auto Complete MemberIds
-            memberRecords = select_all_user().\
-                            all()
+            memberRecords = select_all_users().all()
         except Exception:
             memberRecords = []
             
         # Last Submission Max Count
-        submissions = select_rank(select_last_submissions(memberId = None,
-                                                          courseId = activeTabCourseId).subquery()).subquery()
+        submissions = select_ranks(select_last_submissions(memberId = None,
+                                                           courseId = activeTabCourseId).subquery()).subquery()
         
         # records count
         try:
@@ -69,7 +68,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
             for i in range(1, pages['allPage'] + 1):
                 # memberId in Pages 
                 ranks = get_page_record(dao.query(submissions),
-                                          pageNum = i).subquery()
+                                        pageNum = i).subquery()
                 # finding MemberId in Pages
                 try:
                     if select_match_member_sub(ranks,
@@ -87,7 +86,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
        
                 # 랭크 정보
         try:
-            rankMemberRecords = get_page_record(rank_sorted(submissions,
+            rankMemberRecords = get_page_record(ranks_sorted(submissions,
                                                             sortCondition = sortCondition),
                                                 pageNum = int(pageNum)).all()
         except Exception:

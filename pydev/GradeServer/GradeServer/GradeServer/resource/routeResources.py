@@ -20,4 +20,5 @@ class RouteResources(object):
     const.USER_HISTORY = '.user_history'
     
     # Problem routes
-    const.PROBLEM_LIST = '.problemList'
+    const.PROBLEM_LIST = '.problem_list'
+    const.PROBLEM_RECORD ='.problem_record'

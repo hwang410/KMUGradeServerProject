@@ -6,8 +6,6 @@ from sqlalchemy import func, or_
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
-from GradeServer.resource.htmlResources import HTMLResources
-from GradeServer.resource.routeResources import RouteResources
 from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.sessionResources import SessionResources
 
@@ -24,7 +22,7 @@ from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 '''
  DB Select All Members to User in Authority
  '''
-def select_all_user():
+def select_all_users():
         # 자동 완성을 위한 모든 유저기록
     return dao.query(Members.memberId,
                      Members.memberName).\
@@ -33,9 +31,9 @@ def select_all_user():
 '''
  DB Select MAtch Course
 '''
-def select_match_course(courseId):
+def select_match_members_of_course(courseId):
     # courseId FilterLing
-    members = select_all_user().subquery()
+    members = select_all_users().subquery()
     return dao.query(Registrations.memberId,
                      members).\
                join(members,
@@ -60,21 +58,6 @@ Record count
 def select_count(keySub):
     return dao.query(func.count(keySub).label('count'))
 
-'''
-Sum Of Submitted People Counts
-'''
-def select_submission_people_count(submissions):
-    return dao.query(func.count(submissions.c.memberId).label('sumOfSubmissionPeopleCount'))
-      
-'''
-Sum Of Solved People Counts
-'''
-def select_solved_people_count(submissions):
-    
-    return dao.query(func.count(submissions.c.memberId).label('sumOfSolvedPeopleCount')).\
-               filter(submissions.c.status == ENUMResources().const.SOLVED)
-
-               
 
 '''
 허용된 과목 정보

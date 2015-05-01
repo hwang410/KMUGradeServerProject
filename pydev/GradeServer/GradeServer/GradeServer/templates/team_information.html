@@ -20,7 +20,7 @@
 		</thead>
 		<tr>
 			<td>
-				<a href ="{{ url_for ('GradeServer.user_history', memberId =teamMemberRecords[0].teamMemberId, sortCondition ='submissionDate', pageNum =1) }}">
+				<a href ="{{ url_for ('GradeServer.submission_record', memberId =teamMemberRecords[0].teamMemberId, sortCondition ='submissionDate', pageNum =1) }}">
 				{% if teamMemberRecords[0].teamMemberId %}
 				{{ teamMemberRecords[0].teamMemberId }}
 				{% endif %}
@@ -33,7 +33,7 @@
 		{% for i in range (1, teamMemberRecords|length) %}
 		<tr>
 			<td>
-				<a href ="{{ url_for ('GradeServer.user_history', memberId =teamMemberRecords[i].teamMemberId, sortCondition ='submissionDate', pageNum =1) }}">
+				<a href ="{{ url_for ('GradeServer.submission_record', memberId =teamMemberRecords[i].teamMemberId, sortCondition ='submissionDate', pageNum =1) }}">
 				{% if teamMemberRecords[i].teamMemberId %}
 				{{ teamMemberRecords[i].teamMemberId }}
 				</a>

@@ -15,7 +15,7 @@ from GradeServer.model.submissions import Submissions
 '''
  DB Select basic rank
  '''
-def select_rank(submissions):
+def select_ranks(submissions):
     # # Total Submission Count (Rank Page Server Error Exception)
     submissionCount = dao.query(submissions.c.memberId,
                                 func.sum(submissions.c.solutionCheckCount).label('solutionCheckCount')).\
@@ -50,7 +50,7 @@ def select_rank(submissions):
 '''
 Rank Sorting Condition
 '''
-def rank_sorted(ranks, sortCondition = OtherResources().const.RATE):
+def ranks_sorted(ranks, sortCondition = OtherResources().const.RATE):
     #Get Comment
     # rate 정렬
     if sortCondition == OtherResources().const.RATE:
@@ -108,7 +108,7 @@ def select_top_coder():
 
         try:
             # return subquery
-            topCoder = dao.query(select_rank(dayOfWeekSubmissions)).\
+            topCoder = dao.query(select_ranks(dayOfWeekSubmissions)).\
                            first()
             topCoderId = topCoder[0].memberId
         except Exception:

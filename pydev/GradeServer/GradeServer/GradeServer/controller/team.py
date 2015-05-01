@@ -9,7 +9,7 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
-from GradeServer.utils.utilQuery import select_match_course, select_match_member
+from GradeServer.utils.utilQuery import select_match_members_of_course, select_match_member
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources

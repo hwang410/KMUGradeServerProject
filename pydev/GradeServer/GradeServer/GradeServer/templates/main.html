@@ -43,7 +43,7 @@
 								<li class="nav-header">Current Class</li>
 								{%- if session[SessionResources.const.OWN_CURRENT_COURSES] %}
 									{%- for course in session[SessionResources.const.OWN_CURRENT_COURSES] %}
-									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId, pageNum = 1) }}" class="currentClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="currentClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
 								<li class="disabled"><a tabindex="-1" href="#">None</a></li>
@@ -54,7 +54,7 @@
 								<li class="nav-header">Past Class</li>
 								{%- if session[SessionResources.const.OWN_PAST_COURSES] %}
 									{%- for course in session[SessionResources.const.OWN_PAST_COURSES] %}
-									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId, pageNum = 1) }}" class="pastClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="pastClasses">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
 								<li class="disabled"><a tabindex="-1" href="#">None</a></li>
@@ -79,7 +79,7 @@
 							<ul class="dropdown-menu">
 								{%- if SETResources.const.SERVER_ADMINISTRATOR not in session['authority'] and SETResources.const.COURSE_ADMINISTRATOR not in session['authority'] %}
 								<li>
-									<a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Record</a>
+									<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}">Record</a>
 								</li>
 								{% endif %}
 								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>
@@ -205,7 +205,7 @@
 							<div class="span4 topcoder" style="text-align:center;background:#eeeeee">
 								<h4>Top Coder of this week</h4>
 								{% if topCoderId %}
-									<a href ="{{ url_for ('GradeServer.user_history', memberId =topCoderId, sortCondition ='submissionDate', pageNum =1) }}">{{ topCoderId }}</a>
+									<a href ="{{ url_for ('GradeServer.submission_record', memberId =topCoderId, sortCondition ='submissionDate', pageNum =1) }}">{{ topCoderId }}</a>
 								{% else %}
 									None
 								{% endif %}

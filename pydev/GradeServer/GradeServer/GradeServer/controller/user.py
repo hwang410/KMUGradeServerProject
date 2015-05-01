@@ -7,8 +7,8 @@ from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utilQuery import select_count, select_match_member
-from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_all_submission, select_member_chart_submission
-from GradeServer.utils.utilUserQuery import join_member_information, update_member_information
+from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_all_submissions, select_member_chart_submissions
+from GradeServer.utils.utilUserQuery import join_member_informations, update_member_informations
 
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.htmlResources import HTMLResources
@@ -36,14 +36,14 @@ def close_db_session(exception = None):
 """
 로그인한 유저가 제출 했던 모든기록
 """
-@GradeServer.route('/user_history/<memberId>-<sortCondition>/page<pageNum>')
+@GradeServer.route('/submission_record/<memberId>-<sortCondition>/page<pageNum>')
 @check_invalid_access
 @login_required
-def user_history(memberId, sortCondition, pageNum):
+def submission_record(memberId, sortCondition, pageNum):
     try:       
         # 모든 제출 정보
-        submissions = select_all_submission(lastSubmission = None,
-                                            memberId = memberId).subquery()
+        submissions = select_all_submissions(lastSubmission = None,
+                                             memberId = memberId).subquery()
         # List Count
         try:
             count = select_count(submissions.c.memberId).first().\
@@ -53,7 +53,7 @@ def user_history(memberId, sortCondition, pageNum):
          
         try:
                         # 차트 정보
-            chartSubmissionRecords = select_member_chart_submission(submissions).first()
+            chartSubmissionRecords = select_member_chart_submissions(submissions).first()
         except Exception:
             #None Type Exception
             chartSubmissionRecords = []
@@ -157,7 +157,7 @@ def edit_personal(error = None):
         global gContactNumber, gEmailAddress, gComment
         #Get User Information
         try:
-            memberInformation = join_member_information(select_match_member(session[SessionResources().const.MEMBER_ID]).subquery()).first()
+            memberInformation = join_member_informations(select_match_member(session[SessionResources().const.MEMBER_ID]).subquery()).first()
         except Exception:
             #None Type Exception
             memberInformation = []
@@ -182,11 +182,11 @@ def edit_personal(error = None):
                 passwordConfirm = None
                 
                 #Update DB
-                update_member_information(select_match_member(session[SessionResources().const.MEMBER_ID]),
-                              password,
-                              gContactNumber,
-                              gEmailAddress,
-                              gComment)
+                update_member_informations(select_match_member(session[SessionResources().const.MEMBER_ID]),
+                                           password,
+                                           gContactNumber,
+                                           gEmailAddress,
+                                           gComment)
                 # Commit Exception
                 try:
                     # global Value Init
