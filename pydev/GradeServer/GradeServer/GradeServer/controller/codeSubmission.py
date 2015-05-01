@@ -215,7 +215,7 @@ def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, used
         problemFullName = make_problem_full_name(problemId, problemName)
 
 
-        """Grade.delay(str(filePath),
+        Grade.delay(str(filePath),
                 str(problemPath),
                 str(memberId),
                 str(problemId),
@@ -227,7 +227,7 @@ def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, used
                 str(usedLanguageVersion),
                 str(courseId),
                 subCountNum,
-                str(problemFullName))"""
+                str(problemFullName))
 
                        
         flash(OtherResources.const.SUBMISSION_SUCCESS)
