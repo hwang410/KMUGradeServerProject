@@ -5,11 +5,7 @@ from datetime import datetime
 from sqlalchemy import or_, and_
 
 from GradeServer.resource.enumResources import ENUMResources
-from GradeServer.resource.setResources import SETResources
-from GradeServer.resource.htmlResources import HTMLResources
-from GradeServer.resource.routeResources import RouteResources
 from GradeServer.resource.otherResources import OtherResources
-from GradeServer.resource.sessionResources import SessionResources
 
 from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 from GradeServer.model.likesOnBoard import LikesOnBoard

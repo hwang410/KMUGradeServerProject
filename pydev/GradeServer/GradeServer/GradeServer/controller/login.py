@@ -23,11 +23,9 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.utilQuery import select_accept_courses, select_past_courses, select_current_courses, select_notices, select_match_member
 from GradeServer.utils.utilRankQuery import select_top_coder
 
-from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.htmlResources import HTMLResources
 from GradeServer.resource.routeResources import RouteResources
-from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.sessionResources import SessionResources
 
 from GradeServer.model.members import Members

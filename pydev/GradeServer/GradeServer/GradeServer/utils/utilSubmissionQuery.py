@@ -4,11 +4,7 @@
 from sqlalchemy import func, and_
 
 from GradeServer.resource.enumResources import ENUMResources
-from GradeServer.resource.setResources import SETResources
-from GradeServer.resource.htmlResources import HTMLResources
-from GradeServer.resource.routeResources import RouteResources
 from GradeServer.resource.otherResources import OtherResources
-from GradeServer.resource.sessionResources import SessionResources
 
 from GradeServer.database import dao
 from GradeServer.model.submissions import Submissions
@@ -94,7 +90,22 @@ def select_all_submission(lastSubmission = None, memberId = None, courseId = Non
                         Submissions.usedLanguageIndex == Languages.languageIndex).\
                    join(Problems,
                         Submissions.problemId == Problems.problemId)
-                                  
+  
+ 
+''' 
+ Current Submissions
+'''
+def select_current_submission(lastSubmission):
+    return dao.query(Submissions.score,
+                     Submissions.status,
+                     lastSubmission).\
+               join(lastSubmission,
+                    and_(Submissions.memberId == lastSubmission.c.memberId,
+                         Submissions.problemId == lastSubmission.c.problemId,
+                         Submissions.courseId == lastSubmission.c.courseId,
+                         Submissions.submissionCount == lastSubmission.c.submissionCount))
+                      
+                                                       
                                   
 '''
 Submissions Sorting Condition
@@ -105,11 +116,11 @@ def submissions_sorted(submissions, sortCondition = OtherResources().const.SUBMI
     if sortCondition == OtherResources().const.SUBMISSION_DATE:
         submissionRecords = dao.query(submissions).\
                                 order_by(submissions.c.codeSubmissionDate.asc())
-         # 실행 시간 순 정렬
+        # 실행 시간 순 정렬
     elif sortCondition == OtherResources().const.RUN_TIME:
         submissionRecords = dao.query(submissions).\
                                 order_by(submissions.c.runTime.asc())
-         # 코드 길이별 정렬         
+        # 코드 길이별 정렬         
     elif sortCondition == OtherResources().const.CODE_LENGTH:
         submissionRecords = dao.query(submissions).\
                                 order_by(submissions.c.sumOfSubmittedFileSize.asc())  

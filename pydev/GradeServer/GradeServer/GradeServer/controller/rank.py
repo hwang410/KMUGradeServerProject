@@ -11,10 +11,8 @@ from GradeServer.utils.utilRankQuery import select_rank, rank_sorted
 from GradeServer.utils.utilSubmissionQuery import select_last_submissions
 from GradeServer.utils.utilMessages import unknown_error, get_message
 
-from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.htmlResources import HTMLResources
-from GradeServer.resource.routeResources import RouteResources
 from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.sessionResources import SessionResources
 

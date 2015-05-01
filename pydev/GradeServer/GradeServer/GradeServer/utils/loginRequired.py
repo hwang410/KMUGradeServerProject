@@ -17,10 +17,10 @@ def login_required(f):
                 request.cookies.get(
                     current_app.config['SESSION_COOKIE_NAME'])
 
-            if not (session.sid == session_key and session.__contains__(SessionResources.const.MEMBER_ID)):
+            if not (session.sid == session_key and session.__contains__(SessionResources().const.MEMBER_ID)):
                 session.clear()
              
-                return redirect(url_for(RouteResources.const.SIGN_IN))
+                return redirect(url_for(RouteResources().const.SIGN_IN))
             
             return f(*args, **kwargs)
 
