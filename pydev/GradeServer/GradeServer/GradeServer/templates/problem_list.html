@@ -8,6 +8,11 @@
 {%- block body %}
 <div class="container">
 	<h2>{{ courseRecords.courseId }} {{ courseRecords.courseName }}</h2>
+	<div style="text-align:center">
+			<span class="label label-solved">Solved</span>
+			<span class="label label-warning">Never Submitted</span>
+			<span class="label label-important">Wrong Answer</span>
+	</div>
 	<table class="problem_list table table-bordered">
 		<thead>
 			<tr>
@@ -15,7 +20,10 @@
 			</tr>
 		</thead>
 		{% for problemListRecord in problemListRecords %}
-		<tr>
+		<tr class = '{% if problemListRecord.status == "SOLVED" %}label-solved
+							   {% elif not problemListRecord.status %}label-warning
+							   {% else %}label-important
+							   {% endif %}'>
 			<td style ='vertical-align: middle'>
 				{{ (problemListRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}
 			</td>
