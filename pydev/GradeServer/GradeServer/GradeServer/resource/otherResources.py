@@ -12,11 +12,15 @@ class OtherResources(object):
 
     const.ACCEPT = 'accept'
     const.REJECT = 'reject'
+    
     const.SUBMISSION_DATE = 'submissionDate'
     const.RUN_TIME = 'runTime'
+    const.USED_MEMORY = 'usedMemory'
     const.CODE_LENGTH = 'codeLength'
+    
     const.RATE = 'rate'
     const.SOLVED_PROBLEM = 'solvedProblem'
+    
     const.ALL = 'All'
     const.GET_FILES = 'file[]'
     const.USED_LANGUAGE_NAME = 'usedLanguageName'
