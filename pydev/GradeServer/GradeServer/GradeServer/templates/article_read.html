@@ -42,7 +42,7 @@
 			</button>
 			
 			{% if articlesOnBoard.writerId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
-			<button href="#deleteArticle" class="delete btn" data-toggle="modal">Delete</button>
+			<button href="#deleteArticle" class="delete btn" data-toggle="modal">Delete<i class="icon-trash"></i></button>
 			<div id="deleteArticle" class="modal hide fade">
 				<div class="modal-header">
 					<h3>Delete Post</h3>
@@ -75,7 +75,7 @@
 				<textarea class="span12" onkeyup="autoSize(this)" autocomplete="off" name="writeReplytoArticle" placeholder="Comment" rows = 3></textarea>
 			</div>
 			<div style = 'padding-left:10.5px'>
-				<button class="submit">Write</button>
+				<button class="submit">Write<i class="icon-pencil"></i></button>
 			</div>
 		</div>
 	</form>
@@ -87,9 +87,10 @@
 				{% if repliesOnBoardRecord.boardReplierId %}{{ repliesOnBoardRecord.boardReplierId }}{% endif %}
 			</a>
 			<!-- Content, WrittenDate -->
-			{% if boardReplyIndex and boardReplyIndex == repliesOnBoardRecord.boardReplyIndex %}
+			
 			<div class = 'row-fluid'>
 				<div class = 'span10'>
+			{% if boardReplyIndex and boardReplyIndex == repliesOnBoardRecord.boardReplyIndex %}
 					<textarea class="span12" autofocus = "autofocus" onfocus="autoSize(this)" onkeyup="autoSize(this)" autocomplete="off" name="modifyConfirmArticleComment{{ boardReplyIndex }}" placeholder="Comment" rows = 6>{% if repliesOnBoardRecord.boardReplyContent %}{{ repliesOnBoardRecord.boardReplyContent }}{% endif %}</textarea>
 				</div>
 				<div style = 'padding-left:10.5px'>

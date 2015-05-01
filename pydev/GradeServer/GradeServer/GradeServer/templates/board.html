@@ -45,7 +45,7 @@
 		
 			<div style="text-align:right">
 				<a href="{{ url_for('GradeServer.write', activeTabCourseId = activeTabCourseId, articleIndex =0) }}">
-					<button type="button" class="write">Write</button>
+					<button type="button" class="write">Write<i class="icon-pencil"></i></button>
 				</a>
 			</div>
 		</ul>
@@ -245,7 +245,7 @@
 
 				<div class="input-append" style="margin-bottom:0px">
 					<input class="span3" name = 'keyWord' type="text" placeholder="Type Keyword">
-					<button id = 'filterCondition' name = '{{ Filters[0] }}' class="btn" type="submit">Find</button>
+					<button id = 'filterCondition' name = '{{ Filters[0] }}' class="btn" type="submit">Find<i class="icon-search"></i></button>
 				</div>
 			</div>
 	</form>
