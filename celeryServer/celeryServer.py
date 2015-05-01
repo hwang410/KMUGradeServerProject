@@ -4,7 +4,7 @@ from celery import Celery
 from billiard import current_process
 
 MAX_CONTAINER_COUNT = 10
-app = Celery('tasks', broker = 'redis://192.168.0.119:6379')
+app = Celery('tasks', broker = 'redis://192.168.0.8:6379')
 
 @app.task(name = 'task.Grade')
 def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
