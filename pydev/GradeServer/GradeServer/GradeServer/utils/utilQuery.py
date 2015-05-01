@@ -64,65 +64,6 @@ def select_solved_people_count(submissions):
     return dao.query(func.count(submissions.c.memberId).label('sumOfSolvedPeopleCount')).\
                filter(submissions.c.status == ENUMResources().const.SOLVED)
 
-'''
-Submissions Count
-'''
-def select_submission_count(submissions):
-    return dao.query(func.count(submissions.c.memberId).label('sumOfSubmissionCount'))
-
-'''
-Solved Problem Counts
-'''
-def select_solved_problem_count(submissions):
-    submissions = dao.query(submissions).\
-                      filter(submissions.c.status == ENUMResources().const.SOLVED).\
-                      group_by(submissions.c.problemId,
-                               submissions.c.courseId).\
-                      subquery()
-                      
-    return dao.query(func.count(submissions.c.memberId).label('sumOfSolvedProblemCount'))
-
-'''
-Solved Counts
-'''
-def select_solved_count(submissions):
-    return dao.query(func.count(submissions.c.memberId).label('sumOfSolvedCount')).\
-               filter(submissions.c.status == ENUMResources().const.SOLVED)
-               
-'''
-Wrong Answer Counts
-'''
-def select_wrong_answer_count(submissions):
-    return dao.query(func.count(submissions.c.memberId).label('sumOfWrongAnswerCount')).\
-               filter(submissions.c.status == ENUMResources().const.WRONG_ANSWER)
-
-'''
-Time Over Counts
-'''
-def select_time_over_count(submissions):
-    return dao.query(func.count(submissions.c.memberId).label('sumOfTimeOverCount')).\
-               filter(submissions.c.status == ENUMResources().const.TIME_OVER)
-               
-'''
-Compile Error Counts
-'''
-def select_compile_error_count(submissions):
-    return dao.query(func.count(submissions.c.memberId).label('sumOfCompileErrorCount')).\
-               filter(submissions.c.status == ENUMResources().const.COMPILE_ERROR)
-               
-'''
-RunTime Error Counts
-'''
-def select_runtime_error_count(submissions):
-    return dao.query(func.count(submissions.c.memberId).label('sumOfRunTimeErrorCount')).\
-               filter(submissions.c.status == ENUMResources().const.RUNTIME_ERROR)
-
-'''
-Server Error Counts
-'''
-def select_server_error_count(submissions):
-    return dao.query(func.count(submissions.c.memberId).label('sumOfServerErrorCount')).\
-               filter(submissions.c.status == ENUMResources().const.SERVER_ERROR)
                
 
 '''
