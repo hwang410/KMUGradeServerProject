@@ -13,7 +13,7 @@
 					User ID
 				</div>
 				<div class="span6">
-					{{ session['memberId'] }}
+					{% if session['memberId'] %}{{ session['memberId'] }}{% endif %}
 				</div>
 			</h4>
 		</div>

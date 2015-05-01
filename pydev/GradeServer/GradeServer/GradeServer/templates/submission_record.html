@@ -40,7 +40,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 
 <div class="container">
 	<div style="text-align:center">
-		<h3>{{ memberId }} Submit History</h3>
+		<h3>{% if memberId %}{{ memberId }}{% else %}{{ session['memberId'] }}{% endif %}Submit History</h3>
 	</div>
 	<div class="container">
 		<div class="row-fluid">
@@ -60,7 +60,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 							{% for i in range (0, chartSubmissionDescriptions|length) %}
 							<h4 style ="padding-bottom:5px">
 								<!--  chartSubmissionRecords is Value, chartSubmissionDescriptions is Description -->
-								{{ chartSubmissionDescriptions[i] }}  :  {{ chartSubmissionRecords[i] }}
+								{{ chartSubmissionDescriptions[i] }}  :  {% if chartSubmissionRecords[i] %}{{ chartSubmissionRecords[i] }}{% else %}0{% endif %}
 								<br>
 							</h4>
 							{% endfor %}
@@ -83,13 +83,45 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 							</thead>
 							{%- for submissionRecord in submissionRecords %}
 							<tr>
-								<td style ='vertical-align: middle'>{{ submissionRecord.problemName }}</td>
-								<td style ='vertical-align: middle'>{{ submissionRecord.status }}</td>
-								<td style ='vertical-align: middle'>{{ submissionRecord.score }}</td>
-								<td style ='vertical-align: middle'>{{ submissionRecord.runTime }} ms</td>
-								<td style ='vertical-align: middle'>{{ submissionRecord.sumOfSubmittedFileSize }} Byte</td>
-								<td style ='vertical-align: middle'>{{ submissionRecord.languageName }}</td>
-								<td style ='vertical-align: middle'>{{ submissionRecord.codeSubmissionDate }}</td>
+								<td style ='vertical-align: middle'>
+									{% if submissionRecord.problemName %}
+									{{ submissionRecord.problemName }}
+									{% endif %}
+								</td>
+								<td style ='vertical-align: middle'>
+									{% if submissionRecord.status %}
+									{{ submissionRecord.status }}
+									{% endif %}
+								</td>
+								<td style ='vertical-align: middle'>
+									{% if submissionRecord.score %}
+									{{ submissionRecord.score }}
+									{% else %}
+									0
+									{% endif %}
+								</td>
+								<td style ='vertical-align: middle'>
+									{% if submissionRecord.runTime %}
+									{{ submissionRecord.runTime }}
+									{% endif %}
+									ms
+								</td>
+								<td style ='vertical-align: middle'>
+									{% if submissionRecord.sumOfSubmittedFileSize %}
+									{{ submissionRecord.sumOfSubmittedFileSize }}
+									{% endif %}
+									Byte
+								</td>
+								<td style ='vertical-align: middle'>
+									{% if submissionRecord.languageName %}
+									{{ submissionRecord.languageName }}
+									{% endif %}
+								</td>
+								<td style ='vertical-align: middle'>
+									{% if submissionRecord.codeSubmissionDate %}
+									{{ submissionRecord.codeSubmissionDate }}
+									{% endif %}
+								</td>
 							</tr>
 							{% endfor -%}
 						</table>

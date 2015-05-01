@@ -28,7 +28,7 @@
 				<li>
 					<a href = '{{ url_for ("GradeServer.board", activeTabCourseId = myCourse, pageNum = 1) }}'>
 				{% endif %}
-					{{ myCourse }} 
+					{% if myCourse %}{{ myCourse }}{% endif %}
 				</a>
 			</li>
 			{% elif myCourse.courseId == activeTabCourseId %}
@@ -38,7 +38,7 @@
 			<li>
 				<a href = '{{ url_for ("GradeServer.board", activeTabCourseId = myCourse.courseId, pageNum = 1) }}'>
 			{% endif %}
-					{{ myCourse.courseId }} {{ myCourse.courseName }} 
+					{% if myCourse.courseId and myCourse.courseName %}{{ myCourse.courseId }} {{ myCourse.courseName }}{% endif %}
 				</a>
 			</li>
 		{% endfor %}
@@ -87,10 +87,10 @@
 									[{{ articleNoticeRecord.replyCount }}]
 								{% endif -%}
 							</td>
-							<td>{{ articleNoticeRecord.writerId }}</td>
-							<td>{{ articleNoticeRecord.writtenDate }}</td>
-							<td>{{ articleNoticeRecord.viewCount }}</td>
-							<td>{{ articleNoticeRecord.sumOfLikeCount }}</td>
+							<td>{% if articleNoticeRecord.writerId %}{{ articleNoticeRecord.writerId }}{% endif %}</td>
+							<td>{% if articleNoticeRecord.writtenDate %}{{ articleNoticeRecord.writtenDate }}{% endif %}</td>
+							<td>{% if articleNoticeRecord.viewCount %}{{ articleNoticeRecord.viewCount }}{% else %}0{% endif %}</td>
+							<td>{% if articleNoticeRecord.sumOfLikeCount %}{{ articleNoticeRecord.sumOfLikeCount }}{% else %}0{% endif %}</td>
 						</tr>
 						{% endfor %}
 						
@@ -98,16 +98,16 @@
 						{% for articleRecord in articleRecords %}
 						<tr>
 							<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
-							<td>{{ articleRecord.courseId}} {{ articleRecord.courseName }}</td>
+							<td>{% if articleRecord.courseId and articleRecord.courseName %}{{ articleRecord.courseId}} {{ articleRecord.courseName }}{% endif %}</td>
 							<td><a href='{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
 								{% if articleRecord.replyCount > 0 %}
 									[{{ articleRecord.replyCount }}]
 								{% endif %}
 							</td>
-							<td>{{ articleRecord.writerId }}</td>
-							<td>{{ articleRecord.writtenDate }}</td>
-							<td>{{ articleRecord.viewCount }}</td>
-							<td>{{ articleRecord.sumOfLikeCount }}</td>
+							<td>{% if articleRecord.writerId %}{{ articleRecord.writerId }}{% endif %}</td>
+							<td>{% if articleRecord.writtenDate %}{{ articleRecord.writtenDate }}{% endif %}</td>
+							<td>{% if articleRecord.viewCount %}{{ articleRecord.viewCount }}{% else %}0{% endif %}</td>
+							<td>{% if articleRecord.sumOfLikeCount %}{{ articleRecord.sumOfLikeCount }}{% else %}0{% endif %}</td>
 						</tr>
 						{% endfor %}
 						</tbody>
@@ -171,10 +171,10 @@
 								[{{ articleNoticeRecord.replyCount }}]
 							{% endif -%}
 						</td>
-						<td>{{ articleNoticeRecord.writerId }}</td>
-						<td>{{ articleNoticeRecord.writtenDate }}</td>
-						<td>{{ articleNoticeRecord.viewCount }}</td>
-						<td>{{ articleNoticeRecord.sumOfLikeCount }}</td>
+						<td>{% if articleNoticeRecord.writerId %}{{ articleNoticeRecord.writerId }}{% endif %}</td>
+						<td>{% if articleNoticeRecord.writtenDate %}{{ articleNoticeRecord.writtenDate }}{% endif %}</td>
+						<td>{% if articleNoticeRecord.viewCount %}{{ articleNoticeRecord.viewCount }}{% else %}0{% endif %}</td>
+						<td>{% if articleNoticeRecord.sumOfLikeCount %}{{ articleNoticeRecord.sumOfLikeCount }}{% else %}0{% endif %}</td>
 					</tr>
 					{% endfor %}
 					
@@ -182,16 +182,16 @@
 					{% for articleRecord in articleRecords %}
 					<tr>
 						<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
-						<td>{{ articleRecord.courseId}} {{ articleRecord.courseName }}</td>
+						<td>{% if articleRecord.courseId and articleRecord.courseName %}{{ articleRecord.courseId}} {{ articleRecord.courseName }}{% endif %}</td>
 						<td><a href='{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
 							{% if articleRecord.replyCount > 0 %}
 								[{{ articleRecord.replyCount }}]
 							{% endif %}
 						</td>
-						<td>{{ articleRecord.writerId }}</td>
-						<td>{{ articleRecord.writtenDate }}</td>
-						<td>{{ articleRecord.viewCount }}</td>
-						<td>{{ articleRecord.sumOfLikeCount }}</td>
+						<td>{% if articleRecord.writerId %}{{ articleRecord.writerId }}{% endif %}</td>
+						<td>{% if articleRecord.writtenDate %}{{ articleRecord.writtenDate }}{% endif %}</td>
+						<td>{% if articleRecord.viewCount %}{{ articleRecord.viewCount }}{% else %}0{% endif %}</td>
+						<td>{% if articleRecord.sumOfLikeCount %}{{ articleRecord.sumOfLikeCount }}{% else %}0{% endif %}</td>
 					</tr>
 					{% endfor %}
 					</tbody>

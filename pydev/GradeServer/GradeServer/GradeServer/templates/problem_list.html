@@ -21,7 +21,7 @@
 			</td>
 			<td style ='vertical-align: middle'>
 				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecord.problemId, pageNum = pages['pageNum']) }}">
-					{{ problemListRecord.problemName }}
+					{% if problemListRecord.problemName %}{{ problemListRecord.problemName }}{% endif %}
 				</a>
 			</td>
 			<td style ='vertical-align: middle'>

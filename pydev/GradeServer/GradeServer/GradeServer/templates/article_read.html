@@ -107,7 +107,7 @@
 				UnLike 
 				{% endif %}
 			</button>
-			{% if repliesOnBoardRecord.sumOfLikeCount %}{{ repliesOnBoardRecord.sumOfLikeCount }}{% endif %}
+			{% if repliesOnBoardRecord.sumOfLikeCount %}{{ repliesOnBoardRecord.sumOfLikeCount }}{% else %}0{% endif %}
 			
 			<!-- delete button -->
 			<!-- replier and masters are availables to delete the comments -->

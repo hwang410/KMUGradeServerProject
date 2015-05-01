@@ -6,7 +6,7 @@
 {%- block body %}
 
 <div class="container">
-	<h3>{{ problemName }}</h3>
+	<h3>{% if problemName %}{{ problemName }}{% endif %}</h3>
 		<!-- code information -->
 		<div class="container">
 			<div class="row-fluid">
@@ -22,10 +22,10 @@
 							</tr>
 						</thead>
 						<tr>
-							<td>{{ problemSolvedMemberRecords.memberId }}</td>
-							<td>{{ problemSolvedMemberRecords.runTime }} ms</td>
-							<td>{{ problemSolvedMemberRecords.usedMemory }} MB</td>
-							<td>{{ problemSolvedMemberRecords.sumOfSubmittedFileSize }} Byte</td>
+							<td>{% if problemSolvedMemberRecords.memberId %}{{ problemSolvedMemberRecords.memberId }}{% endif %}</td>
+							<td>{% if problemSolvedMemberRecords.runTime %}{{ problemSolvedMemberRecords.runTime }}{% else %}0{% endif %} ms</td>
+							<td>{% if problemSolvedMemberRecords.usedMemroy %}{{ problemSolvedMemberRecords.usedMemory }}{% else %}0{% endif %} MB</td>
+							<td>{% if problemSolvedMemberRecords.sumOfSubmittedFileSize %}{{ problemSolvedMemberRecords.sumOfSubmittedFileSize }}{% endif %} Byte</td>
 							<td style="text-align: center"><button type="button" id="code-down">Download source code</button></td>
 						</tr>
 					</div>
@@ -45,7 +45,7 @@
 					{% else %}
 					<li class>
 					{% endif %}
-					<a href="#{{ loop.index0 }}" data-toggle="tab">{{ fileInfo.fileName }}</a></li>
+					<a href="#{{ loop.index0 }}" data-toggle="tab">{% if fileInfo.fileName %}{{ fileInfo.fileName }}{% endif %}</a></li>
 				{% endfor %}
 			</ul>
 		

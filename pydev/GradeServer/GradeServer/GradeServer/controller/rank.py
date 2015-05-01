@@ -57,7 +57,6 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
         except Exception:
             count = 0
             
-        print count
         # Paging Pointed
         pages = get_page_pointed(pageNum = int(pageNum),
                                  count = count)
@@ -69,13 +68,13 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
                         # 순차 탐색으로 찾아야 함
             for i in range(1, pages['allPage'] + 1):
                 # memberId in Pages 
-                rankSub = get_page_record(dao.query(submissions),
+                ranks = get_page_record(dao.query(submissions),
                                           pageNum = i).subquery()
                 # finding MemberId in Pages
                 try:
-                    if select_match_member_sub(rankSub,
+                    if select_match_member_sub(ranks,
                                                memberId = findMemberId).first().\
-                                                                      memberId:
+                                                                        memberId:
                         # Finding move to page
                         pageNum = i
                     

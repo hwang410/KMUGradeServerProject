@@ -5,7 +5,7 @@
 {%- extends "main.html" -%}
 {%- block li %}
 <li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">{{request.form.memberId}} </abbr><b class="caret"></b></a>
+	<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">{% if request.form.memberId %}{{request.form.memberId}}{% endif %}</abbr><b class="caret"></b></a>
 	<ul class="dropdown-menu">
 		<li><a href="{{ url_for('GradeServer.user_history') }}">Record</a></li>
 		<li><a href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>

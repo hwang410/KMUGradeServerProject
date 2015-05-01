@@ -30,7 +30,17 @@ def select_all_user():
                      Members.memberName).\
                filter(Members.authority == SETResources().const.USER)
     
-    
+'''
+ DB Select MAtch Course
+'''
+def select_match_course(courseId):
+    # courseId FilterLing
+    members = select_all_user().subquery()
+    return dao.query(Registrations.memberId,
+                     members).\
+               join(members,
+                    Registrations.memberId == members.c.memberId)
+                      
 '''
  DB Select Match MemberId
  '''
@@ -38,10 +48,10 @@ def select_match_member(memberId):
     # memberId Filterling
     return dao.query(Members).\
                filter(Members.memberId == memberId)
-def select_match_member_sub(memberSub, memberId):
+def select_match_member_sub(members, memberId):
     # memberId Filterling
-    return dao.query(memberSub).\
-               filter(Members.memberId == memberId)
+    return dao.query(members).\
+               filter(members.c.memberId == memberId)
                
 
 '''

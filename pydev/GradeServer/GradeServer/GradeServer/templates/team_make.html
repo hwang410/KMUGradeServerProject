@@ -60,7 +60,7 @@ $(function() {
 								<tr><td>Member Id</td><td>Delete</td></tr>
 							</thead>
 							{% for i in range (0, gTeamMembersId|length) %}
-							<tr><td>{{ gTeamMembersId[i] }}</td><td>
+							<tr><td>{% if gTeamMembersId[i] %}{{ gTeamMembersId[i] }}{% endif %}</td><td>
 								<button name ="deleteInviteeMember{{ i }}" class="btn btn-small" type="submit">Delete</button></td>
 							</tr>
 							{% endfor %}
