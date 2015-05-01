@@ -4,6 +4,7 @@ from flask import request, redirect, session, url_for, render_template, flash
 from sqlalchemy import and_, func
 
 from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilQuery import select_submission_people_count, select_solved_people_count, select_count
 from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_last_submissions, select_all_submission
@@ -32,6 +33,7 @@ from itertools import count
 
 
 @GradeServer.route('/problemList/<courseId>/page<pageNum>')
+@check_invalid_access
 @login_required
 def problemList(courseId, pageNum):
         
@@ -90,6 +92,7 @@ def problemList(courseId, pageNum):
                                                    count = count))
 
 @GradeServer.route('/problem/<courseId>/<problemId>?page<pageNum>')
+@check_invalid_access
 @login_required
 def problem(courseId, problemId, pageNum):
     """
@@ -148,6 +151,7 @@ def problem(courseId, problemId, pageNum):
 """
         
 @GradeServer.route('/problem', methods=['GET', 'POST'])
+@check_invalid_access
 @login_required
 def submit():
     """ 
@@ -162,6 +166,7 @@ def submit():
     return render_template('/result.html')
 
 @GradeServer.route('/record/<courseId>/<problemId>-<sortCondition>')
+@check_invalid_access
 @login_required
 def problem_record(courseId, problemId, sortCondition = OtherResources().const.RUN_TIME):
     """
@@ -239,6 +244,7 @@ def problem_record(courseId, problemId, sortCondition = OtherResources().const.R
                            chartSubmissionRecords = chartSubmissionRecords)
 
 @GradeServer.route('/problem/<courseId>/<problemId>')
+@check_invalid_access
 @login_required
 def submission_code(courseId, problemId):
     

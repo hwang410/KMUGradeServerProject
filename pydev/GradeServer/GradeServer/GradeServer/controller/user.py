@@ -3,6 +3,7 @@
 from flask import request, render_template, url_for, redirect, session, flash
 
 from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utilQuery import select_count, select_solved_problem_count, select_submission_count,\
@@ -46,6 +47,7 @@ def close_db_session(exception = None):
 로그인한 유저가 제출 했던 모든기록
 """
 @GradeServer.route('/user_history/<memberId>-<sortCondition>/page<pageNum>')
+@check_invalid_access
 @login_required
 def user_history(memberId, sortCondition, pageNum):
     try:       
@@ -114,6 +116,7 @@ def user_history(memberId, sortCondition, pageNum):
 본인인지 확인하기 위한 페이지
 """
 @GradeServer.route('/id_check/<select>', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def id_check(select, error = None):
     if request.method == 'POST':
@@ -176,6 +179,7 @@ def id_check(select, error = None):
 # ContactNumber, E-mail, comment 저장할 전역 변수
 gContactNumber, gEmailAddress, gComment = None, None, None
 @GradeServer.route('/edit_personal', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def edit_personal(error = None):
     try:
