@@ -75,10 +75,27 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 									<td style ='vertical-align: middle'>Problem Title</td>
 									<td style ='vertical-align: middle'>Status</td>
 									<td style ='vertical-align: middle'>Score</td>
-									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='runTime', pageNum = pages['pageNum']) }}">Runtime</a></td>
-									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='codeLength', pageNum = pages['pageNum']) }}">Code Length</a></td>
 									<td style ='vertical-align: middle'>Language</td>
-									<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='submissionDate', pageNum = pages['pageNum']) }}">Submit Date</a></td>
+									<td style ='vertical-align: middle'>
+										<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='runTime', pageNum = pages['pageNum']) }}">
+										Runtime
+										</a>
+									</td>
+									<td style ='vertical-align: middle'>
+										<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='usedMemory', pageNum = pages['pageNum']) }}">
+										Used Memory
+										</a>
+									</td>
+									<td style ='vertical-align: middle'>
+										<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='codeLength', pageNum = pages['pageNum']) }}">
+										Code Length
+										</a>
+									</td>
+									<td style ='vertical-align: middle'>
+										<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='submissionDate', pageNum = pages['pageNum']) }}">
+										Submit Date
+										</a>
+									/td>
 								</tr>
 							</thead>
 							{%- for submissionRecord in submissionRecords %}
@@ -101,21 +118,31 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 									{% endif %}
 								</td>
 								<td style ='vertical-align: middle'>
+									{% if submissionRecord.languageName %}
+									{{ submissionRecord.languageName }}
+									{% endif %}
+								</td>
+								<td style ='vertical-align: middle'>
 									{% if submissionRecord.runTime %}
 									{{ submissionRecord.runTime }}
+									{% else %}
+									0
 									{% endif %}
 									ms
+								</td>
+								<td style ='vertical-align: middle'>
+									{% if submissionRecord.usedMemory %}
+									{{ submissionRecord.usedMemory }}
+									{% else %}
+									0
+									{% endif %}
+									Byte
 								</td>
 								<td style ='vertical-align: middle'>
 									{% if submissionRecord.sumOfSubmittedFileSize %}
 									{{ submissionRecord.sumOfSubmittedFileSize }}
 									{% endif %}
 									Byte
-								</td>
-								<td style ='vertical-align: middle'>
-									{% if submissionRecord.languageName %}
-									{{ submissionRecord.languageName }}
-									{% endif %}
 								</td>
 								<td style ='vertical-align: middle'>
 									{% if submissionRecord.codeSubmissionDate %}

@@ -91,6 +91,11 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 										<a href = '{{ url_for("GradeServer.problem_record", 
 																					courseId = courseId, 
 																					problemId = problemInformationRecords.problemId, 
+																					sortCondition = "usedMemory") }}'>Used Memory</td>
+									<td style ='vertical-align: middle'>
+										<a href = '{{ url_for("GradeServer.problem_record", 
+																					courseId = courseId, 
+																					problemId = problemInformationRecords.problemId, 
 																					sortCondition = "codeLength") }}'>Code Length</td>
 									<td style ='vertical-align: middle'>
 										<a href = '{{ url_for("GradeServer.problem_record", 
@@ -116,7 +121,15 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 									0
 									{% endif %}
 								 	ms
-								 </td>
+							 	</td>
+							 	<td style ='vertical-align: middle'>
+									{% if problemSolvedMemberRecord.usedMemory %}
+									{{ problemSolvedMemberRecord.usedMemory }}
+									{% else %}
+									0
+									{% endif %}
+									 Byte
+								</td>
 								<td style ='vertical-align: middle'>
 									{% if problemSolvedMemberRecord.sumOfSubmittedFileSize %}
 									{{ problemSolvedMemberRecord.sumOfSubmittedFileSize }}
@@ -124,7 +137,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 									0
 									{% endif %}
 									 Byte
-									</td>
+								</td>
 								<td style ='vertical-align: middle'>
 									{% if problemSolvedMemberRecord.codeSubmissionDate %}
 									{{ problemSolvedMemberRecord.codeSubmissionDate }}

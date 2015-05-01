@@ -145,7 +145,7 @@ def problem(courseId, problemId, pageNum):
 
     # Access Rejection
     else:
-        flash('Access Rejection!!')
+        flash('제출 기간이 아닙니다!!!')
         return redirect(url_for(RouteResources().const.PROBLEM_LIST,
                                 courseId = courseId,
                                 pageNum = pageNum))
@@ -301,7 +301,7 @@ def submission_code(memberId, courseId, problemId):
                                problemSolvedMemberRecords = problemSolvedMemberRecords)
     #Access Rejection
     else:
-        flash('Access Rejection!!')
+        flash('코드를 볼 권한이 없습니다!!!')
         return redirect(url_for(RouteResources().const.PROBLEM_RECORD,
                                 courseId = courseId,
                                 problemId = problemId,
