@@ -1,30 +1,27 @@
 # -*- coding: utf-8 -*-
 
-from flask import request, redirect, session, url_for, render_template, flash
-from sqlalchemy import and_, func
+from flask import request, session, render_template
+from sqlalchemy import and_
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilQuery import select_submission_people_count, select_solved_people_count, select_count
-from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_last_submissions, select_all_submission
+from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_last_submissions, select_all_submission, select_current_submission
 from GradeServer.utils.utilProblemQuery import join_problem_name, select_problem
 from GradeServer.utils.utilMessages import unknown_error
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.htmlResources import HTMLResources
-from GradeServer.resource.routeResources import RouteResources
 from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.sessionResources import SessionResources
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
 
-from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.model.problems import Problems
-from GradeServer.model.submissions import Submissions
 from GradeServer.model.submittedFiles import SubmittedFiles
 from GradeServer.model.submittedRecordsOfProblems import SubmittedRecordsOfProblems
 from GradeServer.model.languages import Languages
@@ -41,19 +38,9 @@ def problemList(courseId, pageNum):
     # Get Last Submitted History
     lastSubmission = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
                                              courseId = courseId).subquery()
-    print len(dao.query(lastSubmission).all())
     # Current Submission                                      
-    submissions = dao.query(Submissions.score,
-                            Submissions.status,
-                            lastSubmission).\
-                      join(lastSubmission,
-                           and_(Submissions.memberId == lastSubmission.c.memberId,
-                                Submissions.problemId == lastSubmission.c.problemId,
-                                Submissions.courseId == lastSubmission.c.courseId,
-                                Submissions.submissionCount == lastSubmission.c.submissionCount)).\
-                      subquery()
+    submissions = select_current_submission(lastSubmission).subquery()
     
-    print len(dao.query(submissions).all())
     # Get Problem Informations
     problems = join_problem_name(select_problem(courseId = courseId).subquery()).subquery()
     

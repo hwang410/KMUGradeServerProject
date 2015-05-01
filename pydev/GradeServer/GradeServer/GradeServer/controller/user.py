@@ -10,19 +10,16 @@ from GradeServer.utils.utilQuery import select_count, select_match_member
 from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_all_submission, select_member_chart_submission
 from GradeServer.utils.utilUserQuery import join_member_information, update_member_information
 
-from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.htmlResources import HTMLResources
 from GradeServer.resource.routeResources import RouteResources
-from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.sessionResources import SessionResources
 
-from GradeServer.model.problems import Problems
-from GradeServer.model.submissions import Submissions
-from GradeServer.model.languages import Languages
+from GradeServer.database import dao
 
 from GradeServer.controller.serverMaster import *
 from GradeServer.controller.classMaster import *
+
 
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
@@ -103,8 +100,7 @@ def id_check(select, error = None):
             try:
                 memberId = session[SessionResources().const.MEMBER_ID]
                 password = request.form['password']
-                check = dao.query(Members.password).\
-                            filter(Members.memberId == memberId).first()
+                check = select_match_member(memberId = memberId).first()
                 
                 # 암호가 일치 할 때
                 if check.password == password:#check_password_hash(password, check.password):

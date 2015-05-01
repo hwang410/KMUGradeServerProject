@@ -13,7 +13,6 @@ import socket
 
 from flask import render_template, request, session, redirect, url_for, flash
 from datetime import datetime
-from sqlalchemy import or_
 
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
@@ -154,7 +153,7 @@ def read(activeTabCourseId, articleIndex, error = None):
     except Exception:
         articlesOnBoard = []
         
-         # 내가 게시글에 누른 좋아요 정보
+        # 내가 게시글에 누른 좋아요 정보
     try:
         isPostLike = select_article_is_like(articleIndex,
                                             session[SessionResources().const.MEMBER_ID]).first().\
