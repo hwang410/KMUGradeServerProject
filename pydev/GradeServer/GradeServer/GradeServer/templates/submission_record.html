@@ -41,6 +41,11 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 <div class="container">
 	<div style="text-align:center">
 		<h3>{% if memberId %}{{ memberId }}{% else %}{{ session['memberId'] }}{% endif %}Submit History</h3>
+		<div style="text-align:center">
+			<span class="label label-solved">Solved</span>
+			<span class="label label-warning">Never Submitted</span>
+			<span class="label label-important">Wrong Answer</span>
+		</div>
 	</div>
 	<div class="container">
 		<div class="row-fluid">
@@ -99,7 +104,11 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 								</tr>
 							</thead>
 							{%- for submissionRecord in submissionRecords %}
-							<tr>
+							<tr class = '{% if submissionRecord.status == "SOLVED" %}label-solved
+							   	 				 {% elif not submissionRecord.status %}label-warning
+							   
+							   	 				 {% else %}label-important
+							   	 				 {% endif %} '>
 								<td style ='vertical-align: middle'>
 									{% if submissionRecord.problemName %}
 									{{ submissionRecord.problemName }}
