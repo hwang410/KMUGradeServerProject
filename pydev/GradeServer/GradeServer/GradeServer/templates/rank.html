@@ -6,7 +6,6 @@
 {%- block body %}
 <script>
 $(function() {
-
 	var members = [
 		{% for member in memberRecords %}
 			{ value: "{{ member.memberId }}" },
@@ -22,11 +21,11 @@ $(function() {
 </script>
 
 <div class="container">
-	<h2>Rank</h2>
+	<h2>Ranking</h2>
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
+		<!-- tab active setting -->
 		{% for myCourse in myCourses %}
-		{# TabActive Setting #}
 			{% if loop.index0 == 0 %}
 				{% if myCourse == activeTabCourseId %}
 			<li class="active">
@@ -37,7 +36,8 @@ $(function() {
 				{% endif %}
 					{{ myCourse }} 
 				</a>
-			</li>
+			
+
 			{% elif myCourse.courseId == activeTabCourseId %}
 			<li class="active">
 				<a href = "#{{ myCourse.courseId }}" data-toggle="tab">
@@ -47,7 +47,7 @@ $(function() {
 			{% endif %}
 					{{ myCourse.courseId }} {{ myCourse.courseName }} 
 				</a>
-			</li>
+			
 		{% endfor %}
 		</ul>
 		
@@ -55,115 +55,129 @@ $(function() {
 		<div class="tab-content">
 		<!-- ActiveTab posts -->
 		{%- for myCourse in myCourses %}
-			{% if loop.index0 == 0 %}
-			{% if myCourse == activeTabCourseId %}
-			<div id="{{ myCourse }}" class = 'active'>
-				<table class="table">
-					<thead>
-						<tr>
-							<td style ='vertical-align: middle'>Ranking</td>
-							<td style ='vertical-align: middle'>User Id</td>
-							<td style ='vertical-align: middle'>Comment</td>
-							<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.rank', activeTabCourseId = myCourse, sortCondition ='solvedProblem', pageNum = pages['pageNum']) }}">Solved Problem</a></td>
-							<td style ='vertical-align: middle'>Count</td>
-							<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.rank', activeTabCourseId = myCourse, sortCondition ='rate', pageNum = pages['pageNum']) }}">Rate</a></td>
-						</tr>
-					</thead>
-					
-					<tbody>
-						{%- for rankMemberRecord in rankMemberRecords %}
-						<tr>
-							<td style ='vertical-align: middle'>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
-							<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">{{ rankMemberRecord.memberId }}</a></td>
-							<td style ='vertical-align: middle'>{% if rankMemberRecord.comment %}{{ rankMemberRecord.comment }}{% endif %}</td>
-							<td style ='vertical-align: middle'>{{ rankMemberRecord.sumOfSolvedProblemCount }}</td>
-							<td style ='vertical-align: middle'>{{ rankMemberRecord.solutionCheckCount }}</td>
-							<td style ='vertical-align: middle'>{{ rankMemberRecord.solvedRate }}%</td>
-						</tr>
-						{% endfor -%}
-					</tbody>
-				</table>
-				<!-- page number section -->
-				<div class="pagination pagination-centered">
-					<ul>
-						{%- if pages['pageNum'] > pages['BLOCK'] %}
-						<li><a href="{{ url_for ('GradeServer.rank', activeTabCourseId = myCourse, sortCondition = sortCondition, pageNum =pages['pageNum'] - 1) }}"><</a></li>
-						{% endif -%}
-						
-						{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
-						<li>
-							{% if pages['pageNum'] == i %}
-							<a style ='background-color:gray'>
-							{% else %}
-							<a href="{{ url_for ('GradeServer.rank', activeTabCourseId = myCourse, sortCondition = sortCondition, pageNum = i) }}">
-							{% endif %}
-							{{ i }}
-							</a>
-						</li>
-						{% endfor -%}
-						
-						{%- if pages['endPage'] < pages ['allPage'] %}
-						<li><a href="{{ url_for ('GradeServer.rank', activeTabCourseId = myCourse, sortCondition = sortCondition, pageNum =pages['pageNum'] + 1) }}">></a></li>
-						{% endif -%}
-					</ul>
+			{%- if loop.index0 == 0 %}
+				{%- if myCourse == activeTabCourseId %}
+				<div id="{{ myCourse }}" class = 'active'>
+					<table class="table">
+						<thead>
+							<tr>
+								<td>Rank
+								<td>User ID
+								<td>Comment
+								<td>
+									<a href="{{ url_for('GradeServer.rank', activeTabCourseId = myCourse, sortCondition ='solvedProblem', pageNum = pages['pageNum']) }}">
+										Solved Problems
+									</a>
+								<td>Tries
+								<td>
+									<a href="{{ url_for('GradeServer.rank', activeTabCourseId = myCourse, sortCondition ='rate', pageNum = pages['pageNum']) }}">
+										Rate
+									</a>
+						<tbody>
+							{%- for rankMemberRecord in rankMemberRecords %}
+							<tr>
+								<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}
+								<td>
+									<a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
+										{{ rankMemberRecord.memberId }}
+									</a>
+								<td>
+									{%- if rankMemberRecord.comment %}
+										{{ rankMemberRecord.comment }}
+									{% endif -%}
+								<td>{{ rankMemberRecord.sumOfSolvedProblemCount }}
+								<td>{{ rankMemberRecord.solutionCheckCount }}
+								<td>{{ rankMemberRecord.solvedRate }}%
+							</tr>
+							{% endfor -%}
+					</table>
+					<!-- page number section -->
+					<div class="pagination pagination-centered">
+						<ul>
+							{%- if pages['pageNum'] > pages['BLOCK'] %}
+							<li>
+								<a href="{{ url_for ('GradeServer.rank', activeTabCourseId = myCourse, sortCondition = sortCondition, pageNum =pages['pageNum'] - 1) }}"><</a>
+							{% endif -%}
+							
+							{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
+							<li>
+								{%- if pages['pageNum'] == i %}
+								<a style ='background-color:gray'>
+								{%- else %}
+								<a href="{{ url_for ('GradeServer.rank', activeTabCourseId = myCourse, sortCondition = sortCondition, pageNum = i) }}">
+								{% endif -%}
+									{{ i }}
+								</a>
+							{% endfor -%}
+							
+							{%- if pages['endPage'] < pages ['allPage'] %}
+							<li>
+								<a href="{{ url_for ('GradeServer.rank', activeTabCourseId = myCourse, sortCondition = sortCondition, pageNum =pages['pageNum'] + 1) }}">></a>
+							{% endif -%}
+					</div>
+					<!-- End Paging -->
 				</div>
-				<!-- End Paging -->
-			</div>
-			{% endif %}
-			{% elif myCourse.courseId == activeTabCourseId %}
+				{% endif -%}
+			{%- elif myCourse.courseId == activeTabCourseId %}
 			<div id="{{ myCourses.courseId }}" class="active">
 				<table class="table">
 					<thead>
 						<tr>
-							<td style ='vertical-align: middle'>Ranking</td>
-							<td style ='vertical-align: middle'>User Id</td>
-							<td style ='vertical-align: middle'>Comment</td>
-							<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition ='solvedProblem', pageNum = pages['pageNum']) }}">Solved Problem</a></td>
-							<td style ='vertical-align: middle'>Count</td>
-							<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition ='rate', pageNum = pages['pageNum']) }}">Rate</a></td>
-						</tr>
-					</thead>
-					
+							<td>Rank
+							<td>User ID
+							<td>Comment
+							<td>
+								<a href="{{ url_for('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition ='solvedProblem', pageNum = pages['pageNum']) }}">
+									Solved Problems
+								</a>
+							<td>Tries
+							<td>
+								<a href="{{ url_for('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition ='rate', pageNum = pages['pageNum']) }}">
+									Rate
+								</a>
 					<tbody>
 						{%- for rankMemberRecord in rankMemberRecords %}
 						<tr>
-							<td style ='vertical-align: middle'>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
-							<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">{{ rankMemberRecord.memberId }}</a></td>
-							<td style ='vertical-align: middle'>{{ rankMemberRecord.comment }}</td>
-							<td style ='vertical-align: middle'>{{ rankMemberRecord.sumOfSolvedProblemCount }}</td>
-							<td style ='vertical-align: middle'>{{ rankMemberRecord.solutionCheckCount }}</td>
-							<td style ='vertical-align: middle'>{{ rankMemberRecord.solvedRate }}%</td>
+							<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}
+							<td>
+								<a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
+									{{ rankMemberRecord.memberId }}
+								</a>
+							<td>{{ rankMemberRecord.comment }}
+							<td>{{ rankMemberRecord.sumOfSolvedProblemCount }}
+							<td>{{ rankMemberRecord.solutionCheckCount }}
+							<td>{{ rankMemberRecord.solvedRate }}%
 						</tr>
 						{% endfor -%}
-					</tbody>
 				</table>
 				<!-- page number section -->
 				<div class="pagination pagination-centered">
 					<ul>
 						{%- if pages['pageNum'] > pages['BLOCK'] %}
-						<li><a href="{{ url_for ('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition = sortCondition, pageNum =pages['pageNum'] - 1) }}"><</a></li>
+						<li>
+							<a href="{{ url_for ('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition = sortCondition, pageNum =pages['pageNum'] - 1) }}"><</a>
 						{% endif -%}
 						
 						{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
 						<li>
-							{% if pages['pageNum'] == i %}
+							{%- if pages['pageNum'] == i %}
 							<a style ='background-color:gray'>
-							{% else %}
+							{%- else %}
 							<a href="{{ url_for ('GradeServer.rank', sactiveTabCourseId = activeTabCourseId, ortCondition = sortCondition, pageNum = i) }}">
-							{% endif %}
+							{% endif -%}
 							{{ i }}
 							</a>
-						</li>
 						{% endfor -%}
 						
 						{%- if pages['endPage'] < pages ['allPage'] %}
-						<li><a href="{{ url_for ('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition = sortCondition, pageNum =pages['pageNum'] + 1) }}">></a></li>
+						<li>
+							<a href="{{ url_for ('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition = sortCondition, pageNum =pages['pageNum'] + 1) }}">></a>
 						{% endif -%}
 					</ul>
 				</div>
 				<!-- End Paging -->
 			</div>
-			{% endif %}
+			{% endif -%}
 		{% endfor -%}
 		</div>
 		<!-- end posts -->
@@ -174,7 +188,7 @@ $(function() {
 		<!-- SearchBar // all -->
 		<div id="all" class="tab-pane active" style="text-align: center">
 			<div class="input-append" style="margin-bottom: 0px">
-				<input class ="span3" id ="search-members" name ="memberId" type="text" placeholder="Member Id">
+				<input class ="span3" id ="search-members" name ="memberId" type="text" placeholder="Member ID">
 				<button name="findMemberId" class="btn" type="submit">Find</button>
 			</div>
 		</div>
