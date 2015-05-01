@@ -35,4 +35,5 @@ class OtherResources(object):
     const.LINUX_NEW_LINE = '\r\n'
     const.WINDOWS_NEW_LINE = '\n'
     const.SUBMISSION_COUNT = 'submissionCount'
+    const.SOLUTION_CHECK_COUNT = 'solutionCheckCount'
     const.SUBMISSION_SUCCESS = 'Submission Success!'
