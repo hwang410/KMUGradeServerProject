@@ -83,18 +83,19 @@ def get_used_language_index(usedLanguageName):
 
 def get_problem_info(problemId, problemName):
     try:
-        problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile = dao.query(Problems.problemPath,
-                                                                                                        Problems.limitedTime,
-                                                                                                        Problems.limitedMemory,
-                                                                                                        Problems.solutionCheckType,
-                                                                                                        RegisteredProblems.isAllInputCaseInOneFile).\
-                                                                                                  join(RegisteredProblems, Problems.problemId == RegisteredProblems.problemId).\
-                                                                                                  filter(Problems.problemId == problemId).\
-                                                                                                  first()
+        problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, numberOfTestCase = dao.query(Problems.problemPath,
+                                                                                                                          Problems.limitedTime,
+                                                                                                                          Problems.limitedMemory,
+                                                                                                                          Problems.solutionCheckType,
+                                                                                                                          RegisteredProblems.isAllInputCaseInOneFile,
+                                                                                                                          RegisteredProblems.numberOfTestCase).\
+                                                                                                                    join(RegisteredProblems, Problems.problemId == RegisteredProblems.problemId).\
+                                                                                                                    filter(Problems.problemId == problemId).\
+                                                                                                                    first()
         problemCasesPath = '%s/%s_%s_%s' %(problemPath, problemId, problemName, solutionCheckType)
     except Exception as e:
         return unknown_error(get_message('dbError'))
-    return problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, problemCasesPath
+    return problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, numberOfTestCase, problemCasesPath
 
 def get_used_language_version(courseId, usedLanguage):
     try:
