@@ -50,11 +50,11 @@ def get_submission_count(memberId, courseId, problemId):
 
 def get_solution_check_count(memberId, courseId, problemId, subCountNum):
     try:
-        solCount = dao.query(Submissions.solutionCheckCount).\
+        solCount = dao.query(func.max(Submissions.solutionCheckCount).\
+                       label(OtherResources.const.SOLUTION_CHECK_COUNT)).\
                        filter(Submissions.memberId == memberId,
                               Submissions.courseId == courseId,
-                              Submissions.problemId == problemId,
-                              Submissions.submissionCount == subCountNum).\
+                              Submissions.problemId == problemId).\
                        first()
         solCountNum = solCount.solutionCheckCount
     except:
