@@ -6,8 +6,7 @@ import shutil
 import glob
 import re
 
-from flask import Flask, render_template, request, redirect, url_for, \
-send_file, make_response, current_app, session, flash
+from flask import Flask, request, redirect, url_for, session, flash
 from werkzeug import secure_filename
 
 from GradeServer.database import dao
@@ -16,10 +15,10 @@ from GradeServer.GradeServer_blueprint import GradeServer
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.GradeServer_config import GradeServerConfig
 from GradeServer.utils.utilCodeSubmissionQuery import get_member_name, get_course_name, get_submission_count, \
-                                                      get_solution_check_count, insert_submitted_files, get_used_language_index, \
-                                                      get_problem_info, get_used_language_version, delete_submitted_files_data, \
-                                                      insert_to_submissions
+                                                      insert_submitted_files, get_used_language_index, insert_to_submissions, \
+                                                      get_problem_info, get_used_language_version, delete_submitted_files_data
 from GradeServer.utils.utilMessages import unknown_error, get_message
+from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.sessionResources import SessionResources
 from GradeServer.resource.otherResources import OtherResources
@@ -81,24 +80,22 @@ def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, used
         usedLanguageVersion = get_used_language_version(courseId, usedLanguageIndex)
         subCountNum = get_submission_count(memberId, courseId, problemId)
         insert_to_submissions(courseId, memberId, problemId, usedLanguageIndex, subCountNum, sumOfSubmittedFileSize)
-        problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, problemCasesPath = get_problem_info(problemId, problemName)
-        caseCount = get_case_count(problemCasesPath, isAllInputCaseInOneFile)
+        problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, numberOfTestCase, problemCasesPath = get_problem_info(problemId, problemName)
         problemFullName = make_problem_full_name(problemId, problemName)
-
-
+        
         Grade.delay(str(filePath),
-                str(problemPath),
-                str(memberId),
-                str(problemId),
-                str(solutionCheckType),
-                caseCount,
-                limitedTime,
-                limitedMemory,
-                str(usedLanguageName),
-                str(usedLanguageVersion),
-                str(courseId),
-                subCountNum,
-                str(problemFullName))
+                    str(problemPath),
+                    str(memberId),
+                    str(problemId),
+                    str(solutionCheckType),
+                    numberOfTestCase,
+                    limitedTime,
+                    limitedMemory,
+                    str(usedLanguageName),
+                    str(usedLanguageVersion),
+                    str(courseId),
+                    subCountNum,
+                    str(problemFullName))
 
                        
         flash(OtherResources.const.SUBMISSION_SUCCESS)
@@ -145,6 +142,7 @@ def write_code_in_file(tempPath):
         return unknown_error(get_message('fileSaveError'))
     return usedLanguageName, fileName
 @GradeServer.route('/problem_<courseId>_<problemId>_<problemName>', methods = ['POST'])
+@check_invalid_access
 @login_required
 def to_process_uploaded_files(courseId, problemId, problemName):
     memberId = session[SessionResources.const.MEMBER_ID]
@@ -166,6 +164,7 @@ def to_process_uploaded_files(courseId, problemId, problemName):
     return "0"
 
 @GradeServer.route('/problem_<courseId>_page<pageNum>_<problemId>_<problemName>', methods = ['POST'])
+@check_invalid_access
 @login_required
 def to_process_written_code(courseId, pageNum, problemId, problemName):
     memberId = session[SessionResources.const.MEMBER_ID]
