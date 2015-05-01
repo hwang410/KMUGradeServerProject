@@ -78,7 +78,7 @@ $(function() {
 							<tr>
 								<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}
 								<td>
-									<a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
+									<a href="{{ url_for('GradeServer.submission_record', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
 										{% if rankMemberRecord.memberId %}{{ rankMemberRecord.memberId }}{% endif %}
 									</a>
 								<td>
@@ -140,7 +140,7 @@ $(function() {
 						<tr>
 							<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}
 							<td>
-								<a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
+								<a href="{{ url_for('GradeServer.submission_record', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
 									{% if rankMemberRecord.memberId %}{{ rankMemberRecord.memberId }}{% endif %}
 								</a>
 							<td>{% if rankMemberRecord.comment %}{{ rankMemberRecord.comment }}{% endif %}

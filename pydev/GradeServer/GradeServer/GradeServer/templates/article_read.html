@@ -83,7 +83,7 @@
 	{% for repliesOnBoardRecord in repliesOnBoardRecords %}
 	<div class = 'row-fluid'>
 		<form method = "post" id="myform">
-			<a href = '{{ url_for ("GradeServer.user_history", memberId = repliesOnBoardRecord.boardReplierId, sortCondition = "submissionDate", pageNum = 1) }}'>
+			<a href = '{{ url_for ("GradeServer.submission_record", memberId = repliesOnBoardRecord.boardReplierId, sortCondition = "submissionDate", pageNum = 1) }}'>
 				{% if repliesOnBoardRecord.boardReplierId %}{{ repliesOnBoardRecord.boardReplierId }}{% endif %}
 			</a>
 			<!-- Content, WrittenDate -->

@@ -18,7 +18,7 @@ from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
-from GradeServer.utils.utilArticleQuery import join_course_name, select_articles, select_article, select_sorted_articles, select_article_is_like,\
+from GradeServer.utils.utilArticleQuery import join_courses_names, select_articles, select_article, select_sorted_articles, select_article_is_like,\
                                                select_replies_on_board, select_replies_on_board_is_like, select_replies_on_board_like, update_view_reply_counting,\
                                                update_article_like_counting, update_article_is_like, update_replies_on_board_like_counting,\
                                                update_replies_on_board_is_like, update_replies_on_board_delete, update_replies_on_board_modify, update_article_delete
@@ -65,10 +65,10 @@ def board(activeTabCourseId, pageNum):
         myCourses = select_current_courses(select_accept_courses().subquery()).subquery()
         # TabActive Course or All Articles
         # get course or All Articles 
-        articlesOnBoard = join_course_name(# get TabActive Articles
-                                           select_articles(activeTabCourseId,
-                                                           isDeleted = ENUMResources().const.FALSE).subquery(),
-                                           myCourses).subquery()
+        articlesOnBoard = join_courses_names(# get TabActive Articles
+                                             select_articles(activeTabCourseId,
+                                                             isDeleted = ENUMResources().const.FALSE).subquery(),
+                                             myCourses).subquery()
                 # 과목 공지글    
         try:  
             articleNoticeRecords = get_page_record((select_sorted_articles(articlesOnBoard,
@@ -141,15 +141,10 @@ def read(activeTabCourseId, articleIndex, error = None):
             # 게시글 정보
     try:
         articlesOnBoard = select_article(articleIndex,
-                                             isDeleted = ENUMResources().const.FALSE)
-        # Abnormal Accept Cut-Off
-        if not articlesOnBoard.first():
-            return redirect(url_for(RouteResources().const.BOARD,
-                                                activeTabCourseId = activeTabCourseId,
-                                                pageNum = 1))
+                                         isDeleted = ENUMResources().const.FALSE)
             
-        articlesOnBoard = join_course_name(articlesOnBoard.subquery(), 
-                                           select_current_courses(select_accept_courses().subquery()).subquery()).first()
+        articlesOnBoard = join_courses_names(articlesOnBoard.subquery(), 
+                                             select_current_courses(select_accept_courses().subquery()).subquery()).first()
     except Exception:
         articlesOnBoard = []
         
@@ -157,7 +152,7 @@ def read(activeTabCourseId, articleIndex, error = None):
     try:
         isPostLike = select_article_is_like(articleIndex,
                                             session[SessionResources().const.MEMBER_ID]).first().\
-                                                                                       isLikeCancelled
+                                                                                         isLikeCancelled
     except Exception:
         # Non-Exist Case
         isPostLike = None
@@ -366,7 +361,6 @@ def read(activeTabCourseId, articleIndex, error = None):
                         error = get_message('updateFailed')
                         
                     return redirect(url_for(RouteResources().const.BOARD,
-                                            SETResources = SETResources,
                                             activeTabCourseId = OtherResources().const.ALL,
                                             pageNum = 1))
         # end Loop
@@ -407,9 +401,9 @@ def write(activeTabCourseId, articleIndex, error =None):
         # Modify Case
         if int(articleIndex) > 0: 
             try:
-                articlesOnBoard = join_course_name(select_article(articleIndex,
-                                                                  isDeleted = ENUMResources().const.FALSE).subquery(),
-                                                   myCourses).first()
+                articlesOnBoard = join_courses_names(select_article(articleIndex,
+                                                                    isDeleted = ENUMResources().const.FALSE).subquery(),
+                                                     myCourses).first()
             except Exception:
                 articlesOnBoard = []
                         
@@ -475,10 +469,10 @@ def write(activeTabCourseId, articleIndex, error =None):
                                                 # 수정 할 글 정보
                         articlesOnBoard = select_article(articleIndex,
                                                          isDeleted = ENUMResources().const.FALSE).update(dict(courseId = courseId,
-                                                                                                            title = title,
-                                                                                                            content = content,
-                                                                                                            writtenDate = currentDate,
-                                                                                                            writerIp = currentIP))
+                                                                                                              title = title,
+                                                                                                              content = content,
+                                                                                                              writtenDate = currentDate,
+                                                                                                              writerIp = currentIP))
                         
                         # Commit Exception
                         try:

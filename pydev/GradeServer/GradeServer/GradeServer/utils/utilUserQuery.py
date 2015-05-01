@@ -10,7 +10,7 @@ from GradeServer.model.colleges import Colleges
 '''
 Update Member Information
 '''
-def update_member_information(members, password, contactNumber, emailAddress, comment):
+def update_member_informations(members, password, contactNumber, emailAddress, comment):
     members.update(dict(password = password,
                         contactNumber = contactNumber,
                         emailAddress = emailAddress,
@@ -20,7 +20,7 @@ def update_member_information(members, password, contactNumber, emailAddress, co
 '''
 Join Members, College, Departments
 '''
-def join_member_information(members):
+def join_member_informations(members):
     return dao.query(members,
                      Colleges.collegeName,
                      Departments.departmentName).\

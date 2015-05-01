@@ -49,7 +49,7 @@
 	<div class="pagination pagination-centered">
 		<ul>
 			{%- if pages['pageNum'] > pages['BLOCK'] %}
-			<li><a href="{{ url_for ('GradeServer.problemList', courseId = courseRecords.courseId, pageNum = pages['pageNum'] - 1) }}"><</a></li>
+			<li><a href="{{ url_for ('GradeServer.problem_list', courseId = courseRecords.courseId, pageNum = pages['pageNum'] - 1) }}"><</a></li>
 			{% endif -%}
 			
 			{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
@@ -57,7 +57,7 @@
 				{% if pages['pageNum'] == i %}
 				<a style ='background-color:gray'>
 				{% else %}
-				<a href="{{ url_for ('GradeServer.problemList', courseId = courseRecords.courseId, pageNum = i) }}">
+				<a href="{{ url_for ('GradeServer.problem_list', courseId = courseRecords.courseId, pageNum = i) }}">
 				{% endif %}
 				{{ i }}
 				</a>
@@ -65,7 +65,7 @@
 			{% endfor -%}
 			
 			{%- if pages['endPage'] < pages['allPage'] %}
-			<li><a href="{{ url_for ('GradeServer.problemList', courseId = courseRecords.courseId, pageNum =pages['pageNum'] + 1) }}">></a></li>
+			<li><a href="{{ url_for ('GradeServer.problem_list', courseId = courseRecords.courseId, pageNum =pages['pageNum'] + 1) }}">></a></li>
 			{% endif -%}
 		</ul>
 	</div>

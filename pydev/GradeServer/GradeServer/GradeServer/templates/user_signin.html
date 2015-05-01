@@ -7,7 +7,7 @@
 <li class="dropdown">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">{% if request.form.memberId %}{{request.form.memberId}}{% endif %}</abbr><b class="caret"></b></a>
 	<ul class="dropdown-menu">
-		<li><a href="{{ url_for('GradeServer.user_history') }}">Record</a></li>
+		<li><a href="{{ url_for('GradeServer.submission_record') }}">Record</a></li>
 		<li><a href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>
 		<li><a href="{{ url_for('GradeServer.board') }}">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
 		<li><a href="#">Manual</a></li>

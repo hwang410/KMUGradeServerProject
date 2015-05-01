@@ -18,7 +18,7 @@ from GradeServer.database import dao
 '''
 Join Course Name
 '''
-def join_course_name(articlesOnBoard, myCourses):
+def join_courses_names(articlesOnBoard, myCourses):
     return dao.query(articlesOnBoard,
                      myCourses.c.courseName).\
                outerjoin(myCourses,

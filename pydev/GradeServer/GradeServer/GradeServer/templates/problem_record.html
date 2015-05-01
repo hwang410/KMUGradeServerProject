@@ -97,6 +97,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 																					courseId = courseId, 
 																					problemId = problemInformationRecords.problemId, 
 																					sortCondition = "submissionDate") }}'>Sumission Date</td>
+									<td style ='vertical-align: middle'>Code View</td>
 									<td style ='vertical-align: middle'>View Count</td>
 								</tr>
 							</thead>
@@ -104,8 +105,8 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 							<tr>
 								<td style ='vertical-align: middle'>{{ loop.index }}</td>
 								<td style ='vertical-align: middle'>
-									<a href='{{ url_for("GradeServer.submission_code", courseId = courseId, problemId = problemInformationRecords.problemId, memberId = problemSolvedMemberRecord.memberId) }}'>
-									{{ problemSolvedMemberRecord.memberId }}
+									<a href="{{ url_for('GradeServer.submission_record', memberId = problemSolvedMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
+										{% if problemSolvedMemberRecord.memberId %}{{ problemSolvedMemberRecord.memberId }}{% endif %}
 									</a>
 								</td>
 								<td style ='vertical-align: middle'>
@@ -135,6 +136,11 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 									{% else %}
 									0
 									{% endif %}
+								</td>
+								<td style ='vertical-align'>
+									<a href='{{ url_for("GradeServer.submission_code", courseId = courseId, problemId = problemInformationRecords.problemId, memberId = problemSolvedMemberRecord.memberId) }}'>
+										<i style="text-align:center" class="ui-icon ui-icon-document"></i>
+									</a>
 								</td>
 							</tr>
 							{% endfor %}
