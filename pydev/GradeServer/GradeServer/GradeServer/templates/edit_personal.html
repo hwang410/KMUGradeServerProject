@@ -13,7 +13,7 @@
 					User Id
 				</div>
 				<div class="span8">
-					{{ memberInformation.memberId }}
+					{% if memberInformation.memberId %}{{ memberInformation.memberId }}{% endif %}
 				</div>
 			</div>
 		</h4>
@@ -46,7 +46,7 @@
 						Department
 					</div>
 					<div class="span8">
-						{{ memberInformation.departmentName }}
+						{% if memberInformation.departmentName %}{{ memberInformation.departmentName }}{% endif %}
 					</div>
 				</div>
 			</h4>
@@ -56,7 +56,7 @@
 						Name
 					</div>
 					<div class="span8">
-						{{ memberInformation.memberName }}
+						{% if memberInformation.memberName %}{{ memberInformation.memberName }}{% endif %}
 					</div>
 				</div>
 			</h4>

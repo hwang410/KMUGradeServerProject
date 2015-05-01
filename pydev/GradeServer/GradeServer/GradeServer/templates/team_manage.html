@@ -47,7 +47,15 @@ $(function() {
 									<td><input name ="teamDescription" type="text" style="width:96%;" 
 									value= "{% if gTeamDescription %}{{ gTeamDescription }}{% else %}{{ teamInformation.teamDescription }}{% endif %}"></td>
 								</tr>
-								<tr><td>Team Master</td><td><span class="uneditable-input" style="width:96%">{{ gTeamMembersId[0].teamMemberId }}</span></td></tr>
+								<tr><td>Team Master</td><
+									<td>
+										<span class="uneditable-input" style="width:96%">
+										{% if gTeamMembersId[0].teamMemberId %}
+										{{ gTeamMembersId[0].teamMemberId }}
+										{% endif %}
+										</span>
+									</td>
+								</tr>
 								<tr>
 									<td>Team Member</td><td><input id ="search-members" name ="inviteeId" type="text" style="width:84%" placeholder="Invitee Id">
 									<button name ="inviteeMember" class="btn btn-small" type="submit">Invitee</button></td>
@@ -61,11 +69,11 @@ $(function() {
 							<thead>
 								<tr><td>Member Id</td><td>Delete</td></tr>
 							</thead>
-							<tr><td>{{ gTeamMembersId[0].teamMemberId }}</td><td>Team Master</td></tr>
+							<tr><td>{% if gTeamMembersId[0].teamMemberId %}{{ gTeamMembersId[0].teamMemberId }}{% endif %}</td><td>Team Master</td></tr>
 							<!--  Original Members -->
 							{% for i in range (1, gTeamMembersId|length) %}
 							<tr>
-								<td>{{ gTeamMembersId[i].teamMemberId }}</td>
+								<td>{% if gTeamMembersId[i].teamMemberId %}{{ gTeamMembersId[i].teamMemberId }}{% endif %}</td>
 								<td>
 									<button href="#deleteTeamMember" class="delete btn" data-toggle="modal">Delete</button>
 									<div id="deleteTeamMember" class="modal hide fade">

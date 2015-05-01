@@ -8,7 +8,7 @@
 $(function() {
 	var members = [
 		{% for member in memberRecords %}
-			{ value: "{{ member.memberId }}" },
+			{ value: "{% if member.memberId %}{{ member.memberId }}{% endif %}" },
 		{% endfor %}
 		{ value: ""}
 	];
@@ -34,7 +34,7 @@ $(function() {
 			<li>
 				<a href = '{{ url_for ("GradeServer.rank", activeTabCourseId = myCourse, sortCondition = sortCondition, pageNum = 1) }}'>
 				{% endif %}
-					{{ myCourse }} 
+					{% if myCourse %}{{ myCourse }}{% endif %}
 				</a>
 			
 
@@ -45,7 +45,7 @@ $(function() {
 			<li>
 				<a href = '{{ url_for ("GradeServer.rank", activeTabCourseId = myCourse.courseId, sortCondition = sortCondition, pageNum = 1) }}'>
 			{% endif %}
-					{{ myCourse.courseId }} {{ myCourse.courseName }} 
+					{% if myCourse.courseId and myCourse.courseName %}{{ myCourse.courseId }} {{ myCourse.courseName }}{% endif %}
 				</a>
 			
 		{% endfor %}
@@ -79,15 +79,15 @@ $(function() {
 								<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}
 								<td>
 									<a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
-										{{ rankMemberRecord.memberId }}
+										{% if rankMemberRecord.memberId %}{{ rankMemberRecord.memberId }}{% endif %}
 									</a>
 								<td>
 									{%- if rankMemberRecord.comment %}
-										{{ rankMemberRecord.comment }}
+										{% if rankMemberRecord.comment %}{{ rankMemberRecord.comment }}{% endif %}
 									{% endif -%}
-								<td>{{ rankMemberRecord.sumOfSolvedProblemCount }}
-								<td>{{ rankMemberRecord.solutionCheckCount }}
-								<td>{{ rankMemberRecord.solvedRate }}%
+								<td>{% if rankMemberRecord.sumOfSolvedProblemCount %}{{ rankMemberRecord.sumOfSolvedProblemCount }}{% endif %}
+								<td>{% if rankMemberRecord.solutionCheckCount %}{{ rankMemberRecord.solutionCheckCount }}{% endif %}
+								<td>{% if rankMemberRecord.solvedRate %}{{ rankMemberRecord.solvedRate }}%{% endif %}
 							</tr>
 							{% endfor -%}
 					</table>
@@ -141,12 +141,12 @@ $(function() {
 							<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}
 							<td>
 								<a href="{{ url_for('GradeServer.user_history', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
-									{{ rankMemberRecord.memberId }}
+									{% if rankMemberRecord.memberId %}{{ rankMemberRecord.memberId }}{% endif %}
 								</a>
 							<td>{% if rankMemberRecord.comment %}{{ rankMemberRecord.comment }}{% endif %}
-							<td>{{ rankMemberRecord.sumOfSolvedProblemCount }}
-							<td>{{ rankMemberRecord.solutionCheckCount }}
-							<td>{{ rankMemberRecord.solvedRate }}%
+							<td>{% if rankMemberRecord.sumOfSolvedProblemCount %}{{ rankMemberRecord.sumOfSolvedProblemCount }}{% endif %}
+							<td>{% if rankMemberRecord.solutionCheckCount %}{{ rankMemberRecord.solutionCheckCount }}{% endif %}
+							<td>{% if rankMemberRecord.solvedRate %}{{ rankMemberRecord.solvedRate }}%{% endif %}
 						</tr>
 						{% endfor -%}
 				</table>

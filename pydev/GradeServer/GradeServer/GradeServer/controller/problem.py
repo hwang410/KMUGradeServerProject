@@ -156,7 +156,7 @@ def submit():
     """
     return render_template('/result.html')
 
-@GradeServer.route('/record/<courseId>/<problemId>-<sortCondition>')
+@GradeServer.route('/record/<courseId>-<problemId>/<sortCondition>')
 @check_invalid_access
 @login_required
 def problem_record(courseId, problemId, sortCondition = OtherResources().const.RUN_TIME):
@@ -234,10 +234,10 @@ def problem_record(courseId, problemId, sortCondition = OtherResources().const.R
                            chartSubmissionDescriptions = chartSubmissionDescriptions,
                            chartSubmissionRecords = chartSubmissionRecords)
 
-@GradeServer.route('/problem/<courseId>/<problemId>')
+@GradeServer.route('/problem/<memberId>/<courseId>-<problemId>')
 @check_invalid_access
 @login_required
-def submission_code(courseId, problemId):
+def submission_code(memberId, courseId, problemId):
     
     # are Not an Administrator and endOfSubmission ago
     if SETResources().const.SERVER_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]\
@@ -254,10 +254,10 @@ def submission_code(courseId, problemId):
         # Problem Solved Users
         try:
             # last Submissions Info
-            submissions = select_all_submission(lastSubmission = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
+            submissions = select_all_submission(lastSubmission = select_last_submissions(memberId = memberId,
                                                                                          courseId = courseId,
                                                                                          problemId = problemId).subquery(),
-                                                memberId = session[SessionResources().const.MEMBER_ID],
+                                                memberId = memberId,
                                                 courseId = courseId,
                                                 problemId = problemId).subquery()
             problemSolvedMemberRecords = dao.query(submissions).\
@@ -270,7 +270,7 @@ def submission_code(courseId, problemId):
         try:
             submittedFileRecords = dao.query(SubmittedFiles.fileName,
                                              SubmittedFiles.filePath).\
-                                       filter(SubmittedFiles.memberId == session[SessionResources().const.MEMBER_ID],
+                                       filter(SubmittedFiles.memberId == memberId,
                                               SubmittedFiles.problemId == problemId,
                                               SubmittedFiles.courseId == courseId).\
                                        all()
@@ -279,7 +279,6 @@ def submission_code(courseId, problemId):
                 # Open
                 filePath = raw.filePath + '/' +raw.fileName
                 file = open(filePath)
-                
                 # Read
                 data = file.read()
                 

@@ -104,14 +104,38 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 							<tr>
 								<td style ='vertical-align: middle'>{{ loop.index }}</td>
 								<td style ='vertical-align: middle'>
-									<a href='{{ url_for("GradeServer.submission_code", courseId = courseId, problemId = problemInformationRecords.problemId) }}'>
+									<a href='{{ url_for("GradeServer.submission_code", courseId = courseId, problemId = problemInformationRecords.problemId, memberId = problemSolvedMemberRecord.memberId) }}'>
 									{{ problemSolvedMemberRecord.memberId }}
 									</a>
 								</td>
-								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.runTime }} ms</td>
-								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.sumOfSubmittedFileSize }} Byte</td>
-								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.codeSubmissionDate }}</td>
-								<td style ='vertical-align: middle'>{{ problemSolvedMemberRecord.viewCount }}</td>
+								<td style ='vertical-align: middle'>
+									{% if problemSolvedMemberRecord.runTime %}
+									{{ problemSolvedMemberRecord.runTime }}
+									{% else %}
+									0
+									{% endif %}
+								 	ms
+								 </td>
+								<td style ='vertical-align: middle'>
+									{% if problemSolvedMemberRecord.sumOfSubmittedFileSize %}
+									{{ problemSolvedMemberRecord.sumOfSubmittedFileSize }}
+									{% else %}
+									0
+									{% endif %}
+									 Byte
+									</td>
+								<td style ='vertical-align: middle'>
+									{% if problemSolvedMemberRecord.codeSubmissionDate %}
+									{{ problemSolvedMemberRecord.codeSubmissionDate }}
+									{% endif %}
+								</td>
+								<td style ='vertical-align: middle'>
+									{% if problemSolvedMemberRecord.viewCount %}
+									{{ problemSolvedMemberRecord.viewCount }}
+									{% else %}
+									0
+									{% endif %}
+								</td>
 							</tr>
 							{% endfor %}
 						</table>

@@ -12,7 +12,13 @@
 			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Invitee<span class="caret"></span></a>
 			<ul class="dropdown-menu">
 				{% for i in range (0, teamInvitationRecords|length) %}
-				<li><a href="#teamName{{ i }}" role="button" class="btn btn-link" data-toggle="modal">{{ teamInvitationRecords[i].teamName }}</a></li>
+				<li>
+					<a href="#teamName{{ i }}" role="button" class="btn btn-link" data-toggle="modal">
+					{% if teamInvitationRecords[i].teamName %}
+					{{ teamInvitationRecords[i].teamName }}
+					{% endif %}
+					</a>
+				</li>
 				{% endfor %}
 				{% if not teamInvitationRecords|length %}
 				<li class="disabled"><a tabindex="-1" href="#">None</a></li>
@@ -42,9 +48,14 @@
 			<tbody>
 			{%- for teamRecord in teamRecords %}
 				<tr>
-					<td style ='vertical-align: middle'><a href="{{ url_for('GradeServer.team_information', teamName =teamRecord.teamName) }}">{{ teamRecord.teamName }}</a></td>
-					<td style ='vertical-align: middle'>{{ teamRecord.teamMasterId }}</td>
-					<td style ='vertical-align: middle'>{{ teamRecord.teamMemberCount }}</td>
+					<td style ='vertical-align: middle'>
+						<a href="{{ url_for('GradeServer.team_information', teamName =teamRecord.teamName) }}">
+						{% if teamRecord.teamName %}{{ teamRecord.teamName }}
+						{% endif %}
+						</a>
+					</td>
+					<td style ='vertical-align: middle'>{% if teamRecord.teamMasterId %}{{ teamRecord.teamMasterId }}{% endif %}</td>
+					<td style ='vertical-align: middle'>{% if teamRecord.teamMemberCount %}{{ teamRecord.teamMemberCount }}{% endif %}</td>
 			 	</tr>
 			{% endfor -%}
 			</tbody>

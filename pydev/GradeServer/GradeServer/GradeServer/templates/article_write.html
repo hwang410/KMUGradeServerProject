@@ -21,7 +21,7 @@
 							selected ="selected">
 							{% else %}>
 							{% endif %}
-							{{ myCourse.courseId }} {{ myCourse.courseName }}</option>
+							{% if myCourse.courseId and myCourse.courseName %}{{ myCourse.courseId }} {{ myCourse.courseName }}{% endif %}</option>
 						<!--  if modify then default Course -->
 						{% endfor -%}
 					{% else %}
@@ -30,7 +30,7 @@
 						</option>
 						{%- for myCourse in myCourses %}
 							<option class ="{{ myCourse.courseId }}">
-							{{ myCourse.courseId }} {{ myCourse.courseName }}</option>
+							{% if myCourse.courseId and myCourse.courseName %}{{ myCourse.courseId }} {{ myCourse.courseName }}{% endif %}</option>
 						<!--  if modify then default Course -->
 						{% endfor -%}
 					{% endif %}
