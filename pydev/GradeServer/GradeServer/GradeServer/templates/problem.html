@@ -62,9 +62,9 @@
 		    {% endif %}
 						<div>
 						{% if name.languageName == "C++" %}
-		    			<form action='/problem_{{courseId }}_{{ problemId }}' id='my-dropzoneCpp' class='dropzone' enctype="multipart/form-data">
+		    			<form action='/problem_{{ courseId }}_{{ problemId }}_{{ problemName }}' id='my-dropzoneCpp' class='dropzone' enctype="multipart/form-data">
 		    		{% else %}
-		    			<form action='/problem_{{courseId }}_{{ problemId }}' id='my-dropzone{{ name.languageName }}' class='dropzone' enctype="multipart/form-data">
+		    			<form action='/problem_{{ courseId }}_{{ problemId }}_{{ problemName }}' id='my-dropzone{{ name.languageName }}' class='dropzone' enctype="multipart/form-data">
 		    		{% endif %}
 		    		<input type="hidden" name="usedLanguageName" value="{{ name.languageName }}">
 								<div class='fallback'>
@@ -80,7 +80,7 @@
 		</div>
   	<div class="tab-pane" id="write">
 	  	<div>
-				<form action = '/problem_{{courseId}}_page{{ pageNum }}_{{problemId}}' method = "post" enctype="multipart/form-data">
+				<form action = '/problem_{{courseId}}_page{{ pageNum }}_{{ problemId }}_{{ problemName }}' method = "post" enctype="multipart/form-data">
 				<div> language:   
 					<select type = "text" id="language" name="language" onchange="selectLanguage(this)">
 						{% for name in languageName %}
