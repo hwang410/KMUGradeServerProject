@@ -38,6 +38,7 @@ import re
 import zipfile
 import os
 import subprocess
+import glob
 
 projectPath = '/mnt/shared'
 problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
@@ -516,18 +517,40 @@ def server_manage_problem():
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
                                                    uploadedProblems = [])
-
+                            
                     # unzip file
                     with zipfile.ZipFile(fileData, 'r') as z:
                         z.extractall(tmpPath)
                     
                     # splitting by .(dot) or _(under bar)
-                    problemName = re.split('_|\.', os.listdir(tmpPath)[0])[0]
+                    # if the problem zip's made on window environment, problem name's broken.
+                    # so it needs to be decoded.
+                    rowProblemName = re.split('_|\.', os.listdir(tmpPath)[0])[0]
+                    problemName = str(rowProblemName.decode('cp949'))
+
+                    byteString = '?'*len(rowProblemName)
+                    
+                    os.chdir('%s' % tmpPath)
+                    
+                    # rename text file
+                    subprocess.call('mv %s.txt %s.txt' % (byteString, problemName), shell=True)
+                    
+                    # rename pdf file
+                    subprocess.call('mv %s.pdf %s.pdf' % (byteString, problemName), shell=True)
+                    
+                    # rename folders
+                    # checking for both check type because we can't check the type.
+                    subprocess.call('mv %s_SOLUTION %s_SOLUTION' % (byteString, problemName), shell=True)
+                    subprocess.call('mv %s_CHECKER %s_CHECKER' % (byteString, problemName), shell=True)
+                    
                     problemInformationPath = '%s/%s.txt' % (tmpPath, problemName)
                     problemInformation = open(problemInformationPath, 'r').read()
+                    problemInformation = problemInformation.decode('cp949')
+                    
                     nextIndex += 1
                     # slice and make information from 'key=value, key=value, ...'
                     problemInformation = problemInformation.split(', ')
+
                     difficulty = 0
                     solutionCheckType = 0
                     limitedTime = 0
@@ -541,7 +564,6 @@ def server_manage_problem():
                         elif key == 'Difficulty':
                             difficulty = int(value)
                         elif key == 'SolutionCheckType':
-                            print value
                             solutionCheckType = ENUMResources().const.SOLUTION if value == "Solution" else ENUMResources().const.CHECKER
                         elif key == 'LimitedTime':
                             limitedTime = int(value)
@@ -553,7 +575,7 @@ def server_manage_problem():
                     problemId = difficulty * 10000 + numberOfProblemsOfDifficulty[difficulty - 1]
                     problemPath = '%s/%s' % (problemsPath,
                                              str(problemId) + '_' + problemName.replace(' ', ''))
-
+                    
                     try:
                         newProblem = Problems(problemIndex = nextIndex, 
                                               problemId = problemId, 
@@ -579,6 +601,13 @@ def server_manage_problem():
                                            solutionCheckType))
                     # current path : ../tmp/problemName_solutionCheckType
                     
+                    inOutCases = [file for file in os.listdir(os.getcwd())]
+                    
+                    for file in inOutCases:
+                        rowFileName = file
+                        fileName = '%s_%s' % (problemName, rowFileName.split('_', 1)[1])
+                        subprocess.call('mv %s %s' % (rowFileName, str(fileName)), shell=True)
+                        
                     # remove space on file/directory names
                     try:
                         subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
@@ -650,12 +679,7 @@ def server_manage_problem():
                     try:
                         subprocess.call('cp %s/%s_%s.pdf %s/' % (problemPath, problemId, problemName, problemDescriptionPath), shell=True)
                     except:
-                        error = 'Error has been occurred while copying new problem'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               uploadedProblems = [])
+                        error = 'problem pdf doesn\'s exist'
                     
             else:
                 try:
