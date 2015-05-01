@@ -586,6 +586,8 @@ def server_manage_problem():
                     os.chdir('%s/%s_%s' % (tmpPath, 
                                            problemName, 
                                            solutionCheckType))
+                    # current path : ../tmp/problemName_solutionCheckType
+                    
                     # remove space on file/directory names
                     try:
                         subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
@@ -610,6 +612,9 @@ def server_manage_problem():
                         
                     problemName = problemName.replace(' ', '')
                     
+                    os.chdir('%s' % (tmpPath))
+                    # current path : ../tmp
+                   
                     # remove space on file/directory names
                     try:
                         subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
@@ -624,7 +629,7 @@ def server_manage_problem():
                     try:
                         subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
                     except OSError:
-                        error = 'Error has occured while renaming a folder'
+                        error = 'Error has occurred while renaming a folder'
                         return render_template('/server_manage_problem.html', 
                                                error = error, 
                                                SETResources = SETResources,
