@@ -181,7 +181,7 @@ def read(activeTabCourseId, articleIndex, error = None):
     
     for i in range(0, len(repliesOnBoardRecords)):
         # 나의 댓글 좋아요 정보 비교
-        isLikeRecords.extend(dict(isLikeCancelled = ENUMResources().const.TRUE))
+        isLikeRecords.append(ENUMResources().const.TRUE)
         for j in range(subIndex, len(repliesOnBoardIsLikeRecords)):
             if repliesOnBoardRecords[i].boardReplyIndex == repliesOnBoardIsLikeRecords[j].boardReplyIndex:
                 isLikeRecords[i] = repliesOnBoardIsLikeRecords[j].isLikeCancelled
