@@ -9,7 +9,8 @@
     :@author: algolab
 """
 
-__all__ = ['loginRequired',
+__all__ = ['checkInvalidAccess',
+           'loginRequired',
            'utilMessages',
            'utilPaging',
            'utilRankQuery',

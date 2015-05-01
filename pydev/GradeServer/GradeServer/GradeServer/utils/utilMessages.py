@@ -14,6 +14,7 @@ def get_message(key ='unknown'):
                   'login': 'Login!!!',
                   'tryAgain': '다시 시도해 주시기 바랍니다.',
                   'accessFailed': '접근 할 수 있는 권한이 없습니다.',
+                  'invalidAccess': 'don\'t access through URL',
                   'updateSucceeded': 'Update Succeeded!!!!',
                   'updateFailed': '정보 갱신에 실패하였습니다.',
                   
