@@ -50,7 +50,7 @@ def problemList(courseId, pageNum):
                            and_(Submissions.memberId == lastSubmission.c.memberId,
                                 Submissions.problemId == lastSubmission.c.problemId,
                                 Submissions.courseId == lastSubmission.c.courseId,
-                                Submissions.solutionCheckCount == lastSubmission.c.solutionCheckCount)).\
+                                Submissions.submissionCount == lastSubmission.c.submissionCount)).\
                       subquery()
     
     print len(dao.query(submissions).all())
@@ -69,6 +69,7 @@ def problemList(courseId, pageNum):
         problemListRecords = get_page_record(dao.query(problems,
                                                        submissions.c.score,
                                                        submissions.c.status,
+                                                       submissions.c.submissionCount,
                                                        submissions.c.solutionCheckCount).\
                                                  outerjoin(submissions,
                                                            problems.c.problemId == submissions.c.problemId).\
