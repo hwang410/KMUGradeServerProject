@@ -17,6 +17,7 @@ from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
 
 from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.checkInvalidAccess import check_invalid_access
 
 from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.model.languages import Languages
@@ -50,6 +51,7 @@ newDepartments = []
 currentTab = 'colleges'
 
 @GradeServer.route('/master/manage_collegedepartment', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def server_manage_collegedepartment():
     global newColleges, newDepartments
@@ -227,12 +229,9 @@ def server_manage_collegedepartment():
                            allDepartments = allDepartments)
         
 @GradeServer.route('/master/manage_class', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def server_manage_class():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "manage_class":
-        error = "invalid access"
-        print error
         
     error = None
     
@@ -282,13 +281,9 @@ def server_manage_class():
                            languagesOfCourse = languagesOfCourse)
     
 @GradeServer.route('/master/add_class', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def server_add_class():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "add_class":
-        error = "invalid access"
-        print error
-        
     global projectPath
     error = None
     courseAdministrator = ''
@@ -470,13 +465,9 @@ def server_add_class():
                            allCourseAdministrators = allCourseAdministrators)
     
 @GradeServer.route('/master/manage_problem', methods=['GET', 'POST'])
+@check_invalid_access
 @login_required
 def server_manage_problem():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "manage_problem":
-        error = "invalid access"
-        print error
-        
     global projectPath
     global numberOfDifficulty
     error = None
@@ -698,13 +689,9 @@ def server_manage_problem():
                            uploadedProblems = uploadedProblems)
 
 @GradeServer.route('/master/manage_users', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
 def server_manage_user():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "manage_users":
-        error = "invalid access"
-        print error
-        
     error = None
 
     try:
@@ -793,13 +780,9 @@ def server_manage_user():
 
 
 @GradeServer.route('/master/addUser', methods = ['GET', 'POST'])
+@check_invalid_access
 @login_required
-def server_add_user():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "addUser":
-        error = "invalid access"
-        print error
-        
+def server_add_user():        
     global newUsers
     error = None
     targetUserIdToDelete = []
@@ -1079,13 +1062,9 @@ def server_add_user():
                            newUsers = newUsers)
 
 @GradeServer.route('/master/manage_service')
+@check_invalid_access
 @login_required
-def server_manage_service():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "manage_service":
-        error = "invalid access"
-        print error
-        
+def server_manage_service():        
     error = None
     return render_template('/server_manage_service.html',
                            error = error,

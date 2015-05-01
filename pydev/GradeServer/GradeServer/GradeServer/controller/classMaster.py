@@ -15,6 +15,7 @@ from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
 
 from GradeServer.utils.loginRequired import login_required
+from GradeServer.utils.checkInvalidAccess import check_invalid_access
 
 from GradeServer.model.registrations import Registrations
 from GradeServer.model.registeredCourses import RegisteredCourses
@@ -85,13 +86,9 @@ def get_own_courses(memberId):
     return ownCourses
 
 @GradeServer.route('/classmaster/user_submit')
+@check_invalid_access
 @login_required
-def class_user_submit():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "user_submit":
-        error = "invalid access"
-        print error
-        
+def class_user_submit():        
     error = None
     
     try:
@@ -135,13 +132,9 @@ def class_user_submit():
                            submissions = submissions)
 
 @GradeServer.route('/classmaster/cm_manage_problem',methods=['GET','POST'])
+@check_invalid_access
 @login_required
 def class_manage_problem():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "cm_manage_problem":
-        error = "invalid access"
-        print error
-        
     global projectPath
     global newProblems
     
@@ -377,13 +370,9 @@ def class_manage_problem():
                            ownProblems = ownProblems)
 
 @GradeServer.route('/classmaster/cm_manage_user',methods=['GET','POST'])
+@check_invalid_access
 @login_required
 def class_manage_user():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "cm_manage_user":
-        error = "invalid access"
-        print error
-        
     error = None
     
     try:
@@ -517,13 +506,9 @@ def class_manage_user():
                            departments=departments)
     
 @GradeServer.route('/classmaster/add_user',methods=['GET','POST'])
+@check_invalid_access
 @login_required
 def class_add_user():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "add_user":
-        error = "invalid access"
-        print error
-        
     global newUsers
     error = None
     targetUserIdToDelete = []
@@ -885,13 +870,9 @@ def class_add_user():
                            newUsers = newUsers)
 
 @GradeServer.route('/classmaster/user_submit/summary')
+@check_invalid_access
 @login_required
 def user_submit_summary():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "user_submit/summary":
-        error = "invalid access"
-        print error
-        
     error = None
 
     try:
