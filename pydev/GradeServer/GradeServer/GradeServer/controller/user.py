@@ -6,10 +6,8 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
-from GradeServer.utils.utilQuery import select_count, select_solved_problem_count, select_submission_count,\
-                                        select_solved_count, select_wrong_answer_count, select_time_over_count,\
-                                        select_compile_error_count, select_runtime_error_count, select_server_error_count
-from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_all_submission
+from GradeServer.utils.utilQuery import select_count
+from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_all_submission, select_user_chart_submission
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
@@ -54,7 +52,6 @@ def user_history(memberId, sortCondition, pageNum):
         # 모든 제출 정보
         submissions = select_all_submission(lastSubmission = None,
                                             memberId = memberId).subquery()
-        
         # List Count
         try:
             count = select_count(submissions.c.memberId).first().\
@@ -64,23 +61,7 @@ def user_history(memberId, sortCondition, pageNum):
          
         try:
                         # 차트 정보
-            chartSubmissionRecords = dao.query(# 중복 제거푼 문제숫
-                                               select_solved_problem_count(submissions).subquery(),
-                                                                                              # 총 제출 횟수
-                                               select_submission_count(submissions).subquery(),
-                                                                                              # 모든 맞춘 횟수
-                                               select_solved_count(submissions).subquery(),
-                                                                                              # 틀린 횟수
-                                               select_wrong_answer_count(submissions).subquery(),
-                                                                                              # 타임 오버 횟수
-                                               select_time_over_count(submissions).subquery(),
-                                                                                              # 컴파일 에러 횟수
-                                               select_compile_error_count(submissions).subquery(),
-                                                                                              # 런타임 에러 횟수
-                                               select_runtime_error_count(submissions).subquery(),
-                                                                                              # 서버 에러 횟수
-                                               select_server_error_count(submissions).subquery()).\
-                                         first()
+            chartSubmissionRecords = select_user_char_submission(submissions).first()
         except Exception:
             #None Type Exception
             chartSubmissionRecords = []
@@ -140,7 +121,6 @@ def id_check(select, error = None):
                         if select == 'server_manage_collegedepartment':
                             return redirect(url_for('.server_manage_collegedepartment'))
                         elif select == 'server_manage_class':
-                            print "ABBB"
                             return redirect(url_for('.server_manage_class'))
                         elif select == 'server_manage_problem':
                             return redirect(url_for('.server_manage_problem'))
