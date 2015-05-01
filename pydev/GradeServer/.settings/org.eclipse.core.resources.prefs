@@ -55,6 +55,7 @@ encoding//GradeServer/GradeServer/utils/utilProblemQuery.py=utf-8
 encoding//GradeServer/GradeServer/utils/utilQuery.py=utf-8
 encoding//GradeServer/GradeServer/utils/utilRankQuery.py=utf-8
 encoding//GradeServer/GradeServer/utils/utilSubmissionQuery.py=utf-8
+encoding//GradeServer/GradeServer/utils/utilUserQuery.py=utf-8
 encoding//GradeServer/GradeServer/utils/utils.py=utf-8
 encoding//GradeServer/runserver.py=utf-8
 encoding/<project>=UTF-8

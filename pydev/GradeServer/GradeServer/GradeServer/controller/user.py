@@ -6,8 +6,9 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
-from GradeServer.utils.utilQuery import select_count
-from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_all_submission, select_user_chart_submission
+from GradeServer.utils.utilQuery import select_count, select_match_member
+from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_all_submission, select_member_chart_submission
+from GradeServer.utils.utilUserQuery import join_member_information, update_member_information
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
@@ -16,15 +17,9 @@ from GradeServer.resource.routeResources import RouteResources
 from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.sessionResources import SessionResources
 
-from GradeServer.database import dao
-
 from GradeServer.model.problems import Problems
-from GradeServer.model.members import Members
 from GradeServer.model.submissions import Submissions
-from GradeServer.model.departments import Departments
 from GradeServer.model.languages import Languages
-from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
-from GradeServer.model.colleges import Colleges
 
 from GradeServer.controller.serverMaster import *
 from GradeServer.controller.classMaster import *
@@ -61,7 +56,7 @@ def user_history(memberId, sortCondition, pageNum):
          
         try:
                         # 차트 정보
-            chartSubmissionRecords = select_user_char_submission(submissions).first()
+            chartSubmissionRecords = select_member_chart_submission(submissions).first()
         except Exception:
             #None Type Exception
             chartSubmissionRecords = []
@@ -166,21 +161,7 @@ def edit_personal(error = None):
         global gContactNumber, gEmailAddress, gComment
         #Get User Information
         try:
-            memberInformation = dao.query(Members.memberId,
-                                          Members.memberName,
-                                          Members.contactNumber,
-                                          Members.emailAddress,
-                                          Members.comment,
-                                          Colleges.collegeName,
-                                          Departments.departmentName).\
-                                    filter(Members.memberId == session[SessionResources().const.MEMBER_ID]).\
-                                    outerjoin(DepartmentsDetailsOfMembers,
-                                         Members.memberId == DepartmentsDetailsOfMembers.memberId).\
-                                    outerjoin(Colleges,
-                                         Colleges.collegeIndex == DepartmentsDetailsOfMembers.collegeIndex).\
-                                    outerjoin(Departments,
-                                         Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
-                                    first()
+            memberInformation = join_member_information(select_match_member(session[SessionResources().const.MEMBER_ID]).subquery()).first()
         except Exception:
             #None Type Exception
             memberInformation = []
@@ -205,12 +186,11 @@ def edit_personal(error = None):
                 passwordConfirm = None
                 
                 #Update DB
-                dao.query(Members).\
-                    filter(Members.memberId == session[SessionResources().const.MEMBER_ID]).\
-                    update(dict(password = password,
-                                contactNumber = gContactNumber,
-                                emailAddress = gEmailAddress,
-                                comment = gComment))
+                update_member_information(select_match_member(session[SessionResources().const.MEMBER_ID]),
+                              password,
+                              gContactNumber,
+                              gEmailAddress,
+                              gComment)
                 # Commit Exception
                 try:
                     # global Value Init
