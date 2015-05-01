@@ -20,6 +20,8 @@ if __name__ == '__main__':
     
     grade = InterfaceGrade.InterfaceGrade(args)
     result, stdNum, problemNum, courseNum, submitCount = grade.Compile()
+    
+    # create DB update object 
     dataUpdate = DBUpdate.DBUpdate(stdNum, problemNum, courseNum, submitCount)
     print result
     
@@ -48,6 +50,9 @@ if __name__ == '__main__':
     # update DBManager 'runtime error'
         dataUpdate.SubmittedRecordsOfProblems_RunTimeError()
     
-    elif result == 'WrongAnser':
+    elif result == 'WrongAnswer':
     # update DBManager 'wrong answer'
         dataUpdate.SubmittedRecordsOfProblems_WrongAnswer()
+    else:
+        dataUpdate.UpdateServerError(stdNum, problemNum,
+                                   courseNum, submitCount)
