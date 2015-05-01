@@ -15,7 +15,6 @@ from GradeServer.database import dao
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
 from GradeServer.utils.loginRequired import login_required
-#from GradeServer.controller.problem import *
 from GradeServer.model.members import Members
 from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.model.problems import Problems
@@ -38,34 +37,15 @@ from GradeServer.utils.utilMessages import get_message
 # Initialize the Flask application
 PATH = GradeServerConfig.CURRENT_FOLDER
 
-class MakePath:
-    def __init__(self, path, memberId, memberName, courseId, courseName, problemId, problemName):
-        self.path = path
-        self.memberId = memberId
-        self.memberName = memberName
-        self.courseId = courseId
-        self.courseName = courseName
-        self.problemId = problemId
-        self.problemName = problemName
-    def make_current_path(self):
-        result = '%s/%s_%s/%s_%s/%s_%s' %(self.path, self.courseId, self.courseName, self.memberId, self.memberName, self.problemId, self.problemName)
-        return result.replace(' ', '')
-    def make_temp_path(self):
-        result = '%s/%s_%s/%s_%s/%s_%s_tmp' %(self.path, self.courseId, self.courseName, self.memberId, self.memberName, self.problemId, self.problemName)
-        return result.replace(' ', '')
+def make_path(PATH, memberId, courseId, problemId, problemName):
+    memberName = get_member_name(memberId)
+    courseName = get_course_name(courseId)
+    filePath = '%s/%s_%s/%s_%s/%s_%s' %(PATH, courseId, courseName, memberId, memberName, problemId, problemName)
+    tempPath = '%s/%s_%s/%s_%s/%s_%s_tmp' %(PATH, courseId, courseName, memberId, memberName, problemId, problemName)
+    return filePath.replace(' ', ''), tempPath.replace(' ', '')
 
 def make_problem_full_name(problemId, problemName):
     return '%s_%s' %(problemId, problemName)
-
-class InsertToSubmittedFiles:
-    def __init__(self, memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize):
-        self.memberId = memberId
-        self.courseId = courseId
-        self.problemId = problemId
-        self.fileIndex = fileIndex
-        self.fileName = fileName
-        self.filePath = filePath
-        self.fileSize = fileSize
         
 def get_course_name(courseId):
     try:
@@ -123,14 +103,14 @@ def get_solution_check_count(memberId, courseId, problemId, subCountNum):
         solCountNum = 0
     return solCountNum
 
-def insert_submitted_files(insertSubmittedFilesObject):
-    submittedFiles = SubmittedFiles(memberId = insertSubmittedFilesObject.memberId,
-                                    problemId = insertSubmittedFilesObject.problemId,
-                                    courseId = insertSubmittedFilesObject.courseId,
-                                    fileIndex = insertSubmittedFilesObject.fileIndex,
-                                    fileName = insertSubmittedFilesObject.fileName,
-                                    filePath = insertSubmittedFilesObject.filePath,
-                                    fileSize = insertSubmittedFilesObject.fileSize)                
+def insert_submitted_files(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize):
+    submittedFiles = SubmittedFiles(memberId = memberId,
+                                    courseId = courseId,
+                                    problemId = problemId,
+                                    fileIndex = fileIndex,
+                                    fileName = fileName,
+                                    filePath = filePath,
+                                    fileSize = fileSize)                
     dao.add(submittedFiles)
     
 def get_used_language_index(usedLanguageName):
@@ -145,27 +125,18 @@ def get_used_language_index(usedLanguageName):
 
 def get_problem_info(problemId, problemName):
     try:
-        problemPath, limitedTime, limitedMemory, solutionCheckType = dao.query(Problems.problemPath,
-                                                                               Problems.limitedTime,
-                                                                               Problems.limitedMemory,
-                                                                               Problems.solutionCheckType).\
-                                                                         filter(Problems.problemId == problemId).\
+        problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile = dao.query(Problems.problemPath,
+                                                                                                        Problems.limitedTime,
+                                                                                                        Problems.limitedMemory,
+                                                                                                        Problems.solutionCheckType,
+                                                                                                        RegisteredProblems.isAllInputCaseInOneFile).\
+                                                                                                  join(RegisteredProblems, Problems.problemId == RegisteredProblems.problemId).\
+                                                                                                        filter(Problems.problemId == problemId).\
                                                                          first()
         problemCasesPath = '%s/%s_%s_%s' %(problemPath, problemId, problemName, solutionCheckType)
     except Exception as e:
         return unknown_error(get_message('dbError'))
-    return problemPath, limitedTime, limitedMemory, solutionCheckType, problemCasesPath
-
-def is_support_multiple_case(problemId, courseId):
-    try:
-        isAllInputCaseInOneFile = dao.query(RegisteredProblems.isAllInputCaseInOneFile).\
-                                      filter(RegisteredProblems.problemId == problemId,
-                                             RegisteredProblems.courseId == courseId).\
-                                      first().\
-                                      isAllInputCaseInOneFile
-    except Exception as e:
-        return unknown_error(get_message('dbError'))
-    return isAllInputCaseInOneFile
+    return problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, problemCasesPath
 
 def used_language_version(courseId, usedLanguage):
     try:
@@ -188,271 +159,63 @@ def get_case_count(problemCasesPath, isAllInputCaseInOneFile):
         else:
             caseCount = 1
     return caseCount
-def get_old_submitted_files(memberId, problemId, courseId):
-    try:
-        oldSubmittedFiles = dao.query(SubmittedFiles).\
-                            filter(and_(SubmittedFiles.memberId == memberId,
-                                        SubmittedFiles.problemId == problemId,
-                                        SubmittedFiles.courseId == courseId,
-                                        SubmittedFiles.isDeleted == ENUMResources.const.FALSE))
-    except Exception as e:
-        return unknown_error(get_message('dbError'))                            
-    return oldSubmittedFiles
 
-def get_submitted_files(memberId, problemId, courseId, fileIndex):
-    getSubmittedFiles = dao.query(SubmittedFiles).\
-                            filter(and_(SubmittedFiles.memberId == memberId,
-                                        SubmittedFiles.problemId == problemId,
-                                        SubmittedFiles.courseId == courseId,
-                                        SubmittedFiles.fileIndex == fileIndex)).\
-                            first()
-    return getSubmittedFiles
-    
-def old_submitted_files_are_deleted(memberId, problemId, courseId):
-    dao.query(SubmittedFiles).\
-        filter(and_(SubmittedFiles.memberId == memberId,
-                    SubmittedFiles.problemId == problemId,
-                    SubmittedFiles.courseId == courseId,
-                    SubmittedFiles.isDeleted == ENUMResources.const.FALSE)).\
-        update(dict(isDeleted = ENUMResources.const.TRUE))  
-
-def update_submitted_files(memberId, courseId, problemId, fileIndex, fileName, fileSize):
-    dao.query(SubmittedFiles).\
-        filter(and_(SubmittedFiles.memberId == memberId,
-                    SubmittedFiles.problemId == problemId,
-                    SubmittedFiles.courseId == courseId,
-                    SubmittedFiles.fileIndex == fileIndex)).\
-        update(dict(isDeleted = ENUMResources.const.FALSE,
-                    fileName = fileName,
-                    fileSize = fileSize))
-                                          
-@GradeServer.route('/problem_<courseId>_<problemId>', methods = ['POST'])
-@login_required
-def upload(courseId, problemId):
-    memberId = session[SessionResources.const.MEMBER_ID]
+def delete_submitted_files_data(memberId, problemId, courseId):
+    deleteData = dao.query(SubmittedFiles).\
+                     filter(and_(SubmittedFiles.memberId == memberId,
+                                 SubmittedFiles.problemId == problemId,
+                                 SubmittedFiles.courseId == courseId)).\
+                     delete()
+def file_save_with_insert_to_SubmittedFiles(memberId, courseId, problemId, uploadFiles, tempPath, filePath):
     fileIndex = 1
-    
-    memberName = get_member_name(memberId)
-    courseName = get_course_name(courseId)
-    problemName = get_problem_name(problemId)
-    
-    makePath = MakePath(PATH, memberId, memberName, courseId, courseName, problemId, problemName)
-    filePath = makePath.make_current_path()
-    tempPath = makePath.make_temp_path()
-
-    sumOfSubmittedFileSize = 0
-
     try:
-        os.mkdir(tempPath)
-    except Exception as e:
-        return unknown_error(get_message('askToMaster'))
-        
-    try:
-        oldSubmittedFiles = get_old_submitted_files(memberId, problemId, courseId)
-        if oldSubmittedFiles != None:
-            old_submitted_files_are_deleted(memberId, problemId, courseId)
-
-        upload_files = request.files.getlist(OtherResources.const.GET_FILES)
-        for file in upload_files:
+        sumOfSubmittedFileSize = 0
+        delete_submitted_files_data(memberId, problemId, courseId)
+        for file in uploadFiles:
             fileName = secure_filename(file.filename)
             try:
                 file.save(os.path.join(tempPath, fileName))
             except Exception as e:
-                return unknown_error(get_message('fileSaveError'))
+                flash(get_message('fileSaveError'))
+                return "0"
             
-            fileSize = os.stat(os.path.join(tempPath, fileName)).st_size 
-            getSubmittedFiles = get_submitted_files(memberId, problemId, courseId, fileIndex)
-            if getSubmittedFiles != None:                                         
-                update_submitted_files(memberId, courseId, problemId, fileIndex, fileName, fileSize)
-            else:
-                insertSubmittedFilesObject = InsertToSubmittedFiles(memberId,
-                                                                    courseId,
-                                                                    problemId,
-                                                                    fileIndex,
-                                                                    fileName,
-                                                                    filePath,
-                                                                    fileSize)
-                insert_submitted_files(insertSubmittedFilesObject)
-            
+            fileSize = os.stat(os.path.join(tempPath, fileName)).st_size
+            insert_submitted_files(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
             fileIndex += 1
             sumOfSubmittedFileSize += fileSize
     except Exception as e:
         dao.rollback()
         os.system("rm -rf %s" % tempPath)
-        return unknown_error(get_message('askToMaster'))
-    try:
-        dao.commit()
-    except Exception as e:
-        return unknown_error(get_message('dbError')) 
+        flash(get_message('askToMaster'))
+        return "0"
     
-    os.system("rm -rf %s" % filePath)
-    os.rename(tempPath, filePath)
-    usedLanguageName = request.form[OtherResources.const.USED_LANGUAGE_NAME]
-    usedLanguageIndex = get_used_language_index(usedLanguageName)
-    usedLanguageVersion = used_language_version(courseId, usedLanguageIndex)
-    subCountNum = get_submission_count(memberId, courseId, problemId)
+    return sumOfSubmittedFileSize
+
+def insert_to_submissions(courseId, memberId, problemId, usedLanguageIndex, subCountNum, sumOfSubmittedFileSize):
     solCountNum = get_solution_check_count(memberId, courseId, problemId, subCountNum)
-    insert_to_submissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguageIndex, sumOfSubmittedFileSize)
-    problemPath, limitedTime, limitedMemory, solutionCheckType, problemCasesPath = get_problem_info(problemId, problemName)
-    isAllInputCaseInOneFile = is_support_multiple_case(problemId, courseId)
-    
-    caseCount = get_case_count(problemCasesPath, isAllInputCaseInOneFile)
-    problemFullName = make_problem_full_name(problemId, problemName)
-
-
-    send_to_celery(filePath,
-                   problemPath,
-                   memberId,
-                   problemId,
-                   solutionCheckType,
-                   caseCount,
-                   limitedTime,
-                   limitedMemory,
-                   usedLanguageName,
-                   usedLanguageVersion,
-                   courseId,
-                   subCountNum,
-                   problemFullName)
-    
-    flash(OtherResources.const.SUBMISSION_SUCCESS)
-
-    return "0"
-
-@GradeServer.route('/problem_<courseId>_page<pageNum>_<problemId>', methods = ['POST'])
-@login_required
-def code(courseId, pageNum, problemId):
-    memberId = session[SessionResources.const.MEMBER_ID]
-    fileIndex = 1
-    
-    memberName = get_member_name(memberId)
-    courseName = get_course_name(courseId)
-    problemName = get_problem_name(problemId)
-    
-    makePath = MakePath(PATH, memberId, memberName, courseId, courseName, problemId, problemName)
-    filePath = makePath.make_current_path()
-    tempPath = makePath.make_temp_path()
-    
-    try:
-        os.mkdir(tempPath)
-    except Exception as e:
-        return unknown_error(get_message('askToMaster'))
-    
-    tests = request.form[OtherResources.const.GET_CODE]
-    unicode(tests)
-    tests = tests.replace(OtherResources.const.LINUX_NEW_LINE, OtherResources.const.WINDOWS_NEW_LINE)
-    usedLanguageName = request.form[OtherResources.const.LANGUAGE]
-    
-    if usedLanguageName == OtherResources.const.C:
-        fileName = OtherResources.const.C_SOURCE_NAME
-    
-    elif usedLanguageName == OtherResources.const.CPP:
-        fileName = OtherResources.const.CPP_SOURCE_NAME
-    
-    elif usedLanguageName == OtherResources.const.JAVA:
-        className = re.search(OtherResources.const.JAVA_MAIN_CLASS, tests)
-        try:
-            fileName = OtherResources.const.JAVA_SOURCE_NAME %(className.group(1))
-        except:
-            fileName = OtherResources.const.MISS_CLASS_NAME
+    submissions = Submissions(memberId = memberId,
+                              problemId = problemId,
+                              courseId = courseId,
+                              submissionCount = subCountNum,
+                              solutionCheckCount = solCountNum,
+                              status = ENUMResources.const.JUDGING,
+                              codeSubmissionDate = datetime.now(),
+                              sumOfSubmittedFileSize = sumOfSubmittedFileSize,
+                              usedLanguageIndex = usedLanguageIndex)
+    dao.add(submissions)
         
-    elif usedLanguageName == OtherResources.const.PYTHON:
-        fileName = OtherResources.const.PYTHON_SOURCE_NAME
-        
+def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, usedLanguageName, sumOfSubmittedFileSize, problemName, filePath, tempPath):
     try:
-        fout = open(os.path.join(tempPath, fileName), 'w')
-        fout.write(tests)
-        fout.close()
-    except:
-        os.system("rm -rf %s" % tempPath)
-        return unknown_error(get_message('fileSaveError'))
+        usedLanguageIndex = get_used_language_index(usedLanguageName)
+        usedLanguageVersion = used_language_version(courseId, usedLanguageIndex)
+        subCountNum = get_submission_count(memberId, courseId, problemId)
+        insert_to_submissions(courseId, memberId, problemId, usedLanguageIndex, subCountNum, sumOfSubmittedFileSize)
+        problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, problemCasesPath = get_problem_info(problemId, problemName)
+        caseCount = get_case_count(problemCasesPath, isAllInputCaseInOneFile)
+        problemFullName = make_problem_full_name(problemId, problemName)
 
-    os.system("rm -rf %s" % filePath)
-    os.rename(tempPath, filePath)
-    fileSize = os.stat(os.path.join(filePath, fileName)).st_size
-    
-    try:
-        oldSubmittedFiles = get_old_submitted_files(memberId, problemId, courseId)
-        if oldSubmittedFiles != None:
-            old_submitted_files_are_deleted(memberId, problemId, courseId)
-        getSubmittedFiles = get_submitted_files(memberId, problemId, courseId, fileIndex)
-        if getSubmittedFiles != None:                                         
-            update_submitted_files(memberId, courseId, problemId, fileIndex, fileName, fileSize)
-        else:
-            insertSubmittedFilesObject = InsertToSubmittedFiles(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
-            insert_submitted_files(insertSubmittedFilesObject)
-    except Exception as e:
-        dao.rollback()
-        return unknown_error(get_message('dbError')) 
-    try:
-        dao.commit()
-    except Exception as e:
-        return unknown_error(get_message('dbError')) 
 
-    usedLanguageIndex = get_used_language_index(usedLanguageName)
-    usedLanguageVersion = used_language_version(courseId, usedLanguageIndex)
-    subCountNum = get_submission_count(memberId, courseId, problemId)
-    solCountNum = get_solution_check_count(memberId, courseId, problemId, subCountNum)
-    insert_to_submissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguageIndex, fileSize)
-    problemPath, limitedTime, limitedMemory, solutionCheckType, problemCasesPath = get_problem_info(problemId, problemName)
-
-    isAllInputCaseInOneFile = is_support_multiple_case(problemId, courseId)
-    
-    caseCount = get_case_count(problemCasesPath, isAllInputCaseInOneFile)
-    problemFullName = make_problem_full_name(problemId, problemName)
-    
-    send_to_celery(filePath,
-                   problemPath,
-                   memberId,
-                   problemId,
-                   solutionCheckType,
-                   caseCount,
-                   limitedTime,
-                   limitedMemory,
-                   usedLanguageName,
-                   usedLanguageVersion,
-                   courseId,
-                   subCountNum,
-                   problemFullName)
-    
-    flash(OtherResources.const.SUBMISSION_SUCCESS)
-    return redirect(url_for(RouteResources.const.PROBLEM_LIST,
-                            courseId = courseId,
-                            pageNum = pageNum))
-    
-def insert_to_submissions(courseId, memberId, problemId, subCountNum, solCountNum, usedLanguage, sumOfSubmittedFileSize):
-    try:
-        submissions = Submissions(memberId = memberId,
-                                  problemId = problemId,
-                                  courseId = courseId,
-                                  submissionCount = subCountNum,
-                                  solutionCheckCount = solCountNum,
-                                  status = ENUMResources.const.JUDGING,
-                                  codeSubmissionDate = datetime.now(),
-                                  sumOfSubmittedFileSize = sumOfSubmittedFileSize,
-                                  usedLanguageIndex = usedLanguage)
-        dao.add(submissions)
-    except Exception as e:
-        dao.rollback()
-        return unknown_error(get_message('dbError'))
-    try:
-        dao.commit()
-    except Exception as e:
-        print 'Commit Error'
-        
-def send_to_celery(filePath,
-                   problemPath,
-                   memberId,
-                   problemId,
-                   solutionCheckType,
-                   caseCount,
-                   limitedTime,
-                   limitedMemory,
-                   usedLanguageName,
-                   usedLanguageVersion,
-                   courseId,
-                   subCountNum,
-                   problemFullName): 
-    Grade.delay(str(filePath),
+        """Grade.delay(str(filePath),
                 str(problemPath),
                 str(memberId),
                 str(problemId),
@@ -464,4 +227,93 @@ def send_to_celery(filePath,
                 str(usedLanguageVersion),
                 str(courseId),
                 subCountNum,
-                str(problemFullName))
+                str(problemFullName))"""
+
+                       
+        flash(OtherResources.const.SUBMISSION_SUCCESS)
+        dao.commit()
+    except Exception as e:
+        dao.rollback()
+        os.system("rm -rf %s" % tempPath)
+        return unknown_error(get_message('dbError'))
+    os.system("rm -rf %s" % filePath)
+    os.rename(tempPath, filePath)
+    
+def get_language_name(usedLanguageName, tests):
+    if usedLanguageName == OtherResources.const.C:
+        languageName = OtherResources.const.C_SOURCE_NAME
+
+    if usedLanguageName == OtherResources.const.CPP:
+        languageName = OtherResources.const.CPP_SOURCE_NAME
+
+    if usedLanguageName == OtherResources.const.JAVA:
+        className = re.search(OtherResources.const.JAVA_MAIN_CLASS, tests)
+        try:
+            languageName = OtherResources.const.JAVA_SOURCE_NAME %(className.group(1))
+        except:
+            languageName = OtherResources.const.MISS_CLASS_NAME
+
+    if usedLanguageName == OtherResources.const.PYTHON:
+        languageName = OtherResources.const.PYTHON_SOURCE_NAME
+
+    return languageName
+
+def write_code_in_file(tempPath):
+    tests = request.form[OtherResources.const.GET_CODE]
+    unicode(tests)
+    tests = tests.replace(OtherResources.const.LINUX_NEW_LINE, OtherResources.const.WINDOWS_NEW_LINE)
+    usedLanguageName = request.form[OtherResources.const.LANGUAGE]
+    
+    fileName = get_language_name(usedLanguageName, tests)
+    try:
+        fout = open(os.path.join(tempPath, fileName), 'w')
+        fout.write(tests)
+        fout.close()
+    except:
+        os.system("rm -rf %s" % tempPath)
+        return unknown_error(get_message('fileSaveError'))
+    return usedLanguageName, fileName
+@GradeServer.route('/problem_<courseId>_<problemId>_<problemName>', methods = ['POST'])
+@login_required
+def upload(courseId, problemId, problemName):
+    memberId = session[SessionResources.const.MEMBER_ID]
+    filePath, tempPath = make_path(PATH, memberId, courseId, problemId, problemName)
+    try:
+        os.mkdir(tempPath)
+    except Exception as e:
+        flash(get_message('askToMaster'))
+        return "0"
+      
+    try:
+        uploadFiles = request.files.getlist(OtherResources.const.GET_FILES)
+        usedLanguageName = request.form[OtherResources.const.USED_LANGUAGE_NAME]
+        sumOfSubmittedFileSize = file_save_with_insert_to_SubmittedFiles(memberId, courseId, problemId, uploadFiles, tempPath, filePath)
+        send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, usedLanguageName, sumOfSubmittedFileSize, problemName, filePath, tempPath)
+    except:
+        os.system("rm -rf %s" % tempPath)
+        return unknown_error(get_message('askToMaster'))        
+    return "0"
+
+@GradeServer.route('/problem_<courseId>_page<pageNum>_<problemId>_<problemName>', methods = ['POST'])
+@login_required
+def code(courseId, pageNum, problemId, problemName):
+    memberId = session[SessionResources.const.MEMBER_ID]
+    filePath, tempPath = make_path(PATH, memberId, courseId, problemId, problemName)
+    try:
+        os.mkdir(tempPath)
+    except Exception as e:
+        return unknown_error(get_message('askToMaster'))
+    
+    try:
+        usedLanguageName, fileName = write_code_in_file(tempPath)
+        fileSize = os.stat(os.path.join(tempPath, fileName)).st_size
+        fileIndex = 1
+        delete_submitted_files_data(memberId, problemId, courseId)
+        insert_submitted_files(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
+        send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, usedLanguageName, fileSize, problemName, filePath, tempPath)
+    except:
+        os.system("rm -rf %s" % tempPath)
+        return unknown_error(get_message('askToMaster'))
+    return redirect(url_for(RouteResources.const.PROBLEM_LIST,
+                            courseId = courseId,
+                            pageNum = pageNum))
