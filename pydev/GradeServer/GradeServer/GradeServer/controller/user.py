@@ -76,8 +76,6 @@ def submission_record(memberId, sortCondition, pageNum):
         except Exception:
             #None Type Exception
             submissionRecords = []
-        for k in submissionRecords:
-            print k.codeSubmissionDate
             
         return render_template(HTMLResources().const.SUBMISSION_RECORD_HTML,
                                SETResources = SETResources,
