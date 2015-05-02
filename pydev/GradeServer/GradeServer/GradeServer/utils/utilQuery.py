@@ -24,6 +24,7 @@ from GradeServer.model.articlesOnBoard import ArticlesOnBoard
  '''
 def select_all_users():
         # 자동 완성을 위한 모든 유저기록
+    print "In"
     return dao.query(Members.memberId,
                      Members.memberName).\
                filter(Members.authority == SETResources().const.USER)

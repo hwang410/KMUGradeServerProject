@@ -9,7 +9,7 @@ from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
-from GradeServer.utils.utilQuery import select_match_members_of_course, select_match_member
+from GradeServer.utils.utilQuery import select_all_users, select_match_members_of_course, select_match_member
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
@@ -170,10 +170,14 @@ def make_team(error = None):
         global gTeamMembersId, gTeamName, gTeamDescription
                 # 자동 완성을 위한 모든 유저기록
         try :
-            memberRecords = select_all_user().all()
+            memberRecords = select_all_users().all()
         except Exception:
             memberRecords = []
-            
+        
+        print "?", memberRecords
+        for k in memberRecords:
+            print k.memberId
+                
         if request.method == 'GET':
             del gTeamMembersId[:]
             gTeamName, gTeamDescription = None, None

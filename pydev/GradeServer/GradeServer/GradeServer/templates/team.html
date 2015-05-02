@@ -6,10 +6,10 @@
 {%- block body %}
 <div class="container">
 	<div>
-		<h3>Team</h3>
-		<a href="{{ url_for('GradeServer.make_team') }}"><button class="btn" type="button">Make Team</button></a>
+		<h3>Team managing</h3>
+		<a href="{{ url_for('GradeServer.make_team') }}"><button class="btn" type="button">Team creation</button></a>
 		<div class="btn-group">
-			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Invitee<span class="caret"></span></a>
+			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Invitees<span class="caret"></span></a>
 			<ul class="dropdown-menu">
 				{% for i in range (0, teamInvitationRecords|length) %}
 				<li>
@@ -43,7 +43,7 @@
 		</div>
 		<table class="table table-bordered" style="margin-top:10px">
 			<thead>
-				<tr><td>Team Name</td><td>Team Master</td><td>Team Member</td></tr>
+				<tr><td>Name</td><td>Master</td><td>Members</td></tr>
 			</thead>
 			<tbody>
 			{%- for teamRecord in teamRecords %}

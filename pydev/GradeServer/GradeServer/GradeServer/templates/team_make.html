@@ -7,69 +7,85 @@
 <script>
 $(function() {
 
-	var members = [
-		{% for member in memberRecords %}
-			{ value: "{{ member.memberId }} {{ member.memberName }}" },
-		{% endfor %}
-		{ value: ""}
+	var members= [
+		{%- for member in memberRecords %}
+			{ value: "{{ member.memberId }} {{ member.memberName }}", data: "{{ member.memberId }}" },
+		{% endfor -%}
+		{ value: "" }
 	];
 	$("#search-members").autocomplete({
 		lookup: members,
 		onSelect: function(suggestion){
-    }
+			var memberId = suggestion.data.split(" ")[0];
+			//document.getElementById(this.id).value = userId;
+			document.getElementById(this.id).value = memberId;
+		}
 	});
 });
 </script>
 
 <div class="container">
-	<form method ="post">
-		<h3>Make Team</h3>
+	<form method="post">
+		<h3>Team creation</h3>
 		<div class="row-fluid">
-			<div class="span12">
-				<div class="row-fluid">
-					<div class="span8">
-						<div><h4>&nbsp</h4></div>
-						<table class="table table-bordered">
-							<tr>
-								<td>Team Name</td>
-								<td>
-									<input name ="teamName" type="text" style="width:96%;" placeholder="Team Name"
-									value ="{% if gTeamName %}{{ gTeamName }}{% endif %}" autofocus ="autofocus">
-								</td>
-							</tr>
-							<tr>
-								<td>Team Description</td>
-								<td>
-									<input name ="teamDescription" type="text" style="width:96%;" placeholder="Team Description" 
-									value= "{% if gTeamDescription %}{{ gTeamDescription }}{% endif %}">
-								</td>
-							</tr>
-							<tr><td>Team Master</td><td><span class="uneditable-input" style="width:96%">{{ session['memberId'] }}</span></td></tr>
-							<tr><td>Team Member</td><td>
-								<div id="searchfield">
-									<input id ="search-members" name ="inviteeId" type="text" style="width:84%" placeholder="Invitee Id">
-									<button name ="inviteeMember" class="btn btn-small" type="submit">Invitee</button></td>
-								</div>
-							</tr>
-						</table>
-					</div>
-					<div class="span4">
-						<div style="text-align:center"><h4>Invitee Members</h4></div>
-						<table class="table table-bordered">
-							<thead>
-								<tr><td>Member Id</td><td>Delete</td></tr>
-							</thead>
-							{% for i in range (0, gTeamMembersId|length) %}
-							<tr><td>{% if gTeamMembersId[i] %}{{ gTeamMembersId[i] }}{% endif %}</td><td>
-								<button name ="deleteInviteeMember{{ i }}" class="btn btn-small" type="submit">Delete</button></td>
-							</tr>
-							{% endfor %}
-						</table>
-					</div>
-				</div>
+			<div class="span8">
+				<div><h4>&nbsp</h4></div>
+				<table class="table table-bordered">
+					<tr>
+						<td>Name
+						<td>
+							<input name="teamName" type="text" style="width:96%" placeholder="Team Name"
+									value="{%- if gTeamName %}{{ gTeamName }}{% endif -%}" autofocus="autofocus">
+					</tr>
+					<tr>
+						<td>Description
+						<td>
+							<input name="teamDescription" type="text" style="width:96%;" placeholder="Team Description" 
+									value= "{%- if gTeamDescription %}{{ gTeamDescription }}{% endif -%}">
+						
+					</tr>
+					<tr>
+						<td>Master
+						<td>
+							{{ session['memberId'] }}
+					</tr>
+					<tr>
+						<td>Invitation
+						<td class="span12">
+							<div class="span10 hidden-phone">
+								<input id="search-members" name="inviteeId" type="text" style="width:96%;float:left" placeholder="Invitee Id">
+							</div>
+							<div class="span2 hidden-phone">
+								<button class="btn btn-small" name="inviteeMember" type="submit" style="width:96%;float:left">Invite</button>
+							</div>
+							<!-- for mobile -->
+							<div class="span12 hidden-desktop hidden-tablet">
+								<input id="search-members" name="inviteeId" type="text" style="width:78%;float:left;display:inline" placeholder="Invitee Id">
+								<button class="btn btn-small" name="inviteeMember" type="submit" style="display:inline;width:15%;margin:-30px 0 0 100%;float:right">Invite</button>
+							</div>
+					</tr>
+				</table>
+			</div>
+			<div class="span4">
+				<div style="text-align:center"><h4>Invitees</h4></div>
+				<table class="table table-bordered">
+					<thead>
+						<tr><td>ID<td>Delete</tr>
+					</thead>
+					{%- for i in range (0, gTeamMembersId|length) %}
+					<tr>
+						<td>
+							{%- if gTeamMembersId[i] %}
+								{{ gTeamMembersId[i] }}
+							{% endif -%}
+						<td>
+							<button name="deleteInviteeMember{{ i }}" class="btn btn-small" type="submit">Delete</button>
+					</tr>
+					{% endfor -%}
+				</table>
 			</div>
 		</div>
-		<a href="#"><button name ="makeTeam" class="btn btn-large" type="submit">Make</button></a>
+		<button name="makeTeam" class="btn" type="submit">Create</button>
 	</form>
 </div>
 {% endblock -%}
