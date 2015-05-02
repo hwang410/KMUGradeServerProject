@@ -58,7 +58,14 @@ def submission_record(memberId, sortCondition, pageNum):
             #None Type Exception
             chartSubmissionRecords = []
         # Viiew Value Text
-        chartSubmissionDescriptions = ['맞춘 문제 갯수','총 제출 횟수', '맞춘 횟수', '오답 횟수', '타임오버 횟수', '컴파일 에러 횟수', '런타임 에러 횟수', '서버 에러 횟수']
+        chartSubmissionDescriptions = ['Solved Problems',
+                                       'Total Submissions',
+                                       'Solved',
+                                       'Wrong answer',
+                                       'Timeover',
+                                       'Compile error',
+                                       'Runtime error',
+                                       'Server error']
         
         try:                           
                         # 모든 제출 정보
@@ -69,7 +76,9 @@ def submission_record(memberId, sortCondition, pageNum):
         except Exception:
             #None Type Exception
             submissionRecords = []
-       
+        for k in submissionRecords:
+            print k.codeSubmissionDate
+            
         return render_template(HTMLResources().const.SUBMISSION_RECORD_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
@@ -218,14 +227,3 @@ def edit_personal(error = None):
         gContactNumber, gEmailAddress, gComment = None, None, None
         
         return unknown_error()
-    
-""" ===== end Basic user space ===== """
-
-
-""" ===== class master space ===== """
-
-""" ===== end class master space ===== """
-
-""" ===== server master space ===== """
-
-""" ===== end server master space ===== """
