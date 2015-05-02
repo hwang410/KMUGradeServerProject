@@ -45,7 +45,7 @@
 		
 			<div style="text-align:right">
 				<a href="{{ url_for('GradeServer.write', activeTabCourseId = activeTabCourseId, articleIndex =0) }}">
-					<button type="button" class="write">Write<i class="icon-pencil"></i></button>
+					<button type="button" class="write">Write <i class="icon-pencil"></i></button>
 				</a>
 			</div>
 		</ul>
@@ -60,54 +60,78 @@
 					<table class="table">
 						<thead>
 							<tr>
-								<td>Num</td>
-								<td>Course Name</td>
-								<td>Title</td>
-								<td>User Id</td>
-								<td>Date</td>
-								<td>View</td>
-								<td>Like</td>
+								<td>Num
+								<td>Course Name
+								<td>Title
+								<td>Member ID
+								<td>Date
+								<td>View
+								<td>Like
 							</tr>
-						</thead>
-						
 						<tbody>
 						<!-- Course Notice -->
 						{% for articleNoticeRecord in articleNoticeRecords %}
 						<tr>
-							<td>Notice</td>
+							<td>Notice
 							<td>
 								{% if articleNoticeRecord.courseName %}
 								{{ articleNoticeRecord.courseId }} {{ articleNoticeRecord.courseName }}
 								{% else %}
 								Server Notice
 								{% endif %}
-							</td>
-							<td><a href= '{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleNoticeRecord.articleIndex) }}'>{{ articleNoticeRecord.title }}</a>
+							
+							<td>
+								<a href= '{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleNoticeRecord.articleIndex) }}'>
+									<script> 
+										// if title is longer than 10 charater, change it to short
+										var newTitle = "{{ articleNoticeRecord.title }}"; 
+										if(newTitle.length >= 10){
+											newTitle = newTitle.substring(0,10)+"...";
+										}
+										document.write(newTitle);
+									</script>
+								</a>
 								{%- if articleNoticeRecord.replyCount > 0 %}
 									[{{ articleNoticeRecord.replyCount }}]
 								{% endif -%}
-							</td>
-							<td>{% if articleNoticeRecord.writerId %}{{ articleNoticeRecord.writerId }}{% endif %}</td>
-							<td>{% if articleNoticeRecord.writtenDate %}{{ articleNoticeRecord.writtenDate }}{% endif %}</td>
-							<td>{% if articleNoticeRecord.viewCount %}{{ articleNoticeRecord.viewCount }}{% else %}0{% endif %}</td>
-							<td>{% if articleNoticeRecord.sumOfLikeCount %}{{ articleNoticeRecord.sumOfLikeCount }}{% else %}0{% endif %}</td>
+							
+							<td>{% if articleNoticeRecord.writerId %}{{ articleNoticeRecord.writerId }}{% endif %}
+							<td>
+								{% if articleNoticeRecord.writtenDate %}
+									<script> var newDate = "{{ articleNoticeRecord.writtenDate }}"; document.write(newDate.substring(2,16)); </script>
+								{% endif %}
+							<td>{% if articleNoticeRecord.viewCount %}{{ articleNoticeRecord.viewCount }}{% else %}0{% endif %}
+							<td>{% if articleNoticeRecord.sumOfLikeCount %}{{ articleNoticeRecord.sumOfLikeCount }}{% else %}0{% endif %}
 						</tr>
 						{% endfor %}
 						
 						<!-- Course Article -->
 						{% for articleRecord in articleRecords %}
 						<tr>
-							<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
-							<td>{% if articleRecord.courseId and articleRecord.courseName %}{{ articleRecord.courseId}} {{ articleRecord.courseName }}{% endif %}</td>
-							<td><a href='{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
+							<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}
+							<td>{% if articleRecord.courseId and articleRecord.courseName %}{{ articleRecord.courseId}} {{ articleRecord.courseName }}{% endif %}
+							<td>
+								<a href='{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleRecord.articleIndex) }}'>
+									<script> 
+										// if title is longer than 10 charater, change it to short
+										var newTitle = "{{ articleRecord.title }}"; 
+										if(newTitle.length >= 10){
+											newTitle = newTitle.substring(0,10)+"...";
+										}
+										document.write(newTitle);
+									</script>
+								</a>
 								{% if articleRecord.replyCount > 0 %}
 									[{{ articleRecord.replyCount }}]
 								{% endif %}
-							</td>
-							<td>{% if articleRecord.writerId %}{{ articleRecord.writerId }}{% endif %}</td>
-							<td>{% if articleRecord.writtenDate %}{{ articleRecord.writtenDate }}{% endif %}</td>
-							<td>{% if articleRecord.viewCount %}{{ articleRecord.viewCount }}{% else %}0{% endif %}</td>
-							<td>{% if articleRecord.sumOfLikeCount %}{{ articleRecord.sumOfLikeCount }}{% else %}0{% endif %}</td>
+							
+							<td>{% if articleRecord.writerId %}{{ articleRecord.writerId }}{% endif %}
+							<td>
+								{% if articleRecord.writtenDate %}
+									<script> var newDate = "{{ articleRecord.writtenDate }}"; document.write(newDate.substring(2,16)); </script>
+								{% endif %}
+							<td>{% if articleRecord.viewCount %}{{ articleRecord.viewCount }}{% else %}0{% endif %}
+							<td>{% if articleRecord.sumOfLikeCount %}{{ articleRecord.sumOfLikeCount }}{% else %}0{% endif %}
 						</tr>
 						{% endfor %}
 						</tbody>
@@ -144,13 +168,13 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<td>Num</td>
-							<td>Course Name</td>
-							<td>Title</td>
-							<td>User Id</td>
-							<td>Date</td>
-							<td>View</td>
-							<td>Like</td>
+							<td>Num
+							<td>Course Name
+							<td>Title
+							<td>Member ID
+							<td>Date
+							<td>View
+							<td>Like
 						</tr>
 					</thead>
 					
@@ -158,40 +182,66 @@
 					<!-- Course Notice -->
 					{% for articleNoticeRecord in articleNoticeRecords %}
 					<tr>
-						<td>Notice</td>
+						<td>Notice
 						<td>
 							{% if articleNoticeRecord.courseName %}
 							{{ articleNoticeRecord.courseId }} {{ articleNoticeRecord.courseName }}
 							{% else %}
 							Server Notice
 							{% endif %}
-						</td>
-						<td><a href= '{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleNoticeRecord.articleIndex) }}'>{{ articleNoticeRecord.title }}</a>
+						
+						<td>
+							<a href= '{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleNoticeRecord.articleIndex) }}'>
+								<script> 
+									// if title is longer than 10 charater, change it to short
+									var newTitle = "{{ articleNoticeRecord.title }}"; 
+									if(newTitle.length >= 10){
+										newTitle = newTitle.substring(0,10)+"...";
+									}
+									document.write(newTitle);
+								</script>
+							</a>
 							{%- if articleNoticeRecord.replyCount > 0 %}
 								[{{ articleNoticeRecord.replyCount }}]
 							{% endif -%}
-						</td>
-						<td>{% if articleNoticeRecord.writerId %}{{ articleNoticeRecord.writerId }}{% endif %}</td>
-						<td>{% if articleNoticeRecord.writtenDate %}{{ articleNoticeRecord.writtenDate }}{% endif %}</td>
-						<td>{% if articleNoticeRecord.viewCount %}{{ articleNoticeRecord.viewCount }}{% else %}0{% endif %}</td>
-						<td>{% if articleNoticeRecord.sumOfLikeCount %}{{ articleNoticeRecord.sumOfLikeCount }}{% else %}0{% endif %}</td>
+						
+						<td>{% if articleNoticeRecord.writerId %}{{ articleNoticeRecord.writerId }}{% endif %}
+						<td>
+							{% if articleNoticeRecord.writtenDate %}
+								<script> var newDate = "{{ articleNoticeRecord.writtenDate }}"; document.write(newDate.substring(2,16)); </script>
+							{% endif %}
+						<td>{% if articleNoticeRecord.viewCount %}{{ articleNoticeRecord.viewCount }}{% else %}0{% endif %}
+						<td>{% if articleNoticeRecord.sumOfLikeCount %}{{ articleNoticeRecord.sumOfLikeCount }}{% else %}0{% endif %}
 					</tr>
 					{% endfor %}
 					
 					<!-- Course Article -->
 					{% for articleRecord in articleRecords %}
 					<tr>
-						<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}</td>
-						<td>{% if articleRecord.courseId and articleRecord.courseName %}{{ articleRecord.courseId}} {{ articleRecord.courseName }}{% endif %}</td>
-						<td><a href='{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleRecord.articleIndex) }}'>{{ articleRecord.title }}</a>
+						<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}
+						<td>{% if articleRecord.courseId and articleRecord.courseName %}{{ articleRecord.courseId}} {{ articleRecord.courseName }}{% endif %}
+						<td>
+							<a href='{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleRecord.articleIndex) }}'>
+								<script> 
+									// if title is longer than 10 charater, change it to short
+									var newTitle = "{{ articleRecord.title }}"; 
+									if(newTitle.length >= 10){
+										newTitle = newTitle.substring(0,10)+"...";
+									}
+									document.write(newTitle);
+								</script>
+							</a>
 							{% if articleRecord.replyCount > 0 %}
 								[{{ articleRecord.replyCount }}]
 							{% endif %}
-						</td>
-						<td>{% if articleRecord.writerId %}{{ articleRecord.writerId }}{% endif %}</td>
-						<td>{% if articleRecord.writtenDate %}{{ articleRecord.writtenDate }}{% endif %}</td>
-						<td>{% if articleRecord.viewCount %}{{ articleRecord.viewCount }}{% else %}0{% endif %}</td>
-						<td>{% if articleRecord.sumOfLikeCount %}{{ articleRecord.sumOfLikeCount }}{% else %}0{% endif %}</td>
+						
+						<td>{% if articleRecord.writerId %}{{ articleRecord.writerId }}{% endif %}
+						<td>
+							{% if articleRecord.writtenDate %}
+								<script> var newDate = "{{ articleRecord.writtenDate }}"; document.write(newDate.substring(2,16)); </script>
+							{% endif %}
+						<td>{% if articleRecord.viewCount %}{{ articleRecord.viewCount }}{% else %}0{% endif %}
+						<td>{% if articleRecord.sumOfLikeCount %}{{ articleRecord.sumOfLikeCount }}{% else %}0{% endif %}
 					</tr>
 					{% endfor %}
 					</tbody>
@@ -245,7 +295,7 @@
 
 				<div class="input-append" style="margin-bottom:0px">
 					<input class="span3" name = 'keyWord' type="text" placeholder="Type Keyword">
-					<button id = 'filterCondition' name = '{{ Filters[0] }}' class="btn" type="submit">Find<i class="icon-search"></i></button>
+					<button id = 'filterCondition' name = '{{ Filters[0] }}' class="btn" type="submit"><i class="icon-search"></i></button>
 				</div>
 			</div>
 	</form>

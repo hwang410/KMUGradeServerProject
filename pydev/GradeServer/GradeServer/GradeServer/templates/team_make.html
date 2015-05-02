@@ -34,13 +34,13 @@ $(function() {
 					<tr>
 						<td>Name
 						<td>
-							<input name="teamName" type="text" style="width:96%" placeholder="Team Name"
+							<input name="teamName" type="text" style="width:96%" placeholder="Enter your team name"
 									value="{%- if gTeamName %}{{ gTeamName }}{% endif -%}" autofocus="autofocus">
 					</tr>
 					<tr>
 						<td>Description
 						<td>
-							<input name="teamDescription" type="text" style="width:96%;" placeholder="Team Description" 
+							<input name="teamDescription" type="text" style="width:96%;" placeholder="Team description" 
 									value= "{%- if gTeamDescription %}{{ gTeamDescription }}{% endif -%}">
 						
 					</tr>
@@ -53,14 +53,14 @@ $(function() {
 						<td>Invitation
 						<td class="span12">
 							<div class="span10 hidden-phone">
-								<input id="search-members" name="inviteeId" type="text" style="width:96%;float:left" placeholder="Invitee Id">
+								<input id="search-members" name="inviteeId" type="text" style="width:96%;float:left" placeholder="Invitee ID">
 							</div>
 							<div class="span2 hidden-phone">
 								<button class="btn btn-small" name="inviteeMember" type="submit" style="width:96%;float:left">Invite</button>
 							</div>
 							<!-- for mobile -->
 							<div class="span12 hidden-desktop hidden-tablet">
-								<input id="search-members" name="inviteeId" type="text" style="width:78%;float:left;display:inline" placeholder="Invitee Id">
+								<input id="search-members" name="inviteeId" type="text" style="width:78%;float:left;display:inline" placeholder="Invitee ID">
 								<button class="btn btn-small" name="inviteeMember" type="submit" style="display:inline;width:15%;margin:-30px 0 0 100%;float:right">Invite</button>
 							</div>
 					</tr>
