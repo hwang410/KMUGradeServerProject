@@ -90,7 +90,7 @@
     display: none !important;
   }
   .visible-phone {
-    display: inherit !important;
+    display: inline-block !important;
   }
   .hidden-phone {
     display: none !important;

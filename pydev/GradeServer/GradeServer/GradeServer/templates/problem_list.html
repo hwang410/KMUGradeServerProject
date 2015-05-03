@@ -9,47 +9,71 @@
 <div class="container">
 	<h2>{{ courseRecords.courseId }} {{ courseRecords.courseName }}</h2>
 	<div style="text-align:center">
-			<span class="label label-solved">Solved</span>
-			<span class="label label-warning">Never Submitted</span>
-			<span class="label label-important">Wrong Answer</span>
+		<div class="visible-phone" style="margin-bottom:10px">
+			<span class="label label-info">Solved</span>
+			<span class="label label-important">Wrong</span>
+			<span class="label label-warning">NeverSubmitted & Error</span>
+		</div>
 	</div>
 	<table class="problem_list table table-bordered">
 		<thead>
 			<tr>
-				<td>Num</td><td>Title</td><td>Score</td><td>Status</td><td>Due Date</td><td>Count</td><td>Record</td>
+				<td class="hidden-phone">Num
+				<td>Title
+				<td>Score
+				<td>Status
+				<td>Due Date
+				<td>Count
+				<td>Record
 			</tr>
-		</thead>
-		{% for problemListRecord in problemListRecords %}
-		<tr class = '{% if problemListRecord.status == "SOLVED" %}label-solved
-							   {% elif not problemListRecord.status %}label-warning
-							   {% else %}label-important
-							   {% endif %}'>
-			<td style ='vertical-align: middle'>
-				{{ (problemListRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}
-			</td>
-			<td style ='vertical-align: middle'>
-				<a href="{{ url_for('GradeServer.problem', courseId = courseRecords.courseId, problemId = problemListRecord.problemId, pageNum = pages['pageNum']) }}">
-					{% if problemListRecord.problemName %}{{ problemListRecord.problemName }}{% endif %}
-				</a>
-			</td>
-			<td style ='vertical-align: middle'>
-				{% if problemListRecord.score %}{{ problemListRecord.score }}{% else %}0{% endif %}
-			</td>
-			<td style ='vertical-align: middle'>
-				{% if problemListRecord.status %}{{ problemListRecord.status }}{% else %}Never Submitted{% endif %}
-			</td>
-			<td style ='vertical-align: middle'>
-				{{ problemListRecord.startDateOfSubmission }}<br>~{{ problemListRecord.endDateOfSubmission }}
-			</td>
-			<td style ='vertical-align: middle'>
-				{% if problemListRecord.solutionCheckCount %}{{ problemListRecord.solutionCheckCount }}{% else %}0{% endif %}
-			</td>
-			<td style ='vertical-align: middle'>
-				<a href="{{ url_for('GradeServer.problem_record', courseId = courseRecords.courseId, problemId = problemListRecord.problemId, sortCondition = 'submissionDate') }}" onclick="setLegend()">
-					Problem Record
-				</a>
-			</td>
-		</tr>
+		<tbody>
+			{% for problemListRecord in problemListRecords %}
+			<tr>
+				<td class="hidden-phone">
+					{{ (problemListRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}
+				<td>
+					<a href="{{ url_for('GradeServer.problem', courseId=courseRecords.courseId, problemId=problemListRecord.problemId, pageNum=pages['pageNum']) }}">
+						{%- if problemListRecord.problemName %}{{ problemListRecord.problemName }}{% endif -%}
+					</a>
+				<td>
+					{%- if problemListRecord.score %}{{ problemListRecord.score }}{%- else %}0{% endif -%}
+				<td>
+					<span class='label label-{%- if problemListRecord.status == "SOLVED" %}info
+											     {% elif problemListRecord.status == "WRONG_ANSWER" %}important
+											     {%- else %}warning
+											     {% endif -%}'>
+						<div class="hidden-phone">{%- if problemListRecord.status %}{{ problemListRecord.status }}{%- else %}Never Submitted{% endif -%}</div>
+						<div class="visible-phone">&nbsp;</div>
+					</span>
+				<td class="responsiveTD" align="center">
+					<div class="hidden-phone">
+						<script>
+							// cut from YYYY-MM-DD hh:mm:ss to YY-MM-DD hh:mm
+							var newDate="{{ problemListRecord.startDateOfSubmission }}";
+							document.write(newDate.substring(2,16));
+							document.write("<br>");
+							newDate="{{ problemListRecord.endDateOfSubmission }}";
+							document.write(newDate.substring(2,16));
+						</script>
+					</div>
+					<div class="visible-phone">
+						<script>
+							// cut from YYYY-MM-DD hh:mm:ss to YY-MM-DD hh:mm
+							var newDate="{{ problemListRecord.startDateOfSubmission }}";
+							document.write(newDate.substring(2,10));
+							document.write("<br>");
+							newDate="{{ problemListRecord.endDateOfSubmission }}";
+							document.write(newDate.substring(2,10));
+						</script>
+					</div>
+				<td>
+					{%- if problemListRecord.solutionCheckCount %}{{ problemListRecord.solutionCheckCount }}{%- else %}0{% endif -%}
+				<td>
+					<a href="{{ url_for('GradeServer.problem_record', courseId=courseRecords.courseId, problemId=problemListRecord.problemId, sortCondition='submissionDate') }}" onclick="setLegend()">
+						<div class="hidden-phone">Problem Record</div>
+						<div class="visible-phone">Record</div>
+					</a>
+			</tr>
 		{% endfor %}
 	</table>
 	
@@ -57,23 +81,23 @@
 	<div class="pagination pagination-centered">
 		<ul>
 			{%- if pages['pageNum'] > pages['BLOCK'] %}
-			<li><a href="{{ url_for ('GradeServer.problem_list', courseId = courseRecords.courseId, pageNum = pages['pageNum'] - 1) }}"><</a></li>
+			<li><a href="{{ url_for ('GradeServer.problem_list', courseId=courseRecords.courseId, pageNum=pages['pageNum'] - 1) }}"><</a></li>
 			{% endif -%}
 			
 			{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
 			<li>
-				{% if pages['pageNum'] == i %}
+				{%- if pages['pageNum'] == i %}
 				<a style ='background-color:gray'>
-				{% else %}
-				<a href="{{ url_for ('GradeServer.problem_list', courseId = courseRecords.courseId, pageNum = i) }}">
-				{% endif %}
+				{%- else %}
+				<a href="{{ url_for ('GradeServer.problem_list', courseId=courseRecords.courseId, pageNum=i) }}">
+				{% endif -%}
 				{{ i }}
 				</a>
 			</li>
 			{% endfor -%}
 			
 			{%- if pages['endPage'] < pages['allPage'] %}
-			<li><a href="{{ url_for ('GradeServer.problem_list', courseId = courseRecords.courseId, pageNum =pages['pageNum'] + 1) }}">></a></li>
+			<li><a href="{{ url_for ('GradeServer.problem_list', courseId=courseRecords.courseId, pageNum =pages['pageNum'] + 1) }}">></a></li>
 			{% endif -%}
 		</ul>
 	</div>
