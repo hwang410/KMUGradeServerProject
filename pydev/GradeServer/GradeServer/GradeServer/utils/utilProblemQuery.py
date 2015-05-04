@@ -66,3 +66,15 @@ def join_problem_lists_submissions(problems, submissions):
                outerjoin(submissions,
                          problems.c.problemId == submissions.c.problemId).\
                order_by(problems.c.startDateOfSubmission.desc())
+   
+
+'''
+Submission code View Counting
+'''
+def update_submission_code_view_count(lastSubmission, memberId, courseId, problemId):
+    dao.query(Submissions).\
+        filter(Submissions.memberId == memberId,
+               ubmissions.courseId == courseId,
+               Submissions.problemId == problemId,
+               Submissions.submissionCount == lastSubmission.c.submissionCount).\
+        update(dict(viewCount = Submissions.viewCount + 1))

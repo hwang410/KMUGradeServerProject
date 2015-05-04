@@ -12,9 +12,10 @@ from GradeServer.utils.utilQuery import select_count
 from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_last_submissions, select_all_submissions, select_current_submissions,\
                                                   select_submissions_peoples_counts, select_solved_peoples_counts, select_submitted_records_of_problem,\
                                                   select_problem_chart_submissions, select_solved_submissions, select_submitted_files
-from GradeServer.utils.utilProblemQuery import join_problems_names, select_problems_of_course, join_problem_lists_submissions,select_problem_informations
+from GradeServer.utils.utilProblemQuery import join_problems_names, select_problems_of_course, join_problem_lists_submissions,select_problem_informations,\
+                                               update_submission_code_view_count
                                                
-from GradeServer.utils.utilMessages import unknown_error
+from GradeServer.utils.utilMessages import unknown_error, get_message
 
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.htmlResources import HTMLResources
@@ -238,7 +239,7 @@ def problem_record(courseId, problemId, sortCondition = OtherResources().const.R
 @GradeServer.route('/submission_code/<memberId>/<courseId>-<problemId>')
 @check_invalid_access
 @login_required
-def submission_code(memberId, courseId, problemId):
+def submission_code(memberId, courseId, problemId, error = None):
     
     # Get endDateOfSubmission of Problem
     try:
@@ -252,6 +253,23 @@ def submission_code(memberId, courseId, problemId):
     if SETResources().const.SERVER_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]\
        or SETResources().const.COURSE_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]\
        or endDateOfSubmission <= datetime.now():
+        
+        # last Submissions Info
+        lastSubmission = select_last_submissions(memberId = memberId,
+                                                 courseId = courseId,
+                                                 problemId = problemId).subquery()
+        # Code View Count Up
+        update_submission_code_view_count(lastSubmission,
+                                          memberId = memberId,
+                                          courseId = courseId,
+                                          problemId = problemId)
+        # Commit Exception
+        try:
+            dao.commit()
+        except Exception:
+            dao.rollback()
+            error = get_message('updateFailed')
+            
         # Problem Information (LimitedTime, LimitedMemory
         try:
             problemName = select_problem_informations(problemId).first().\
@@ -262,9 +280,7 @@ def submission_code(memberId, courseId, problemId):
         # Problem Solved Users
         try:
             # last Submissions Info
-            submissions = select_all_submissions(lastSubmission = select_last_submissions(memberId = memberId,
-                                                                                          courseId = courseId,
-                                                                                          problemId = problemId).subquery(),
+            submissions = select_all_submissions(lastSubmission,
                                                  memberId = memberId,
                                                  courseId = courseId,
                                                  problemId = problemId).subquery()
@@ -298,7 +314,8 @@ def submission_code(memberId, courseId, problemId):
                                submittedFileRecords = submittedFileRecords,
                                fileData = fileData,
                                problemName = problemName,
-                               problemSolvedMemberRecords = problemSolvedMemberRecords)
+                               problemSolvedMemberRecords = problemSolvedMemberRecords,
+                               error = error)
     #Access Rejection
     else:
         flash('코드를 볼 권한이 없습니다!!!')
