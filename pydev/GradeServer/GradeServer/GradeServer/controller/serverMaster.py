@@ -65,6 +65,7 @@ def server_manage_collegedepartment():
     
     try:
         allColleges = dao.query(Colleges).\
+                          filter(Colleges.isAbolished == SETResources().const.FALSE).\
                           all()
     except:
         error = 'Error has been occurred while searching colleges'
@@ -78,6 +79,8 @@ def server_manage_collegedepartment():
         allDepartments = (dao.query(DepartmentsOfColleges,
                                     Colleges,
                                     Departments).\
+                              filter(and_(Colleges.isAbolished == SETResources().const.FALSE,
+                                          Departments.isAbolished == SETResources().const.FALSE)).\
                               join(Colleges,
                                    Colleges.collegeIndex == DepartmentsOfColleges.collegeIndex).\
                               join(Departments,
@@ -93,12 +96,15 @@ def server_manage_collegedepartment():
                                allDepartments = [])
     
     if request.method == 'POST':
+        # initialization
         isNewCollege = False
         isNewDepartment = False
+        
         numberOfColleges = (len(request.form) - 1) / 2
-        newCollege = [['' for i in range(2)] for j in range(numberOfColleges + 1)]
+        newCollege = [['' for _ in range(2)] for __ in range(numberOfColleges + 1)]
         numberOfDepartments = (len(request.form) - 1) / 3
-        newDepartment = [['' for i in range(3)] for j in range(numberOfDepartments + 1)]
+        newDepartment = [['' for _ in range(3)] for __ in range(numberOfDepartments + 1)]
+        
         for form in request.form:
             if 'addCollege' in request.form:
                 isNewCollege = True
@@ -110,6 +116,7 @@ def server_manage_collegedepartment():
                         newCollege[index-1][0] = data
                     elif value == 'collegeName':
                         newCollege[index-1][1] = data
+                        
             elif 'addDepartment' in request.form:
                 isNewDepartment = True
                 if form != 'addDepartment':
@@ -122,12 +129,14 @@ def server_manage_collegedepartment():
                         newDepartment[index-1][1] = data
                     elif value == 'collegeIndex':
                         newDepartment[index-1][2] = data.split()[0]
+                        
             elif 'deleteCollege' in request.form:
                 if 'college' in form:
                     try:
                         collegeIndex = re.findall('\d+|\D+', form)[1]
-                        target = dao.query(Colleges).filter(Colleges.collegeIndex == collegeIndex).first()
-                        dao.delete(target)
+                        dao.query(Colleges).\
+                            filter(Colleges.collegeIndex == collegeIndex).\
+                            update(dict(isAbolished = SETResources().const.TRUE))
                         dao.commit()
                     except:
                         error = 'Delete all departments before this work'
@@ -138,14 +147,23 @@ def server_manage_collegedepartment():
                                                SessionResources = SessionResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
+                    currentTab = 'colleges'
+                    
             elif 'deleteDepartment' in request.form:
                 if 'department' in form:
                     try:
                         departmentIndex = re.findall('\d+|\D+', form)[1]
-                        target = dao.query(DepartmentsOfColleges).filter(DepartmentsOfColleges.departmentIndex == departmentIndex).first()
-                        dao.delete(target)
+                        
+                        # updates abolition 
+                        dao.query(Departments).\
+                            filter(Departments.departmentIndex == departmentIndex).\
+                            update(dict(isAbolished = SETResources().const.TRUE))
                         dao.commit()
-                        target = dao.query(Departments).filter(Departments.departmentIndex == departmentIndex).first()
+                        
+                        # delete its relation
+                        target = dao.query(DepartmentsOfColleges).\
+                                     filter(DepartmentsOfColleges.departmentIndex == departmentIndex).\
+                                     first()
                         dao.delete(target)
                         dao.commit()
                     except:
@@ -157,6 +175,7 @@ def server_manage_collegedepartment():
                                                SessionResources = SessionResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
+                    currentTab = 'departments'
         
                 
         if isNewCollege:
@@ -233,7 +252,6 @@ def server_manage_collegedepartment():
 @check_invalid_access
 @login_required
 def server_manage_class():
-        
     error = None
     
     try:
