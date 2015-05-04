@@ -26,7 +26,10 @@
 		{% endif %}
 		<br>
 		{% if articlesOnBoard.writerId %}
-			Writer : {{ articlesOnBoard.writerId }}
+			Writer : 
+			<a href = '{{ url_for("GradeServer.submission_record", memberId=articlesOnBoard.writerId, sortCondition="submissionDate", pageNum=1) }}'>
+			 {{ articlesOnBoard.writerId }}
+			 </a>
 		{% endif %}
 		</div>
 		<hr>
@@ -74,7 +77,7 @@
 	<!-- put the comments here -->
 
 	<form method="post">
-		<div class='row-fluid'>
+		<div class='row-fluid' style = 'margin-bottom:10px'>
 			<div class='span11'>
 				<textarea name="writeReplytoArticle" style="width:100%" onkeyup="autoSize(this)" autocomplete="off" placeholder="Comment" rows=3></textarea>
 			</div>
@@ -85,7 +88,7 @@
 	</form>
 
 	{% for repliesOnBoardRecord in repliesOnBoardRecords %}
-	<hr>
+	<hr style ='margin-top:0%;margin-bottom:0%'>
 	<div class='row-fluid'>
 		<form method="post" id="myform">
 			<a href='{{ url_for ("GradeServer.submission_record", memberId=repliesOnBoardRecord.boardReplierId, sortCondition="submissionDate", pageNum=1) }}'>
@@ -93,56 +96,60 @@
 			:
 			<!-- Content, WrittenDate -->
 			
+			{% if boardReplyIndex and boardReplyIndex == repliesOnBoardRecord.boardReplyIndex %}
 			<div class='row-fluid'>
 				<div class="span11">
-					{% if boardReplyIndex and boardReplyIndex == repliesOnBoardRecord.boardReplyIndex %}
 					<textarea name="modifyConfirmArticleComment{{ boardReplyIndex }}" style="width:100%" autofocus="autofocus" onfocus="autoSize(this)" onkeyup="autoSize(this)" autocomplete="off" placeholder="Comment" rows=6>{% if repliesOnBoardRecord.boardReplyContent %}{{ repliesOnBoardRecord.boardReplyContent }}{% endif %}</textarea>
 				</div>
 				<div class="span1">
 					<button class="submit" style="width:100%">Confirm</button>
 				</div>
 			</div>
+			
 			{% else %}
-			<textarea class="span11" style="width:100%" readonly ="reaonly" onclick="autoSize(this)" rows=6>{% if repliesOnBoardRecord.boardReplyContent %}{{ repliesOnBoardRecord.boardReplyContent }}{% endif %}
-			</textarea>
-			{% if repliesOnBoardRecord.boardRepliedDate %}{{ repliesOnBoardRecord.boardRepliedDate }}{% endif %}
+			<div class='row-fluid'>
+				<div class="span11">
+					<textarea class="span11" style="width:100%" readonly ="reaonly" onclick="autoSize(this)" rows=6>{% if repliesOnBoardRecord.boardReplyContent %}{{ repliesOnBoardRecord.boardReplyContent }}{% endif %}
+					</textarea>
+				{% if repliesOnBoardRecord.boardRepliedDate %}{{ repliesOnBoardRecord.boardRepliedDate }}{% endif %}
 			<!-- like button -->
-			<button class="like btn btn-link" href="#" name="articleReplyLike{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">
-				{% if isLikeRecords[loop.index0] == 'TRUE' %} 
-				Like 
-				{% else %} 
-				UnLike 
-				{% endif %}
-			</button>
-			{% if repliesOnBoardRecord.sumOfLikeCount %}{{ repliesOnBoardRecord.sumOfLikeCount }}{% else %}0{% endif %}&nbsp;&nbsp;
+					<button class="like btn btn-link" href="#" name="articleReplyLike{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">
+						{% if isLikeRecords[loop.index0] == 'TRUE' %} 
+						Like 
+						{% else %} 
+						UnLike 
+						{% endif %}
+					</button>
+					{% if repliesOnBoardRecord.sumOfLikeCount %}{{ repliesOnBoardRecord.sumOfLikeCount }}{% else %}0{% endif %}&nbsp;&nbsp;
 			
 			<!-- delete button -->
 			<!-- replier and masters are availables to delete the comments -->
-				{% if repliesOnBoardRecord.boardReplierId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
-			<a href="#deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal">
-				<i class="icon-trash"></i>
-			</a>
+					{% if repliesOnBoardRecord.boardReplierId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
+					<a href="#deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal">
+						<i class="icon-trash"></i>
+					</a>
 			<!-- modify button -->
 			<!-- replier and masters are available to modify the comments -->
-			<button name ='modifyArticleComment{{ repliesOnBoardRecord.boardReplyIndex }}' role="button" class="btn btn-link">
-				<i class="icon-pencil"></i>
-			</button>
-
-			<div id="deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" class="modal hide fade" style="text-align:center">
-				<div class="modal-header">
-					<h3>Delete Comment</h3>
-				</div>
-				<div class="modal-body">
-					<p>Do you really want to delete it?</p>
-				</div>
-				<div class="modal-footer">
-					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-					<button class="delete btn btn-primary" name="deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">Confirm</button>
+					<button name ='modifyArticleComment{{ repliesOnBoardRecord.boardReplyIndex }}' role="button" class="btn btn-link">
+						<i class="icon-pencil"></i>
+					</button>
+	
+					<div id="deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" class="modal hide fade" style="text-align:center">
+						<div class="modal-header">
+							<h3>Delete Comment</h3>
+						</div>
+						<div class="modal-body">
+							<p>Do you really want to delete it?</p>
+						</div>
+						<div class="modal-footer">
+							<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+							<button class="delete btn btn-primary" name="deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">Confirm</button>
+						</div>
+					</div>
+					{% endif %}
 				</div>
 			</div>
-				{% endif %}
 			{% endif %}
-			<br>
 		</form>
 	</div>
 	{% endfor %}
