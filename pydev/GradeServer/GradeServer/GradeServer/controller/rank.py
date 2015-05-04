@@ -59,7 +59,8 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
         # Paging Pointed
         pages = get_page_pointed(pageNum = int(pageNum),
                                  count = count)
-        
+        submissions = ranks_sorted(submissions,
+                                   sortCondition = sortCondition)
         # Find MemberId 뷰 호출
         if request.method == 'POST':
             # Finding MemberId
@@ -86,8 +87,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
        
                 # 랭크 정보
         try:
-            rankMemberRecords = get_page_record(ranks_sorted(submissions,
-                                                            sortCondition = sortCondition),
+            rankMemberRecords = get_page_record(submissions,
                                                 pageNum = int(pageNum)).all()
         except Exception:
             rankMemberRecords = []

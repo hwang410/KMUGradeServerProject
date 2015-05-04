@@ -64,11 +64,11 @@ $(function() {
 								<td>Rank
 								<td>User ID
 								<td>Comment
+								<td>Tries
 								<td>
 									<a href="{{ url_for('GradeServer.rank', activeTabCourseId = myCourse, sortCondition ='solvedProblem', pageNum = pages['pageNum']) }}">
 										Solved Problems
 									</a>
-								<td>Tries
 								<td>
 									<a href="{{ url_for('GradeServer.rank', activeTabCourseId = myCourse, sortCondition ='rate', pageNum = pages['pageNum']) }}">
 										Rate
@@ -85,8 +85,9 @@ $(function() {
 									{%- if rankMemberRecord.comment %}
 										{% if rankMemberRecord.comment %}{{ rankMemberRecord.comment }}{% endif %}
 									{% endif -%}
-								<td>{% if rankMemberRecord.sumOfSolvedProblemCount %}{{ rankMemberRecord.sumOfSolvedProblemCount }}{% endif %}
 								<td>{% if rankMemberRecord.solutionCheckCount %}{{ rankMemberRecord.solutionCheckCount }}{% endif %}
+								<td>{% if rankMemberRecord.sumOfSolvedProblemCount %}{{ rankMemberRecord.sumOfSolvedProblemCount }}{% endif %}
+								
 								<td>{% if rankMemberRecord.solvedRate %}{{ rankMemberRecord.solvedRate }}%{% endif %}
 							</tr>
 							{% endfor -%}
