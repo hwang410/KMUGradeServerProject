@@ -62,13 +62,18 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 							</div>
 						</div>
 						<div style="text-align:right;width:60%">
-							{% for i in range (0, chartSubmissionDescriptions|length) %}
-							<h4 style ="padding-bottom:5px">
-								<!--  chartSubmissionRecords is Value, chartSubmissionDescriptions is Description -->
-								{{ chartSubmissionDescriptions[i] }}  :  {% if not chartSubmissionRecords[i] %}0{% else %}{{ chartSubmissionRecords[i] }}{% endif %}
-								<br>
-							</h4>
-							{% endfor %}
+							<table>
+								{% for i in range (0, chartSubmissionDescriptions|length) %}
+									<!--  chartSubmissionRecords is Value, chartSubmissionDescriptions is Description -->
+									<tr>
+									<h4 style ="padding-bottom:5px">
+										<td>{{ chartSubmissionDescriptions[i] }}</td>
+										<td>:  {% if not chartSubmissionRecords[i] %}0{% else %}{{ chartSubmissionRecords[i] }}{% endif %}</td>
+									</h4>
+									</tr>
+								{% endfor %}
+							  
+							</table>
 						</div>
 					</div>
 					<!-- user list section -->
@@ -143,17 +148,17 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 									{{ problemSolvedMemberRecord.codeSubmissionDate }}
 									{% endif %}
 								</td>
+								<td style ='vertical-align'>
+									<a href='{{ url_for("GradeServer.submission_code", courseId = courseId, problemId = problemInformationRecords.problemId, memberId = problemSolvedMemberRecord.memberId) }}'>
+										<i style="text-align:center" class="ui-icon ui-icon-document"></i>
+									</a>
+								</td>
 								<td style ='vertical-align: middle'>
 									{% if problemSolvedMemberRecord.viewCount %}
 									{{ problemSolvedMemberRecord.viewCount }}
 									{% else %}
 									0
 									{% endif %}
-								</td>
-								<td style ='vertical-align'>
-									<a href='{{ url_for("GradeServer.submission_code", courseId = courseId, problemId = problemInformationRecords.problemId, memberId = problemSolvedMemberRecord.memberId) }}'>
-										<i style="text-align:center" class="ui-icon ui-icon-document"></i>
-									</a>
 								</td>
 							</tr>
 							{% endfor %}
