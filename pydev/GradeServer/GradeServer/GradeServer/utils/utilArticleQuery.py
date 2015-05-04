@@ -1,12 +1,21 @@
 
 # -*- coding: utf-8 -*-
 
+from flask import session
 from datetime import datetime
 from sqlalchemy import or_, and_
 
+from GradeServer.utils.utilQuery import select_accept_courses, select_current_courses
 from GradeServer.resource.enumResources import ENUMResources
+from GradeServer.resource.setResources import SETResources
+from GradeServer.resource.sessionResources import SessionResources
 from GradeServer.resource.otherResources import OtherResources
 
+from GradeServer.utils.utilPaging import get_page_record
+
+from GradeServer.model.members import Members
+from GradeServer.model.registeredCourses import RegisteredCourses
+from GradeServer.model.registrations import Registrations
 from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 from GradeServer.model.likesOnBoard import LikesOnBoard
 from GradeServer.model.repliesOnBoard import RepliesOnBoard
@@ -203,3 +212,68 @@ def update_replies_on_board_delete(boardReplyIndex, isDeleted = ENUMResources().
     dao.query(RepliesOnBoard).\
         filter(RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
         update(dict(isDeleted = isDeleted)) 
+
+
+
+'''
+ DB Select Notices
+ 권한 별로 공지 가져오기
+'''
+def select_notices():
+    # Notices Layer
+    
+        # 로그인 상태
+    if session:
+                # 허용 과목 리스트
+        myCourses = select_current_courses(select_accept_courses().subquery()).subquery()
+        
+        # TabActive Course or All Articles
+        # get course or All Articles 
+        articlesOnBoard = join_courses_names(# get TabActive Articles
+                                             select_articles(OtherResources().const.ALL,
+                                                             isDeleted = ENUMResources().const.FALSE).subquery(),
+                                             myCourses).subquery()
+    # Not Login     
+    else:  
+        print "SFSDFEWR"
+                # 서버 공지만
+        myCourses = []
+        try:
+            serverAdministratorId = dao.query(Members.memberId).\
+                                        filter(Members.authority == SETResources().const.SERVER_ADMINISTRATOR).\
+                                        first().\
+                                        memberId
+        except:
+            print "AAAAAAAAAAAAAA"
+            serverAdministratorId = None
+            
+        # TabActive Course or All Articles
+        # get course or All Articles 
+        '''articlesOnBoard = join_courses_names(select_server_notice(serverAdministratorId).subquery(),
+                                             myCourses).subquery()'''
+        #print len(dao.query(articlesOnBoard).all())
+    try:
+        print "CGFDSFSDF"
+                # 과목 공지글
+        # Get ServerAdministrator is All, CourseAdministrators, Users is server and course Notice
+                # 서버 관리자는 모든 공지
+                # 과목 관리자 및 유저는 담당 과목 공지
+        articleNoticeRecords = get_page_record((select_sorted_articles(articlesOnBoard,
+                                                                       isNotice = ENUMResources().const.TRUE)),
+                                               pageNum = int(1),
+                                               LIST = OtherResources().const.NOTICE_LIST).all()
+    except Exception:
+        print "AAAAA"
+        articleNoticeRecords = []
+       
+    return articleNoticeRecords 
+
+
+''' 
+Ger SErverNotices
+'''
+def select_server_notice(serverAdministratorId):
+    return dao.query(ArticlesOnBoard).\
+               filter(ArticlesOnBoard.writerId == serverAdministratorId,
+                      ArticlesOnBoard.isNotice == ENUMResources().const.TRUE,
+                      ArticlesOnBoard.isDeleted == ENUMResources().const.FALSE)        
