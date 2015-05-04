@@ -2,20 +2,16 @@
 
 from flask import session
 from datetime import datetime
-from sqlalchemy import func, or_
+from sqlalchemy import func
 
-from GradeServer.resource.enumResources import ENUMResources
+
 from GradeServer.resource.setResources import SETResources
-from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.sessionResources import SessionResources
-
-from GradeServer.utils.utilPaging import get_page_record
 
 from GradeServer.database import dao
 from GradeServer.model.members import Members
 from GradeServer.model.registeredCourses import RegisteredCourses
 from GradeServer.model.registrations import Registrations
-from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 
         
         
@@ -69,12 +65,13 @@ def select_accept_courses():
         myCourses = dao.query(RegisteredCourses.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse)
-    # Class Master, User
+    # Class Master
     elif SETResources().const.COURSE_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
         myCourses = dao.query(RegisteredCourses.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse).\
                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID])
+    # User
     else:
         myCourses = dao.query(Registrations.courseId,
                               RegisteredCourses.courseName,
@@ -95,88 +92,3 @@ def select_past_courses(myCourses):
 def select_current_courses(myCourses):
     return dao.query(myCourses).\
                filter(myCourses.c.endDateOfCourse >= datetime.now())
-               
-           
-'''
- DB Select Notices
- 권한 별로 공지 가져오기
-'''
-def select_notices():
-    # Notices Layer
-    from GradeServer.utils.loginRequired import login_required
-            # 로그인 상태
-    if session:
-        try:
-                         # 서버 관리자는 모든 공지
-            if SETResources().const.SERVER_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
-                noticeRecords = select_simple_notice(dao.query(ArticlesOnBoard).\
-                                                         subquery()).all()
-                       # 과목 관리자 및 유저는 담당 과목 공지
-            else:
-                # Course Administrator
-                if SETResources().const.COURSE_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
-                    registeredCoursesId = dao.query(RegisteredCourses.courseId).\
-                                             filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID]).\
-                                             subquery()
-                                 # 학생인 경우
-                else: # elif User in session['authority']
-                    registeredCoursesId = dao.query(Registrations.courseId).\
-                                             filter(Registrations.memberId == session[SessionResources().const.MEMBER_ID]).\
-                                             subquery()
-                
-                                # 해당 과목 추려내기
-                # slice 0 ~ NOTICE_LIST
-                noticeRecords = select_simple_notice(dao.query(ArticlesOnBoard).\
-                                                         join(registeredCoursesId,
-                                                              or_(ArticlesOnBoard.courseId == registeredCoursesId.c.courseId,
-                                                                  ArticlesOnBoard.courseId == None)).\
-                                                         subquery()).subquery()
-                noticeRecords = get_page_record(dao.query(noticeRecords).\
-                                                    order_by(noticeRecords.c.writtenDate.desc()),
-                                                    
-                                                int(1),
-                                                OtherResources().const.NOTICE_LIST).all()   
-        except Exception:
-            noticeRecords = []
-    # Not Login     
-    else:  
-                # 서버 공지만
-        try:
-            try:
-                serverAdministratorId = dao.query(Members.memberId).\
-                                            filter(Members.authority == SETResources().const.SERVER_ADMINISTRATOR).\
-                                            first().\
-                                            memberId
-            except:
-                serverAdministratorId = None
-            # Get Server Notice
-            noticeRecords = select_simple_notice(select_server_notice(serverAdministratorId).subquery()).all()
-        except Exception:
-            # query get All Error None type Error
-            noticeRecords = []
-
-    return noticeRecords 
-
-
-''' 
-Ger SErverNotices
-'''
-def select_server_notice(serverAdministratorId):
-    return dao.query(ArticlesOnBoard).\
-               filter(ArticlesOnBoard.writerId == serverAdministratorId,
-                      ArticlesOnBoard.isNotice == ENUMResources().const.TRUE)
-               
-               
-''' 
-Get Notices
-'''
-def select_simple_notice(articlesSub):
-    
-    return dao.query(articlesSub,
-                     RegisteredCourses.courseName).\
-               join(RegisteredCourses,
-                    or_(articlesSub.c.courseId == RegisteredCourses.courseId,
-                        articlesSub.c.courseId == None)).\
-               filter(articlesSub.c.isNotice == ENUMResources().const.TRUE)
-
-                                                    
