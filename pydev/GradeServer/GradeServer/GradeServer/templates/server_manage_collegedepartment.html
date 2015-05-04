@@ -73,24 +73,24 @@
 					<thead>
 						<tr>
 							<td>College
-							<td>Department Code
+							<td class="hidden-phone">Department Code
 							<td>Department Name
 					<tbody id="addDepartmentForm">
 						<tr>
 							<td>
-								<select id="collegeIndex1" name="collegeIndex1" style="width:115px">
-					                  {%- for college in allColleges %}
-					                  <option>
-					                    {{ college.collegeIndex }} {{ college.collegeName }}
-					                  </option>
-					                  {% endfor -%}
-					                </select>
-							<td>
+								<select id="collegeIndex1" name="collegeIndex1" style="width:100%">
+									{%- for college in allColleges %}
+									<option>
+										{{ college.collegeIndex }} {{ college.collegeName }}
+									</option>
+									{% endfor -%}
+								</select>
+							<td class="hidden-phone">
 								<input class="input-medium" name="departmentCode1"
-									     type="text" placeholder="Optional">
+										type="text" placeholder="Optional" style="width:93%">
 							<td>
 								<input class="input-medium" name="departmentName1"
-										type="text" placeholder="Department Name">
+										type="text" placeholder="Department Name" style="width:93%">
 				</table>
 			</div>
 			<div class="modal-footer">
@@ -109,14 +109,14 @@
 					<thead>
 						<tr>
 							<td>Index
-							<td>Code
+							<td class='hidden-phone'>Code
 							<td>Name
 							<td>Check
 					<tbody>
 						{%- for college in allColleges %}
 						<tr>
 							<td>{{ loop.index }}
-							<td>{{ college.collegeCode }}
+							<td class='hidden-phone'>{{ college.collegeCode }}
 							<td>{{ college.collegeName }}
 							<td>
 								<input class="college-box-check"
@@ -175,7 +175,7 @@
 						<tr>
 							<td>Index
 							<td>College
-							<td>Code
+							<td class='hidden-phone'>Code
 							<td>Name
 							<td>Check
 					<tbody>
@@ -183,7 +183,7 @@
 						<tr>
 							<td>{{ loop.index }}
 							<td>{{ college.collegeName }}
-							<td>{{ department.departmentCode }}
+							<td class='hidden-phone'>{{ department.departmentCode }}
 							<td>{{ department.departmentName }}
 							<td>
 								<input class="department-box-check"
@@ -289,6 +289,18 @@ function changeOnClickEvent(tab){
 	document.getElementById('deleteButton').innerHTML=newinnerhtml;
 }
 
+// disabling add line when the window size is small like phone
+window.onresize = function(){
+	var displayOption;
+	if($(window).width()<768){
+		displayOption="display:none";
+	}
+	else{
+		displayOption="display:inline-block";
+	}
+	document.getElementById('addline_department').style=displayOption;
+};
+
 // College
 // Add line button event
 $("#addline_college").bind("click", function(){
@@ -323,15 +335,14 @@ $("#addline_college").bind("click", function(){
 $("#resetAddCollegeForm").bind("click", function(){
 	var keys=['collegeCode', 'collegeName'];
 	var placeholders=['Optional', 'College Name'];
-	var newInnerHTML="";
+	var newInnerHTML="<tr>";
 	for(var i=0;i<2;i++){
-		newInnerHTML+="<tr>"+
-								"<td>"+
-									"<input class='input-medium"+
-										    "'name='"+keys[i]+"1"+
-										    "'type='text"+
-										    "'placeholder='"+placeholders[i]+
-										    "'>";
+		newInnerHTML+="<td>"+
+								"<input class='input-medium"+
+									    "'name='"+keys[i]+"1"+
+									    "'type='text"+
+									    "'placeholder='"+placeholders[i]+
+									    "'>";
 	}
 	document.getElementById("addCollegeForm").innerHTML=newInnerHTML;
 });
@@ -352,12 +363,13 @@ $("#addline_department").bind("click", function(){
 	var keys=['collegeIndex', 'departmentCode', 'departmentName'];
 	var placeholders=['', 'Optional', 'Department Name'];
 
+	var newCell = "<tr>";
 	for(var i=0;i<targetTable.rows[0].cells.length;i++){
-		var newCell="<tr><td>";
+		newCell+="<td";
 		if(i == 0){
-			newCell="<select id='"+keys[i]+numOfRow+
+			newCell+="><select id='"+keys[i]+numOfRow+
 							   "'name='"+keys[i]+numOfRow+
-							   "'style='width:115px'>"+
+							   "'style='width:100%'>"+
 			               	{%- for college in allColleges %}
 			               	"<option>"+
 		                    		"{{ college.collegeIndex }} {{ college.collegeName }}"+
@@ -366,16 +378,19 @@ $("#addline_department").bind("click", function(){
 	               	   "</select>";
 		}	
 		else{
-			newCell+="<input class='input-medium"+
-				        		   "'name='"+keys[i]+numOfRow+
-				        		   "'type='text"+
-				        		   "'placeholder='"+placeholders[i]+
-				        		   "'values='"+$("#"+keys[i]+"1").val()+
-				        		   "'>";
+			if(i==1){
+				newCell += " class='hidden-phone'";
+			}
+			newCell+="><input class='input-medium"+
+								"'name='"+keys[i]+numOfRow+
+								"'type='text"+
+								"'placeholder='"+placeholders[i]+
+								"'values='"+$("#"+keys[i]+"1").val()+
+								"'style='width:93%'>";
+				        	
 		}
-		newRow.insertCell(i).innerHTML=newCell;
-					
 	}
+	newRow.innerHTML = newCell;
 	reset_values();
 });
 
@@ -386,25 +401,25 @@ $("#resetAddDepartmentForm").bind("click", function(){
 	document.getElementById("addDepartmentForm").innerHTML=
 		"<tr>"+
 			"<td>"+
-				"<select id='collegeIndex1' name='collegeIndex1' style='width:115px'>"+
+				"<select id='collegeIndex1' name='collegeIndex1' style='width:100%'>"+
 	               	{%- for college in allColleges %}
 	                  	"<option>"+
 	                    	"{{ college.collegeIndex }} {{ college.collegeName }}"+
 	                  	"</option>"+
 	                  	{% endfor -%}
 	               "</select>"+
-			"<td>"+
+			"<td class='hidden-phone'>"+
 				"<input class='input-medium"+
 					    "'name='"+keys[0]+"1"+
 					    "'type='text"+
 					    "'placeholder='"+placeholders[0]+
-					    "'>"+
+					    "'style='width:93%'>"+
 			"<td>"+
 				"<input class='input-medium"+
 					    "'name='"+keys[1]+"1"+
 					    "'type='text"+
 					    "'placeholder='"+placeholders[1]+
-					    "'>";
+					    "'style='width:93%'>";
 });
 </script>
 {% endblock -%}
