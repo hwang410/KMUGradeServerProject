@@ -1,5 +1,5 @@
+import sys
 import string
-from DBUpdate import DBUpdate
 from shutil import copyfile
 from subprocess import call
 
@@ -54,8 +54,8 @@ class GradingTools(object):
             stdOutput = open('output.txt', 'r')
         except Exception as e:
             print e
-            DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                       self.errorParaList[2], self.errorParaList[3])
+            print 'ServerError', 0, 0, 0
+            sys.exit()
         
         stdLines = stdOutput.readlines()
         answerLines = answerFile.readlines()
@@ -96,8 +96,8 @@ class GradingTools(object):
             call('./checker.out 1>result.txt', shell = True)
         except Exception as e:
             print e
-            DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                       self.errorParaList[2], self.errorParaList[3])
+            print 'ServerError', 0, 0, 0
+            sys.exit()
         
         rf = open('result.txt', 'r')
         
@@ -135,8 +135,8 @@ class GradingTools(object):
                 stdOutput = open('output.txt', 'r') # student output open
             except Exception as e:
                 print e
-                DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                           self.errorParaList[2], self.errorParaList[3])
+                print 'ServerError', 0, 0, 0
+                sys.exit()
             
             answer = answerFile.read()
             student = stdOutput.read()
@@ -172,8 +172,8 @@ class GradingTools(object):
             copyfile(copyCommand, 'checker.out')
         except Exception as e:
                 print e
-                DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                           self.errorParaList[2], self.errorParaList[3])
+                print 'ServerError', 0, 0, 0
+                sys.exit()
         
         for i in range(1, self.caseCount+1):
             try:
@@ -190,8 +190,8 @@ class GradingTools(object):
                 rf = open('reuslt.txt', 'r')
             except Exception as e:
                 print e
-                DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                           self.errorParaList[2], self.errorParaList[3])
+                print 'ServerError', 0, 0, 0
+                sys.exit()
             
             score = rf.readline()
             
