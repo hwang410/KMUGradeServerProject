@@ -1,9 +1,9 @@
 import os
+import sys
 import glob
 import string
 import ptrace
 import resource
-from DBUpdate import DBUpdate
 from shutil import copyfile
 
 RUN_COMMAND_LIST = []
@@ -29,8 +29,8 @@ class ExecutionTools(object):
                 copyfile(copyCommand, 'input.txt')
         except Exception as e:
             print e
-            DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                       self.errorParaList[2], self.errorParaList[3])
+            print 'ServerError', 0, 0, 0
+            sys.exit()
         
         # make execution command
         self.MakeCommand()
@@ -48,10 +48,12 @@ class ExecutionTools(object):
         userTime = int(time * 1000)
         
         if result == 'TimeOver' or result == 'RunTimeError':
-            return result, userTime, usingMem
+            print result, 0, userTime, usingMem
+            sys.exit()
         
         if userTime > self.limitTime:
-            return 'TimeOver', userTime, usingMem
+            print 'TimeOver', 0, userTime, usingMem
+            sys.exit()
         
         coreSize = 0
         coreList = glob.glob('core.[0-9]*')
@@ -63,7 +65,8 @@ class ExecutionTools(object):
             return 'Grading', userTime, usingMem
         
         else:
-            return 'RunTimeError', 0, 0
+            print 'RunTimeError', 0, 0, 0
+            sys.exit()
         
         
     def MakeCommand(self):

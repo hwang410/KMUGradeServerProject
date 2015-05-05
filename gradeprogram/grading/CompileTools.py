@@ -1,7 +1,7 @@
 import os
+import sys
 import glob
 import string
-from DBUpdate import DBUpdate
 from subprocess import call
 
 class CompileTools(object):
@@ -21,8 +21,8 @@ class CompileTools(object):
             
             if len(glob.glob('*.py')) == 0:
                 print 'compile python file copy'
-                DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                           self.errorParaList[2], self.errorParaList[3])
+                print 'ServerError', 0, 0, 0
+                sys.exit()
             
             return True
             
@@ -39,8 +39,8 @@ class CompileTools(object):
         
         # if not make execution file
         elif len(glob.glob('./'+self.runFileName)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
-            DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                       self.errorParaList[2], self.errorParaList[3])
+            print 'ServerError', 0, 0, 0
+            sys.exit()
         
         return True
         
@@ -54,8 +54,8 @@ class CompileTools(object):
             rf = open('error.err', 'r')
         except Exception as e:
             print 'make compile error list file open error'
-            DBUpdate.UpdateServerError(self.errorParaList[0], self.errorParaList[1],
-                                       self.errorParaList[2], self.errorParaList[3])
+            print 'ServerError', 0, 0, 0
+            sys.exit()
         
         lines = rf.readlines()
         _list = []
