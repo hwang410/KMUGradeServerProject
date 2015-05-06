@@ -115,9 +115,9 @@
 			<!-- like button -->
 					<button class="like btn btn-link" href="#" name="articleReplyLike{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">
 						{% if isLikeRecords[loop.index0] == 'TRUE' %} 
-						Like 
+						<i class="icon-thumbs-up"></i>
 						{% else %} 
-						UnLike 
+						<i class="icon-thumbs-down"></i>
 						{% endif %}
 					</button>
 					{% if repliesOnBoardRecord.sumOfLikeCount %}{{ repliesOnBoardRecord.sumOfLikeCount }}{% else %}0{% endif %}&nbsp;&nbsp;

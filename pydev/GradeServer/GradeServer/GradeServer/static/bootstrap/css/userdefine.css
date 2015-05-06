@@ -286,3 +286,7 @@ thead{
 .autocomplete-suggestions{
 	width:auto; 
 }
+
+.label-searchLine, .badge-searchLine {
+	background-color: #FFFFA2;
+}
