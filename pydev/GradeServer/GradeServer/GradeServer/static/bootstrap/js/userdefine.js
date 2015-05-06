@@ -189,10 +189,12 @@ jQuery(document).ready(function ($) {
 })
 
 $(document).on('click','.dropdown ul a',function(){
-    var text = $(this).text();
-    $(this).closest('.dropdown').children('a.dropdown-toggle').text(text);
+		var name = $(this).attr('name')
+		if (name != "main") {
+    	var text = $(this).text();
+    	$(this).closest('.dropdown').children('a.dropdown-toggle').text(text);
+    	}
 }) 	
-
 
 // showing delete modal
 function showingDeleteModal(target){
