@@ -23,6 +23,7 @@ def select_last_submissions(memberId = None, courseId = None, problemId = None):
         return dao.query(Submissions.memberId,
                          Submissions.courseId,
                          Submissions.problemId,
+                         Submissions.codeSubmissionDate,
                          func.max(Submissions.submissionCount).label(OtherResources().const.SUBMISSION_COUNT),
                          func.max(Submissions.solutionCheckCount).label(OtherResources().const.SOLUTION_CHECK_COUNT)).\
                    group_by(Submissions.memberId,
@@ -32,6 +33,7 @@ def select_last_submissions(memberId = None, courseId = None, problemId = None):
         return dao.query(Submissions.memberId,
                          Submissions.courseId,
                          Submissions.problemId,
+                         Submissions.codeSubmissionDate,
                          func.max(Submissions.submissionCount).label(OtherResources().const.SUBMISSION_COUNT),
                          func.max(Submissions.solutionCheckCount).label(OtherResources().const.SOLUTION_CHECK_COUNT)).\
                    filter((Submissions.courseId == courseId if courseId
@@ -42,7 +44,20 @@ def select_last_submissions(memberId = None, courseId = None, problemId = None):
                            else Submissions.memberId != None)).\
                    group_by(Submissions.memberId,
                             Submissions.problemId,
-                            Submissions.courseId) 
+                            Submissions.courseId)
+
+
+
+'''
+Submissions to Last Submitted between any days
+'''
+def select_between_days_last_submissions(submissions, submissionDatePeriod):
+    return dao.query(submissions).\
+               filter(submissions.c.codeSubmissionDate.\
+                                    between(submissionDatePeriod['start'], 
+                                            submissionDatePeriod['end']))
+                   
+                   
 '''
 All Submission Record
 '''

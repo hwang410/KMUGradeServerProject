@@ -7,6 +7,8 @@ from sqlalchemy import func, and_
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.otherResources import OtherResources
 
+from GradeServer.utils.utilSubmissionQuery import select_between_days_last_submissions, select_last_submissions
+
 from GradeServer.database import dao
 from GradeServer.model.members import Members
 from GradeServer.model.submissions import Submissions
@@ -54,6 +56,8 @@ def ranks_sorted(ranks, sortCondition = OtherResources().const.RATE):
     #Get Comment
     # rate 정렬
     if sortCondition == OtherResources().const.RATE:
+        a = dao.query(ranks).first()
+        print a.memberId
         rankMemberRecords = dao.query(ranks,
                                       Members.comment).\
                                 join(Members,
@@ -92,31 +96,15 @@ def select_top_coder():
                                     5: 1,
                                     6: 0,
                                     7: 6}
-        # 금주의 시작일과 끝일 구함
+                # 금주의 시작일과 끝일 구함
         submissionDatePeriod = dayOfWeek(minusDays = minusDays[dayOfWeekNum],
                                          addDays = addDays[dayOfWeekNum])
-        # 이번주에 낸 제출 목록 
-        dayOfWeekSubmissions = dao.query(Submissions.memberId,
-                                         Submissions.solutionCheckCount,
-                                         Submissions.status).\
-                                    filter(Submissions.codeSubmissionDate.between(submissionDatePeriod['start'],
-                                                                                  submissionDatePeriod['end'])).\
-                                    group_by(Submissions.memberId,
-                                             Submissions.problemId,
-                                             Submissions.courseId).\
-                                    subquery()
-
-        try:
-            # return subquery
-            topCoder = dao.query(select_ranks(dayOfWeekSubmissions)).\
-                           first()
-            topCoderId = topCoder[0].memberId
-        except Exception:
-            topCoderId = None
+                # 이번주에 낸 제출 목록 
+        topCoderId = ranks_sorted(select_ranks(select_between_days_last_submissions(select_last_submissions().subquery(),
+                                                                                    submissionDatePeriod).subquery()).subquery()).first().\
+                                                                                                                       memberId
     except Exception:
-        # None Type Error
-        from GradeServer.utils.utilMessages import get_message
-        topCoderId = get_message('unknown')
+        topCoderId = None
         
     return topCoderId
 
