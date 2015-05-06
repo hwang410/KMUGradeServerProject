@@ -108,7 +108,9 @@ def problem(courseId, problemId, pageNum):
             problemInformation = select_problem_informations(problemId = problemId).first()
         except Exception:
             problemInformation = []    
-        
+
+        browserName = request.user_agent.browser
+        browserVersion = request.user_agent.version
         return render_template(HTMLResources().const.PROBLEM_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
@@ -117,7 +119,9 @@ def problem(courseId, problemId, pageNum):
                                problemInformation = problemInformation,
                                problemName = problemInformation.problemName.replace(' ', ''),
                                languageInfoRecords = languageInfoRecords,
-                               pageNum = pageNum)
+                               pageNum = pageNum,
+                               browserName = browserName,
+                               browserVersion = browserVersion)
 
     # Access Rejection
     else:

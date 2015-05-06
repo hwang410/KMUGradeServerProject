@@ -43,7 +43,7 @@
 								<li class="nav-header">Current Class</li>
 								{%- if session[SessionResources.const.OWN_CURRENT_COURSES] %}
 									{%- for course in session[SessionResources.const.OWN_CURRENT_COURSES] %}
-									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="currentClasses" class="main-checker">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="currentClasses main-checker">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
 								<li class="disabled"><a tabindex="-1" href="#" class="main-checker">None</a></li>
@@ -54,7 +54,7 @@
 								<li class="nav-header">Past Class</li>
 								{%- if session[SessionResources.const.OWN_PAST_COURSES] %}
 									{%- for course in session[SessionResources.const.OWN_PAST_COURSES] %}
-									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="pastClasses" class="main-checker">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="pastClasses main-checker">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
 								<li class="disabled"><a tabindex="-1" href="#" class="main-checker">None</a></li>
