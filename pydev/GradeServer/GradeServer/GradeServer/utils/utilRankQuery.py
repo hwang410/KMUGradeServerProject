@@ -56,8 +56,6 @@ def ranks_sorted(ranks, sortCondition = OtherResources().const.RATE):
     #Get Comment
     # rate 정렬
     if sortCondition == OtherResources().const.RATE:
-        a = dao.query(ranks).first()
-        print a.memberId
         rankMemberRecords = dao.query(ranks,
                                       Members.comment).\
                                 join(Members,

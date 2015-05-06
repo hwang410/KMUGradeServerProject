@@ -39,6 +39,7 @@ def close_db_session(exception = None):
 def rank(activeTabCourseId, sortCondition, pageNum, error =None):
     
     try:
+        searchLine = None
         try:
             # Auto Complete MemberIds
             memberRecords = select_all_users().all()
@@ -68,7 +69,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
                         # 순차 탐색으로 찾아야 함
             for i in range(1, pages['allPage'] + 1):
                 # memberId in Pages 
-                ranks = get_page_record(dao.query(submissions),
+                ranks = get_page_record(submissions,
                                         pageNum = i).subquery()
                 # finding MemberId in Pages
                 try:
@@ -77,12 +78,14 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
                                                                         memberId:
                         # Finding move to page
                         pageNum = i
+                        # searchLine Check
+                        searchLine = i
                     
                         break
                 except Exception:
                     pass
             else:
-                        # 같은 아이디가 없을 때 메세지
+                                # 같은 아이디가 없을 때 메세지
                 error = get_message('notExists')
        
                 # 랭크 정보
@@ -108,6 +111,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
                                rankMemberRecords = rankMemberRecords,
                                myCourses = myCourses,
                                pages = pages,
+                               searchLine = searchLine,
                                error = error) # 페이지 정보
     except Exception:
         return unknown_error()     

@@ -43,8 +43,6 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 		<h3>
 			{%- if memberId %}
 				{{ memberId }}
-			{%- else %}
-				{{ session['memberId'] }}
 			{% endif -%}
 				's submission history
 		</h3>
@@ -80,19 +78,19 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 						<td class="hidden-phone">
 							Language
 						<td class="hidden-phone">
-							<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='runTime', pageNum = pages['pageNum']) }}">
+							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='runTime', pageNum = pages['pageNum']) }}">
 							Runtime
 							</a>
 						<td class="hidden-phone">
-							<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='usedMemory', pageNum = pages['pageNum']) }}">
+							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='usedMemory', pageNum = pages['pageNum']) }}">
 							Memory
 							</a>
 						<td class="hidden-phone">
-							<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='codeLength', pageNum = pages['pageNum']) }}">
+							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='codeLength', pageNum = pages['pageNum']) }}">
 							Length
 							</a>
 						<td>
-							<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='submissionDate', pageNum = pages['pageNum']) }}">
+							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='submissionDate', pageNum = pages['pageNum']) }}">
 							Date
 							</a>
 					</tr>
@@ -154,7 +152,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 			<div class="pagination pagination-centered">
 				<ul>
 					{%- if pages['pageNum'] > pages['BLOCK'] %}
-					<li><a href="{{ url_for ('GradeServer.submission_record', memberId =session['memberId'], sortCondition = sortCondition, pageNum = pages['pageNum'] - 1) }}"><</a></li>
+					<li><a href="{{ url_for ('GradeServer.submission_record', memberId = memberId, sortCondition = sortCondition, pageNum = pages['pageNum'] - 1) }}"><</a></li>
 					{% endif -%} 
 					
 					{%- for i in range (pages['startPage'], pages['endPage'] + 1) %}
@@ -162,7 +160,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 						{%- if pages['pageNum'] == i %}
 						<a style ='background-color:gray'>
 						{%- else %}
-						<a href="{{ url_for ('GradeServer.submission_record', memberId =session['memberId'], sortCondition = sortCondition, pageNum = i) }}">
+						<a href="{{ url_for ('GradeServer.submission_record', memberId = memberId, sortCondition = sortCondition, pageNum = i) }}">
 						{% endif -%}
 						{{ i }}
 						</a>
@@ -170,7 +168,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 					{% endfor -%}
 					
 					{%- if pages['endPage'] < pages ['allPage'] %}
-					<li><a href="{{ url_for ('GradeServer.submission_record', memberId =session['memberId'], sortCondition = sortCondition, pageNum = pages['pageNum'] + 1) }}">></a></li>
+					<li><a href="{{ url_for ('GradeServer.submission_record', memberId = memberId, sortCondition = sortCondition, pageNum = pages['pageNum'] + 1) }}">></a></li>
 					{% endif -%}
 				</ul>
 			</div>
