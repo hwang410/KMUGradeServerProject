@@ -99,37 +99,15 @@ def problem(courseId, problemId, pageNum):
        or startDateOfSubmission <= datetime.now():
         
         try:
-            languageName = dao.query(Languages.languageName).\
-                               join(LanguagesOfCourses, 
-                                    Languages.languageIndex == LanguagesOfCourses.languageIndex).\
-                               filter(LanguagesOfCourses.courseId == courseId).\
-                               all()
-        except Exception as e:
-            unknown_error("DB 에러입니다")
+            from GradeServer.utils.utilCodeSubmissionQuery import select_languages
+            languageInfoRecords = select_languages(courseId = courseId).all()
+        except Exception:
+            languageInfoRecords = []
+
         try:
-            languageVersion = dao.query(Languages.languageVersion).\
-                                  join(LanguagesOfCourses,
-                                       and_(LanguagesOfCourses.courseId == courseId,
-                                            LanguagesOfCourses.languageIndex == Languages.languageIndex)).\
-                                  all()
-        except Exception as e:
-            unknown_error("DB 에러입니다") 
-        try:
-            languageIndex = dao.query(LanguagesOfCourses.languageIndex).\
-                                filter(LanguagesOfCourses.courseId == courseId).\
-                                all()
-        except Exception as e:
-            unknown_error("DB 에러입니다")
-            
-        try:
-            problemInformation = dao.query(Problems).\
-                                 filter(Problems.problemId == problemId).\
-                                 first()
-        except Exception as e:
-            unknown_error("DB 에러입니다")       
-        
-        problemName = problemInformation.problemName.replace(' ', '')
-        browserName = request.user_agent.browser
+            problemInformation = select_problem_informations(problemId = problemId).first()
+        except Exception:
+            problemInformation = []    
         
         return render_template(HTMLResources().const.PROBLEM_HTML,
                                SETResources = SETResources,
@@ -137,12 +115,9 @@ def problem(courseId, problemId, pageNum):
                                courseId = courseId,
                                problemId = problemId,
                                problemInformation = problemInformation,
-                               problemName = problemName,
-                               languageName = languageName,
-                               languageVersion = languageVersion,
-                               languageIndex = languageIndex,
-                               pageNum = pageNum,
-                               browserName = browserName)
+                               problemName = problemInformation.problemName.replace(' ', ''),
+                               languageInfoRecords = languageInfoRecords,
+                               pageNum = pageNum)
 
     # Access Rejection
     else:
