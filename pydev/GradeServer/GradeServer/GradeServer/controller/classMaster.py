@@ -256,8 +256,10 @@ def class_manage_problem():
                         
             # addition problem
             else:
+                print "in!!"
                 if form == ADD:
                     continue
+                print "form:", form
                 value,index = re.findall('\d+|\D+',form)
                 index = int(index)
                 data = request.form[form]
@@ -271,14 +273,18 @@ def class_manage_problem():
                 # if openDate,closeDate are empty then same with startDate,endDate
                 if not problem[keys['openDate']]:
                     problem[keys['openDate']] = problem[keys['startDate']]
+                    
                 if not problem[keys['closeDate']]:
                     problem[keys['closeDate']] = problem[keys['endDate']]
+                    
                 if not problem[keys['isAllInputCaseInOneFile']]:
                     problem[keys['isAllInputCaseInOneFile']] = ENUMResources().const.FALSE
                 else:
                     problem[keys['isAllInputCaseInOneFile']] = ENUMResources().const.TRUE
+                    
                 if problem[keys['courseId']]:
                     problem[keys['courseId']],problem[keys['courseName']] = problem[keys['courseId']].split(' ',1)
+                    
                 if problem[keys['problemId']]:
                     problem[keys['problemId']],problem[keys['problemName']] = problem[keys['problemId']].split(' ',1)
                     try:
@@ -310,6 +316,7 @@ def class_manage_problem():
                     if not key:
                         isValid = False
                         break
+                    
                 if not isValid:
                     continue
 
