@@ -8,14 +8,11 @@ from sqlalchemy import or_, and_
 from GradeServer.utils.utilQuery import select_accept_courses, select_current_courses
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
-from GradeServer.resource.sessionResources import SessionResources
 from GradeServer.resource.otherResources import OtherResources
 
 from GradeServer.utils.utilPaging import get_page_record
 
 from GradeServer.model.members import Members
-from GradeServer.model.registeredCourses import RegisteredCourses
-from GradeServer.model.registrations import Registrations
 from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 from GradeServer.model.likesOnBoard import LikesOnBoard
 from GradeServer.model.repliesOnBoard import RepliesOnBoard
