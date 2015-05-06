@@ -43,10 +43,10 @@
 								<li class="nav-header">Current Class</li>
 								{%- if session[SessionResources.const.OWN_CURRENT_COURSES] %}
 									{%- for course in session[SessionResources.const.OWN_CURRENT_COURSES] %}
-									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="currentClasses" name="main">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="currentClasses" class="main-checker">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
-								<li class="disabled"><a tabindex="-1" href="#" name="main">None</a></li>
+								<li class="disabled"><a tabindex="-1" href="#" class="main-checker">None</a></li>
 								{% endif -%}
 								
 								<li class="divider"></li> <!-- seperation line -->
@@ -54,10 +54,10 @@
 								<li class="nav-header">Past Class</li>
 								{%- if session[SessionResources.const.OWN_PAST_COURSES] %}
 									{%- for course in session[SessionResources.const.OWN_PAST_COURSES] %}
-									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="pastClasses" name="main">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="pastClasses" class="main-checker">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
-								<li class="disabled"><a tabindex="-1" href="#" name="main">None</a></li>
+								<li class="disabled"><a tabindex="-1" href="#" class="main-checker">None</a></li>
 								{% endif -%}
 							</ul>
 							{% endif -%}
@@ -79,35 +79,35 @@
 							<ul class="dropdown-menu">
 								{%- if SETResources.const.SERVER_ADMINISTRATOR not in session['authority'] and SETResources.const.COURSE_ADMINISTRATOR not in session['authority'] %}
 								<li>
-									<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}" name="main">Record</a>
+									<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}" class="main-checker">Record</a>
 								</li>
 								{% endif %}
-								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}" name="main">Account</a></li>
-								<li><a href="{{ url_for('GradeServer.article_notice', activeTabCourseId = 'All', pageNum =1) }}" name="main">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
-								<li><a href="#" name="main">Manual</a></li>
+								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}" class="main-checker">Account</a></li>
+								<li><a href="{{ url_for('GradeServer.article_notice', activeTabCourseId = 'All', pageNum =1) }}" class="main-checker">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
+								<li><a href="#" class="main-checker">Manual</a></li>
 								{%- if SETResources.const.SERVER_ADMINISTRATOR in session['authority'] %}
 								<li class="dropdown-submenu">
-									<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="server-management" name="main">Server Management</a>
+									<a class="dropdown-toggle main-checker" data-toggle="dropdown" href="#" id="server-management">Server Management</a>
 									<ul class="dropdown-menu" id="menu-box">
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_collegedepartment') }}" id='manage-collegedepartment' name="main">College&Department</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_class') }}" id='manage-class' name="main">Class</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_problem') }}" id='manage-problem' name="main">Problem</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_user') }}" id='manage-user' name="main">User</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_service') }}" id='manage-service' name="main">Service</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_collegedepartment') }}" id='manage-collegedepartment' class="main-checker">College&Department</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_class') }}" id='manage-class' class="main-checker">Class</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_problem') }}" id='manage-problem' class="main-checker">Problem</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_user') }}" id='manage-user' class="main-checker">User</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_service') }}" id='manage-service' class="main-checker">Service</a></li>
 									</ul>
 								</li>
 								{%- elif SETResources.const.COURSE_ADMINISTRATOR in session['authority'] %}
 								<li class="dropdown-submenu">
-									<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="class-server-management" name="main">Class Management</a>
+									<a class="dropdown-toggle main-checker" data-toggle="dropdown" href="#" id="class-server-management" class="main-checker">Class Management</a>
 									<ul class="dropdown-menu" id="menu-box">
-										<li><a href="{{ url_for('GradeServer.id_check', select='user_submit') }}" id='manage-problem' name="main">User Submit</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_problem') }}" id='manage-class' name="main">Problem</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_user') }}" id='manage-user' name="main">User</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_service') }}" id='manage-service' name="main">Service</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='user_submit') }}" id='manage-problem' class="main-checker">User Submit</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_problem') }}" id='manage-class' class="main-checker">Problem</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_user') }}" id='manage-user' class="main-checker">User</a></li>
+										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_service') }}" id='manage-service' class="main-checker">Service</a></li>
 									</ul>
 								</li>
 								{% endif -%}
-								<li><a href="{{ url_for('GradeServer.sign_out') }}" name="main">Sign out</a></li>
+								<li><a href="{{ url_for('GradeServer.sign_out') }}" class="main-checker">Sign out</a></li>
 							</ul>
 						</li>
 						<li style="display:none"><a href="#"><i class="icon-bell icon-white"></i></a></li>
