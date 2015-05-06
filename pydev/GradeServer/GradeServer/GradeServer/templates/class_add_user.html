@@ -45,15 +45,15 @@ $(function() {
 			document.getElementById(this.id).value = userId;
 			document.getElementById("username"+userIdx).value = userName;
 		
-			// set predefined data and make it disabled
+			// set predefined data
 			document.getElementById("college"+userIdx).options[collegeIndex].selected = true;
-			//document.getElementById("college"+userIdx).setAttribute("disabled", "disabled");
-
 			document.getElementById("department"+userIdx).innerHTML = "<option selected>"+departmentIndex + ' '+ departmentName+"</option>";
-			//document.getElementById("department"+userIdx).setAttribute("disabled", "disabled");
-
 			document.getElementById("authority"+userIdx).options[authority].selected = true;
-			//document.getElementById("authority"+userIdx).setAttribute("disabled", "disabled");
+			
+			// for the exist data, set disabled option
+			document.getElementById("college"+userIdx).setAttribute("disabled", "disabled");
+			document.getElementById("department"+userIdx).setAttribute("disabled", "disabled");
+			document.getElementById("authority"+userIdx).setAttribute("disabled", "disabled");
 		}
 	});
 
@@ -65,15 +65,16 @@ $(function() {
 			$("#courseId1").val("");
 			$("#userId1").val("");
 			$("#username1").val("");
-			$("#authority1").val("");
 			$("#college1").val("");
 			$("#department1").val("");
+			$("#authority1").val("");
 		};
 
 		var newRow = targetTable.insertRow(2);
 
-		var memberIdOnFirstRow = $("#userId1").val();
+		var memberIdOnFirstRow = $("#userId1").val(); // member Id before insert new row
 		var isExistUser = false;
+
 		{%- for user, college, department in allUsers %}
 		if(memberIdOnFirstRow == "{{ user.memberId }}"){
 			isExistUser = true;
@@ -224,17 +225,23 @@ $(function() {
 				if(isExistUser){
 					// set predefined data and make it disabled
 					document.getElementById("college"+userIdx).options[collegeIndex].selected = true;
-					document.getElementById("college"+userIdx).setAttribute("disabled", "");
-
 					document.getElementById("department"+userIdx).innerHTML = "<option selected>"+departmentIndex + ' '+ departmentName+"</option>";
-					document.getElementById("department"+userIdx).setAttribute("disabled", "");
-
 					document.getElementById("authority"+userIdx).options[authority].selected = true;
-					document.getElementById("authority"+userIdx).setAttribute("disabled", "");
+
+					document.getElementById("college"+userIdx).setAttribute("disabled", "disabled");
+					document.getElementById("department"+userIdx).setAttribute("disabled", "disabled");
+					document.getElementById("authority"+userIdx).setAttribute("disabled", "disabled");
 				}
 			}
 		});
+
+		// initialization
 		reset_val();
+		document.getElementById("college1").removeAttribute("disabled");
+		document.getElementById("department1").removeAttribute("disabled");
+		document.getElementById("authority1").removeAttribute("disabled");
+
+
 		var initialOptions = "<option> select college </option>" +
 						   	   "{%- for college in allColleges %}" +
 							   "<option>" +
