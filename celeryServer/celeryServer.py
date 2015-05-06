@@ -1,10 +1,14 @@
 import os
 import time
+import DBUpdate
 from celery import Celery
+from subprocess import Popen, PIPE
+from dbinit import DatabaseInit
 from billiard import current_process
 
 MAX_CONTAINER_COUNT = 4
 app = Celery('tasks', broker = 'redis://192.168.0.8:6379')
+DatabaseInit()
 
 @app.task(name = 'task.Grade')
 def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
@@ -22,7 +26,42 @@ def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
                                          worker_num,
                                          ' python /gradeprogram/rungrade.py ')
 
-    os.system(containerCreadeCommand + argsList) 
+    message = Popen(containerCreadeCommand + argsList, shell=True, stdout=PIPE)
+    
+    messageLines = message.stdout.readlines()
+    messageLine = messageLines[-1]
+    
+    result = messageLine[0]
+    score = messageLine[1]
+    runTime = messageLine[2]
+    usingMem = messageLine[3]
+    
+    dataUpdate = DBUpdate.DBUpdate(stdNum, problemNum, courseNum, submitCount)
+    
+    dataUpdate.UpdateSubmissions(result, score, runTime, usingMem)
+     
+    if result == 'Solved':
+    # update DBManager 'solved'
+        dataUpdate.SubmittedRecordsOfProblems_Solved()
+     
+    elif result == 'TimeOver':
+    # update DBManager 'time out'
+        dataUpdate.SubmittedRecordsOfProblems_TimbeOver()
+     
+    elif result == 'RunTimeError':
+    # update DBManager 'runtime error'
+        dataUpdate.SubmittedRecordsOfProblems_RunTimeError()
+     
+    elif result == 'WrongAnswer':
+    # update DBManager 'wrong answer'
+        dataUpdate.SubmittedRecordsOfProblems_WrongAnswer()
+        
+    elif result == 'CompileError':
+        dataUpdate.SubmittedRecordsOfProblems_CompileError()
+        
+    else:
+        dataUpdate.UpdateServerError(stdNum, problemNum,
+                                   courseNum, submitCount)
     
 @app.task(name = 'task.ServerOn')
 def ServerOn():

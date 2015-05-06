@@ -5,7 +5,7 @@ from subprocess import call
 
 class GradingTools(object):
     def __init__(self, gradeMethod, caseCount, usingLang, version, answerPath,
-                 problemName, filePath, errorParaList):
+                 problemName, filePath):
         self.gradeMethod =gradeMethod 
         self.caseCount = caseCount
         self.usingLang = usingLang
@@ -13,7 +13,6 @@ class GradingTools(object):
         self.answerPath = answerPath
         self.problemName = problemName
         self.filePath = filePath
-        self.errorParaList = errorParaList
         
     def Grade(self):
         if self.gradeMethod == 'SOLUTION':   # solution
@@ -41,7 +40,7 @@ class GradingTools(object):
                 return "%s%s%s" % ('python3 ', self.runFileName, '.py 1>output.txt 2>core.1')
         
         elif self.usingLang == 'C' or self.usingLang == 'C++':
-            return 'ulimit -c unlimited; ./main 1>output.txt'
+            return './main 1>output.txt'
         
         elif self.usingLang == 'JAVA':
             return "%s%s%s" % ('java ', self.runFileName, ' 1>output.txt 2>core.1')
@@ -209,7 +208,7 @@ class GradingTools(object):
             return int( ((self.caseCount - count) * 100) / self.caseCount )
         
     def MakeCaseList(self, _list):
-        wf = open(self.filePath + 'caselist.txt', 'w')
+        wf = open('caselist.txt', 'w')
         size = len(_list)
         find = string.find
         wf.wrtie(str(size))

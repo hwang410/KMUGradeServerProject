@@ -10,7 +10,7 @@ RUN_COMMAND_LIST = []
 
 class ExecutionTools(object):
     def __init__(self, usingLang, limitTime, limitMemory, answerPath, version,
-                 runFileName, problemName, caseCount, errorParaList):
+                 runFileName, problemName, caseCount):
         self.usingLang = usingLang
         self.limitTime = limitTime
         self.limitMemory = limitMemory
@@ -19,7 +19,6 @@ class ExecutionTools(object):
         self.runFileName = runFileName
         self.problemName = problemName
         self.caseCount = caseCount
-        self.errorParaList = errorParaList
         
     def Execution(self):
         # copy input data
@@ -47,8 +46,12 @@ class ExecutionTools(object):
         
         userTime = int(time * 1000)
         
-        if result == 'TimeOver' or result == 'RunTimeError':
+        if result == 'TimeOver':
             print result, 0, userTime, usingMem
+            sys.exit()
+            
+        elif result == 'RunTimeError':
+            print result, 0, 0, 0
             sys.exit()
         
         if userTime > self.limitTime:

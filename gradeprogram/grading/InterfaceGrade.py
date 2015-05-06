@@ -1,4 +1,6 @@
+import os
 import glob
+import sys
 import string
 import CompileTools
 from grading import ExecutionTools
@@ -20,18 +22,20 @@ class InterfaceGrade(object):
         self.submitCount = int(args[12])
         self.problemName = args[13]
         
-        self.errorParaList = [self.stdNum, self.problemNum, self.courseNum, self.submitCount]
-        
         self.answerPath = "%s%s%s%s%s%s" % (self.problemPath, '/', self.problemName, '_', self.gradeMethod, '/')
         
         # make execution file name
         self.filePath = "%s%s" % (self.filePath, '/')
         self.runFileName = self.MakeRunFileName()
         
+        dirName = "%s%i%i" % (self.stdNum, self.problemNum, self.submitCount)
+        os.mkdir(dirName)
+        os.chdir(dirName)
+        
     def Compile(self):
         _compile = CompileTools.CompileTools(self.filePath, self.stdNum,
                                              self.usingLang, self.version,
-                                             self.runFileName, self.errorParaList)
+                                             self.runFileName)
         success = _compile.CodeCompile()
         
         return success, self.stdNum, self.problemNum, self.courseNum, self.submitCount
@@ -41,8 +45,7 @@ class InterfaceGrade(object):
         execution = ExecutionTools.ExecutionTools(self.usingLang, self.limitTime,
                                                  self.limitMemory, self.answerPath,
                                                  self.version, self.runFileName,
-                                                 self.problemName, self.caseCount,
-                                                 self.errorParaList)
+                                                 self.problemName, self.caseCount)
             
         success, runTime, usingMem = execution.Execution()
         
@@ -50,11 +53,12 @@ class InterfaceGrade(object):
             evaluation = GradingTools.GradingTools(self.gradeMethod, self.caseCount,
                                                    self.usingLang, self.version,
                                                    self.answerPath, self.problemName,
-                                                   self.filePath, self.errorParaList)
+                                                   self.filePath)
              
             success, score = evaluation.Grade()
             
-        return success, score, runTime, usingMem
+        print success, score, runTime, usingMem
+        sys.exit()
     
     def MakeRunFileName(self):
         if self.usingLang == 'C' or self.usingLang == 'C++':
