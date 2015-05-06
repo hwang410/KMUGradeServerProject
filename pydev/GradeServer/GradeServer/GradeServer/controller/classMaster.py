@@ -542,9 +542,19 @@ def class_add_user():
                                authorities = authorities,
                                newUsers = newUsers)
     try:
-        allUsers = dao.query(Members).\
-                       filter(or_(Members.authority == SETResources().const.USER,
-                                  Members.authority == SETResources().const.COURSE_ADMINISTRATOR))
+        allUsers = (dao.query(Members,
+                              Colleges,
+                              Departments).\
+                        filter(or_(Members.authority == SETResources().const.USER,
+                                   Members.authority == SETResources().const.COURSE_ADMINISTRATOR)).\
+                        join(DepartmentsDetailsOfMembers,
+                             Members.memberId == DepartmentsDetailsOfMembers.memberId).\
+                        join(Colleges,
+                             DepartmentsDetailsOfMembers.collegeIndex == Colleges.collegeIndex).\
+                        join(Departments,
+                             DepartmentsDetailsOfMembers.departmentIndex == Departments.departmentIndex)).\
+                   all()
+                       
     except:
         error = 'Error has been occurred while searching all users'
         return render_template('/class_add_user.html',

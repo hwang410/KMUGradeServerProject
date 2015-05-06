@@ -15,20 +15,45 @@ $(function() {
 	// now it shows all members having 'user' authority.
 	// but if the member is exist, then it needs to change college/department/authority space automatically.
 	var allUsers = [
-		{%- for user in allUsers %}
+		{%- for user, college, department in allUsers %}
 		{ value: "{{ user.memberId }} {{ user.memberName }}", 
-			data: "{{ user.memberId }} {{ user.memberName }}" },
+		data: "{{ user.memberId }} {{ user.memberName }} {{ college.collegeIndex }} {{ department.departmentIndex }} {{ department.departmentName }} {{ user.authority }}" },
 		{% endfor -%}
 		{ value: "", data: "" }
 	];
+	// autocompletion for initial state of the form
 	$("#userId1").autocomplete({
 		lookup: allUsers,
 		onSelect: function(suggestion){
-			var userId = suggestion.data.split(" ")[0];
-			var userName = suggestion.data.split(" ")[1];
+			var data = suggestion.data;
+			var userId = data.split(" ")[0];
+			var userName = data.split(" ")[1];
+			var collegeIndex = data.split(" ")[2];
+			var departmentIndex = data.split(" ")[3];
+			var departmentName = data.split(" ")[4];
+			var authority = data.split(" ")[5];
+			
+			if(authority.indexOf("COURSE_ADMINISTRATOR")!=-1){
+				authority = 0;
+			}
+			else{
+				authority = 1;
+			}
+
 			var userIdx = this.id.match(/(\d+)/g);
+			
 			document.getElementById(this.id).value = userId;
 			document.getElementById("username"+userIdx).value = userName;
+		
+			// set predefined data and make it disabled
+			document.getElementById("college"+userIdx).options[collegeIndex].selected = true;
+			//document.getElementById("college"+userIdx).setAttribute("disabled", "disabled");
+
+			document.getElementById("department"+userIdx).innerHTML = "<option selected>"+departmentIndex + ' '+ departmentName+"</option>";
+			//document.getElementById("department"+userIdx).setAttribute("disabled", "disabled");
+
+			document.getElementById("authority"+userIdx).options[authority].selected = true;
+			//document.getElementById("authority"+userIdx).setAttribute("disabled", "disabled");
 		}
 	});
 
@@ -47,10 +72,19 @@ $(function() {
 
 		var newRow = targetTable.insertRow(2);
 
+		var memberIdOnFirstRow = $("#userId1").val();
+		var isExistUser = false;
+		{%- for user, college, department in allUsers %}
+		if(memberIdOnFirstRow == "{{ user.memberId }}"){
+			isExistUser = true;
+		}
+		{% endfor -%}
+
 		for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
 			var uploadObj = "<td>";
 			var selectedItem, index; 
-			if(i < 1){
+			// course ID[0]
+			if(i < 1){ 
 				selectedItem = document.getElementById(keys[i]+"1");
 				index = selectedItem.options[selectedItem.selectedIndex].index + 1;
 				uploadObj += "<select id='" + keys[i] + numOfRow +
@@ -66,6 +100,7 @@ $(function() {
 				{% endfor -%}
 				uploadObj += "</select>";
 			}
+			// member ID[1], member name[2]
 			else if(i < 3){
 				uploadObj += "<input class='input-" + formsize[i] +
 										"'id='" + keys[i] + numOfRow +
@@ -80,12 +115,18 @@ $(function() {
 				}
 				uploadObj += "'>";
 			}
+			// college[3], department[4], authority[5]
 			else{
 		    		uploadObj += "<select class='input-" + formsize[i] +
 										"'id='" + keys[i] + numOfRow +
 								      	"'name='" + keys[i] + numOfRow +
-									  	"'value='" + $("#" + keys[i] + "1").val() +	"'>";
+									  	"'value='" + $("#" + keys[i] + "1").val()+"'";
+				if(isExistUser){
+					uploadObj += " disabled";
+				}
+				uploadObj += ">";
 				switch(i){
+					// college
 					case 3:
 						var index = $("#" + keys[i] + "1 option:selected").text().match(/(\d+)/g);
 			    			if(index == null){
@@ -99,6 +140,7 @@ $(function() {
 						uploadObj += ">{{ college.collegeIndex }} {{ college.collegeName }} </option>";
 						{% endfor -%}
 						break;
+					// department
 					case 4:
 						var collegeIndex = $("#" + keys[i-1] + "1 option:selected").text().match(/(\d+)/g);
 			    			var departmentIndex = $("#" + keys[i] + "1 option:selected").text().match(/(\d+)/g);
@@ -114,6 +156,7 @@ $(function() {
 							}
 						{% endfor -%}	
 						break;
+					// authority
 					case 5:
 						selectedItem = document.getElementById(keys[i]+"1");
 						index = selectedItem.options[selectedItem.selectedIndex].index + 1;
@@ -130,17 +173,65 @@ $(function() {
 			}
 	    		newRow.insertCell(i).innerHTML = uploadObj;
 		}
+
+		$("#userId"+numOfRow).change(function(){
+			var isExistUser = false;
+			{%- for user, college, department in allUsers %}
+				if($("#userId"+numOfRow).val() == "{{ user.memberId }}"){
+					isExistUser = true;
+				}
+			{% endfor -%}
+			if(!isExistUser){
+				resetDisabledOption(numOfRow);
+			}
+		});
+
 		$("#college"+numOfRow).change(function(){
 			RowOnClickController(numOfRow);
 		});
+
+		// autocompletion for the form already exist
 		$("#userId"+numOfRow).autocomplete({
 			lookup: allUsers,
 			onSelect: function(suggestion){
-				var userId = suggestion.data.split(" ")[0];
-				var userName = suggestion.data.split(" ")[1];
+				var data = suggestion.data;
+				var userId = data.split(" ")[0];
+				var userName = data.split(" ")[1];
+				var collegeIndex = data.split(" ")[2];
+				var departmentIndex = data.split(" ")[3];
+				var departmentName = data.split(" ")[4];
+				var authority = data.split(" ")[5];
+				
+				if(authority.indexOf("COURSE_ADMINISTRATOR")!=-1){
+					authority = 0;
+				}
+				else{
+					authority = 1;
+				}
+
 				var userIdx = this.id.match(/(\d+)/g);
+				
 				document.getElementById(this.id).value = userId;
 				document.getElementById("username"+userIdx).value = userName;
+
+				var isExistUser = false;
+				{%- for user, college, department in allUsers %}
+				if(userId == "{{ user.memberId }}"){
+					isExistUser = true;
+				}
+				{% endfor -%}
+
+				if(isExistUser){
+					// set predefined data and make it disabled
+					document.getElementById("college"+userIdx).options[collegeIndex].selected = true;
+					document.getElementById("college"+userIdx).setAttribute("disabled", "");
+
+					document.getElementById("department"+userIdx).innerHTML = "<option selected>"+departmentIndex + ' '+ departmentName+"</option>";
+					document.getElementById("department"+userIdx).setAttribute("disabled", "");
+
+					document.getElementById("authority"+userIdx).options[authority].selected = true;
+					document.getElementById("authority"+userIdx).setAttribute("disabled", "");
+				}
 			}
 		});
 		reset_val();
@@ -189,17 +280,54 @@ $(function() {
 					'{% endfor -%}' +
 				'</select>';
 
+		$("#userId1").change(function(){
+			var isExistUser = false;
+			{%- for user, college, department in allUsers %}
+				if($("#userId1").val() == "{{ user.memberId }}"){
+					isExistUser = true;
+				}
+			{% endfor -%}
+			if(!isExistUser){
+				resetDisabledOption(1);
+			}
+		});
+
 		$("#college1").change(function(){
 			RowOnClickController(1);
 		});
+
 		$("#userId1").autocomplete({
 			lookup: allUsers,
 			onSelect: function(suggestion){
-				var userId = suggestion.data.split(" ")[0];
-				var userName = suggestion.data.split(" ")[1];
+				var data = suggestion.data;
+				var userId = data.split(" ")[0];
+				var userName = data.split(" ")[1];
+				var collegeIndex = data.split(" ")[2];
+				var departmentIndex = data.split(" ")[3];
+				var departmentName = data.split(" ")[4];
+				var authority = data.split(" ")[5];
+				
+				if(authority.indexOf("COURSE_ADMINISTRATOR")!=-1){
+					authority = 0;
+				}
+				else{
+					authority = 1;
+				}
+
 				var userIdx = this.id.match(/(\d+)/g);
+				
 				document.getElementById(this.id).value = userId;
 				document.getElementById("username"+userIdx).value = userName;
+
+				// set predefined data and make it disabled
+				document.getElementById("college"+userIdx).options[collegeIndex].selected = true;
+				document.getElementById("college"+userIdx).setAttribute("disabled", "disabled");
+
+				document.getElementById("department"+userIdx).innerHTML = "<option selected>"+departmentIndex +' '+ departmentName+"</option>";
+				document.getElementById("department"+userIdx).setAttribute("disabled", "disabled");
+
+				document.getElementById("authority"+userIdx).options[authority].selected = true;
+				document.getElementById("authority"+userIdx).setAttribute("disabled", "disabled");
 			}
 		});
 	});
@@ -280,6 +408,23 @@ $(function() {
 									<option> {{ authority }} </option>
 									{% endfor -%}
 								</select>
+							<!-- hidden select forms for disabled option -->
+								<select class="input-medium" id="college1" name="college1" style="display:none">
+									<option> select college </option>
+									{%- for college in allColleges %}
+									<option> 
+										{{ college.collegeIndex }} {{ college.collegeName }}
+									</option>
+									{% endfor -%}
+								</select>
+								<select class="input-medium" id="department1" name="department1" style="display:none">
+								</select>
+								<select class="input-medium" id="authority1" name="authority1" style="display:none">
+									{%- for authority in authorities %}
+									<option> {{ authority }} </option>
+									{% endfor -%}
+								</select>
+							<!-- end hidden select form -->
 				</table>
 			</div>
 			<div class="modal-footer">
@@ -398,9 +543,46 @@ $(function() {
 		<!-- ///// end hidden modal pop ///// -->
 </div>
 <script>
+$("#userId1").change(function(){
+	var isExistUser = false;
+	{%- for user, college, department in allUsers %}
+		if($("#userId1").val() == "{{ user.memberId }}"){
+			isExistUser = true;
+		}
+	{% endfor -%}
+	if(!isExistUser){
+		resetDisabledOption(1);
+	}
+});
+
+function resetDisabledOption(idxOfRow){
+	// reset diabled option
+	document.getElementById("college"+idxOfRow).removeAttribute("disabled");
+	document.getElementById("department"+idxOfRow).removeAttribute("disabled");
+	document.getElementById("authority"+idxOfRow).removeAttribute("disabled");
+
+	document.getElementById("college"+idxOfRow).innerHTML = 
+		'<option> select college </option>' +
+		'{%- for college in allColleges %}' +
+		'<option>' +
+		'{{ college.collegeIndex }} {{ college.collegeName }}' +
+		'</option>' +
+		'{% endfor -%}';
+	document.getElementById("department"+idxOfRow).innerHTML =
+		'<select class="input-medium" id="department"'+idxOfRow+' name="department'+idxOfRow+'">' +
+		'</select>';
+	document.getElementById("authority"+idxOfRow).innerHTML =
+		'<select class="input-medium" id="authority'+idxOfRow+'" name="authority'+idxOfRow+'">' +
+		'{%- for authority in authorities %}' +
+		'<option> {{ authority }} </option>' +
+		'{% endfor -%}' +
+		'</select>';
+}
+
 $("#college1").change(function(){
 	RowOnClickController(1);
 });
+
 function RowOnClickController(IdxOfRow){
 	var selectedText = $("#college"+IdxOfRow+" option:selected").text();
 
