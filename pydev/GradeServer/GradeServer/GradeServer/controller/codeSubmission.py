@@ -77,35 +77,30 @@ def file_save_with_insert_to_SubmittedFiles(memberId, courseId, problemId, uploa
     return sumOfSubmittedFileSize
         
 def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, usedLanguageName, sumOfSubmittedFileSize, problemName, filePath, tempPath):
-    try:
-        usedLanguageIndex = get_used_language_index(usedLanguageName)
-        usedLanguageVersion = get_used_language_version(courseId, usedLanguageIndex)
-        submissionCount, solutionCheckCount, viewCount = get_submission_info(memberId, courseId, problemId)
-        insert_to_submissions(courseId, memberId, problemId, submissionCount, solutionCheckCount, viewCount, usedLanguageIndex, sumOfSubmittedFileSize)
-        problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, numberOfTestCase, problemCasesPath = get_problem_info(problemId, problemName)
-        problemFullName = make_problem_full_name(problemId, problemName)
-        
-        """Grade.delay(str(filePath),
-                    str(problemPath),
-                    str(memberId),
-                    str(problemId),
-                    str(solutionCheckType),
-                    numberOfTestCase,
-                    limitedTime,
-                    limitedMemory,
-                    str(usedLanguageName),
-                    str(usedLanguageVersion),
-                    str(courseId),
-                    submissionCount,
-                    str(problemFullName))"""
+    usedLanguageIndex = get_used_language_index(usedLanguageName)
+    usedLanguageVersion = get_used_language_version(courseId, usedLanguageIndex)
+    submissionCount, solutionCheckCount, viewCount = get_submission_info(memberId, courseId, problemId)
+    insert_to_submissions(courseId, memberId, problemId, submissionCount, solutionCheckCount, viewCount, usedLanguageIndex, sumOfSubmittedFileSize)
+    problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, numberOfTestCase, problemCasesPath = get_problem_info(problemId, problemName)
+    problemFullName = make_problem_full_name(problemId, problemName)
+            
+    """Grade.delay(str(filePath),
+                   str(problemPath),
+                str(memberId),
+                str(problemId),
+                str(solutionCheckType),
+                numberOfTestCase,
+                limitedTime,
+                limitedMemory,
+                str(usedLanguageName),
+                str(usedLanguageVersion),
+                str(courseId),
+                submissionCount,
+                str(problemFullName))"""
 
-                       
-        flash(OtherResources.const.SUBMISSION_SUCCESS)
-        dao.commit()
-    except Exception as e:
-        dao.rollback()
-        os.system("rm -rf %s" % tempPath)
-        return unknown_error(get_message('dbError'))
+    dao.commit()
+    
+    flash(OtherResources.const.SUBMISSION_SUCCESS)
     os.system("rm -rf %s" % filePath)
     os.rename(tempPath, filePath)
     
@@ -160,9 +155,12 @@ def to_process_uploaded_files(courseId, problemId, problemName):
         usedLanguageName = request.form[OtherResources.const.USED_LANGUAGE_NAME]
         sumOfSubmittedFileSize = file_save_with_insert_to_SubmittedFiles(memberId, courseId, problemId, uploadFiles, tempPath, filePath)
         send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, usedLanguageName, sumOfSubmittedFileSize, problemName, filePath, tempPath)
-    except:
+    except Exception as e:
+        dao.rollback()
         os.system("rm -rf %s" % tempPath)
-        return unknown_error(get_message('askToMaster'))        
+        flash(get_message('dbError'))
+        return "0"
+
     return "0"
 
 @GradeServer.route('/problem_<courseId>_page<pageNum>_<problemId>_<problemName>', methods = ['POST'])
