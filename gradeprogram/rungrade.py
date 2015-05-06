@@ -10,7 +10,7 @@ if __name__ == '__main__':
     
     from grading import InterfaceGrade
     
-    os.chdir('tmpdir')
+    os.chdir('tempdir')
     
     grade = InterfaceGrade.InterfaceGrade(args)
     result, stdNum, problemNum, courseNum, submitCount = grade.Compile()
