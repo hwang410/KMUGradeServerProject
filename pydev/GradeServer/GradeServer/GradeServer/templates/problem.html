@@ -86,13 +86,14 @@
 		    	{% endif %}
 						<div>
 						{% if languageInfoRecord.languageName == "C++" %}
-		    			<form action='/problem_{{ courseId }}_{{ problemId }}_{{ problemName }}' id='my-dropzoneCpp' class='dropzone' enctype="multipart/form-data">
+		    			<form action='/problem_{{ courseId }}_{{ problemId }}_{{ problemName }}_{{ pageNum }}' id='my-dropzoneCpp' class='dropzone' enctype="multipart/form-data">
 		    		{% else %}
-		    			<form action='/problem_{{ courseId }}_{{ problemId }}_{{ problemName }}' id='my-dropzone{{ languageInfoRecord.languageName }}' class='dropzone' enctype="multipart/form-data">
+		    			<form action='/problem_{{ courseId }}_{{ problemId }}_{{ problemName }}_{{ pageNum }}' method="post" id='my-dropzone{{ languageInfoRecord.languageName }}' class='dropzone' enctype="multipart/form-data">
 		    		{% endif %}
 		    		<input type="hidden" name="usedLanguageName" value="{{ languageInfoRecord.languageName }}">
 								<div class='fallback'>
-									<input name='file' type='file' multiple />
+									<input name='file[]' type='file' multiple /></br>
+									<input type="submit" />
 								</div>
 							</form>
 						</div>
@@ -101,7 +102,9 @@
       	
       	</div>
     	</div>
-    	<button class="btn" id='submit-all' type="submit">submit files</button>
+			{% if browserName == 'msie' and browserVersion > 8.0 or browserName != 'msie' %}
+    		<button class="btn" id='submit-all' type="submit">submit files</button>
+    	{% endif %}
 		</div>
   	<div class="tab-pane" id="write">
 	  	<div>
