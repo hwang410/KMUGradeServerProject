@@ -15,6 +15,20 @@ from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.routeResources import RouteResources
 from sqlalchemy import and_, func, update
 
+
+'''
+Select Langues
+'''
+def select_languages(courseId):
+    return dao.query(LanguagesOfCourses.languageIndex,
+                     Languages.languageName,
+                     Languages.languageVersion).\
+               filter(LanguagesOfCourses.courseId == courseId).\
+               join(Languages,
+                    LanguagesOfCourses.languageIndex == Languages.languageIndex)
+               
+               
+
 def get_course_name(courseId):
     try:
         courseName = dao.query(RegisteredCourses.courseName).\
