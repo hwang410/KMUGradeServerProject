@@ -189,11 +189,17 @@ jQuery(document).ready(function ($) {
 })
 
 $(document).on('click','.dropdown ul a',function(){
-		var name = $(this).attr('name')
-		if (name != "main") {
+	var className = $(this).attr('class');
+	if (!className) {
+    var text = $(this).text();
+    $(this).closest('.dropdown').children('a.dropdown-toggle').text(text);
+    }
+	else {
+		if (className.substr(className.length-12, 12) != "main-checker") {
     	var text = $(this).text();
     	$(this).closest('.dropdown').children('a.dropdown-toggle').text(text);
     	}
+ 	}
 }) 	
 
 // showing delete modal
