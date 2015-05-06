@@ -5,14 +5,12 @@ import string
 from subprocess import call
 
 class CompileTools(object):
-    def __init__(self, filePath, stdNum, usingLang, version, runFileName,
-                 errorParaList):
+    def __init__(self, filePath, stdNum, usingLang, version, runFileName):
         self.filePath = filePath
         self.stdNum = stdNum
         self.usingLang = usingLang
         self.version = version
         self.runFileName = runFileName
-        self.errorParaList = errorParaList
         
     def CodeCompile(self):
         if self.usingLang == 'PYTHON':
@@ -35,7 +33,8 @@ class CompileTools(object):
         # check compile error
         if os.path.getsize('error.err') > 0:
             self.MakeErrorList()
-            return 'CompileError'
+            print 'CompileError', 0, 0, 0
+            sys.exit()
         
         # if not make execution file
         elif len(glob.glob('./'+self.runFileName)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
@@ -50,7 +49,7 @@ class CompileTools(object):
         count = 0
         
         try:
-            wf = open(self.filePath + 'errorlist.txt', 'w')
+            wf = open('errorlist.txt', 'w')
             rf = open('error.err', 'r')
         except Exception as e:
             print 'make compile error list file open error'
