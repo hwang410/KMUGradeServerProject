@@ -73,7 +73,7 @@
 					<thead>
 						<tr>
 							<td>College
-							<td class="hidden-phone">Department Code
+							<td class="hidden-phone input-medium">Department Code
 							<td>Department Name
 					<tbody id="addDepartmentForm">
 						<tr>
@@ -288,18 +288,6 @@ function changeOnClickEvent(tab){
 	}
 	document.getElementById('deleteButton').innerHTML=newinnerhtml;
 }
-
-// disabling add line when the window size is small like phone
-window.onresize = function(){
-	var displayOption;
-	if($(window).width()<768){
-		displayOption="display:none";
-	}
-	else{
-		displayOption="display:inline-block";
-	}
-	document.getElementById('addline_department').style=displayOption;
-};
 
 // College
 // Add line button event

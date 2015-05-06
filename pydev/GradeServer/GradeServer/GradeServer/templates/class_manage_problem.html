@@ -18,26 +18,24 @@
 				</a>
 			{% endfor %}</li> <!-- without li closing tag, div tag is recognized as a part of the second tag -->
 			<div style="text-align:right">
-				<a class="btn" data-toggle="modal" href="#addProblemModal" rol="button">Add</a>
+				<div class="visible-desktop"><a class="btn" data-toggle="modal" href="#addProblemModal" rol="button">Add</a></div>
+				<div class="visible-phone visible-tablet"><button class="btn" onclick="alert('not available in this window size');">Add</button></div>
 			</div>	
 		</ul>
 		<!-- hidden modal pop -->
 		<!-- ///// Add case ///// -->
-		<form method="post">
+		<form id="addProblemModalForm" method="post">
 		<div class="modal hide fade" id="addProblemModal" 
 			  tabindex="-1" role="dialog" aria-labelledby="addProblemModalLabel"
 			  aria-hidden="true">
-			{%- if modalError %}
-			<div class="modalError"> {{ modalError }}</div>
-			{% endif -%}
 			<div class="modal-header">
+				<div id="modalError" class="error" style="display:none;width:97%"></div>
 				<button class="close" data-dismiss="modal"
 						  type="button" aria-hidden="true">x</button>
 				<h3 id="addProblemModalLabel">Problem addition</h3>
 			</div>
 			<div class="modal-body">
-				<p>If you don't choose open/close date, then the dates will be same with start/end date<br>
-				MF : Each test case is in each file</p>
+				<p>If you don't choose open/close date, then the dates will be same with start/end date<br></p>
 				<div style="text-align:right">
 					<button class="btn" type="button" id="addline_problem">Add line
 					</button>
@@ -93,7 +91,8 @@
 				</table>
 			</div>
 			<div class="modal-footer">
-				<button class="btn" name="add" type="submit">Done</button>
+				<a class="btn" onclick="checkFormValidation()">Done</a>
+				<!--<button class="btn" name="add" onclick="checkFormValidation()">Done</button>-->
 				<button class="btn" id="resetAddProblemForm"
 						  data-dismiss="modal" aria-hidden="true">Close</button>
 </form>
@@ -147,7 +146,7 @@
 											name="delete_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}"
 											class="box-check">
 								</label>
-						<!-- this is for getting MF value when it's changed -->
+						<!-- this is for getting AIOF value when it's changed -->
 						<div id="isAllInputCaseInOneFile_{{registeredProblem.courseId}}_{{registeredProblem.problemId}}">
 						</div>
 						{% endfor %}
@@ -159,10 +158,10 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<td>Course Id
+							<td>Course ID
 							<td>Class Name
 							<td>Problem Name
-							<td><abbr title="is this problem has only one input file?">MF</abbr>
+							<td><abbr title="All Input cases in One File">AIOF</abbr>
 							<td>Start Date
 							<td>End Date
 							<td>Open Date
@@ -262,8 +261,6 @@
 		</div>
 	</div>
 	<!-- ///// end hidden modal pop ///// -->
-
-
 
 	<div class="pagination pagination-centered">
 		<ul>
@@ -499,12 +496,39 @@ $("#resetAddProblemForm").bind('click', function(){
 						'name="closeDate1"'+
 						'data-date-format="yyyy-mm-dd" type="date"'+
 						'autocomplete="off" placeholder="click">' ;
-				
+	
+	document.getElementById("modalError").style.display="none";
+
 	if (!Modernizr.inputtypes['date']) {
 		$('input[type=date]').datepicker({
 			dateFormat: 'yy-mm-dd'
 		});
 	}
 });
+
+// checking validations of dates
+function checkFormValidation(){
+	var targetTable = document.getElementById('problems');
+	var numOfRow = targetTable.rows.length;
+	var isValid = true;
+
+	for(var row=1;row<numOfRow;row++){
+		if(document.getElementById("startDate"+row).value > document.getElementById("endDate"+row).value ||
+		   document.getElementById("openDate"+row).value > document.getElementById("closeDate"+row).value){
+			isValid = false;
+			break;
+		}
+	}
+
+	if(isValid){
+		// send http request
+		document.getElementById("addProblemModalForm").submit();
+	}
+	else{
+		// when the dates are invalid, shows error message.
+		document.getElementById("modalError").style.display = "inline-block";
+		document.getElementById("modalError").innerHTML = "make sure that Start/Open dates should be earlier than End/Close Date";
+	}
+}
 </script>
 {% endblock -%}
