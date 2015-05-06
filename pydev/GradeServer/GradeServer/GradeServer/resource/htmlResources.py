@@ -13,6 +13,7 @@ class HTMLResources():
     
     # Board
     const.BOARD_HTML = '/board.html'
+    const.ARTICLE_NOTICE_HTML = '/article_notice.html'
     const.ARTICLE_READ_HTML = '/article_read.html'
     const.ARTICLE_WRITE_HTML = '/article_write.html'
     

@@ -1,0 +1,247 @@
+<!-- //////////////////////////////////////////
+		fill every "here" sign using jinja2 template
+		/////////////////////////////////////////// -->
+		
+{% extends "main.html" %}
+{%- block body %}
+<script>
+	function filterConditions (string){
+                 	
+		var dropDownCondition = document.getElementById("dropDownCondition") ;
+		dropDownCondition.innerHTML = string + "<b class = 'caret'></b>" ;
+		
+		var filterCondition = document.getElementById("filterCondition") ;
+		filterCondition.name = string ;
+     }
+</script>
+            
+<div class="container">
+	<div class="tabbable">
+		<ul class="nav nav-tabs">
+		{% for myCourse in myCourses %}
+		{# TabActive Setting #}
+			{% if loop.index0 == 0 %}
+				{% if myCourse == activeTabCourseId %}
+				<li class="active">
+					<a href = '#{{ myCourse }}' data-toggle="tab">
+				{% else %}
+				<li>
+					<a href = '{{ url_for ("GradeServer.article_notice", activeTabCourseId = myCourse, pageNum = 1) }}'>
+				{% endif %}
+					{% if myCourse %}{{ myCourse }}{% endif %}
+				</a>
+			</li>
+			{% elif myCourse.courseId == activeTabCourseId %}
+			<li class="active">
+				<a href = "#{{ myCourse.courseId }}" data-toggle="tab">
+			{% else %}
+			<li>
+				<a href = '{{ url_for ("GradeServer.article_notice", activeTabCourseId = myCourse.courseId, pageNum = 1) }}'>
+			{% endif %}
+					{% if myCourse.courseId and myCourse.courseName %}{{ myCourse.courseId }} {{ myCourse.courseName }}{% endif %}
+				</a>
+			</li>
+		{% endfor %}
+		
+			<div style="text-align:right">
+			{% if 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
+				<a href="{{ url_for('GradeServer.write', activeTabCourseId = activeTabCourseId, articleIndex =0) }}">
+					<button type="button" class="write">Write <i class="icon-pencil"></i></button>
+				</a>
+			{% endif %}
+			</div>
+		</ul>
+		
+		<!-- posts -->
+		<div class="tab-content">
+		<!-- ActiveTab posts -->
+		{%- for myCourse in myCourses %}
+			{% if loop.index0 == 0 %}
+				{% if myCourse == activeTabCourseId %}
+				<div id="{{ myCourse }}" class = 'active'>
+					<table class="table">
+						<thead>
+							<tr>
+								<td>Num
+								<td>Course Name
+								<td>Title
+								<td>Member ID
+								<td>Date
+								<td>View
+								<td>Like
+							</tr>
+						<tbody>
+						<!-- Course Notice -->
+						{% for articleNoticeRecord in articleNoticeRecords %}
+						<tr>
+							<td>Notice
+							<td>
+								{% if articleNoticeRecord.courseName %}
+								{{ articleNoticeRecord.courseId }} {{ articleNoticeRecord.courseName }}
+								{% else %}
+								Server Notice
+								{% endif %}
+							
+							<td>
+								<a href= '{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleNoticeRecord.articleIndex) }}'>
+									<script> 
+										// if title is longer than 10 charater, change it to short
+										var newTitle = "{{ articleNoticeRecord.title }}"; 
+										if(newTitle.length >= 10){
+											newTitle = newTitle.substring(0,10)+"...";
+										}
+										document.write(newTitle);
+									</script>
+								</a>
+								{%- if articleNoticeRecord.replyCount > 0 %}
+									[{{ articleNoticeRecord.replyCount }}]
+								{% endif -%}
+							
+							<td>{% if articleNoticeRecord.writerId %}{{ articleNoticeRecord.writerId }}{% endif %}
+							<td>
+								{% if articleNoticeRecord.writtenDate %}
+									<script> var newDate = "{{ articleNoticeRecord.writtenDate }}"; document.write(newDate.substring(2,16)); </script>
+								{% endif %}
+							<td>{% if articleNoticeRecord.viewCount %}{{ articleNoticeRecord.viewCount }}{% else %}0{% endif %}
+							<td>{% if articleNoticeRecord.sumOfLikeCount %}{{ articleNoticeRecord.sumOfLikeCount }}{% else %}0{% endif %}
+						</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+					
+					<!-- Paging -->
+					<div class="pagination pagination-centered">
+						<ul>
+							{%- if pages['pageNum'] > pages['BLOCK'] %}
+							<li><a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum = pages['pageNum'] -1) }}"><</a></li>
+							{% endif -%}
+							
+							{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
+							<li>
+								{% if pages['pageNum'] == i %}
+								<a style ='background-color:gray'>
+								{% else %}
+								<a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum = i) }}">
+								{% endif %}
+								{{ i }}
+								</a>
+							</li>
+							{% endfor -%}
+							
+							{%- if pages['endPage'] < pages['allPage'] %}
+							<li><a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum =pages['pageNum'] +1) }}">></a></li>
+							{% endif -%}
+						</ul>
+					</div>
+					<!-- End Paging -->
+				{% endif %}
+				
+			{% elif myCourse.courseId == activeTabCourseId %}
+			<div id="{{ myCourses.courseId }}" class="active">
+				<table class="table">
+					<thead>
+						<tr>
+							<td>Num
+							<td>Course Name
+							<td>Title
+							<td>Member ID
+							<td>Date
+							<td>View
+							<td>Like
+						</tr>
+					</thead>
+					
+					<tbody>
+					<!-- Course Notice -->
+					{% for articleNoticeRecord in articleNoticeRecords %}
+					<tr>
+						<td>Notice
+						<td>
+							{% if articleNoticeRecord.courseName %}
+							{{ articleNoticeRecord.courseId }} {{ articleNoticeRecord.courseName }}
+							{% else %}
+							Server Notice
+							{% endif %}
+						
+						<td>
+							<a href= '{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleNoticeRecord.articleIndex) }}'>
+								<script> 
+									// if title is longer than 10 charater, change it to short
+									var newTitle = "{{ articleNoticeRecord.title }}"; 
+									if(newTitle.length >= 10){
+										newTitle = newTitle.substring(0,10)+"...";
+									}
+									document.write(newTitle);
+								</script>
+							</a>
+							{%- if articleNoticeRecord.replyCount > 0 %}
+								[{{ articleNoticeRecord.replyCount }}]
+							{% endif -%}
+						
+						<td>{% if articleNoticeRecord.writerId %}{{ articleNoticeRecord.writerId }}{% endif %}
+						<td>
+							{% if articleNoticeRecord.writtenDate %}
+								<script> var newDate = "{{ articleNoticeRecord.writtenDate }}"; document.write(newDate.substring(2,16)); </script>
+							{% endif %}
+						<td>{% if articleNoticeRecord.viewCount %}{{ articleNoticeRecord.viewCount }}{% else %}0{% endif %}
+						<td>{% if articleNoticeRecord.sumOfLikeCount %}{{ articleNoticeRecord.sumOfLikeCount }}{% else %}0{% endif %}
+					</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+				
+				<!-- Paging -->
+				<div class="pagination pagination-centered">
+					<ul>
+						{%- if pages['pageNum'] > pages['BLOCK'] %}
+						<li><a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum = pages['pageNum'] -1) }}"><</a></li>
+						{% endif -%}
+						
+						{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
+						<li>
+							{% if pages['pageNum'] == i %}
+							<a style ='background-color:gray'>
+							{% else %}
+							<a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum = i) }}">
+							{% endif %}
+							{{ i }}
+							</a>
+						</li>
+						{% endfor -%}
+						
+						{%- if pages['endPage'] < pages['allPage'] %}
+						<li><a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum =pages['pageNum'] +1) }}">></a></li>
+						{% endif -%}
+					</ul>
+				</div>
+				<!-- End Paging -->
+			{% endif %}
+			</div>
+			{% endfor -%}
+		</div>
+		<!-- end posts -->
+	</div>
+	
+	<!-- search bar -->
+	<form method ="post">
+			<!-- SearchBar // all -->
+			<div id= '{{ activeTabCourseId }}' class="tab-pane active" style="text-align:center">
+				
+				<div class="btn-group">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" id = 'dropDownCondition'>All<span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						{% for filter in Filters %}
+						<li><a onclick = 'filterConditions("{{ filter }}")'>{{ filter }}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+
+				<div class="input-append" style="margin-bottom:0px">
+					<input class="span3" name = 'keyWord' type="text" placeholder="Type Keyword">
+					<button id = 'filterCondition' name = '{{ Filters[0] }}' class="btn" type="submit"><i class="icon-search"></i></button>
+				</div>
+			</div>
+	</form>
+	<!-- end search bar -->
+</div>
+{% endblock -%}

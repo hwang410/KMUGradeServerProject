@@ -83,7 +83,7 @@
 								</li>
 								{% endif %}
 								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}" name="main">Account</a></li>
-								<li><a href="{{ url_for('GradeServer.board', activeTabCourseId = 'All', pageNum =1) }}" name="main">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
+								<li><a href="{{ url_for('GradeServer.article_notice', activeTabCourseId = 'All', pageNum =1) }}" name="main">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
 								<li><a href="#" name="main">Manual</a></li>
 								{%- if SETResources.const.SERVER_ADMINISTRATOR in session['authority'] %}
 								<li class="dropdown-submenu">
