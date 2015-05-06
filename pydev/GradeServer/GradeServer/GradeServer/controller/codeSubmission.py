@@ -130,25 +130,25 @@ def write_code_in_file(tempPath):
     usedLanguageName = request.form[OtherResources.const.LANGUAGE]
     
     fileName = get_language_name(usedLanguageName, tests)
-    try:
-        fout = open(os.path.join(tempPath, fileName), 'w')
-        fout.write(tests)
-        fout.close()
-    except:
-        os.system("rm -rf %s" % tempPath)
-        return unknown_error(get_message('fileSaveError'))
+    fout = open(os.path.join(tempPath, fileName), 'w')
+    fout.write(tests)
+    fout.close()
+
     return usedLanguageName, fileName
-@GradeServer.route('/problem_<courseId>_<problemId>_<problemName>', methods = ['POST'])
+
+@GradeServer.route('/problem_<courseId>_<problemId>_<problemName>_<pageNum>', methods = ['POST'])
 @check_invalid_access
 @login_required
-def to_process_uploaded_files(courseId, problemId, problemName):
+def to_process_uploaded_files(courseId, problemId, problemName, pageNum):
     memberId = session[SessionResources.const.MEMBER_ID]
     filePath, tempPath = make_path(PATH, memberId, courseId, problemId, problemName)
     try:
         os.mkdir(tempPath)
     except Exception as e:
         flash(get_message('askToMaster'))
-        return "0"
+        return redirect(url_for(RouteResources.const.PROBLEM_LIST,
+                            courseId = courseId,
+                            pageNum = pageNum))
       
     try:
         uploadFiles = request.files.getlist(OtherResources.const.GET_FILES)
@@ -159,9 +159,13 @@ def to_process_uploaded_files(courseId, problemId, problemName):
         dao.rollback()
         os.system("rm -rf %s" % tempPath)
         flash(get_message('dbError'))
-        return "0"
+        return redirect(url_for(RouteResources.const.PROBLEM_LIST,
+                            courseId = courseId,
+                            pageNum = pageNum))
 
-    return "0"
+    return redirect(url_for(RouteResources.const.PROBLEM_LIST,
+                            courseId = courseId,
+                            pageNum = pageNum))
 
 @GradeServer.route('/problem_<courseId>_page<pageNum>_<problemId>_<problemName>', methods = ['POST'])
 @check_invalid_access
@@ -172,10 +176,13 @@ def to_process_written_code(courseId, pageNum, problemId, problemName):
     try:
         os.mkdir(tempPath)
     except Exception as e:
-        return unknown_error(get_message('askToMaster'))
+        flash(get_message('askToMaster'))
+        return redirect(url_for(RouteResources.const.PROBLEM_LIST,
+                            courseId = courseId,
+                            pageNum = pageNum))
     
     try:
-        usedLanguageName, fileName = write_code_in_file(tempPath)
+        usedLanguageName, fileName = write_code_in_file(tempPath, pageNum)
         fileSize = os.stat(os.path.join(tempPath, fileName)).st_size
         fileIndex = 1
         delete_submitted_files_data(memberId, problemId, courseId)
@@ -183,7 +190,11 @@ def to_process_written_code(courseId, pageNum, problemId, problemName):
         send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, usedLanguageName, fileSize, problemName, filePath, tempPath)
     except:
         os.system("rm -rf %s" % tempPath)
-        return unknown_error(get_message('askToMaster'))
+        flash(get_message('askToMaster'))
+        return redirect(url_for(RouteResources.const.PROBLEM_LIST,
+                            courseId = courseId,
+                            pageNum = pageNum))
+        
     return redirect(url_for(RouteResources.const.PROBLEM_LIST,
                             courseId = courseId,
                             pageNum = pageNum))
