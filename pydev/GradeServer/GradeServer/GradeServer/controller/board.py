@@ -126,7 +126,82 @@ def board(activeTabCourseId, pageNum):
         
     except Exception:
         return unknown_error()
+
+
+'''
+게시판 공지만 과목별 혹은 전체 통합으로
+보여주는 페이지
+'''
+@GradeServer.route('/notice/<activeTabCourseId>/page<pageNum>', methods = ['GET', 'POST'])
+@check_invalid_access
+@login_required
+def article_notice(activeTabCourseId, pageNum):    
+    try:
+        # 검색시 FilterCondition List
+        Filters = ['모두', '작성자', '제목 및 내용']
+        
+                # 허용 과목 리스트
+        myCourses = select_current_courses(select_accept_courses().subquery()).subquery()
+        # TabActive Course or All Articles
+        # get course or All Articles 
+        articlesOnBoard = join_courses_names(# get TabActive Articles
+                                             select_articles(activeTabCourseId,
+                                                             isDeleted = ENUMResources().const.FALSE).subquery(),
+                                             myCourses).subquery()
+                # 과목 공지글 
+        try:
+            if request.method == 'POST':
+                try:
+                    for form in request.form:
+                        # FilterCondition
+                        if 'keyWord' != form:
+                            filterCondition = form
+                            keyWord = request.form['keyWord']
+                except Exception:
+                    filterCondition = None
+                    keyWord = None
+            else:
+                filterCondition = None
+                keyWord = None
+                
+            # Notices Sorted
+            articleNoticeRecords = select_sorted_articles(articlesOnBoard,
+                                                          isNotice = ENUMResources().const.TRUE,
+                                                          filterCondition = filterCondition,
+                                                          keyWord = keyWord)
+            # Get Notices count
+            count = select_count(articleNoticeRecords.subquery().\
+                                                      c.articleIndex).\
+                                                      first().\
+                                                      count
+            # Get Notices in Page                                                                           
+            articleNoticeRecords = get_page_record(articleNoticeRecords,
+                                                   pageNum = int(pageNum)).all()
+        except Exception:
+            count = 0
+            articleNoticeRecords = []
+            
+        try:
+            myCourses = dao.query(myCourses).all()
+        except Exception:
+            myCourses = []
+        # myCourses Default Add ALL
+        myCourses.insert(0, OtherResources().const.ALL)
+        
+        return render_template(HTMLResources().const.ARTICLE_NOTICE_HTML,
+                               SETResources = SETResources,
+                               SessionResources = SessionResources,
+                               articleNoticeRecords =  articleNoticeRecords,
+                               myCourses = myCourses,
+                               pages = get_page_pointed(int(pageNum),
+                                                        count),
+                               Filters = Filters,
+                               activeTabCourseId = activeTabCourseId) # classType, condition은 검색 할 때 필요한 변수    
+        
+    except Exception:
+        return unknown_error()
                             
+
 
  
 '''
