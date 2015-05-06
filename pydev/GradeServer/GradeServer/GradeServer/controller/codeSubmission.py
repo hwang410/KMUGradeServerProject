@@ -84,8 +84,8 @@ def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, used
     problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, numberOfTestCase, problemCasesPath = get_problem_info(problemId, problemName)
     problemFullName = make_problem_full_name(problemId, problemName)
             
-    """Grade.delay(str(filePath),
-                   str(problemPath),
+    Grade.delay(str(filePath),
+                str(problemPath),
                 str(memberId),
                 str(problemId),
                 str(solutionCheckType),
@@ -96,7 +96,7 @@ def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, used
                 str(usedLanguageVersion),
                 str(courseId),
                 submissionCount,
-                str(problemFullName))"""
+                str(problemFullName))
 
     dao.commit()
     
