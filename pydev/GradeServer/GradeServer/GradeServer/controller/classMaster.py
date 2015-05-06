@@ -256,10 +256,6 @@ def class_manage_problem():
                         
             # addition problem
             else:
-                print "in!!"
-                if form == ADD:
-                    continue
-                print "form:", form
                 value,index = re.findall('\d+|\D+',form)
                 index = int(index)
                 data = request.form[form]
