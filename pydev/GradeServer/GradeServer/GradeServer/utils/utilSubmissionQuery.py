@@ -143,7 +143,7 @@ def submissions_sorted(submissions, sortCondition = OtherResources().const.SUBMI
         # 제출날짜순 정렬
     if sortCondition == OtherResources().const.SUBMISSION_DATE:
         submissionRecords = dao.query(submissions).\
-                                order_by(submissions.c.codeSubmissionDate.asc())
+                                order_by(submissions.c.codeSubmissionDate.desc())
         # 실행 시간 순 정렬
     elif sortCondition == OtherResources().const.RUN_TIME:
         submissionRecords = dao.query(submissions).\
