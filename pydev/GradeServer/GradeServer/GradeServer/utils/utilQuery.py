@@ -60,26 +60,33 @@ def select_count(keySub):
 '''
 def select_accept_courses():
     # 서버 마스터는 모든 과목에 대해서, 그 외에는 지정된 과목에 대해서
-    # Server Master
-    if SETResources().const.SERVER_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
-        myCourses = dao.query(RegisteredCourses.courseId,
-                              RegisteredCourses.courseName,
-                              RegisteredCourses.endDateOfCourse)
-    # Class Master
-    elif SETResources().const.COURSE_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
+    try:
+        # Server Master
+        if SETResources().const.SERVER_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
+            myCourses = dao.query(RegisteredCourses.courseId,
+                                  RegisteredCourses.courseName,
+                                  RegisteredCourses.endDateOfCourse)
+        # Class Master
+        elif SETResources().const.COURSE_ADMINISTRATOR in session[SessionResources().const.AUTHORITY]:
+            myCourses = dao.query(RegisteredCourses.courseId,
+                                  RegisteredCourses.courseName,
+                                  RegisteredCourses.endDateOfCourse).\
+                            filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID])
+        # User
+        else:
+            myCourses = dao.query(Registrations.courseId,
+                                  RegisteredCourses.courseName,
+                                  RegisteredCourses.endDateOfCourse).\
+                            filter(Registrations.memberId == session[SessionResources().const.MEMBER_ID]).\
+                            join(RegisteredCourses,
+                                 Registrations.courseId == RegisteredCourses.courseId)
+    # Session Error Catch
+    except Exception:
         myCourses = dao.query(RegisteredCourses.courseId,
                               RegisteredCourses.courseName,
                               RegisteredCourses.endDateOfCourse).\
-                        filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID])
-    # User
-    else:
-        myCourses = dao.query(Registrations.courseId,
-                              RegisteredCourses.courseName,
-                              RegisteredCourses.endDateOfCourse).\
-                        filter(Registrations.memberId == session[SessionResources().const.MEMBER_ID]).\
-                        join(RegisteredCourses,
-                             Registrations.courseId == RegisteredCourses.courseId)
-            
+                        filter(RegisteredCourses.courseId == None)
+                        
     return myCourses
 
 

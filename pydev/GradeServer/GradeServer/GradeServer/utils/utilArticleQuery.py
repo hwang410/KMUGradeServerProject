@@ -235,25 +235,23 @@ def select_notices():
                                              myCourses).subquery()
     # Not Login     
     else:  
-        print "SFSDFEWR"
                 # 서버 공지만
-        myCourses = []
+        myCourses = select_accept_courses().subquery()
         try:
             serverAdministratorId = dao.query(Members.memberId).\
                                         filter(Members.authority == SETResources().const.SERVER_ADMINISTRATOR).\
                                         first().\
                                         memberId
         except:
-            print "AAAAAAAAAAAAAA"
             serverAdministratorId = None
             
         # TabActive Course or All Articles
         # get course or All Articles 
-        '''articlesOnBoard = join_courses_names(select_server_notice(serverAdministratorId).subquery(),
-                                             myCourses).subquery()'''
-        #print len(dao.query(articlesOnBoard).all())
+        articlesOnBoard = join_courses_names(select_server_notice(serverAdministratorId,
+                                                                  isNotice = ENUMResources().const.TRUE,
+                                                                  isDeleted = ENUMResources().const.FALSE).subquery(),
+                                             myCourses).subquery()
     try:
-        print "CGFDSFSDF"
                 # 과목 공지글
         # Get ServerAdministrator is All, CourseAdministrators, Users is server and course Notice
                 # 서버 관리자는 모든 공지
@@ -263,7 +261,6 @@ def select_notices():
                                                pageNum = int(1),
                                                LIST = OtherResources().const.NOTICE_LIST).all()
     except Exception:
-        print "AAAAA"
         articleNoticeRecords = []
        
     return articleNoticeRecords 
@@ -272,8 +269,9 @@ def select_notices():
 ''' 
 Ger SErverNotices
 '''
-def select_server_notice(serverAdministratorId):
+def select_server_notice(serverAdministratorId, isNotice = ENUMResources().const.TRUE, isDeleted = ENUMResources().const.FALSE):
     return dao.query(ArticlesOnBoard).\
-               filter(ArticlesOnBoard.writerId == serverAdministratorId,
-                      ArticlesOnBoard.isNotice == ENUMResources().const.TRUE,
-                      ArticlesOnBoard.isDeleted == ENUMResources().const.FALSE)        
+               filter(ArticlesOnBoard.courseId == None,
+                      ArticlesOnBoard.writerId == serverAdministratorId,
+                      ArticlesOnBoard.isNotice == isNotice,
+                      ArticlesOnBoard.isDeleted == isDeleted)        
