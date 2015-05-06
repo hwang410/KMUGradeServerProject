@@ -14,7 +14,7 @@ from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.GradeServer_config import GradeServerConfig
-from GradeServer.utils.utilCodeSubmissionQuery import get_member_name, get_course_name, get_submission_count, \
+from GradeServer.utils.utilCodeSubmissionQuery import get_member_name, get_course_name, get_submission_info, \
                                                       insert_submitted_files, get_used_language_index, insert_to_submissions, \
                                                       get_problem_info, get_used_language_version, delete_submitted_files_data
 from GradeServer.utils.utilMessages import unknown_error, get_message
@@ -80,12 +80,12 @@ def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, used
     try:
         usedLanguageIndex = get_used_language_index(usedLanguageName)
         usedLanguageVersion = get_used_language_version(courseId, usedLanguageIndex)
-        subCountNum = get_submission_count(memberId, courseId, problemId)
-        insert_to_submissions(courseId, memberId, problemId, usedLanguageIndex, subCountNum, sumOfSubmittedFileSize)
+        submissionCount, solutionCheckCount, viewCount = get_submission_info(memberId, courseId, problemId)
+        insert_to_submissions(courseId, memberId, problemId, submissionCount, solutionCheckCount, viewCount, usedLanguageIndex, sumOfSubmittedFileSize)
         problemPath, limitedTime, limitedMemory, solutionCheckType, isAllInputCaseInOneFile, numberOfTestCase, problemCasesPath = get_problem_info(problemId, problemName)
         problemFullName = make_problem_full_name(problemId, problemName)
         
-        Grade.delay(str(filePath),
+        """Grade.delay(str(filePath),
                     str(problemPath),
                     str(memberId),
                     str(problemId),
@@ -96,8 +96,8 @@ def send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, used
                     str(usedLanguageName),
                     str(usedLanguageVersion),
                     str(courseId),
-                    subCountNum,
-                    str(problemFullName))
+                    submissionCount,
+                    str(problemFullName))"""
 
                        
         flash(OtherResources.const.SUBMISSION_SUCCESS)

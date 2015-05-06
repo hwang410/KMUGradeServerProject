@@ -35,31 +35,26 @@ def get_member_name(memberId):
     except Exception as e:
         return unknown_error(get_message('dbError'))
 
-def get_submission_count(memberId, courseId, problemId):
+def get_submission_info(memberId, courseId, problemId):
     try:
-        subCount = dao.query(func.max(Submissions.submissionCount).\
-                       label(OtherResources.const.SUBMISSION_COUNT)).\
-                       filter(Submissions.memberId == memberId,
-                              Submissions.courseId == courseId,
-                              Submissions.problemId == problemId).\
-                       first()
-        subCountNum = subCount.submissionCount + 1
+        submissionInfo = dao.query(func.max(Submissions.submissionCount).\
+                                    label(OtherResources.const.SUBMISSION_COUNT),
+                                    func.max(Submissions.solutionCheckCount).\
+                                    label(OtherResources.const.SOLUTION_CHECK_COUNT),
+                                    func.max(Submissions.viewCount).\
+                                    label(OtherResources.const.VIEW_COUNT)).\
+                              filter(Submissions.memberId == memberId,
+                                     Submissions.courseId == courseId,
+                                     Submissions.problemId == problemId).\
+                              first()
+        submissionCount = submissionInfo.submissionCount + 1
+        solutionCheckCount = submissionInfo.solutionCheckCount
+        viewCount = submissionInfo.viewCount
     except:
-        subCountNum = 1
-    return subCountNum
-
-def get_solution_check_count(memberId, courseId, problemId, subCountNum):
-    try:
-        solCount = dao.query(func.max(Submissions.solutionCheckCount).\
-                       label(OtherResources.const.SOLUTION_CHECK_COUNT)).\
-                       filter(Submissions.memberId == memberId,
-                              Submissions.courseId == courseId,
-                              Submissions.problemId == problemId).\
-                       first()
-        solCountNum = solCount.solutionCheckCount
-    except:
-        solCountNum = 0
-    return solCountNum
+        submissionCount = 1
+        solutionCheckCount = 0
+        viewCount = 0
+    return submissionCount, solutionCheckCount, viewCount
 
 def insert_submitted_files(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize):
     submittedFiles = SubmittedFiles(memberId = memberId,
@@ -116,13 +111,13 @@ def delete_submitted_files_data(memberId, problemId, courseId):
                                  SubmittedFiles.courseId == courseId)).\
                      delete()
                      
-def insert_to_submissions(courseId, memberId, problemId, usedLanguageIndex, subCountNum, sumOfSubmittedFileSize):
-    solCountNum = get_solution_check_count(memberId, courseId, problemId, subCountNum)
+def insert_to_submissions(courseId, memberId, problemId, submissionCount, solutionCheckCount, viewCount, usedLanguageIndex, sumOfSubmittedFileSize):
     submissions = Submissions(memberId = memberId,
                               problemId = problemId,
                               courseId = courseId,
-                              submissionCount = subCountNum,
-                              solutionCheckCount = solCountNum,
+                              submissionCount = submissionCount,
+                              solutionCheckCount = solutionCheckCount,
+                              viewCount = viewCount,
                               status = ENUMResources.const.JUDGING,
                               codeSubmissionDate = datetime.now(),
                               sumOfSubmittedFileSize = sumOfSubmittedFileSize,

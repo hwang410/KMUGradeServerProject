@@ -40,4 +40,5 @@ class OtherResources(object):
     const.WINDOWS_NEW_LINE = '\n'
     const.SUBMISSION_COUNT = 'submissionCount'
     const.SOLUTION_CHECK_COUNT = 'solutionCheckCount'
+    const.VIEW_COUNT = 'viewCount'
     const.SUBMISSION_SUCCESS = 'Submission Success!'
