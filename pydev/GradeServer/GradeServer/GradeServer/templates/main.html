@@ -34,7 +34,7 @@
 					<span class="icon-bar"></span>
 				</button>
 				<a class="link-main" href="{{ url_for('GradeServer.sign_in') }}" width="10px"><img src="../../static/bootstrap/img/kookmin_logo_dark.jpg" style="height:40px;width:40px"> KMU Grade Server </a>
-				<div class="nav-collapse collapse">
+				<div class="nav-collapse collapse" >
 					<ul class="nav">
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Problem<b class="caret"></b></a>
@@ -43,10 +43,10 @@
 								<li class="nav-header">Current Class</li>
 								{%- if session[SessionResources.const.OWN_CURRENT_COURSES] %}
 									{%- for course in session[SessionResources.const.OWN_CURRENT_COURSES] %}
-									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId, pageNum = 1) }}" class="currentClasses" name="main">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="currentClasses" name="main">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
-								<li class="disabled"><a tabindex="-1" href="#">None</a></li>
+								<li class="disabled"><a tabindex="-1" href="#" name="main">None</a></li>
 								{% endif -%}
 								
 								<li class="divider"></li> <!-- seperation line -->
@@ -54,7 +54,7 @@
 								<li class="nav-header">Past Class</li>
 								{%- if session[SessionResources.const.OWN_PAST_COURSES] %}
 									{%- for course in session[SessionResources.const.OWN_PAST_COURSES] %}
-									<li><a href="{{ url_for('GradeServer.problemList', courseId=course.courseId, pageNum = 1) }}" class="pastClasses" name="main">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="pastClasses" name="main">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
 								<li class="disabled"><a tabindex="-1" href="#" name="main">None</a></li>
@@ -79,7 +79,7 @@
 							<ul class="dropdown-menu">
 								{%- if SETResources.const.SERVER_ADMINISTRATOR not in session['authority'] and SETResources.const.COURSE_ADMINISTRATOR not in session['authority'] %}
 								<li>
-									<a href="{{ url_for('GradeServer.user_history', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}" name="main">Record</a>
+									<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}" name="main">Record</a>
 								</li>
 								{% endif %}
 								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}" name="main">Account</a></li>
@@ -205,7 +205,7 @@
 							<div class="span4 topcoder" style="text-align:center;background:#eeeeee">
 								<h4>Top Coder of this week</h4>
 								{% if topCoderId %}
-									<a href ="{{ url_for ('GradeServer.user_history', memberId =topCoderId, sortCondition ='submissionDate', pageNum =1) }}">{{ topCoderId }}</a>
+									<a href ="{{ url_for ('GradeServer.submission_record', memberId =topCoderId, sortCondition ='submissionDate', pageNum =1) }}">{{ topCoderId }}</a>
 								{% else %}
 									None
 								{% endif %}
