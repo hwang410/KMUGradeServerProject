@@ -292,23 +292,15 @@ function visibleButton(parent){
 
 // @@ Check All checkbox function
 // works up to 'Check All' checkbox's checked option
+// 'range' means the position of checkboxes. 
+// it doesn't search in all page range.
 function selectAllCheckboxes(range){
 	var checkboxes = document.getElementById(range).getElementsByTagName("input");
 	var checkAllBox = document.getElementById(range).getElementsByClassName('checkAll')[0];
 	// when 'Check All' is unchecked, other checkboxes are being unchecked
-	//if(checkAllBox.checked == false){
-		for(var i=0;i<checkboxes.length;i++){
-			if(checkboxes[i].type == "checkbox"){
-				checkboxes[i].checked = checkAllBox.checked;
-			}
+	for(var i=0;i<checkboxes.length;i++){
+		if(checkboxes[i].type == "checkbox"){
+			checkboxes[i].checked = checkAllBox.checked;
 		}
-	//}
-	// when 'Check All' is checked(by user's clicking), other checkboxes are bing checked
-	//else{
-	//	for(var i=0;i<checkboxes.length;i++){
-	//		if(checkboxes[i].type == "checkbox"){
-	//			checkboxes[i].checked = true;
-	//		}
-	//	}
-	//}
+	}
 }
