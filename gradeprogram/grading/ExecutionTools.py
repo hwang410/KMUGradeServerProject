@@ -19,6 +19,7 @@ class ExecutionTools(object):
         self.runFileName = runFileName
         self.problemName = problemName
         self.caseCount = caseCount
+        self.resultMessage = "%s %i %i %i"
         
     def Execution(self):
         # copy input data
@@ -28,8 +29,7 @@ class ExecutionTools(object):
                 copyfile(copyCommand, 'input.txt')
         except Exception as e:
             print e
-            resultMessage = "%s %i %i %i" % ('ServerError', 0, 0, 0)
-            sys.stderr.write(resultMessage)
+            sys.stderr.write(self.resultMessage % ('ServerError', 0, 0, 0))
             sys.exit()
         
         # make execution command
@@ -46,18 +46,15 @@ class ExecutionTools(object):
         userTime = int(time * 1000)
         
         if result == 'TimeOver':
-            resultMessage = "%s %i %i %i" % (result, 0, userTime, usingMem)
-            sys.stderr.write(resultMessage)
+            sys.stderr.write(self.resultMessage % (result, 0, userTime, usingMem))
             sys.exit()
             
         elif result == 'RunTimeError':
-            resultMessage = "%s %i %i %i" % (result, 0, 0, 0)
-            sys.stderr.write(resultMessage)
+            sys.stderr.write(self.resultMessage % (result, 0, 0, 0))
             sys.exit()
         
         if userTime > self.limitTime:
-            resultMessage = "%s %i %i %i" % ('TimeOver', 0, userTime, usingMem)
-            sys.stderr.write(resultMessage)
+            sys.stderr.write(self.resultMessage % ('TimeOver', 0, userTime, usingMem))
             sys.exit()
         
         coreSize = 0
@@ -70,8 +67,7 @@ class ExecutionTools(object):
             return 'Grading', userTime, usingMem
         
         else:
-            resultMessage = "%s %i %i %i" % ('RunTimeError', 0, 0, 0)
-            sys.stderr.write(resultMessage)
+            sys.stderr.write(self.resultMessage % ('RunTimeError', 0, 0, 0))
             sys.exit()
         
         
