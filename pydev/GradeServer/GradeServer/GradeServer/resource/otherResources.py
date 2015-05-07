@@ -5,6 +5,8 @@ class OtherResources(object):
     
     from GradeServer.resource import const
     
+    # key 
+    const.TRIPLE_DES_KEY = '1234567812345678'
     # Integer
     const.NOTICE_LIST = 5
     const.BLOCK = 3
