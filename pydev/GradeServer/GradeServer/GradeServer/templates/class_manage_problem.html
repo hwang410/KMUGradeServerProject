@@ -102,7 +102,7 @@
 	<form method="post">
 		<div class="tab-content">
 			<div class="tab-pane active" id="all">
-				<table class="table">
+				<table class="table" id="allProblems">
 					<thead>
 						<tr>
 							<td>Course ID
@@ -113,7 +113,7 @@
 							<td>End Date
 							<td>Open Date
 							<td>Close Date
-							<td>Check
+							<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('allProblems');">
 					<tbody>
 						{% for registeredProblem, registeredCourse, problem in ownProblems %}
 						<tr>
@@ -166,7 +166,7 @@
 							<td>End Date
 							<td>Open Date
 							<td>Close Date
-							<td>Check
+							<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('{{ course.courseId }}');">
 					<tbody>
 						{% for registeredProblem, registeredCourse, problem in ownProblems %}
 						{% if course.courseId == registeredProblem.courseId %}

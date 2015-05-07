@@ -111,7 +111,7 @@
 							<td>Index
 							<td class='hidden-phone'>Code
 							<td>Name
-							<td>Check
+							<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('colleges');">
 					<tbody>
 						{%- for college in allColleges %}
 						<tr>
@@ -177,7 +177,7 @@
 							<td>College
 							<td class='hidden-phone'>Code
 							<td>Name
-							<td>Check
+							<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('departments');">
 					<tbody>
 						{%- for relation, college, department in allDepartments %}
 						<tr>

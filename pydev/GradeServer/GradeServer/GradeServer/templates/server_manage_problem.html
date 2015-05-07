@@ -70,13 +70,13 @@
 		</div>
 		<!-- ///// end hidden modal pop ///// -->
 
-		<table class="table table-bordered" style="margin-top:10px">
+		<table class="table table-bordered" id="registeredProblems" style="margin-top:10px">
 			<thead>
 				<tr>
 					<td>ID
 					<td>Name
 					<td>Solution/Checker
-					<td>Check
+					<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('registeredProblems');">
 			<tbody>
 				{%- for uploadedProblem in uploadedProblems %}
 				<tr>
