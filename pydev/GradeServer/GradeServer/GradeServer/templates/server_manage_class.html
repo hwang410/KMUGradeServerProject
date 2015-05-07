@@ -60,7 +60,7 @@
 		</div>
 		<!-- end hidden modal pop -->
 
-		<table class="table table-bordered" style="margin-top:10px">
+		<table class="table table-bordered" id="registeredCourses" style="margin-top:10px">
 			<thead>
 				<tr>
 					<td>Number
@@ -71,7 +71,7 @@
 					<td class="hidden-phone">Start Date
 					<td class="hidden-phone">Finish Date
 					<td class="visible-phone" style='width:87%'>Date
-					<td>Check
+					<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('registeredCourses');">
 			<form method="post">
 			<tbody>
 				{%- for course, member in courses %}

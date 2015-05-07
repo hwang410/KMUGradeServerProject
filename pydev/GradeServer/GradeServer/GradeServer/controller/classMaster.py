@@ -50,9 +50,6 @@ DELETE = 'delete'
 EDIT = 'edit'
 TAB = 'Tab'
 ADD = 'add'
-ONE_FILE = 'OneFile'
-MULTIPLE_FILES = 'MultipleFiles'
-POST_METHOD = 'POST'
 
 newUsers = []
 newProblems = []
@@ -183,7 +180,7 @@ def class_manage_problem():
                                ownCourses = ownCourses,
                                ownProblems = [])
         
-    if request.method == POST_METHOD:
+    if request.method == 'POST':
         isNewProblem = True
         numberOfNewProblems = (len(request.form)-1)/7
         keys = {"courseId":0,
@@ -486,7 +483,7 @@ def class_manage_user():
                 userIndex += 1  
         loopIndex += 1
     
-    if request.method == POST_METHOD:
+    if request.method == 'POST':
         for form in request.form:
             if 'delete' in form:
                 courseId,memberId = form[7:].split('_')

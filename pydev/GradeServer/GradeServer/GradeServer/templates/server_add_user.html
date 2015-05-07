@@ -274,7 +274,7 @@ $(function() {
 		</div>
 		<!-- ///// end hidden modal pop ///// -->
 		<form method="post">
-			<table class="table table-bordered" style="margin-top:10px">
+			<table class="table table-bordered" id="pendingUsers" style="margin-top:10px">
 				<thead>
 					<tr>
 						<td>Index
@@ -283,7 +283,7 @@ $(function() {
 						<td>Authority
 						<td>College
 						<td>Department
-						<td>Check
+						<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('pendingUsers');">
 				<tbody>
 					<script> index = 0; </script>
 					{%- for newUser in newUsers %}

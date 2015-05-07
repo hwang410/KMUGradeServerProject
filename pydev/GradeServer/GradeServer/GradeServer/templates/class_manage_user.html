@@ -41,7 +41,7 @@
 		</div>
 		<!-- end hidden modal pop -->
 
-		<table class="table table-bordered" style="margin-top:10px">
+		<table class="table table-bordered" id="registeredUsers" style="margin-top:10px">
 			<thead>
 				<tr>
 					<td>Index
@@ -49,7 +49,7 @@
 					<td>ID
 					<td>Name
 					<td>College&Department
-					<td>Check All <input type="checkbox" id="checkAll" style="margin:0px" onclick="selectAllCheckboxes();">
+					<td>Check All <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('registeredUsers');">
 			<tbody>
 				{%- for eachUser in ownUsers %}
 				<tr>

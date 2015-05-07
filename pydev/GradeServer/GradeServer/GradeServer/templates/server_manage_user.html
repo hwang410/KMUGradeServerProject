@@ -51,7 +51,7 @@
 		</div>
 		<!-- end hidden modal pop -->
 
-		<table class="table table-bordered" style="margin-top:10px">
+		<table class="table table-bordered" id="registeredUsers" style="margin-top:10px">
 			<thead>
 				<tr>
 					<td>Index
@@ -62,7 +62,7 @@
 					<td>E-mail
 					<td><abbr title="SA: Server Administrator, CA: Course Administrator">Authority</abbr>
 					<td>Last Access
-					<td>Check
+					<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('registeredUsers');">
 			<tbody>
 				<script> index = {{ index }}; </script>
 				{%- for user in users %}
