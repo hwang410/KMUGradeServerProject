@@ -1,7 +1,8 @@
 import sys
-from DBManager import dao
+from DBManager import db_session
 from DB.submissions import Submissions
 from DB.submittedRecordsOfProblems import SubmittedRecordsOfProblems
+
 STATUS = ['grading status', 'NeverSubmitted', 'Judging', 'Solved', 'TimeOver',
           'WrongAnswer', 'CompileError', 'RunTimeError', 'ServerError']
 
@@ -14,7 +15,7 @@ class DBUpdate(object):
         
     def UpdateSubmissions(self, result, score, runTime, usingMem):
         try:
-            dao.query(Submissions).\
+            db_session.query(Submissions).\
                 filter_by(memberId = self.stdNum,
                           problemId = self.problemNum,
                           courseId = self.courseNum,
@@ -26,83 +27,83 @@ class DBUpdate(object):
                             solutionCheckCount = Submissions.solutionCheckCount+1))
             
         except Exception as e:
-            dao.rollback()
+            db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
         
     def SubmittedRecordsOfProblems_CompileError(self):
         try:
-            dao.query(SubmittedRecordsOfProblems).\
+            db_session.query(SubmittedRecordsOfProblems).\
                 filter_by(problemId = self.problemNum,
                           courseId = self.courseNum).\
                           update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                       sumOfCompileErrorCount = SubmittedRecordsOfProblems.sumOfCompileErrorCount + 1))
         
-            dao.commit()
+            db_session.commit()
             sys.exit()
         except Exception as e:
-            dao.rollback()
+            db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
             
     def SubmittedRecordsOfProblems_Solved(self):
         try:
-            dao.query(SubmittedRecordsOfProblems).\
+            db_session.query(SubmittedRecordsOfProblems).\
                     filter_by(problemId = self.problemNum,
                               courseId = self.courseNum).\
                     update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                 sumOfSolvedCount = SubmittedRecordsOfProblems.sumOfSolvedCount + 1))
         
-            dao.commit()
+            db_session.commit()
             sys.exit()
         except Exception as e:
-            dao.rollback()
+            db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
             
     def SubmittedRecordsOfProblems_WrongAnswer(self):
         try:
-            dao.query(SubmittedRecordsOfProblems).\
+            db_session.query(SubmittedRecordsOfProblems).\
                     filter_by(problemId = self.problemNum,
                               courseId = self.courseNum).\
                     update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                 sumOfWrongCount = SubmittedRecordsOfProblems.sumOfWrongCount + 1))
         
-            dao.commit()
+            db_session.commit()
             sys.exit()
         except Exception as e:
-            dao.rollback()
+            db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
             
     def SubmittedRecordsOfProblems_TimbeOver(self):
         try:
-            dao.query(SubmittedRecordsOfProblems).\
+            db_session.query(SubmittedRecordsOfProblems).\
                     filter_by(problemId = self.problemNum,
                               courseId = self.courseNum).\
                     update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                 sumOfTimeOverCount = SubmittedRecordsOfProblems.sumOfTimeOverCount + 1))
         
-            dao.commit()
+            db_session.commit()
             sys.exit()
         except Exception as e:
-            dao.rollback()
+            db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
             
     def SubmittedRecordsOfProblems_RunTimeError(self):
         try:
-            dao.query(SubmittedRecordsOfProblems).\
+            db_session.query(SubmittedRecordsOfProblems).\
                     filter_by(problemId = self.problemNum,
                               courseId = self.courseNum).\
                     update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                 sumOfRuntimeErrorCount = SubmittedRecordsOfProblems.sumOfRuntimeErrorCount + 1))
         
-            dao.commit()
+            db_session.commit()
             sys.exit()
         except Exception as e:
-            dao.rollback()
+            db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
 
     @staticmethod        
     def UpdateServerError(stdNum, problemNum, courseNum, submitCount):
         try :
-            dao.query(Submissions).\
+            db_session.query(Submissions).\
                 filter_by(memberId = stdNum,
                           problemId = problemNum,
                           courseId = courseNum,
@@ -111,9 +112,9 @@ class DBUpdate(object):
                             score = 0,
                             runTime = 0,
                             usedMemory = 0))
-            dao.commit()
+            db_session.commit()
             print '...server error...'
             sys.exit()
         except Exception as e:
-            dao.rollback()
+            db_session.rollback()
             raise e

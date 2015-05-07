@@ -13,27 +13,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+from DB import Base
 
-class DBManager:
-    """데이터베이스 처리를 담당하는 공통 클래스"""
-    
-    __engine = None
-    __session = None
 
-    @staticmethod
-    def init(db_url, db_log_flag=True, recycle_time = 60):
-        DBManager.__engine =create_engine(db_url, pool_recycle =recycle_time, echo =db_log_flag)
-        DBManager.__session =scoped_session(sessionmaker(autocommit=False, 
-                                        autoflush=False, 
-                                        bind=DBManager.__engine))
+engine = create_engine("mysql+mysqlconnector://root:dkfrhflwma@192.168.0.8/GradeServer_DB",
+                      convert_unicode = True, pool_recycle = 3600, pool_size=10) #echo =db_log_flag)
 
-        global dao
-        dao = DBManager.__session
-    
-    @staticmethod
-    def init_db():
-        from DB import Base
-        
-        Base.metadata.create_all(bind=DBManager.__engine)
+db_session = scoped_session(sessionmaker(
+                                         autocommit=False,
+                                         autoflush=False,
+                                         bind=engine))
 
-dao = None        
+Base.metadata.create_all(bind=engine)
