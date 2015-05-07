@@ -12,6 +12,7 @@
 from flask import request, render_template, url_for, redirect, session
 from sqlalchemy import func, and_
 from datetime import datetime
+from werkzeug.security import generate_password_hash
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
@@ -1051,7 +1052,7 @@ def server_add_user():
                                                newUsers = newUsers)
 
                     freshman = Members(memberId = newUser[keys['memberId']], 
-                                       password = newUser[keys['memberId']], 
+                                       password = generate_password_hash(newUser[keys['memberId']]), 
                                        memberName = newUser[keys['memberName']], 
                                        authority = newUser[keys['authority']],
                                        signedInDate = datetime.now())
