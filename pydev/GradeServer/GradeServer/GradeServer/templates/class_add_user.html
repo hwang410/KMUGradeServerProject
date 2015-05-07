@@ -46,10 +46,19 @@ $(function() {
 			document.getElementById("username"+userIdx).value = userName;
 		
 			// set predefined data
-			document.getElementById("college"+userIdx).options[collegeIndex].selected = true;
-			document.getElementById("department"+userIdx).innerHTML = "<option selected>"+departmentIndex + ' '+ departmentName+"</option>";
-			document.getElementById("authority"+userIdx).options[authority].selected = true;
-			
+			document.getElementById("college"+userIdx).innerHTML =
+				"<option selected>"+
+					document.getElementById("college"+userIdx).options[collegeIndex].value+
+				"</option>";
+			document.getElementById("department"+userIdx).innerHTML =
+				"<option selected>"+
+					departmentIndex + ' '+ departmentName+
+				"</option>";
+			document.getElementById("authority"+userIdx).innerHTML =
+				"<option selected>"+
+					document.getElementById("authority"+userIdx).options[authority].value+
+				"</option>";
+
 			// for the exist data, set disabled option
 			document.getElementById("college"+userIdx).setAttribute("disabled", "disabled");
 			document.getElementById("department"+userIdx).setAttribute("disabled", "disabled");
@@ -224,10 +233,20 @@ $(function() {
 
 				if(isExistUser){
 					// set predefined data and make it disabled
-					document.getElementById("college"+userIdx).options[collegeIndex].selected = true;
-					document.getElementById("department"+userIdx).innerHTML = "<option selected>"+departmentIndex + ' '+ departmentName+"</option>";
-					document.getElementById("authority"+userIdx).options[authority].selected = true;
+					document.getElementById("college"+userIdx).innerHTML =
+						"<option selected>"+
+							document.getElementById("college"+userIdx).options[collegeIndex].value+
+						"</option>";
+					document.getElementById("department"+userIdx).innerHTML =
+						"<option selected>"+
+							departmentIndex + ' '+ departmentName+
+						"</option>";
+					document.getElementById("authority"+userIdx).innerHTML =
+						"<option selected>"+
+							document.getElementById("authority"+userIdx).options[authority].value+
+						"</option>";
 
+					// set disabled option
 					document.getElementById("college"+userIdx).setAttribute("disabled", "disabled");
 					document.getElementById("department"+userIdx).setAttribute("disabled", "disabled");
 					document.getElementById("authority"+userIdx).setAttribute("disabled", "disabled");
@@ -240,7 +259,6 @@ $(function() {
 		document.getElementById("college1").removeAttribute("disabled");
 		document.getElementById("department1").removeAttribute("disabled");
 		document.getElementById("authority1").removeAttribute("disabled");
-
 
 		var initialOptions = "<option> select college </option>" +
 						   	   "{%- for college in allColleges %}" +
@@ -327,13 +345,21 @@ $(function() {
 				document.getElementById("username"+userIdx).value = userName;
 
 				// set predefined data and make it disabled
-				document.getElementById("college"+userIdx).options[collegeIndex].selected = true;
+				document.getElementById("college"+userIdx).innerHTML =
+					"<option selected>"+
+						document.getElementById("college"+userIdx).options[collegeIndex].value+
+					"</option>";
+				document.getElementById("department"+userIdx).innerHTML =
+					"<option selected>"+
+						departmentIndex + ' '+ departmentName+
+					"</option>";
+				document.getElementById("authority"+userIdx).innerHTML =
+					"<option selected>"+
+						document.getElementById("authority"+userIdx).options[authority].value+
+					"</option>";
+
 				document.getElementById("college"+userIdx).setAttribute("disabled", "disabled");
-
-				document.getElementById("department"+userIdx).innerHTML = "<option selected>"+departmentIndex +' '+ departmentName+"</option>";
 				document.getElementById("department"+userIdx).setAttribute("disabled", "disabled");
-
-				document.getElementById("authority"+userIdx).options[authority].selected = true;
 				document.getElementById("authority"+userIdx).setAttribute("disabled", "disabled");
 			}
 		});
@@ -343,7 +369,10 @@ $(function() {
 <div class="container">
 	<div>
 		<h3>User addition</h3>
-		<!-- if any button is checked, then showing modal pop -->
+		<!--
+		@@ Navigation for modal
+		It matches each button to each modal.
+		-->
 		<div style="text-align:right">
 			<a class="btn" href="#addUserModal" data-toggle="modal" role="button">
 				Individual
@@ -355,19 +384,24 @@ $(function() {
 				Delete
 			</a>
 		</div>
+		<!-- End navigation -->
 
-		<!-- hidden modal pop -->
-		<!-- ///// Add indivisual ///// -->
+		<!--
+		@@ Add user individually from modal
+		 -->
 		<form id="addIndivisualUser" method="post">
 		<div class="modal hide fade" id="addUserModal"
-				 aria-labelledby="addUserModalLabel" aria-hidden="false" role="dialog"
-				 tabindex="-1" style="width:900px;margin-left:-450px">
+			  aria-labelledby="addUserModalLabel" aria-hidden="false" role="dialog"
+			  tabindex="-1" style="width:900px;margin-left:-450px">
 			<div class="modal-header">
 				<button class="close" type="button"
-								data-dismiss="modal" aria-hidden="true">x</button>
+						  data-dismiss="modal" aria-hidden="true">x</button>
 				<h3 id="addUserModalLabel">User addition</h3>
 			</div>
 			<div class="modal-body">
+				<p>
+					You can edit form data until you click 'Done'
+				</p>
 				<div style="text-align:right">
 					<button class="btn" id="addline" type="button" >Add line</button>
 				</div>
@@ -415,54 +449,52 @@ $(function() {
 									<option> {{ authority }} </option>
 									{% endfor -%}
 								</select>
-							<!-- hidden select forms for disabled option -->
-								<select class="input-medium" id="college1" name="college1" style="display:none">
-									<option> select college </option>
-									{%- for college in allColleges %}
-									<option> 
-										{{ college.collegeIndex }} {{ college.collegeName }}
-									</option>
-									{% endfor -%}
-								</select>
-								<select class="input-medium" id="department1" name="department1" style="display:none">
-								</select>
-								<select class="input-medium" id="authority1" name="authority1" style="display:none">
-									{%- for authority in authorities %}
-									<option> {{ authority }} </option>
-									{% endfor -%}
-								</select>
-							<!-- end hidden select form -->
 				</table>
 			</div>
 			<div class="modal-footer">
-				<button class="btn" name="addIndivisualUser" type="submit">Done</button>
+				<button class="btn" name="addIndivisualUser" onclick="activateDisabledOption();">Done</button>
 				<button class="btn" id="resetIndivisualUserForm"
 						  data-dismiss="modal" aria-hidden="true">Close</button>
 			</div>
 		</div>
 		</form>
-		<!-- ///// add group ///// -->
+		<!-- End add user individually modal -->
+
+		<!-- 
+		@@ Add user group modal 
+		-->
 		<div class="modal hide fade" id="addGroupModal"
-				 aria-labelledby="addGroupModalLabel" aria-hidden="true"
-				 role="dialog" tabindex="-1">
-<form method="post" enctype="multipart/form-data">
+			  aria-labelledby="addGroupModalLabel" aria-hidden="true"
+			  role="dialog" tabindex="-1">
+			<!--
+			@@ Add user from files
+			It allows multiple files to upload.
+			Before you push 'Done', make sure you select correct course and the files' contents are suit to the manual.
+			-->
+			<form method="post" enctype="multipart/form-data">
 				<div class="modal-header">
 					<button class="close" data-dismiss="modal"
 									type="button" aria-hidden="true">x</button>
-					<h3 id="addGroupModalLabel">User addition</h3>
+					<h3 id="addGroupModalLabel">User Addition</h3>
 				</div>
 				<div class="modal-body">
-					<p>default authority is "User(student)"</p>
-					Manual : userId="userid", username="username", college="college Index", department="department Index"<br>
-					Course : 
-					<select id="courseId" name="courseId">
-					{%- for ownCourse in ownCourses %}
-					<option>
-						{{ ownCourse.courseId }} {{ ownCourse.courseName }}
-					</option>
-					{% endfor -%}
-					</select><br>
-					File(*.txt) : <input type="file" name="files" multiple>
+					<p>
+						Authority will be set '<b>USER(student)</b>'<br>
+						File contents should be like the form below<br>
+						<b>userId=user_bot1, username=test_user, college=1, department=1</b><br>
+						<div style="width:120px;display:inline-block;text-align:center">Course</div>
+						<select id="courseId" name="courseId" style="display:inline-block">
+						{%- for ownCourse in ownCourses %}
+						<option>
+							{{ ownCourse.courseId }} {{ ownCourse.courseName }}
+						</option>
+						{% endfor -%}
+						</select><br>
+						<div style="width:120px;display:inline-block;text-align:center;margin-left:-1px">
+						File(*.txt, *.csv)
+						</div>
+						<input type="file" name="files" multiple>
+					</p>
 				</div>
 				<div class="modal-footer">
 					<button class="btn" name="addUserGroup" type="submit">
@@ -472,9 +504,16 @@ $(function() {
 						Close
 					</button>
 				</div>
-</form>
+			</form>
+			<!-- @@ End user from files -->
 		</div>
-		<table class="table table-bordered" style="margin-top:10px">
+		<!-- @@ End user group modal -->
+
+		<!--
+		@@ Holding user list
+		When you check users and click 'Delete', it sends checked values to server.
+		-->
+		<table class="table table-bordered" id="pendingUserTable" style="margin-top:10px">
 			<thead>
 				<tr>
 					<td>Index
@@ -483,7 +522,7 @@ $(function() {
 					<td>Authority
 					<td>College
 					<td>Department
-					<td>Check
+					<td>Check All <input id="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes();">
 			<tbody>
 <form method="post">
 				<script> index = 0; </script>
@@ -498,7 +537,7 @@ $(function() {
 					<td>
 						<label class="checkbox-center">
 							<input class="box-check" name="{{ newUser[0] }}"
-										 type="checkbox" value="{{ newUser[0] }}">
+									type="checkbox" value="{{ newUser[0] }}">
 						</label>
 				{% endfor -%}
 		</table>
@@ -506,11 +545,15 @@ $(function() {
 			<button class="btn" name="addUser" type="submit">Done</button>
 		</a>
 	</div>
-	<!-- ///// Delete case /////
-				if any item choosed -->
+		<!-- End holding user list -->
+
+		<!-- 
+		@@ Delete holding users modal
+		It works when you click 'Delete' then shows pop-up.
+		-->
 		<div class="modal hide fade" id="deleteModal"
-				 aria-labelledby="deleteModalLabel" aria-hidden="true"
-				 role="dialog" tabindex="-1">
+			  aria-labelledby="deleteModalLabel" aria-hidden="true"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
 								type="button" aria-hidden="true">x</button>
@@ -529,7 +572,6 @@ $(function() {
 </form>
 			</div>
 		</div>
-		<!-- no items choosed -->
 		<div class="modal hide fade" id="deleteNoItem"
 				 aria-labelledby="deleteModalLabel" aria-hidden="true"
 				 role="dialog" tabindex="-1">
@@ -547,7 +589,7 @@ $(function() {
 				</button>
 			</div>
 		</div>
-		<!-- ///// end hidden modal pop ///// -->
+		<!-- @@ End delete user modal -->
 </div>
 <script>
 $("#userId1").change(function(){
@@ -584,6 +626,16 @@ function resetDisabledOption(idxOfRow){
 		'<option> {{ authority }} </option>' +
 		'{% endfor -%}' +
 		'</select>';
+}
+
+function activateDisabledOption(){
+	var selectForms = document.getElementsByTagName("select");
+	for(var i=0;i<selectForms.length;i++){
+		if(selectForms[i].disabled == true){
+			selectForms[i].disabled = false;
+		}
+	}
+	document.getElementById("addIndivisualUser").submit();
 }
 
 $("#college1").change(function(){
@@ -634,5 +686,7 @@ function RowOnClickController(IdxOfRow){
 	}
 	{% endfor -%}
 }
+
+
 </script>
 {% endblock -%}
