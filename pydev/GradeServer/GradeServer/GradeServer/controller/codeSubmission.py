@@ -51,28 +51,17 @@ def get_case_count(problemCasesPath, isAllInputCaseInOneFile):
 
 def file_save_with_insert_to_SubmittedFiles(memberId, courseId, problemId, uploadFiles, tempPath, filePath):
     fileIndex = 1
-    try:
-        sumOfSubmittedFileSize = 0
-        delete_submitted_files_data(memberId, problemId, courseId)
-        for file in uploadFiles:
-            fileName = secure_filename(file.filename)
-            if len(fileName) == 1:
-                fileName = file.filename.decode()
-            try:
-                file.save(os.path.join(tempPath, fileName))
-            except Exception as e:
-                flash(get_message('fileSaveError'))
-                return "0"
-            
-            fileSize = os.stat(os.path.join(tempPath, fileName)).st_size
-            insert_submitted_files(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
-            fileIndex += 1
-            sumOfSubmittedFileSize += fileSize
-    except Exception as e:
-        dao.rollback()
-        os.system("rm -rf %s" % tempPath)
-        flash(get_message('askToMaster'))
-        return "0"
+    sumOfSubmittedFileSize = 0
+    delete_submitted_files_data(memberId, problemId, courseId)
+    for file in uploadFiles:
+        fileName = secure_filename(file.filename)
+        if len(fileName) == 1:
+            fileName = file.filename.decode()
+        file.save(os.path.join(tempPath, fileName))
+        fileSize = os.stat(os.path.join(tempPath, fileName)).st_size
+        insert_submitted_files(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
+        fileIndex += 1
+        sumOfSubmittedFileSize += fileSize
     
     return sumOfSubmittedFileSize
         
@@ -136,19 +125,24 @@ def write_code_in_file(tempPath):
 
     return usedLanguageName, fileName
 
-@GradeServer.route('/problem_<courseId>_<problemId>_<problemName>_<pageNum>', methods = ['POST'])
+def page_move(courseId, pageNum):
+    return redirect(url_for(RouteResources.const.PROBLEM_LIST,
+                                    courseId = courseId,
+                                    pageNum = pageNum))
+@GradeServer.route('/problem_<courseId>_<problemId>_<problemName>_<pageNum>_<browserName>', methods = ['POST'])
 @check_invalid_access
 @login_required
-def to_process_uploaded_files(courseId, problemId, problemName, pageNum):
+def to_process_uploaded_files(courseId, problemId, problemName, pageNum, browserName):
     memberId = session[SessionResources.const.MEMBER_ID]
     filePath, tempPath = make_path(PATH, memberId, courseId, problemId, problemName)
     try:
         os.mkdir(tempPath)
     except Exception as e:
         flash(get_message('askToMaster'))
-        return redirect(url_for(RouteResources.const.PROBLEM_LIST,
-                            courseId = courseId,
-                            pageNum = pageNum))
+        if browserName == 'msie':
+            return page_move(courseId, pageNum)
+        else:
+            return "0"
       
     try:
         uploadFiles = request.files.getlist(OtherResources.const.GET_FILES)
@@ -159,13 +153,15 @@ def to_process_uploaded_files(courseId, problemId, problemName, pageNum):
         dao.rollback()
         os.system("rm -rf %s" % tempPath)
         flash(get_message('dbError'))
-        return redirect(url_for(RouteResources.const.PROBLEM_LIST,
-                            courseId = courseId,
-                            pageNum = pageNum))
-
-    return redirect(url_for(RouteResources.const.PROBLEM_LIST,
-                            courseId = courseId,
-                            pageNum = pageNum))
+        if browserName == 'msie':
+            return page_move(courseId, pageNum)
+        else:
+            return "0"
+        
+    if browserName == 'msie':
+        return page_move(courseId, pageNum)
+    else:
+        return "0"
 
 @GradeServer.route('/problem_<courseId>_page<pageNum>_<problemId>_<problemName>', methods = ['POST'])
 @check_invalid_access
@@ -177,24 +173,19 @@ def to_process_written_code(courseId, pageNum, problemId, problemName):
         os.mkdir(tempPath)
     except Exception as e:
         flash(get_message('askToMaster'))
-        return redirect(url_for(RouteResources.const.PROBLEM_LIST,
-                            courseId = courseId,
-                            pageNum = pageNum))
+        return page_move(courseId, pageNum)
     
     try:
-        usedLanguageName, fileName = write_code_in_file(tempPath, pageNum)
+        usedLanguageName, fileName = write_code_in_file(tempPath)
         fileSize = os.stat(os.path.join(tempPath, fileName)).st_size
         fileIndex = 1
         delete_submitted_files_data(memberId, problemId, courseId)
         insert_submitted_files(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
         send_to_celery_and_insert_to_submissions(memberId, courseId, problemId, usedLanguageName, fileSize, problemName, filePath, tempPath)
-    except:
+    except Exception as e:
+        dao.rollback()
         os.system("rm -rf %s" % tempPath)
         flash(get_message('askToMaster'))
-        return redirect(url_for(RouteResources.const.PROBLEM_LIST,
-                            courseId = courseId,
-                            pageNum = pageNum))
+        return page_move(courseId, pageNum)
         
-    return redirect(url_for(RouteResources.const.PROBLEM_LIST,
-                            courseId = courseId,
-                            pageNum = pageNum))
+    return page_move(courseId, pageNum)
