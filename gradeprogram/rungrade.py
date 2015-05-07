@@ -9,8 +9,7 @@ if __name__ == '__main__':
     args = sys.argv
     
     if len(args) != 14:
-        resultMessage = "%s %i %i %i" % ('ServerError', 0, 0, 0)
-        sys.stderr.write(resultMessage)
+        print 'ServerError', 0, 0, 0
         sys.exit()
     
     from grading import InterfaceGrade
@@ -23,8 +22,7 @@ if __name__ == '__main__':
     
     if result == 'CompileError':
         # update DBManager 'compile error'
-        resultMessage = "%s %i %i %i" % (result, 0, 0, 0)
-        sys.stderr.write(resultMessage)
+        print result, 0, 0, 0
         sys.exit()
     
     result, score, runTime, usingMem = grade.Evaluation()

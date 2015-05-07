@@ -67,8 +67,7 @@ class InterfaceGrade(object):
             success, score = evaluation.Grade()
             logging.debug(self.stdNum + ' grade end')
             
-        resultMessage = "%s %i %i %i" % (success, score, runTime, usingMem)
-        sys.stderr.write(resultMessage)
+        print success, score, runTime, usingMem
         sys.exit()
     
     def MakeRunFileName(self):
