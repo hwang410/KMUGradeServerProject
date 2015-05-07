@@ -65,7 +65,7 @@ def sign_in():
                 try :
                     check = select_match_member(memberId = memberId).first()
                     #Checking Success
-                    if check.password == password:#check_password_hash (password, check.password)
+                    if check_password_hash (check.password, password):
                         flash(get_message('login'))
                         #push Session Cache 
                         session[SessionResources().const.MEMBER_ID] = memberId
