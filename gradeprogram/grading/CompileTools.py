@@ -19,7 +19,8 @@ class CompileTools(object):
             
             if len(glob.glob('*.py')) == 0:
                 print 'compile python file copy'
-                print 'ServerError', 0, 0, 0
+                resultMessage = "%s %i %i %i" % ('ServerError', 0, 0, 0)
+                sys.stderr.write(resultMessage)
                 sys.exit()
             
             return True
@@ -38,7 +39,8 @@ class CompileTools(object):
         
         # if not make execution file
         elif len(glob.glob('./'+self.runFileName)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
-            print 'ServerError', 0, 0, 0
+            resultMessage = "%s %i %i %i" % ('ServerError', 0, 0, 0)
+            sys.stderr.write(resultMessage)
             sys.exit()
         
         return True
@@ -53,7 +55,8 @@ class CompileTools(object):
             rf = open('error.err', 'r')
         except Exception as e:
             print 'make compile error list file open error'
-            print 'ServerError', 0, 0, 0
+            resultMessage = "%s %i %i %i" % ('ServerError', 0, 0, 0)
+            sys.stderr.write(resultMessage)
             sys.exit()
         
         lines = rf.readlines()
