@@ -10,6 +10,7 @@
 """
 
 from flask import request, render_template, url_for, redirect, session
+from werkzeug.security import generate_password_hash
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
@@ -768,7 +769,7 @@ def class_add_user():
                                 
                         # at first insert to 'Members'. Duplicated tuple will be ignored.
                         freshman = Members(memberId = newUser[keys['memberId']],
-                                           password = newUser[keys['memberId']],
+                                           password = generate_password_hash(newUser[keys['memberId']]),
                                            memberName = newUser[keys['memberName']],
                                            authority = newUser[keys['authority']],
                                            signedInDate = datetime.now())
