@@ -13,7 +13,6 @@ class GradingTools(object):
         self.answerPath = answerPath
         self.problemName = problemName
         self.filePath = filePath
-        self.resultMessage = "%s %i %i %i" 
         
     def Grade(self):
         if self.gradeMethod == 'SOLUTION':   # solution
@@ -54,7 +53,7 @@ class GradingTools(object):
             stdOutput = open('output.txt', 'r')
         except Exception as e:
             print e
-            sys.stderr.write(self.resultMessage % ('ServerError', 0, 0, 0))
+            print 'ServerError', 0, 0, 0
             sys.exit()
         
         stdLines = stdOutput.readlines()
@@ -96,7 +95,7 @@ class GradingTools(object):
             call('./checker.out 1>result.txt', shell = True)
         except Exception as e:
             print e
-            sys.stderr.write(self.resultMessage % ('ServerError', 0, 0, 0))
+            'ServerError', 0, 0, 0
             sys.exit()
         
         rf = open('result.txt', 'r')
@@ -135,7 +134,7 @@ class GradingTools(object):
                 stdOutput = open('output.txt', 'r') # student output open
             except Exception as e:
                 print e
-                sys.stderr.write(self.resultMessage % ('ServerError', 0, 0, 0))
+                print 'ServerError', 0, 0, 0
                 sys.exit()
             
             answer = answerFile.read()
@@ -172,7 +171,7 @@ class GradingTools(object):
             copyfile(copyCommand, 'checker.out')
         except Exception as e:
                 print e
-                sys.stderr.write(self.resultMessage % ('ServerError', 0, 0, 0))
+                print 'ServerError', 0, 0, 0
                 sys.exit()
         
         for i in range(1, self.caseCount+1):
@@ -190,7 +189,7 @@ class GradingTools(object):
                 rf = open('reuslt.txt', 'r')
             except Exception as e:
                 print e
-                sys.stderr.write(self.resultMessage % ('ServerError', 0, 0, 0))
+                print 'ServerError', 0, 0, 0
                 sys.exit()
             
             score = rf.readline()
