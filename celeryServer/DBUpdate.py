@@ -39,7 +39,6 @@ class DBUpdate(object):
                                       sumOfCompileErrorCount = SubmittedRecordsOfProblems.sumOfCompileErrorCount + 1))
         
             db_session.commit()
-            sys.exit()
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
@@ -53,7 +52,6 @@ class DBUpdate(object):
                                 sumOfSolvedCount = SubmittedRecordsOfProblems.sumOfSolvedCount + 1))
         
             db_session.commit()
-            sys.exit()
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
@@ -67,7 +65,6 @@ class DBUpdate(object):
                                 sumOfWrongCount = SubmittedRecordsOfProblems.sumOfWrongCount + 1))
         
             db_session.commit()
-            sys.exit()
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
@@ -81,7 +78,6 @@ class DBUpdate(object):
                                 sumOfTimeOverCount = SubmittedRecordsOfProblems.sumOfTimeOverCount + 1))
         
             db_session.commit()
-            sys.exit()
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
@@ -95,7 +91,6 @@ class DBUpdate(object):
                                 sumOfRuntimeErrorCount = SubmittedRecordsOfProblems.sumOfRuntimeErrorCount + 1))
         
             db_session.commit()
-            sys.exit()
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError(self.stdNum, self.problemNum, self.courseNum, self.submitCount)
@@ -114,7 +109,6 @@ class DBUpdate(object):
                             usedMemory = 0))
             db_session.commit()
             print '...server error...'
-            sys.exit()
         except Exception as e:
             db_session.rollback()
             raise e

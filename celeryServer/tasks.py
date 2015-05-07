@@ -3,6 +3,7 @@ from celeryServer import app
 
 import os
 import time
+import DBUpdate
 from DBManager import db_session, engine
 from subprocess import Popen, PIPE
 from billiard import current_process
@@ -26,7 +27,7 @@ def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
                                          ' python /gradeprogram/rungrade.py ')
 
     print 'program start'
-    message = Popen(containerCreadeCommand + argsList, shell=True, stderr=PIPE)
+    message = Popen(containerCreadeCommand + argsList, shell=True, stdout=PIPE)
     
     messageLines = message.stdout.readlines()
     
@@ -55,9 +56,7 @@ def ServerOff():
         os.system('sudo docker stop grade_container' + number)
         os.system('sudo docker rm grade_container' + number)
         
-def resultUpdate(messageLine, stdNum, problemNum, courseNum, submitCount):
-    import DBUpdate
-            
+def resultUpdate(messageLine, stdNum, problemNum, courseNum, submitCount):        
     messageParaList = messageLine.split() 
     
     result = messageParaList[0]
