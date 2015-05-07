@@ -2,6 +2,8 @@
 
 from flask import request, render_template, url_for, redirect, session, flash
 
+from werkzeug.security import check_password_hash, generate_password_hash
+
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
@@ -110,7 +112,7 @@ def id_check(select, error = None):
                 check = select_match_member(memberId = memberId).first()
                 
                 # 암호가 일치 할 때
-                if check.password == password:#check_password_hash(password, check.password):
+                if check_password_hash(check.password, password):
                     # for all user
                     if select == 'account':
                         return redirect(url_for(RouteResources().const.EDIT_PERSONAL))
@@ -185,7 +187,7 @@ def edit_personal(error = None):
             #Password Same
             if(password and passwordConfirm) and password == passwordConfirm:
                 #Generate Password
-                #password =generate_password_hash(password)
+                password = generate_password_hash(password)
                 passwordConfirm = None
                 
                 #Update DB
