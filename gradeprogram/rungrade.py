@@ -1,4 +1,5 @@
 import os
+import logging
 import sys
 
 if __name__ == '__main__':
@@ -10,6 +11,9 @@ if __name__ == '__main__':
     
     from grading import InterfaceGrade
     
+    logging.basicConfig(level=logging.DEBUG)
+    
+    logging.debug(args[2] + ' grading start')
     os.chdir('tempdir')
     
     grade = InterfaceGrade.InterfaceGrade(args)
@@ -17,7 +21,8 @@ if __name__ == '__main__':
     
     if result == 'CompileError':
         # update DBManager 'compile error'
-        print result, 0, 0, 0
+        resultMessage = "%s %i %i %i" % (result, 0, 0, 0)
+        sys.stderr.write(resultMessage)
         sys.exit()
     
     result, score, runTime, usingMem = grade.Evaluation()

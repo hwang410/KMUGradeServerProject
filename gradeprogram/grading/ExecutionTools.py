@@ -28,7 +28,8 @@ class ExecutionTools(object):
                 copyfile(copyCommand, 'input.txt')
         except Exception as e:
             print e
-            print 'ServerError', 0, 0, 0
+            resultMessage = "%s %i %i %i" % ('ServerError', 0, 0, 0)
+            sys.stderr.write(resultMessage)
             sys.exit()
         
         # make execution command
@@ -42,20 +43,21 @@ class ExecutionTools(object):
         else:
             result, time, usingMem = self.WatchRunProgram(pid)
         
-        print time, usingMem
-        
         userTime = int(time * 1000)
         
         if result == 'TimeOver':
-            print result, 0, userTime, usingMem
+            resultMessage = "%s %i %i %i" % (result, 0, userTime, usingMem)
+            sys.stderr.write(resultMessage)
             sys.exit()
             
         elif result == 'RunTimeError':
-            print result, 0, 0, 0
+            resultMessage = "%s %i %i %i" % (result, 0, 0, 0)
+            sys.stderr.write(resultMessage)
             sys.exit()
         
         if userTime > self.limitTime:
-            print 'TimeOver', 0, userTime, usingMem
+            resultMessage = "%s %i %i %i" % ('TimeOver', 0, userTime, usingMem)
+            sys.stderr.write(resultMessage)
             sys.exit()
         
         coreSize = 0
@@ -68,7 +70,8 @@ class ExecutionTools(object):
             return 'Grading', userTime, usingMem
         
         else:
-            print 'RunTimeError', 0, 0, 0
+            resultMessage = "%s %i %i %i" % ('RunTimeError', 0, 0, 0)
+            sys.stderr.write(resultMessage)
             sys.exit()
         
         

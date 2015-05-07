@@ -1,7 +1,8 @@
 import os
-import glob
 import sys
+import glob
 import string
+import logging
 import CompileTools
 from grading import ExecutionTools
 from grading import GradingTools
@@ -32,32 +33,42 @@ class InterfaceGrade(object):
         os.mkdir(dirName)
         os.chdir(dirName)
         
+        logging.debug(self.stdNum + ' parameter setting')
+        
     def Compile(self):
+        logging.debug(self.stdNum + ' compile start')
         _compile = CompileTools.CompileTools(self.filePath, self.stdNum,
                                              self.usingLang, self.version,
                                              self.runFileName)
         success = _compile.CodeCompile()
         
+        logging.debug(self.stdNum + ' compile end')
         return success, self.stdNum, self.problemNum, self.courseNum, self.submitCount
         
     def Evaluation(self):
         score = 0
+        logging.debug(self.stdNum + ' execution start')
+        
         execution = ExecutionTools.ExecutionTools(self.usingLang, self.limitTime,
                                                  self.limitMemory, self.answerPath,
                                                  self.version, self.runFileName,
                                                  self.problemName, self.caseCount)
             
         success, runTime, usingMem = execution.Execution()
+        logging.debug(self.stdNum + ' execution end')
         
         if success == 'Grading':
+            logging.debug(self.stdNum + ' grade start')
             evaluation = GradingTools.GradingTools(self.gradeMethod, self.caseCount,
                                                    self.usingLang, self.version,
                                                    self.answerPath, self.problemName,
                                                    self.filePath)
              
             success, score = evaluation.Grade()
+            logging.debug(self.stdNum + ' grade end')
             
-        print success, score, runTime, usingMem
+        resultMessage = "%s %i %i %i" % (success, score, runTime, usingMem)
+        sys.stderr.write(resultMessage)
         sys.exit()
     
     def MakeRunFileName(self):
