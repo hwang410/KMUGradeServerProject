@@ -111,6 +111,7 @@ def problem(courseId, problemId, pageNum):
 
         browserName = request.user_agent.browser
         browserVersion = request.user_agent.version
+        print browserName, browserVersion
         return render_template(HTMLResources().const.PROBLEM_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
