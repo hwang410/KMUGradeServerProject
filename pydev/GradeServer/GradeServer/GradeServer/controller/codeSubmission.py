@@ -4,7 +4,7 @@ import os
 import sys
 import shutil
 import glob
-import re
+import re, time
 
 from flask import Flask, request, redirect, url_for, session, flash
 from werkzeug import secure_filename
@@ -158,6 +158,7 @@ def to_process_uploaded_files(courseId, problemId, problemName, pageNum, browser
         else:
             return "0"
         
+    time.sleep(0.4)
     if browserName == 'msie':
         return page_move(courseId, pageNum)
     else:
@@ -188,4 +189,5 @@ def to_process_written_code(courseId, pageNum, problemId, problemName):
         flash(get_message('askToMaster'))
         return page_move(courseId, pageNum)
         
+    time.sleep(0.4)
     return page_move(courseId, pageNum)
