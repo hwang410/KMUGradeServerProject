@@ -22,6 +22,9 @@
   	{% if browserName != 'msie' or browserVersion|length > 3  %}
   	<li><a href="#write" data-toggle="tab">Write Code</a></li>
   	<li><a href="#info" data-toggle="tab">PDF</a></li>
+  	{% else %}
+  	<li class="disabled"><a href="" data-toggle="">Write Code</a></li>
+  	<li class="disabled"><a href="" data-toggle="">PDF</a></li>
   	{% endif %}
   </ul>
 	<div id="myTabContent2" class="tab-content">
