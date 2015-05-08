@@ -92,21 +92,26 @@ def select_all_submissions(lastSubmission = None, memberId = None, courseId = No
                          Submissions.courseId, 
                          Submissions.status,
                          Submissions.score,
-                         Submissions.sumOfSubmittedFileSize,
-                         Submissions.runTime,
-                         Submissions.usedMemory,
-                         Submissions.codeSubmissionDate,
-                         Languages.languageName).\
-                   filter((Submissions.memberId == memberId if memberId
+                         Submissions.sumOfSubmittedFileSize,filter((Submissions.memberId == memberId if memberId
                            else Submissions.memberId != None),
                           (Submissions.courseId == courseId if courseId
                            else Submissions.courseId != None),
                           (Submissions.problemId == problemId if problemId
                            else Submissions.problemId != None)).\
+                         Submissions.runTime,
+                         Submissions.usedMemory,
+                         Submissions.codeSubmissionDate,
+                         Languages.languageName).\
                    join(Languages, 
                         Submissions.usedLanguageIndex == Languages.languageIndex).\
                    join(Problems,
-                        Submissions.problemId == Problems.problemId)
+                        Submissions.problemId == Problems.problemId).\
+                   filter((Submissions.memberId == memberId if memberId
+                           else Submissions.memberId != None),
+                          (Submissions.courseId == courseId if courseId
+                           else Submissions.courseId != None),
+                          (Submissions.problemId == problemId if problemId
+                           else Submissions.problemId != None))
   
  
 ''' 

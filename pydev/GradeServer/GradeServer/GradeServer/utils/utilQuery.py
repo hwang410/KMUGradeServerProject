@@ -77,9 +77,11 @@ def select_accept_courses():
             myCourses = dao.query(Registrations.courseId,
                                   RegisteredCourses.courseName,
                                   RegisteredCourses.endDateOfCourse).\
-                            filter(Registrations.memberId == session[SessionResources().const.MEMBER_ID]).\
                             join(RegisteredCourses,
-                                 Registrations.courseId == RegisteredCourses.courseId)
+                                 Registrations.courseId == RegisteredCourses.courseId).\
+                            filter(Registrations.memberId == session[SessionResources().const.MEMBER_ID])
+                            
+                            
     # Session Error Catch
     except Exception:
         myCourses = dao.query(RegisteredCourses.courseId,
