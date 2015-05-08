@@ -26,16 +26,7 @@ def has_form(form_name):
     return True
 
 @GradeServer.route('/sign_up', methods = ['GET', 'POST'])
-def sign_up():
-    '''
-    @@ Success sign in flash
-    
-    When the page redirected from sign up page,
-    It display flash message.    
-    '''
-    if 'sign_up' in request.referrer:
-        flash('Signed up successfully')
-        
+def sign_up():        
     '''
     @@ import for main page 
     '''
