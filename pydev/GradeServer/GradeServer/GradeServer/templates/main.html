@@ -125,7 +125,8 @@
 						{% endif -%}
 					</ul>
 					{%- if session['memberId'] == NULL %}
-					<button type="button" class="btn pull-right" style="margin:15px 5px 10px 0px; display:none" onclick="alert('It might be no need')">Sign up</button>
+					<a class="btn pull-right" href="{{ url_for('GradeServer.sign_up') }}" style="margin:15px 5px 10px 0px">Sign up</a>
+					<!--<button type="button" class="btn pull-right" style="margin:15px 5px 10px 0px;" onclick="alert('It might be no need')">Sign up</button>-->
 					{% endif -%}
 				</div>
 			</div>

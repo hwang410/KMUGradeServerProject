@@ -1,0 +1,55 @@
+{% extends "main.html" %}
+{%- block body %}
+<div class="container">
+	<h3> Sign up </h3>
+	<hr>
+	<form id="sign_up_form" method="post">
+		<div style="margin:0 10px 0 10px">
+			<b style="color:#990000">Must complete forms</b>
+			<div class="row-fluid">
+				<h4>
+				<div class="span2"> ID </div><div class="span2"><input type="text" name="member_id"></div>
+				</h4>
+			</div>
+			<div class="row-fluid">
+				<h4>
+				<div class="span2"> Password </div><div class="span2"><input type="password" name="password"></div>
+				</h4>
+			</div>
+			<div class="row-fluid">
+				<h4>
+				<div class="span2"> Name </div><div class="span2"><input type="text" name="member_name"></div>
+				</h4>
+			</div>
+			<hr>
+			<b style="color:#009900">Optional forms</b>
+			<div class="row-fluid">
+				<h4>
+				<div class="span2"> College </div><div class="span2"><input type="text" name="college"></div>
+				</h4>
+			</div>
+			<div class="row-fluid">
+				<h4>
+				<div class="span2"> Department </div><div class="span2"><input type="text" name="department"></div>
+				</h4>
+			</div>
+			<div class="row-fluid">
+				<h4>
+				<div class="span2"> Comment </div><div class="span10"><input type="text" name="comment"></div>
+				</h4>
+			</div>
+		</div>
+		<hr>
+		<button class="btn" type="submit">Done</button>
+	</form>
+</div>
+<style>
+input {
+	width: 100%;
+}
+div .span2{
+	vertical-align: middle;
+	line-height: normal;
+}
+</style>
+{% endblock -%}

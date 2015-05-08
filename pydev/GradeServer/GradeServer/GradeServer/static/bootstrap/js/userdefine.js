@@ -202,16 +202,13 @@ $(document).on('click','.dropdown ul a',function(){
  	}
 }) 	
 
-// showing delete modal
+// @@ Show deletion modal
+// It shows different contents with modal up to 'target'
 function showingDeleteModal(target){
 	var items, checkboxes;
-	if(target == 'college'){
-		items = $('.college-box-check').length;
-		checkboxes = $('.college-box-check');
-	}
-	else if(target == 'department'){
-		items = $('.department-box-check').length;
-		checkboxes = $('.department-box-check');
+	if(target == 'college' || target == 'department'){
+		items = $('.'+target+'-box-check').length;
+		checkboxes = $('.'+target+'-box-check');
 	}
 	else{
 		items = $('.box-check').length;
@@ -225,13 +222,10 @@ function showingDeleteModal(target){
 			break;
 		}
 	}
-
+	target[0] = target.toUpperCase()[0];
 	if(cnt == 0){ 
-		if(target == 'college'){
-			$('#deleteNoCollegeItem').modal();
-		}
-		else if(target == 'department'){
-			$('#deleteNoDepartmentItem').modal();
+		if(target == 'College' || target == 'Department'){
+			$('#deleteNo'+target+'Item').modal();
 		}
 		else{
 			$('#deleteNoItem').modal();
@@ -239,34 +233,13 @@ function showingDeleteModal(target){
 	}
 
 	else{ 
-		if(target == 'college'){
-			$('#deleteCollegeModal').modal();
-		}
-		else if(target == 'department'){
-			$('#deleteDepartmentModal').modal();
+		if(target == 'College' || target == 'Department'){
+			$('#delete'+target+'Modal').modal();
 		}
 		else{
 			$('#deleteModal').modal();
 		}
 	}
-}
-
-// showing delete modal
-function showingEditModal(){
-	var items = $('.box-check').length;
-	var target = $('.box-check');
-	var cnt=0;
-	for(var i=0;i<items;i++){
-		if(target[i].checked == true){
-			cnt++;
-			break;
-		} 
-	}
-	if(cnt==0) 
-    $('#editNoItem').modal();
-  else{
-		$('#editModal').modal();
-  }
 }
 
 // showing add user modal
@@ -279,15 +252,19 @@ function addGroupModal(){
 	$('#addGroupModal').modal();
 }
 
+// @@ Show summary button
+// It shows summary button on 'User submission' menu.
+// When course administrator clicks on some course, then it shows the button.
+// If course administrator stays 'all' tab, then it doesn't show up.
 function visibleButton(parent){ 
-	var thisId = parent.id; 
-	//var target = ;
-	if(thisId == "link-all"){
-		document.getElementById('summary').style.display = "none";
+	var displayOption;
+	if(parent.id == "link-all"){
+		displayOption = "none";
 	}
 	else{
-		document.getElementById('summary').style.display = "";
+		displayOption = "";
 	}
+	document.getElementById('summary').style.display = displayOption;
 }
 
 // @@ Check All checkbox function
