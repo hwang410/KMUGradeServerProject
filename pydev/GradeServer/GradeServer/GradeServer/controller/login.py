@@ -37,6 +37,15 @@ def close_db_session(exception = None):
 """
 @GradeServer.route('/', methods = ['GET', 'POST'])
 def sign_in():
+    '''
+    @@ Success sign in flash
+    
+    When the page redirected from sign up page,
+    It display flash message.    
+    '''
+    if 'sign_up' in request.referrer:
+        flash('Signed up successfully')
+        
     """ main page before sign in"""
     from GradeServer.utils.utilMessages import get_message
     
