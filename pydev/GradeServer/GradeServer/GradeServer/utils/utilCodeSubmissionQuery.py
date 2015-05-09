@@ -23,9 +23,9 @@ def select_languages(courseId):
     return dao.query(LanguagesOfCourses.languageIndex,
                      Languages.languageName,
                      Languages.languageVersion).\
-               filter(LanguagesOfCourses.courseId == courseId).\
                join(Languages,
-                    LanguagesOfCourses.languageIndex == Languages.languageIndex)
+                    LanguagesOfCourses.languageIndex == Languages.languageIndex).\
+               filter(LanguagesOfCourses.courseId == courseId)
                
                
 

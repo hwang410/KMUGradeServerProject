@@ -12,6 +12,7 @@
 		<h4 class="problem_constraints">Limitation Time : {{ problemInformation.limitedTime }} ms | Memory : {{ problemInformation.limitedMemory }} MB</h4>
 	</div>
 
+<<<<<<< HEAD
 <!-- source code space -->
 	<div class="source" bs-example-tabs>
 		<ul id="myTabs" class="nav nav-tabs">
@@ -62,6 +63,31 @@
 	          	{% endfor -%}
 	        		</ul>
 		      		{% endif -%}
+=======
+{%- block div %}
+<div class="source container" bs-example-tabs>
+	<ul id="myTabs" class="nav nav-tabs">
+  	<li class="active"><a href="#upload" data-toggle="tab">Upload Files</a></li>
+  	{% if browserName != 'msie' or browserVersion|length > 3  %}
+  	<li><a href="#write" data-toggle="tab">Write Code</a></li>
+  	<li><a href="#info" data-toggle="tab">PDF</a></li>
+  	{% else %}
+  	<li class="disabled"><a href="" data-toggle="">Write Code</a></li>
+  	<li class="disabled"><a href="" data-toggle="">PDF</a></li>
+  	{% endif %}
+  </ul>
+	<div id="myTabContent2" class="tab-content">
+  	<div class="tab-pane active" id="upload">
+			<div id="content">
+    		<ul id="myTab" class="nav nav-tabs" role="tablist">
+	      	
+	      	<li class="dropdown">
+	      		<a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown" aria-controls="myTabDrop1-contents">
+  					<!-- length is 1 show 1 more than select view -->
+	      		{% if languageInfoRecords|length == 1 %}
+	      			{{ languageInfoRecords[0].languageName }}
+	      		</a>
+>>>>>>> 8823028ed4af6a904f35b9c166a454807e8a371f
 	      		
 	      		
 	    		</ul>
