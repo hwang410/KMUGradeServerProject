@@ -34,12 +34,22 @@ from GradeServer.model.problems import Problems
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.sessionResources import SessionResources
+from GradeServer.resource.otherResources import OtherResources
 
 import re
 import zipfile
 import os
 import subprocess
 import glob
+
+from GradeServer.py3Des.pyDes import *
+def initialize_tripleDes_class():
+    tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
+                           mode = ECB,
+                           IV = "\0\0\0\0\0\0\0\0",
+                           pad = None,
+                           padmode = PAD_PKCS5)
+    return tripleDes
 
 projectPath = '/mnt/shared'
 problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
@@ -1051,8 +1061,11 @@ def server_add_user():
                                                authorities = authorities,
                                                newUsers = newUsers)
 
+                    tripleDes = initialize_tripleDes_class()
+                    password = generate_password_hash(tripleDes.encrypt(str(newUser[keys['memberId']])))
+
                     freshman = Members(memberId = newUser[keys['memberId']], 
-                                       password = generate_password_hash(newUser[keys['memberId']]), 
+                                       password = password, 
                                        memberName = newUser[keys['memberName']], 
                                        authority = newUser[keys['authority']],
                                        signedInDate = datetime.now())

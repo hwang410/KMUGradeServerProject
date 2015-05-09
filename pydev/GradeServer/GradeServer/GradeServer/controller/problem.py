@@ -160,14 +160,14 @@ def problem_record(courseId, problemId, sortCondition = OtherResources().const.R
     navbar - class - Record of problem
     """
     # Chart View Value Text
-    chartSubmissionDescriptions = ['Total Submitted People',
-                                   'Total Solved People',
-                                   'Total Submitted Count',
+    chartSubmissionDescriptions = ['Tried People',
+                                   'Solved People',
+                                   'Submission Count',
                                    'Solved',
                                    'Wrong Answer',
                                    'Time Over',
                                    'Compile Error',
-                                   'RunTime Error']
+                                   'Runtime Error']
     
     # last Submissions Info
     submissions = select_all_submissions(lastSubmission = select_last_submissions(memberId = None,

@@ -96,7 +96,7 @@ def get_relation_between_col_and_dep():
     return relation
 
 from GradeServer.py3Des.pyDes import *
-def initialize_tipleDes_class():
+def initialize_tripleDes_class():
     tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
                            mode = ECB,
                            IV = "\0\0\0\0\0\0\0\0",
@@ -175,7 +175,7 @@ def sign_up():
                     comment = request.form['comment'] if request.form['comment'] else ''
                                    
                     # encrypt password and transfer for insertion into DB
-                    tripleDes = initialize_tipleDes_class()
+                    tripleDes = initialize_tripleDes_class()
                     password = generate_password_hash(tripleDes.encrypt(str(password)))
 
                     if not insert_into_Members(memberId, password, name, 'USER', datetime.now(), comment):

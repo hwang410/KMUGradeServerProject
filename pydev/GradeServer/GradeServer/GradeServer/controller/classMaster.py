@@ -83,6 +83,15 @@ def get_own_courses(memberId):
                      all()
     return ownCourses
 
+from GradeServer.py3Des.pyDes import *
+def initialize_tripleDes_class():
+    tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
+                           mode = ECB,
+                           IV = "\0\0\0\0\0\0\0\0",
+                           pad = None,
+                           padmode = PAD_PKCS5)
+    return tripleDes
+
 @GradeServer.route('/classmaster/user_submit')
 @check_invalid_access
 @login_required
@@ -764,9 +773,12 @@ def class_add_user():
                         if newUser[keys['authority']] == 'Course Admin':
                             newUser[keys['authority']] = SETResources().const.COURSE_ADMINISTRATOR
                                 
+                        tripleDes = initialize_tripleDes_class()
+                        password = generate_password_hash(tripleDes.encrypt(str(newUser[keys['memberId']])))
+                    
                         # at first insert to 'Members'. Duplicated tuple will be ignored.
                         freshman = Members(memberId = newUser[keys['memberId']],
-                                           password = generate_password_hash(newUser[keys['memberId']]),
+                                           password = password,
                                            memberName = newUser[keys['memberName']],
                                            authority = newUser[keys['authority']],
                                            signedInDate = datetime.now())

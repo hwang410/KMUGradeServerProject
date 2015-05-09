@@ -5,26 +5,27 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
+	<div class="alert alert-error" id="alertDiv" style="display:none;width:100%;padding-right:0px">Please Enter your password</div>
 	<div width="100%" align="center" style="position:absolute;left: 50%;margin-left:-125px;width:250px">
 		<h3>Identification Check</h3>
 		<div class="row-fluid">
 			<h4>
 				<div class="span6">
-					User ID
+					ID
 				</div>
 				<div class="span6">
 					{% if session['memberId'] %}{{ session['memberId'] }}{% endif %}
 				</div>
 			</h4>
 		</div>
-		<form method="post">	
+		<form id="id_check" method="post">	
 			<div class="row-fluid">
 				<h4>
 					<div class="span6">
 						Password
 					</div>
 					<div class="span6">
-						<input type="password" class="input-small" name="password" autofocus ="autofocus" style="text-align:center">
+						<input class="input-small" id="password" name="password" type="password" autofocus ="autofocus" style="text-align:center">
 					</div>
 				</h4>
 			</div>
