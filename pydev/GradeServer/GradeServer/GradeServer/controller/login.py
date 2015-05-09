@@ -43,7 +43,7 @@ def sign_in():
     When the page redirected from sign up page,
     It display flash message.    
     '''
-    if 'sign_up' in request.referrer:
+    if '?' in request.url:
         flash('Signed up successfully')
         
     """ main page before sign in"""

@@ -1,6 +1,7 @@
 {% extends "main.html" %}
 {%- block body %}
 <div class="container">
+	<div class="alert alert-error" id="alert" style="display:none;width:100%;padding-right:0px">Complete 'Must complete forms'</div>
 	<h3> Sign up </h3>
 	<hr>
 	<form id="sign_up_form" method="post">
@@ -8,39 +9,54 @@
 			<b style="color:#990000">Must complete forms</b>
 			<div class="row-fluid">
 				<h4>
-				<div class="span2"> ID </div><div class="span2"><input type="text" name="member_id"></div>
+					<div class="span2"> ID </div><div class="span2"><input id="member_id" type="text" name="member_id" autocomplete="off"></div>
 				</h4>
 			</div>
 			<div class="row-fluid">
 				<h4>
-				<div class="span2"> Password </div><div class="span2"><input type="password" name="password"></div>
+					<div class="span2"> Password </div><div class="span2"><input id="password" type="password" name="password"></div>
 				</h4>
 			</div>
 			<div class="row-fluid">
 				<h4>
-				<div class="span2"> Name </div><div class="span2"><input type="text" name="member_name"></div>
+					<div class="span2"> Name </div><div class="span2"><input id="member_name" type="text" name="member_name"></div>
 				</h4>
 			</div>
 			<hr>
 			<b style="color:#009900">Optional forms</b>
 			<div class="row-fluid">
 				<h4>
-				<div class="span2"> College </div><div class="span2"><input type="text" name="college"></div>
+					<div class="span2"> College </div>
+					<div class="span2">
+						<select id="college1" name="college" style="width:150%">
+							<option value=''> select college </option>
+							{%- for college in colleges %}
+							<option>
+								{{ college.collegeIndex }} {{ college.collegeName }}
+							</option>
+							{% endfor -%}
+						</select>
+					</div>
 				</h4>
 			</div>
 			<div class="row-fluid">
 				<h4>
-				<div class="span2"> Department </div><div class="span2"><input type="text" name="department"></div>
+					<div class="span2"> Department </div>
+					<div class="span2">
+						<select id="department1" name="department" style="width:150%">
+							<option value=''></option>
+						</select>
+					</div>
 				</h4>
 			</div>
 			<div class="row-fluid">
 				<h4>
-				<div class="span2"> Comment </div><div class="span10"><input type="text" name="comment"></div>
+					<div class="span2"> Comment </div><div class="span10"><input type="text" name="comment"></div>
 				</h4>
 			</div>
 		</div>
 		<hr>
-		<button class="btn" type="submit">Done</button>
+		<a class="btn" onclick="checkForms()">Done</a>
 	</form>
 </div>
 <style>
@@ -52,4 +68,86 @@ div .span2{
 	line-height: normal;
 }
 </style>
+<script>
+function checkForms(){
+	var member_id = document.getElementById('member_id').value;
+	var password = document.getElementById('password').value;
+	var name = document.getElementById('member_name').value;
+
+	if(member_id == '' || password == '' || name == ''){
+		document.getElementById('alert').style.display="inline-block";
+		document.getElementById('member_id') = member_id;
+		document.getElementById('password') = '';
+		document.getElementById('member_name') = name;
+	}
+
+	document.getElementById('sign_up_form').submit();
+}
+
+/* 
+	@@ Showing department list event
+
+	When you select college, 
+	it hides 'select college' option and shows departments which is in the college you select.
+	
+	Its college id should be 'college' + integer number and department id should be as well for using this function.
+	Change $(here) and RowOnClickController(here).
+
+	## Notice
+	It's the same function with it in "class_add_user.html"
+	But it uses jinja2 template so I couldn't place it into "userdefine.js" and reuse it.
+
+	If you find a way to reuse with jinja2 values as parameters of it.
+	Pleasure you to modify it.
+
+	2015.5.9. Seulgi Choi
+*/
+$("#college1").change(function(){
+	RowOnClickController(1);
+});
+function RowOnClickController(IdxOfRow){
+	var selectedText=$("#college"+IdxOfRow+" option:selected").text();
+
+	selectedText=selectedText.replace(/\t|\n/g, "");
+	
+	var index=selectedText.match(/\d+/g);
+	var name=selectedText.split(index)[1];
+
+	var initialOptions=document.getElementById("college"+IdxOfRow).innerHTML;
+
+	if(initialOptions.indexOf("select college") != -1){
+		var OptionsWithoutDefault=
+			initialOptions.replace("<option value=\"\"> select college </option>", "");
+		
+		// remove tab spaces
+		OptionsWithoutDefault=OptionsWithoutDefault.replace(/\t/g, "");
+
+		// split for checking selected value
+		OptionsWithoutDefault=OptionsWithoutDefault.split('</option>');
+
+		var newOptions="";
+		for(var i=0;i<OptionsWithoutDefault.length;i++){
+			// if an option's index and name are same then gives 'selected'
+			if(OptionsWithoutDefault[i].indexOf(index+name) != -1){
+				OptionsWithoutDefault[i]=OptionsWithoutDefault[i].replace("<option>", "<option selected>");
+			}
+			newOptions+=OptionsWithoutDefault[i]+' ';
+		}
+		document.getElementById("college"+IdxOfRow).innerHTML=newOptions;
+	}
+	{%- for college in colleges %}
+	if(index == "{{ college.collegeIndex }}"){
+		document.getElementById("department"+IdxOfRow).innerHTML="";
+		{%- for relation, collegeInfo, departmentInfo in departments %}
+			{%- if relation.collegeIndex == college.collegeIndex %}
+			document.getElementById("department"+IdxOfRow).innerHTML+=
+				"<option>"+
+				"{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}"+
+				"</option>";
+			{% endif -%}
+		{% endfor -%}
+	}
+	{% endfor -%}
+}
+</script>
 {% endblock -%}

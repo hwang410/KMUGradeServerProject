@@ -14,7 +14,21 @@ from datetime import datetime
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_blueprint import GradeServer
+from sqlalchemy import and_
 
+from GradeServer.resource.setResources import SETResources
+from GradeServer.resource.sessionResources import SessionResources
+from GradeServer.resource.otherResources import OtherResources
+
+from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
+from GradeServer.model.colleges import Colleges
+from GradeServer.model.departments import Departments
+from GradeServer.model.departmentsOfColleges import DepartmentsOfColleges
+from GradeServer.model.members import Members
+
+from __builtin__ import False
+
+    
 '''
 @@ Check form data from request.form
 
@@ -25,14 +39,108 @@ def has_form(form_name):
         return False
     return True
 
-@GradeServer.route('/sign_up', methods = ['GET', 'POST'])
-def sign_up():        
+def insert_into_departmentDetailsOfMembers(memberId, collegeIndex, departmentIndex):
+    departmentInformation = DepartmentsDetailsOfMembers(memberId = memberId,
+                                                        collegeIndex = int(collegeIndex),
+                                                        departmentIndex = int(departmentIndex))
+    dao.add(departmentInformation)
+
+    try:
+        dao.commit()
+    except:
+        dao.rollback()
+        return False
+            
+    return True
+
+def insert_into_Members(memberId, password, memberName, authority, signedInDate, comment):
     '''
-    @@ import for main page 
-    '''
-    from GradeServer.resource.setResources import SETResources
-    from GradeServer.resource.sessionResources import SessionResources
+    @@ TODO
     
+    Default authority is USER.
+    So if you want to make an account for server administrator,
+    you change the authority in database terminal.
+    '''
+    newMember = Members(memberId = memberId,
+                        password = password,
+                        memberName = memberName,
+                        authority = authority,
+                        signedInDate = signedInDate,
+                        comment = comment)
+    dao.add(newMember)
+    try:
+        dao.commit()
+    except:
+        dao.rollback()
+        return False
+    
+    return True
+
+def get_colleges():
+    colleges = dao.query(Colleges).\
+                         filter(Colleges.isAbolished == SETResources().const.FALSE).\
+                         all()
+    return colleges
+
+def get_relation_between_col_and_dep():
+    relation = (dao.query(DepartmentsOfColleges,
+                          Colleges,
+                          Departments).\
+                    filter(and_(Colleges.isAbolished == SETResources().const.FALSE,
+                                Departments.isAbolished == SETResources().const.FALSE)).\
+                    join(Colleges,
+                         Colleges.collegeIndex == DepartmentsOfColleges.collegeIndex).\
+                    join(Departments,
+                         Departments.departmentIndex == DepartmentsOfColleges.departmentIndex)).\
+               all()
+    return relation
+
+from GradeServer.py3Des.pyDes import *
+def initialize_tipleDes_class():
+    tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
+                           mode = ECB,
+                           IV = "\0\0\0\0\0\0\0\0",
+                           pad = None,
+                           padmode = PAD_PKCS5)
+    return tripleDes
+
+def has_duplicated_member(memberId):
+    try:
+        dao.query(Members).\
+            filter(Members.memberId == memberId).\
+            first().\
+            memberId
+    except:
+        return False
+    
+    return True
+                                       
+@GradeServer.route('/sign_up', methods = ['GET', 'POST'])
+def sign_up():
+    try:
+        colleges = get_colleges()
+        
+    except:
+        error = 'Error has been occurred while searching colleges. Please refresh the page.'
+        return render_template("sign_up.html",
+                               SETResources = SETResources,
+                               SessionResources = SessionResources,
+                               colleges = '',
+                               departments = '',
+                               error = error)
+        
+    try:
+        departments = get_relation_between_col_and_dep()
+        
+    except:
+        error = 'Error has been occurred while searching departments. Please refresh the page.'
+        return render_template("sign_up.html",
+                               SETResources = SETResources,
+                               SessionResources = SessionResources,
+                               colleges = colleges,
+                               departments = '',
+                               error = error)
+        
     error = None
     if request.method == 'POST':
         memberId = ''
@@ -46,16 +154,12 @@ def sign_up():
             return render_template("sign_up.html",
                                    SETResources = SETResources,
                                    SessionResources = SessionResources,
+                                   colleges = colleges,
+                                   departments = departments,
                                    error = error)
             
         else:
             try:
-                '''
-                @@ import for insertion new member to DB
-                '''
-                from GradeServer.model.members import Members
-                from GradeServer.resource.otherResources import OtherResources
-                
                 '''
                 @@ check ID duplication
                 
@@ -64,66 +168,48 @@ def sign_up():
                 So it can keep doing signing process.
                 '''
                 memberId = request.form['member_id']
-                
-                try:
-                    checkIfExist = dao.query(Members).\
-                                       filter(Members.memberId == memberId).\
-                                       first().\
-                                       memberId
-                
-                except:
+
+                if not has_duplicated_member(memberId):
                     password = request.form['password']
                     name = request.form['member_name']
-                    comment = request.form['comment'] if not request.form['comment'] else ''
-                    
-                    '''
-                    @@ import for encryption password
-                    '''
-                    from GradeServer.py3Des.pyDes import *
-                    
-                    '''
-                    @@ Class initialization
-                    '''
-                    tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
-                                           mode = ECB,
-                                           IV = "\0\0\0\0\0\0\0\0",
-                                           pad = None,
-                                           padmode = PAD_PKCS5)
-                    
+                    comment = request.form['comment'] if request.form['comment'] else ''
+                                   
                     # encrypt password and transfer for insertion into DB
+                    tripleDes = initialize_tipleDes_class()
                     password = generate_password_hash(tripleDes.encrypt(str(password)))
-                    
-                    try:
-                        '''
-                        @@ IMPORTANT
-                        !! change authority before real service !!
-                        
-                        It's for initial server administrator registration.
-                        So, default authority is 'SERVER_ADMINISTRATOR'.
-                        '''
-                        newMember = Members(memberId = memberId,
-                                            password = password,
-                                            memberName = name,
-                                            authority = 'SERVER_ADMINISTRATOR',
-                                            signedInDate = datetime.now(),
-                                            comment = comment)
-                        dao.add(newMember)
-                        dao.commit()
-                    except:
+
+                    if not insert_into_Members(memberId, password, name, 'USER', datetime.now(), comment):
                         error = 'Error has been occurred while adding new user to DB'
                         return render_template("sign_up.html",
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               colleges = colleges,
+                                               departments = departments,
                                                error = error)
-                       
+
+                    college = request.form['college'].split()[0] if request.form['college'] else ''
+                    department = request.form['department'].split()[0] if request.form['department'] else ''
+
+                    if college and department:
+                        if not insert_into_departmentDetailsOfMembers(memberId, college, department):
+                            error = "Error has been occurred while adding user's department information to DB"
+                            return render_template("sign_up.html",
+                                                   SETResources = SETResources,
+                                                   SessionResources = SessionResources,
+                                                   colleges = colleges,
+                                                   departments = departments,
+                                                   error = error)
+
                     from GradeServer.resource.routeResources import RouteResources
-                    return redirect(url_for(RouteResources().const.SIGN_IN))
+                    return redirect(url_for(RouteResources().const.SIGN_IN, rdr=''))
                 
-                if checkIfExist:
+                else:
                     error = "Your ID is already exist"
                     return render_template("sign_up.html",
                                            SETResources = SETResources,
                                            SessionResources = SessionResources,
+                                           colleges = colleges,
+                                           departments = departments,
                                            error = error)
                     
             except:
@@ -131,9 +217,13 @@ def sign_up():
                 return render_template("sign_up.html",
                                        SETResources = SETResources,
                                        SessionResources = SessionResources,
+                                       colleges = colleges,
+                                       departments = departments,
                                        error = error)
                     
     return render_template('/sign_up.html',
                            SETResources = SETResources,
                            SessionResources = SessionResources,
+                           colleges = colleges,
+                           departments = departments,
                            error = error)
