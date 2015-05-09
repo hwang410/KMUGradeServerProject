@@ -34,138 +34,123 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
   		})
 		{% endif %}
   {% endfor %}
-
-})
+});
 </script>
 <div class="container">
 	<div style="text-align:center">
 		<h3>{{ problemInformationRecords.problemName }}</h3>
 		<h4>
 			<div style="row-fluid">
-				<div class="span6" id="time-limit">Time Limit : {{ problemInformationRecords.limitedTime }} &nbsp&nbsp&nbsp|</div>
+				<div class="span6" id="time-limit">Time Limit : {{ problemInformationRecords.limitedTime }} &nbsp&nbsp&nbsp<span class="hidden-phone">|</span></div>
 				<div class="span6" id="memory-limit">Memory Limit : {{ problemInformationRecords.limitedMemory }}</div>
 			</div>
 		</h4>
 	</div>
-	<div class="container">
-		<div class="row-fluid">
-			<div class="span12" style="padding-top:50px">
-				<div class="row-fluid">
-					<!-- chart section -->
-					<div class="chart span5" style="text-align:center">
-						<div class="row-fluid">
-							<div class="span7" style="float:left">
-								<canvas id="submitChart" width="200%"></canvas>
-							</div>
-							<div class="span5" id="legend-box" style="float:right">
-							<br>
-							</div>
-						</div>
-						<div style="text-align:right;width:60%">
-							<table>
-								{% for i in range (0, chartSubmissionDescriptions|length) %}
-									<!--  chartSubmissionRecords is Value, chartSubmissionDescriptions is Description -->
-									<tr>
-									<h4 style ="padding-bottom:5px">
-										<td>{{ chartSubmissionDescriptions[i] }}</td>
-										<td>:  {% if not chartSubmissionRecords[i] %}0{% else %}{{ chartSubmissionRecords[i] }}{% endif %}</td>
-									</h4>
-									</tr>
-								{% endfor %}
-							  
-							</table>
-						</div>
-					</div>
-					<!-- user list section -->
-					<div class="user_list span7" style="text-align:center">
-						<table class="problem_list table table-bordered">
-							<thead>
-								<tr>
-									<td style ='vertical-align: middle'>Rank</td>
-									<td style ='vertical-align: middle'>
-										<a href = '{{ url_for("GradeServer.problem_record", 
-																					courseId = courseId, 
-																					problemId = problemInformationRecords.problemId, 
-																					sortCondition = "memberId") }}'>Member Id</td>
-									<td style ='vertical-align: middle'>
-										<a href = '{{ url_for("GradeServer.problem_record", 
-																					courseId = courseId, 
-																					problemId = problemInformationRecords.problemId, 
-																					sortCondition = "runTime") }}'>Run Time</a></td>
-									<td style ='vertical-align: middle'>
-										<a href = '{{ url_for("GradeServer.problem_record", 
-																					courseId = courseId, 
-																					problemId = problemInformationRecords.problemId, 
-																					sortCondition = "usedMemory") }}'>Used Memory</td>
-									<td style ='vertical-align: middle'>
-										<a href = '{{ url_for("GradeServer.problem_record", 
-																					courseId = courseId, 
-																					problemId = problemInformationRecords.problemId, 
-																					sortCondition = "codeLength") }}'>Code Length</td>
-									<td style ='vertical-align: middle'>
-										<a href = '{{ url_for("GradeServer.problem_record", 
-																					courseId = courseId, 
-																					problemId = problemInformationRecords.problemId, 
-																					sortCondition = "submissionDate") }}'>Sumission Date</td>
-									<td style ='vertical-align: middle'>Code View</td>
-									<td style ='vertical-align: middle'>View Count</td>
-								</tr>
-							</thead>
-							{% for problemSolvedMemberRecord in problemSolvedMemberRecords %}
-							<tr>
-								<td style ='vertical-align: middle'>{{ loop.index }}</td>
-								<td style ='vertical-align: middle'>
-									<a href="{{ url_for('GradeServer.submission_record', memberId = problemSolvedMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
-										{% if problemSolvedMemberRecord.memberId %}{{ problemSolvedMemberRecord.memberId }}{% endif %}
-									</a>
-								</td>
-								<td style ='vertical-align: middle'>
-									{% if problemSolvedMemberRecord.runTime %}
-									{{ problemSolvedMemberRecord.runTime }}
-									{% else %}
-									0
-									{% endif %}
-								 	ms
-							 	</td>
-							 	<td style ='vertical-align: middle'>
-									{% if problemSolvedMemberRecord.usedMemory %}
-									{{ problemSolvedMemberRecord.usedMemory }}
-									{% else %}
-									0
-									{% endif %}
-									 Byte
-								</td>
-								<td style ='vertical-align: middle'>
-									{% if problemSolvedMemberRecord.sumOfSubmittedFileSize %}
-									{{ problemSolvedMemberRecord.sumOfSubmittedFileSize }}
-									{% else %}
-									0
-									{% endif %}
-									 Byte
-								</td>
-								<td style ='vertical-align: middle'>
-									{% if problemSolvedMemberRecord.codeSubmissionDate %}
-									{{ problemSolvedMemberRecord.codeSubmissionDate }}
-									{% endif %}
-								</td>
-								<td style ='vertical-align'>
-									<a href='{{ url_for("GradeServer.submission_code", courseId = courseId, problemId = problemInformationRecords.problemId, memberId = problemSolvedMemberRecord.memberId) }}'>
-										<img src="../../static/bootstrap/img/text.png" style="height:20%;width:20%">
-									</a>
-								</td>
-								<td style ='vertical-align: middle'>
-									{% if problemSolvedMemberRecord.viewCount %}
-									{{ problemSolvedMemberRecord.viewCount }}
-									{% else %}
-									0
-									{% endif %}
-								</td>
-							</tr>
-							{% endfor %}
-						</table>
-					</div>
+	<div class="row-fluid" style="padding-top:50px">
+		<div class="span3">
+			<!-- chart section -->
+			<div class="row-fluid" style="text-align:center">
+				<div class="spanX">
+					<canvas id="submitChart" width="200%"></canvas>
+				</div>
+				<div class="spanY">
+					{% for i in range (0, chartSubmissionDescriptions|length) %}
+					<!--  chartSubmissionRecords is Value, chartSubmissionDescriptions is Description -->
+					<h4 style ="padding-bottom:5px">
+						{{ chartSubmissionDescriptions[i] }}
+						{% if not chartSubmissionRecords[i] %}0{% else %}{{ chartSubmissionRecords[i] }}{% endif %}
+						<br>
+					</h4>
+					{% endfor %}
 				</div>
 			</div>
+		</div>
+		<!-- user list section -->
+		<div class="user_list span9" style="text-align:center">
+			<table class="problem_list table table-bordered">
+				<thead>
+					<tr>
+						<td>Rank
+						<td>
+							<a href = '{{ url_for("GradeServer.problem_record", 
+													courseId = courseId, 
+													problemId = problemInformationRecords.problemId, 
+													sortCondition = "memberId") }}'>ID
+						<td>
+							<a href = '{{ url_for("GradeServer.problem_record", 
+													courseId = courseId, 
+													problemId = problemInformationRecords.problemId, 
+													sortCondition = "runTime") }}'>Runtime</a>
+						<td>
+							<a href = '{{ url_for("GradeServer.problem_record", 
+													courseId = courseId, 
+													problemId = problemInformationRecords.problemId, 
+													sortCondition = "usedMemory") }}'>Memory
+						<td>
+							<a href = '{{ url_for("GradeServer.problem_record", 
+													courseId = courseId, 
+													problemId = problemInformationRecords.problemId, 
+													sortCondition = "codeLength") }}'>Size
+						<td>
+							<a href = '{{ url_for("GradeServer.problem_record", 
+													courseId = courseId, 
+													problemId = problemInformationRecords.problemId, 
+													sortCondition = "submissionDate") }}'>Date
+						<td><span class="hidden-phone">Code</span>View
+						<td class="hidden-phone">View Count
+					</tr>
+				<tbody>
+				{% for problemSolvedMemberRecord in problemSolvedMemberRecords %}
+				<tr>
+					<td>{{ loop.index }}
+					<td>
+						<a href="{{ url_for('GradeServer.submission_record', memberId = problemSolvedMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
+							{% if problemSolvedMemberRecord.memberId %}{{ problemSolvedMemberRecord.memberId }}{% endif %}
+						</a>
+					<td>
+						{% if problemSolvedMemberRecord.runTime %}
+						{{ problemSolvedMemberRecord.runTime }}
+						{% else %}
+						0
+						{% endif %}
+					 	ms
+				 	<td>
+						{% if problemSolvedMemberRecord.usedMemory %}
+						{{ problemSolvedMemberRecord.usedMemory }}
+						{% else %}
+						0
+						{% endif %}
+						<span class="hidden-phone hidden-tablet"> Byte</span>
+						<span class="visible-phone visible-tablet"> B</span>
+					<td>
+						{% if problemSolvedMemberRecord.sumOfSubmittedFileSize %}
+						{{ problemSolvedMemberRecord.sumOfSubmittedFileSize }}
+						{% else %}
+						0
+						{% endif %}
+						<span class="hidden-phone hidden-tablet"> Byte</span>
+						<span class="visible-phone visible-tablet"> B</span>
+					<td>
+						{% if problemSolvedMemberRecord.codeSubmissionDate %}
+						<script>
+						var newDate = "{{ problemSolvedMemberRecord.codeSubmissionDate }}";
+						document.write(newDate.substring(2,16));
+						</script>
+						{% endif %}
+					<td style ='vertical-align'>
+						<a href='{{ url_for("GradeServer.submission_code", courseId = courseId, problemId = problemInformationRecords.problemId, memberId = problemSolvedMemberRecord.memberId) }}'>
+							<!--<img src="../../static/bootstrap/img/text.png" style="height:20%;width:20%">-->
+							<i class="icon-file"></i>
+						</a>
+					<td class="hidden-phone">
+						{% if problemSolvedMemberRecord.viewCount %}
+						{{ problemSolvedMemberRecord.viewCount }}
+						{% else %}
+						0
+						{% endif %}
+				</tr>
+				{% endfor %}
+			</table>
 		</div>
 	</div>
 </div>

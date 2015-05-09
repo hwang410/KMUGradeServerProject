@@ -5,12 +5,12 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
-	<h3>Edit Personal Information</h3>
+	<h3>Personal Information</h3>
 	<div class="span12">
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					User Id
+					ID
 				</div>
 				<div class="span8">
 					{% if memberInformation.memberId %}{{ memberInformation.memberId }}{% endif %}
@@ -63,7 +63,7 @@
 			<h4>
 				<div class="row-fluid">
 					<div class="span3">
-						Contact number
+						Contact Number
 					</div>
 					<div class="span8">
 						<input type="text" class="input-large" name="contactNumber"

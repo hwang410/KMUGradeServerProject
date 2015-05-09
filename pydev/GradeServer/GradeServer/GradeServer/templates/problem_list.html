@@ -10,9 +10,14 @@
 	<h2>{{ courseRecords.courseId }} {{ courseRecords.courseName }}</h2>
 	<div style="text-align:center">
 		<div class="visible-phone" style="margin-bottom:10px">
-			<span class="label label-info">Solved</span>
-			<span class="label label-important">Wrong</span>
-			<span class="label label-warning">NeverSubmitted & Error</span>
+			<style>
+			.alert{
+				padding: 5px;
+			}
+			</style>
+			<span class="alert alert-info">Solved</span>
+			<span class="alert alert-error">Wrong</span>
+			<span class="alert">NeverSubmitted & Error</span>
 		</div>
 	</div>
 	<table class="problem_list table table-bordered">
@@ -21,14 +26,17 @@
 				<td class="hidden-phone">Num
 				<td>Title
 				<td>Score
-				<td>Status
+				<td class="hidden-phone">Status
 				<td>Due Date
 				<td>Count
 				<td>Record
 			</tr>
 		<tbody>
 			{% for problemListRecord in problemListRecords %}
-			<tr>
+			<tr class='alert {%- if problemListRecord.status == "SOLVED" %}alert-info
+						       {% elif problemListRecord.status == "WRONG_ANSWER" %}alert-error
+						       {%- else %}
+						       {% endif -%}'>
 				<td class="hidden-phone">
 					{{ (problemListRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}
 				<td>
@@ -37,14 +45,8 @@
 					</a>
 				<td>
 					{%- if problemListRecord.score %}{{ problemListRecord.score }}{%- else %}0{% endif -%}
-				<td>
-					<span class='label label-{%- if problemListRecord.status == "SOLVED" %}info
-											     {% elif problemListRecord.status == "WRONG_ANSWER" %}important
-											     {%- else %}warning
-											     {% endif -%}'>
-						<div class="hidden-phone">{%- if problemListRecord.status %}{{ problemListRecord.status }}{%- else %}Never Submitted{% endif -%}</div>
-						<div class="visible-phone">&nbsp;</div>
-					</span>
+				<td class="hidden-phone">
+					<div>{%- if problemListRecord.status %}{{ problemListRecord.status }}{%- else %}Never Submitted{% endif -%}</div>
 				<td class="responsiveTD" align="center">
 					<div class="hidden-phone">
 						<script>

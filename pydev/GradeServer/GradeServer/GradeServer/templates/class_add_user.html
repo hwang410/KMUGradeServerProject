@@ -5,16 +5,16 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <script>
-var keys = ['courseId', 'userId', 'username', 
+var keys=['courseId', 'userId', 'username', 
 			 'college', 'department', 'authority'];
-var placeholders = ['Course Id', 'ID', 'Name', 
+var placeholders=['Course Id', 'ID', 'Name', 
 					  'College', 'Department', 'Authority'];
-var formsize = ['', 'small', 'mini', 'medium', 'medium', 'medium'];
+var formsize=['', 'small', 'mini', 'medium', 'medium', 'medium'];
 $(function() {
 	// To do.
 	// now it shows all members having 'user' authority.
 	// but if the member is exist, then it needs to change college/department/authority space automatically.
-	var allUsers = [
+	var allUsers=[
 		{%- for user, college, department in allUsers %}
 		{ value: "{{ user.memberId }} {{ user.memberName }}", 
 		data: "{{ user.memberId }} {{ user.memberName }} {{ college.collegeIndex }} {{ department.departmentIndex }} {{ department.departmentName }} {{ user.authority }}" },
@@ -25,25 +25,25 @@ $(function() {
 	$("#userId1").autocomplete({
 		lookup: allUsers,
 		onSelect: function(suggestion){
-			var data = suggestion.data;
-			var userId = data.split(" ")[0];
-			var userName = data.split(" ")[1];
-			var collegeIndex = data.split(" ")[2];
-			var departmentIndex = data.split(" ")[3];
-			var departmentName = data.split(" ")[4];
-			var authority = data.split(" ")[5];
+			var data=suggestion.data;
+			var userId=data.split(" ")[0];
+			var userName=data.split(" ")[1];
+			var collegeIndex=data.split(" ")[2];
+			var departmentIndex=data.split(" ")[3];
+			var departmentName=data.split(" ")[4];
+			var authority=data.split(" ")[5];
 			
 			if(authority.indexOf("COURSE_ADMINISTRATOR")!=-1){
-				authority = 0;
+				authority=0;
 			}
 			else{
-				authority = 1;
+				authority=1;
 			}
 
-			var userIdx = this.id.match(/(\d+)/g);
+			var userIdx=this.id.match(/(\d+)/g);
 			
-			document.getElementById(this.id).value = userId;
-			document.getElementById("username"+userIdx).value = userName;
+			document.getElementById(this.id).value=userId;
+			document.getElementById("username"+userIdx).value=userName;
 		
 			// set predefined data
 			document.getElementById("college"+userIdx).innerHTML =
@@ -52,7 +52,7 @@ $(function() {
 				"</option>";
 			document.getElementById("department"+userIdx).innerHTML =
 				"<option selected>"+
-					departmentIndex + ' '+ departmentName+
+					departmentIndex+' '+ departmentName+
 				"</option>";
 			document.getElementById("authority"+userIdx).innerHTML =
 				"<option selected>"+
@@ -67,10 +67,10 @@ $(function() {
 	});
 
 	$("#addline").bind('click',function(){
-		var targetTable = document.getElementById('indivisual');
-		var numOfRow = targetTable.rows.length;
+		var targetTable=document.getElementById('indivisual');
+		var numOfRow=targetTable.rows.length;
 
-		reset_val = function(){
+		reset_val=function(){
 			$("#courseId1").val("");
 			$("#userId1").val("");
 			$("#username1").val("");
@@ -79,116 +79,116 @@ $(function() {
 			$("#authority1").val("");
 		};
 
-		var newRow = targetTable.insertRow(2);
+		var newRow=targetTable.insertRow(2);
 
-		var memberIdOnFirstRow = $("#userId1").val(); // member Id before insert new row
-		var isExistUser = false;
+		var memberIdOnFirstRow=$("#userId1").val(); // member Id before insert new row
+		var isExistUser=false;
 
 		{%- for user, college, department in allUsers %}
 		if(memberIdOnFirstRow == "{{ user.memberId }}"){
-			isExistUser = true;
+			isExistUser=true;
 		}
 		{% endfor -%}
 
-		for(var i = 0; i < targetTable.rows[0].cells.length; i++){  
-			var uploadObj = "<td>";
+		for(var i=0; i < targetTable.rows[0].cells.length; i++){  
+			var uploadObj="<td>";
 			var selectedItem, index; 
 			// course ID[0]
 			if(i < 1){ 
-				selectedItem = document.getElementById(keys[i]+"1");
-				index = selectedItem.options[selectedItem.selectedIndex].index + 1;
-				uploadObj += "<select id='" + keys[i] + numOfRow +
-								      	"'name='" + keys[i] + numOfRow +
-									  	"'value='" + $("#" + keys[i] + "1").val() +
+				selectedItem=document.getElementById(keys[i]+"1");
+				index=selectedItem.options[selectedItem.selectedIndex].index+1;
+				uploadObj+="<select id='"+keys[i]+numOfRow+
+								      	"'name='"+keys[i]+numOfRow+
+									  	"'value='"+$("#"+keys[i]+"1").val()+
 									  	"'style='width:115px'>";
 				{%- for ownCourse in ownCourses %}
-				uploadObj += "<option";
+				uploadObj+="<option";
 				if(index == "{{ loop.index }}"){
-					uploadObj += " selected";
+					uploadObj+=" selected";
 				}
-				uploadObj += ">{{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>";
+				uploadObj+=">{{ ownCourse.courseId }} {{ ownCourse.courseName }} </option>";
 				{% endfor -%}
-				uploadObj += "</select>";
+				uploadObj+="</select>";
 			}
 			// member ID[1], member name[2]
 			else if(i < 3){
-				uploadObj += "<input class='input-" + formsize[i] +
-										"'id='" + keys[i] + numOfRow +
-										"'name='" + keys[i] + numOfRow +
-										"'type='text'" +
-										"autocomplete='off'" +
-										"placeholder='" + placeholders[i];
+				uploadObj+="<input class='input-"+formsize[i]+
+										"'id='"+keys[i]+numOfRow+
+										"'name='"+keys[i]+numOfRow+
+										"'type='text'"+
+										"autocomplete='off'"+
+										"placeholder='"+placeholders[i];
 				// if the form is not empty then shows the value else shows placeholder
-				var val = $("#"+keys[i]+"1").val();
+				var val=$("#"+keys[i]+"1").val();
 				if(val != ""){
-					uploadObj += "'value='" + val;
+					uploadObj+="'value='"+val;
 				}
-				uploadObj += "'>";
+				uploadObj+="'>";
 			}
 			// college[3], department[4], authority[5]
 			else{
-		    		uploadObj += "<select class='input-" + formsize[i] +
-										"'id='" + keys[i] + numOfRow +
-								      	"'name='" + keys[i] + numOfRow +
-									  	"'value='" + $("#" + keys[i] + "1").val()+"'";
+		    		uploadObj+="<select class='input-"+formsize[i]+
+										"'id='"+keys[i]+numOfRow+
+								      	"'name='"+keys[i]+numOfRow+
+									  	"'value='"+$("#"+keys[i]+"1").val()+"'";
 				if(isExistUser){
-					uploadObj += " disabled";
+					uploadObj+=" disabled";
 				}
-				uploadObj += ">";
+				uploadObj+=">";
 				switch(i){
 					// college
 					case 3:
-						var index = $("#" + keys[i] + "1 option:selected").text().match(/(\d+)/g);
+						var index=$("#"+keys[i]+"1 option:selected").text().match(/(\d+)/g);
 			    			if(index == null){
-			    				uploadObj += "<option> select college </option>";
+			    				uploadObj+="<option> select college </option>";
 			    			}
 			    			{%- for college in allColleges %}
-						uploadObj += "<option";
+						uploadObj+="<option";
 						if(index == "{{ college.collegeIndex }}"){
-							uploadObj += " selected";
+							uploadObj+=" selected";
 						}
-						uploadObj += ">{{ college.collegeIndex }} {{ college.collegeName }} </option>";
+						uploadObj+=">{{ college.collegeIndex }} {{ college.collegeName }} </option>";
 						{% endfor -%}
 						break;
 					// department
 					case 4:
-						var collegeIndex = $("#" + keys[i-1] + "1 option:selected").text().match(/(\d+)/g);
-			    			var departmentIndex = $("#" + keys[i] + "1 option:selected").text().match(/(\d+)/g);
+						var collegeIndex=$("#"+keys[i-1]+"1 option:selected").text().match(/(\d+)/g);
+			    			var departmentIndex=$("#"+keys[i]+"1 option:selected").text().match(/(\d+)/g);
 			    			{%- for relation, collegeInfo, departmentInfo in allDepartments %}
 			    				if("{{ relation.collegeIndex }}" == collegeIndex){
-								uploadObj += "<option";
+								uploadObj+="<option";
 								if(departmentIndex == "{{ departmentInfo.departmentIndex }}"){
-									uploadObj += " selected";
+									uploadObj+=" selected";
 								}
-								uploadObj += 
-									">{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}" +
+								uploadObj+=
+									">{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}"+
 									"</option>";
 							}
 						{% endfor -%}	
 						break;
 					// authority
 					case 5:
-						selectedItem = document.getElementById(keys[i]+"1");
-						index = selectedItem.options[selectedItem.selectedIndex].index + 1;
+						selectedItem=document.getElementById(keys[i]+"1");
+						index=selectedItem.options[selectedItem.selectedIndex].index+1;
 						{%- for authority in authorities %}
-						uploadObj += "<option";
+						uploadObj+="<option";
 						if(index == "{{ loop.index }}"){
-							uploadObj += " selected";
+							uploadObj+=" selected";
 						}
-						uploadObj += ">{{ authority }} </option>";
+						uploadObj+=">{{ authority }} </option>";
 						{% endfor -%}
 						break;
 				}
-				uploadObj += "</select>";
+				uploadObj+="</select>";
 			}
-	    		newRow.insertCell(i).innerHTML = uploadObj;
+	    		newRow.insertCell(i).innerHTML=uploadObj;
 		}
 
 		$("#userId"+numOfRow).change(function(){
-			var isExistUser = false;
+			var isExistUser=false;
 			{%- for user, college, department in allUsers %}
 				if($("#userId"+numOfRow).val() == "{{ user.memberId }}"){
-					isExistUser = true;
+					isExistUser=true;
 				}
 			{% endfor -%}
 			if(!isExistUser){
@@ -204,30 +204,30 @@ $(function() {
 		$("#userId"+numOfRow).autocomplete({
 			lookup: allUsers,
 			onSelect: function(suggestion){
-				var data = suggestion.data;
-				var userId = data.split(" ")[0];
-				var userName = data.split(" ")[1];
-				var collegeIndex = data.split(" ")[2];
-				var departmentIndex = data.split(" ")[3];
-				var departmentName = data.split(" ")[4];
-				var authority = data.split(" ")[5];
+				var data=suggestion.data;
+				var userId=data.split(" ")[0];
+				var userName=data.split(" ")[1];
+				var collegeIndex=data.split(" ")[2];
+				var departmentIndex=data.split(" ")[3];
+				var departmentName=data.split(" ")[4];
+				var authority=data.split(" ")[5];
 				
 				if(authority.indexOf("COURSE_ADMINISTRATOR")!=-1){
-					authority = 0;
+					authority=0;
 				}
 				else{
-					authority = 1;
+					authority=1;
 				}
 
-				var userIdx = this.id.match(/(\d+)/g);
+				var userIdx=this.id.match(/(\d+)/g);
 				
-				document.getElementById(this.id).value = userId;
-				document.getElementById("username"+userIdx).value = userName;
+				document.getElementById(this.id).value=userId;
+				document.getElementById("username"+userIdx).value=userName;
 
-				var isExistUser = false;
+				var isExistUser=false;
 				{%- for user, college, department in allUsers %}
 				if(userId == "{{ user.memberId }}"){
-					isExistUser = true;
+					isExistUser=true;
 				}
 				{% endfor -%}
 
@@ -239,7 +239,7 @@ $(function() {
 						"</option>";
 					document.getElementById("department"+userIdx).innerHTML =
 						"<option selected>"+
-							departmentIndex + ' '+ departmentName+
+							departmentIndex+' '+ departmentName+
 						"</option>";
 					document.getElementById("authority"+userIdx).innerHTML =
 						"<option selected>"+
@@ -260,56 +260,56 @@ $(function() {
 		document.getElementById("department1").removeAttribute("disabled");
 		document.getElementById("authority1").removeAttribute("disabled");
 
-		var initialOptions = "<option> select college </option>" +
-						   	   "{%- for college in allColleges %}" +
-							   "<option>" +
-						   	   "{{ college.collegeIndex }} {{ college.collegeName }}" +
-						   	   "</option>" +
+		var initialOptions="<option> select college </option>"+
+						   	   "{%- for college in allColleges %}"+
+							   "<option>"+
+						   	   "{{ college.collegeIndex }} {{ college.collegeName }}"+
+						   	   "</option>"+
 						   	   "{% endfor -%}";
-		document.getElementById("college1").innerHTML = initialOptions;
-		document.getElementById("department1").innerHTML = "";
+		document.getElementById("college1").innerHTML=initialOptions;
+		document.getElementById("department1").innerHTML="";
 	});
 
 	$("#resetIndivisualUserForm").bind('click',function(){
-		document.getElementById("indivisualUserForm").innerHTML = 
-			'<td>' +
-				'<select id="courseId1" name="courseId1" style="width:115px">' +
-				  '{%- for ownCourse in ownCourses %}' +
-				  '<option>' +
-				  '{{ ownCourse.courseId }} {{ ownCourse.courseName }}' +
-				  '</option>' +
-				  '{% endfor -%}' +
-			  '</select>' +
-			'<td>' +
-				'<input class="input-small formLine1" id="userId1" name="userId1"' +
-							 'type="text" placeholder="ID" value="">' +
-			'<td>' +
-				'<input class="input-mini formLine1" id="username1" name="username1"' +
-							 'type="text" placeholder="Name" value="">' +
-			'<td>' +
-				'<select class="input-medium" id="college1" name="college1">' +
-					'<option> select college </option>' +
-					'{%- for college in allColleges %}' +
-					'<option>' +
-					'{{ college.collegeIndex }} {{ college.collegeName }}' +
-					'</option>' +
-					'{% endfor -%}' +
-				'</select>' +
-			'<td>' +
-				'<select class="input-medium" id="department1" name="department1">' +
-				'</select>' +
-			'<td>' +
-				'<select class="input-medium" id="authority1" name="authority1">' +
-					'{%- for authority in authorities %}' +
-					'<option> {{ authority }} </option>' +
-					'{% endfor -%}' +
+		document.getElementById("indivisualUserForm").innerHTML=
+			'<td>'+
+				'<select id="courseId1" name="courseId1" style="width:115px">'+
+				  '{%- for ownCourse in ownCourses %}'+
+				  '<option>'+
+				  '{{ ownCourse.courseId }} {{ ownCourse.courseName }}'+
+				  '</option>'+
+				  '{% endfor -%}'+
+			  '</select>'+
+			'<td>'+
+				'<input class="input-small formLine1" id="userId1" name="userId1"'+
+							 'type="text" placeholder="ID" value="">'+
+			'<td>'+
+				'<input class="input-mini formLine1" id="username1" name="username1"'+
+							 'type="text" placeholder="Name" value="">'+
+			'<td>'+
+				'<select class="input-medium" id="college1" name="college1">'+
+					'<option> select college </option>'+
+					'{%- for college in allColleges %}'+
+					'<option>'+
+					'{{ college.collegeIndex }} {{ college.collegeName }}'+
+					'</option>'+
+					'{% endfor -%}'+
+				'</select>'+
+			'<td>'+
+				'<select class="input-medium" id="department1" name="department1">'+
+				'</select>'+
+			'<td>'+
+				'<select class="input-medium" id="authority1" name="authority1">'+
+					'{%- for authority in authorities %}'+
+					'<option> {{ authority }} </option>'+
+					'{% endfor -%}'+
 				'</select>';
 
 		$("#userId1").change(function(){
-			var isExistUser = false;
+			var isExistUser=false;
 			{%- for user, college, department in allUsers %}
 				if($("#userId1").val() == "{{ user.memberId }}"){
-					isExistUser = true;
+					isExistUser=true;
 				}
 			{% endfor -%}
 			if(!isExistUser){
@@ -324,25 +324,25 @@ $(function() {
 		$("#userId1").autocomplete({
 			lookup: allUsers,
 			onSelect: function(suggestion){
-				var data = suggestion.data;
-				var userId = data.split(" ")[0];
-				var userName = data.split(" ")[1];
-				var collegeIndex = data.split(" ")[2];
-				var departmentIndex = data.split(" ")[3];
-				var departmentName = data.split(" ")[4];
-				var authority = data.split(" ")[5];
+				var data=suggestion.data;
+				var userId=data.split(" ")[0];
+				var userName=data.split(" ")[1];
+				var collegeIndex=data.split(" ")[2];
+				var departmentIndex=data.split(" ")[3];
+				var departmentName=data.split(" ")[4];
+				var authority=data.split(" ")[5];
 				
 				if(authority.indexOf("COURSE_ADMINISTRATOR")!=-1){
-					authority = 0;
+					authority=0;
 				}
 				else{
-					authority = 1;
+					authority=1;
 				}
 
-				var userIdx = this.id.match(/(\d+)/g);
+				var userIdx=this.id.match(/(\d+)/g);
 				
-				document.getElementById(this.id).value = userId;
-				document.getElementById("username"+userIdx).value = userName;
+				document.getElementById(this.id).value=userId;
+				document.getElementById("username"+userIdx).value=userName;
 
 				// set predefined data and make it disabled
 				document.getElementById("college"+userIdx).innerHTML =
@@ -351,7 +351,7 @@ $(function() {
 					"</option>";
 				document.getElementById("department"+userIdx).innerHTML =
 					"<option selected>"+
-						departmentIndex + ' '+ departmentName+
+						departmentIndex+' '+ departmentName+
 					"</option>";
 				document.getElementById("authority"+userIdx).innerHTML =
 					"<option selected>"+
@@ -368,7 +368,7 @@ $(function() {
 </script>
 <div class="container">
 	<div>
-		<h3>User addition</h3>
+		<h3>User Addition</h3>
 		<!--
 		@@ Navigation for modal
 		It matches each button to each modal.
@@ -396,7 +396,7 @@ $(function() {
 			<div class="modal-header">
 				<button class="close" type="button"
 						  data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="addUserModalLabel">User addition</h3>
+				<h3 id="addUserModalLabel">User Addition</h3>
 			</div>
 			<div class="modal-body">
 				<p>
@@ -525,7 +525,7 @@ $(function() {
 					<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('pendingUserTable');">
 			<tbody>
 <form method="post">
-				<script> index = 0; </script>
+				<script> index=0; </script>
 				{%- for newUser in newUsers %}
 				<tr>
 					<td><script> document.write(++index); </script>
@@ -557,7 +557,7 @@ $(function() {
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
 								type="button" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">User deletion</h3>
+				<h3 id="deleteModalLabel">User Deletion</h3>
 			</div>
 			<div class="modal-body">
 				<p>Do you really want to delete it?</p>
@@ -578,7 +578,7 @@ $(function() {
 			<div class="modal-header">
 				<button class="close" type="button"
 								data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">User deletion</h3>
+				<h3 id="deleteModalLabel">User Deletion</h3>
 			</div>
 			<div class="modal-body">
 				<p>No items choosed</p>
@@ -593,10 +593,10 @@ $(function() {
 </div>
 <script>
 $("#userId1").change(function(){
-	var isExistUser = false;
+	var isExistUser=false;
 	{%- for user, college, department in allUsers %}
 		if($("#userId1").val() == "{{ user.memberId }}"){
-			isExistUser = true;
+			isExistUser=true;
 		}
 	{% endfor -%}
 	if(!isExistUser){
@@ -610,76 +610,93 @@ function resetDisabledOption(idxOfRow){
 	document.getElementById("department"+idxOfRow).removeAttribute("disabled");
 	document.getElementById("authority"+idxOfRow).removeAttribute("disabled");
 
-	document.getElementById("college"+idxOfRow).innerHTML = 
-		'<option> select college </option>' +
-		'{%- for college in allColleges %}' +
-		'<option>' +
-		'{{ college.collegeIndex }} {{ college.collegeName }}' +
-		'</option>' +
+	document.getElementById("college"+idxOfRow).innerHTML=
+		'<option> select college </option>'+
+		'{%- for college in allColleges %}'+
+		'<option>'+
+		'{{ college.collegeIndex }} {{ college.collegeName }}'+
+		'</option>'+
 		'{% endfor -%}';
 	document.getElementById("department"+idxOfRow).innerHTML =
-		'<select class="input-medium" id="department"'+idxOfRow+' name="department'+idxOfRow+'">' +
+		'<select class="input-medium" id="department"'+idxOfRow+' name="department'+idxOfRow+'">'+
 		'</select>';
 	document.getElementById("authority"+idxOfRow).innerHTML =
-		'<select class="input-medium" id="authority'+idxOfRow+'" name="authority'+idxOfRow+'">' +
-		'{%- for authority in authorities %}' +
-		'<option> {{ authority }} </option>' +
-		'{% endfor -%}' +
+		'<select class="input-medium" id="authority'+idxOfRow+'" name="authority'+idxOfRow+'">'+
+		'{%- for authority in authorities %}'+
+		'<option> {{ authority }} </option>'+
+		'{% endfor -%}'+
 		'</select>';
 }
 
 function activateDisabledOption(){
-	var selectForms = document.getElementsByTagName("select");
+	var selectForms=document.getElementsByTagName("select");
 	for(var i=0;i<selectForms.length;i++){
 		if(selectForms[i].disabled == true){
-			selectForms[i].disabled = false;
+			selectForms[i].disabled=false;
 		}
 	}
 	document.getElementById("addIndivisualUser").submit();
 }
 
+/* 
+	@@ Showing department list event
+
+	When you select college, 
+	it hides 'select college' option and shows departments which is in the college you select.
+	
+	Its college id should be 'college' + integer number and department id should be as well for using this function.
+	Change $(here) and RowOnClickController(here).
+
+	## Notice
+	It's the same function with it in "sign_up.html"
+	But it uses jinja2 template so I couldn't place it into "userdefine.js" and reuse it.
+
+	If you find a way to reuse with jinja2 values as parameters of it.
+	Pleasure you to modify it.
+
+	2015.5.9. Seulgi Choi
+*/
 $("#college1").change(function(){
 	RowOnClickController(1);
 });
-
 function RowOnClickController(IdxOfRow){
-	var selectedText = $("#college"+IdxOfRow+" option:selected").text();
+	var selectedText=$("#college"+IdxOfRow+" option:selected").text();
 
-	selectedText = selectedText.replace(/\t|\n/g, "");
+	selectedText=selectedText.replace(/\t|\n/g, "");
 	
-	var index = selectedText.match(/\d+/g);
-	var name = selectedText.split(index)[1];
+	var index=selectedText.match(/\d+/g);
+	var name=selectedText.split(index)[1];
 
-	var initialOptions = document.getElementById("college"+IdxOfRow).innerHTML;
+	var initialOptions=document.getElementById("college"+IdxOfRow).innerHTML;
 
 	if(initialOptions.indexOf("select college") != -1){
-		var OptionsWithoutDefault = 
+		var OptionsWithoutDefault=
 			initialOptions.replace("<option> select college </option>", "");
 		
 		// remove tab spaces
-		OptionsWithoutDefault = OptionsWithoutDefault.replace(/\t/g, "");
+		OptionsWithoutDefault=OptionsWithoutDefault.replace(/\t/g, "");
 
 		// split for checking selected value
-		OptionsWithoutDefault = OptionsWithoutDefault.split('</option>');
+		OptionsWithoutDefault=OptionsWithoutDefault.split('</option>');
 
-		var newOptions = "";
+		var newOptions="";
 		for(var i=0;i<OptionsWithoutDefault.length;i++){
 			// if an option's index and name are same then gives 'selected'
 			if(OptionsWithoutDefault[i].indexOf(index+name) != -1){
-				OptionsWithoutDefault[i] = OptionsWithoutDefault[i].replace("<option>", "<option selected>");
+				OptionsWithoutDefault[i]=OptionsWithoutDefault[i].replace("<option>", "<option selected>");
 			}
-			newOptions += OptionsWithoutDefault[i] + ' ';
+			newOptions+=OptionsWithoutDefault[i]+' ';
 		}
-		document.getElementById("college"+IdxOfRow).innerHTML = newOptions;
+		document.getElementById("college"+IdxOfRow).innerHTML=newOptions;
 	}
 	{%- for college in allColleges %}
 	if(index == "{{ college.collegeIndex }}"){
-		document.getElementById("department"+IdxOfRow).innerHTML = "";
+		document.getElementById("department"+IdxOfRow).innerHTML="";
 		{%- for relation, collegeInfo, departmentInfo in allDepartments %}
 			{%- if relation.collegeIndex == college.collegeIndex %}
-			document.getElementById("department"+IdxOfRow).innerHTML += 
-				"<option>" +
-				"{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}" +
+			document.getElementById("department"+IdxOfRow).innerHTML+=
+				"<option>"+
+				"{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}"+
 				"</option>";
 			{% endif -%}
 		{% endfor -%}

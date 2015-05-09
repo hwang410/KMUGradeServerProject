@@ -145,13 +145,12 @@
 	</ul>
 	{% endif -%}
 	{% endwith -%}
-	{%- if error %}<div class="error"> {{ error }}</div>{% endif -%}
-
 	<!-- ///////////////////////////////////
 		container section
 	//////////////////////////////////// -->
 	<!-- ///// body section ///// -->
 	<div class="body">
+		{%- if error %}<div class="container"><div class="error alert alert-error" id="errorAlert" style="width:100%;padding-right:0px;margin-bottom:0px"> {{ error }}</div></div>{% endif -%}
 		{%- block body %}
 		<div class="container">
 			<h2>Kookmin University Online Judge System</h2>
