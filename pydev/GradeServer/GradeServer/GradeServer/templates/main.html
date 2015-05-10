@@ -98,7 +98,7 @@
 								</li>
 								{%- elif SETResources.const.COURSE_ADMINISTRATOR in session['authority'] %}
 								<li class="dropdown-submenu">
-									<a class="dropdown-toggle main-checker" data-toggle="dropdown" href="#" id="class-server-management" class="main-checker">Class Management</a>
+									<a class="dropdown-toggle main-checker" data-toggle="dropdown" href="#" id="class-server-management">Class Management</a>
 									<ul class="dropdown-menu" id="menu-box">
 										<li><a href="{{ url_for('GradeServer.id_check', select='user_submit') }}" id='manage-problem' class="main-checker">User Submit</a></li>
 										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_problem') }}" id='manage-class' class="main-checker">Problem</a></li>
