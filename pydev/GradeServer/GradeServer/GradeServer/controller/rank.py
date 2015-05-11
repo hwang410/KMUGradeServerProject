@@ -5,6 +5,9 @@ from flask import render_template, request
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
+
+from GradeServer.utils.memberCourseProblemParameter import MemberCourseProblemParameter
+
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilQuery import select_all_users, select_count, select_match_member_sub, select_accept_courses
 from GradeServer.utils.utilRankQuery import select_ranks, ranks_sorted
@@ -47,8 +50,8 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
             memberRecords = []
             
         # Last Submission Max Count
-        submissions = select_ranks(select_last_submissions(memberId = None,
-                                                           courseId = activeTabCourseId).subquery()).subquery()
+        submissions = select_ranks(select_last_submissions(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
+                                                                                                                       courseId = activeTabCourseId)).subquery()).subquery()
         
         # records count
         try:
@@ -74,8 +77,8 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
                 # finding MemberId in Pages
                 try:
                     if select_match_member_sub(ranks,
-                                               memberId = findMemberId).first().\
-                                                                        memberId:
+                                               memberCourseProblemParameter = MemberCourseProblemParameter(memberId = findMemberId)).first().\
+                                                                                                                                     memberId:
                         # Finding move to page
                         pageNum = i
                         # searchLine Check

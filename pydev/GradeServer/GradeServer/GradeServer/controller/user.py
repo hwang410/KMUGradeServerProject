@@ -8,6 +8,9 @@ from GradeServer.py3Des.pyDes import *
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
+
+from GradeServer.utils.memberCourseProblemParameter import MemberCourseProblemParameter
+
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utilQuery import select_count, select_match_member
@@ -47,7 +50,7 @@ def submission_record(memberId, sortCondition, pageNum):
     try:       
         # 모든 제출 정보
         submissions = select_all_submissions(lastSubmission = None,
-                                             memberId = memberId).subquery()
+                                             memberCourseProblemParameter = MemberCourseProblemParameter(memberId = memberId)).subquery()
         # List Count
         try:
             count = select_count(submissions.c.memberId).first().\
@@ -111,7 +114,7 @@ def id_check(select, error = None):
             try:
                 memberId = session[SessionResources().const.MEMBER_ID]
                 password = request.form['password']
-                check = select_match_member(memberId = memberId).first()
+                check = select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = memberId)).first()
                 
                                 # 암호가 일치 할 때
                 tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
@@ -175,7 +178,7 @@ def edit_personal(error = None):
         global gContactNumber, gEmailAddress, gComment
         #Get User Information
         try:
-            memberInformation = join_member_informations(select_match_member(session[SessionResources().const.MEMBER_ID]).subquery()).first()
+            memberInformation = join_member_informations(select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = session[SessionResources().const.MEMBER_ID])).subquery()).first()
         except Exception:
             #None Type Exception
             memberInformation = []
@@ -206,7 +209,7 @@ def edit_personal(error = None):
                 passwordConfirm = None
                 
                 #Update DB
-                update_member_informations(select_match_member(session[SessionResources().const.MEMBER_ID]),
+                update_member_informations(select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = session[SessionResources().const.MEMBER_ID])),
                                            password,
                                            gContactNumber,
                                            gEmailAddress,

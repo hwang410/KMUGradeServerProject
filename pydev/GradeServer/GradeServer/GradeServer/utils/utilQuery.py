@@ -4,6 +4,7 @@ from flask import session
 from datetime import datetime
 from sqlalchemy import func
 
+from GradeServer.utils.memberCourseProblemParameter import MemberCourseProblemParameter
 
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.sessionResources import SessionResources
@@ -27,25 +28,29 @@ def select_all_users():
 '''
  DB Select MAtch Course
 '''
-def select_match_members_of_course(courseId):
+def select_match_members_of_course(memberCourseProblemParameter = MemberCourseProblemParameter()):
     # courseId FilterLing
     members = select_all_users().subquery()
-    return dao.query(Registrations.memberId,
+    return dao.query(Registrations.courseId,
                      members).\
                join(members,
-                    Registrations.memberId == members.c.memberId)
+                    Registrations.memberId == members.c.memberId).\
+               filter(Registrations.courseId == memberCourseProblemParameter.courseId if memberCourseProblemParameter.courseId
+                      else Registrations.courseId != None)
                       
 '''
  DB Select Match MemberId
  '''
-def select_match_member(memberId):
+def select_match_member(memberCourseProblemParameter):
     # memberId Filterling
+    print "ADSFSDF",memberCourseProblemParameter.memberId
     return dao.query(Members).\
-               filter(Members.memberId == memberId)
-def select_match_member_sub(members, memberId):
+               filter(Members.memberId == memberCourseProblemParameter.memberId)
+               
+def select_match_member_sub(members, memberCourseProblemParameter = MemberCourseProblemParameter()):
     # memberId Filterling
     return dao.query(members).\
-               filter(members.c.memberId == memberId)
+               filter(members.c.memberId == memberCourseProblemParameter.memberId)
                
 
 '''
