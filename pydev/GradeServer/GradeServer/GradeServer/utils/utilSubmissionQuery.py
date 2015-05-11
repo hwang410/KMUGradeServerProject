@@ -6,6 +6,8 @@ from sqlalchemy import func, and_
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.otherResources import OtherResources
 
+from GradeServer.utils.memberCourseProblemParameter import MemberCourseProblemParameter
+
 from GradeServer.database import dao
 from GradeServer.model.submittedFiles import SubmittedFiles
 from GradeServer.model.submissions import Submissions
@@ -17,9 +19,12 @@ from GradeServer.model.languages import Languages
 '''
 Submissions to Last Submitted
 '''
-def select_last_submissions(memberId = None, courseId = None, problemId = None):
+def select_last_submissions(memberCourseProblemParameter = MemberCourseProblemParameter()):
     
-    if courseId == OtherResources().const.ALL or not(memberId or courseId or problemId):
+    if memberCourseProblemParameter.courseId == OtherResources().const.ALL\
+       or not(memberCourseProblemParameter.memberId\
+       or memberCourseProblemParameter.courseId\
+       or memberCourseProblemParameter.problemId):
         return dao.query(Submissions.memberId,
                          Submissions.courseId,
                          Submissions.problemId,
@@ -36,11 +41,11 @@ def select_last_submissions(memberId = None, courseId = None, problemId = None):
                          Submissions.codeSubmissionDate,
                          func.max(Submissions.submissionCount).label(OtherResources().const.SUBMISSION_COUNT),
                          func.max(Submissions.solutionCheckCount).label(OtherResources().const.SOLUTION_CHECK_COUNT)).\
-                   filter((Submissions.courseId == courseId if courseId
+                   filter((Submissions.courseId == memberCourseProblemParameter.courseId if memberCourseProblemParameter.courseId
                           else Submissions.courseId != None),
-                          (Submissions.problemId == problemId if problemId
+                          (Submissions.problemId == memberCourseProblemParameter.problemId if memberCourseProblemParameter.problemId
                            else Submissions.problemId != None),
-                          (Submissions.memberId == memberId if memberId
+                          (Submissions.memberId == memberCourseProblemParameter.memberId if memberCourseProblemParameter.memberId
                            else Submissions.memberId != None)).\
                    group_by(Submissions.memberId,
                             Submissions.problemId,
@@ -61,7 +66,7 @@ def select_between_days_last_submissions(submissions, submissionDatePeriod):
 '''
 All Submission Record
 '''
-def select_all_submissions(lastSubmission = None, memberId = None, courseId = None, problemId = None):
+def select_all_submissions(lastSubmission = None, memberCourseProblemParameter = MemberCourseProblemParameter()):
     try:
         if lastSubmission.name:
             return dao.query(Submissions.memberId,
@@ -92,12 +97,7 @@ def select_all_submissions(lastSubmission = None, memberId = None, courseId = No
                          Submissions.courseId, 
                          Submissions.status,
                          Submissions.score,
-                         Submissions.sumOfSubmittedFileSize,filter((Submissions.memberId == memberId if memberId
-                           else Submissions.memberId != None),
-                          (Submissions.courseId == courseId if courseId
-                           else Submissions.courseId != None),
-                          (Submissions.problemId == problemId if problemId
-                           else Submissions.problemId != None)).\
+                         Submissions.sumOfSubmittedFileSize,
                          Submissions.runTime,
                          Submissions.usedMemory,
                          Submissions.codeSubmissionDate,
@@ -106,11 +106,11 @@ def select_all_submissions(lastSubmission = None, memberId = None, courseId = No
                         Submissions.usedLanguageIndex == Languages.languageIndex).\
                    join(Problems,
                         Submissions.problemId == Problems.problemId).\
-                   filter((Submissions.memberId == memberId if memberId
+                   filter((Submissions.memberId == memberCourseProblemParameter.memberId if memberCourseProblemParameter.memberId
                            else Submissions.memberId != None),
-                          (Submissions.courseId == courseId if courseId
+                          (Submissions.courseId == memberCourseProblemParameter.courseId if memberCourseProblemParameter.courseId
                            else Submissions.courseId != None),
-                          (Submissions.problemId == problemId if problemId
+                          (Submissions.problemId == memberCourseProblemParameter.problemId if memberCourseProblemParameter.problemId
                            else Submissions.problemId != None))
   
  
@@ -131,12 +131,12 @@ def select_current_submissions(lastSubmission):
 '''
 Get SubmittedFiles
 '''
-def select_submitted_files(memberId, courseId, problemId):
+def select_submitted_files(memberCourseProblemParameter = MemberCourseProblemParameter()):
     return dao.query(SubmittedFiles.fileName,
                      SubmittedFiles.filePath).\
-               filter(SubmittedFiles.memberId == memberId,
-                      SubmittedFiles.problemId == problemId,
-                      SubmittedFiles.courseId == courseId)
+               filter(SubmittedFiles.memberId == memberCourseProblemParameter.memberId,
+                      SubmittedFiles.problemId == memberCourseProblemParameter.problemId,
+                      SubmittedFiles.courseId == memberCourseProblemParameter.courseId)
                                        
                                        
                                                                          
@@ -261,15 +261,15 @@ def select_problem_chart_submissions(sumOfSubmissionPeopleCount, sumOfSolvedPeop
 '''
 Submitted Records Of problems
 '''
-def select_submitted_records_of_problem(courseId, problemId):
+def select_submitted_records_of_problem(memberCourseProblemParameter = MemberCourseProblemParameter()):
     return dao.query(SubmittedRecordsOfProblems.sumOfSubmissionCount, 
                      SubmittedRecordsOfProblems.sumOfSolvedCount, 
                      SubmittedRecordsOfProblems.sumOfWrongCount, 
                      SubmittedRecordsOfProblems.sumOfTimeOverCount, 
                      SubmittedRecordsOfProblems.sumOfCompileErrorCount, 
                      SubmittedRecordsOfProblems.sumOfRuntimeErrorCount ).\
-               filter(SubmittedRecordsOfProblems.problemId == problemId,
-                      SubmittedRecordsOfProblems.courseId == courseId)
+               filter(SubmittedRecordsOfProblems.problemId == memberCourseProblemParameter.problemId,
+                      SubmittedRecordsOfProblems.courseId == memberCourseProblemParameter.courseId)
                
                
 '''

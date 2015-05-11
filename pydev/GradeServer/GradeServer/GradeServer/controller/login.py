@@ -49,6 +49,8 @@ def sign_in():
     """ main page before sign in"""
     from GradeServer.utils.utilMessages import get_message
     
+    from GradeServer.utils.memberCourseProblemParameter import MemberCourseProblemParameter
+    
     from GradeServer.utils.utilArticleQuery import select_notices
     from GradeServer.utils.utilQuery import select_accept_courses, select_past_courses, select_current_courses, select_match_member
     from GradeServer.utils.utilRankQuery import select_top_coder
@@ -69,7 +71,7 @@ def sign_in():
                 memberId = request.form['memberId']
                 password = request.form['password']
                 
-                check = select_match_member(memberId = memberId).first()
+                check = select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = memberId)).first()
                 
                 from werkzeug.security import check_password_hash
                 

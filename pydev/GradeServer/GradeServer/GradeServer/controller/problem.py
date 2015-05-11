@@ -7,15 +7,18 @@ from datetime import datetime
 
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
+
 from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
 from GradeServer.utils.utilQuery import select_count
 from GradeServer.utils.utilSubmissionQuery import submissions_sorted, select_last_submissions, select_all_submissions, select_current_submissions,\
                                                   select_submissions_peoples_counts, select_solved_peoples_counts, select_submitted_records_of_problem,\
                                                   select_problem_chart_submissions, select_solved_submissions, select_submitted_files
-from GradeServer.utils.utilProblemQuery import join_problems_names, select_problems_of_course, join_problem_lists_submissions,select_problem_informations,\
+from GradeServer.utils.utilProblemQuery import join_problems_names, select_problems_of_course, join_problem_lists_submissions, select_problem_informations,\
                                                update_submission_code_view_count
                                                
 from GradeServer.utils.utilMessages import unknown_error, get_message
+
+from GradeServer.utils.memberCourseProblemParameter import MemberCourseProblemParameter
 
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.htmlResources import HTMLResources
@@ -39,13 +42,14 @@ from itertools import count
 def problem_list(courseId, pageNum):
     """ problem submitting page """
     # Get Last Submitted History
-    lastSubmission = select_last_submissions(memberId = session[SessionResources().const.MEMBER_ID],
-                                             courseId = courseId).subquery()
+    lastSubmission = select_last_submissions(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = session[SessionResources().const.MEMBER_ID],
+                                                                                                         courseId = courseId)).subquery()
     # Current Submission                                      
     submissions = select_current_submissions(lastSubmission).subquery()
     
     # Get Problem Informations
-    problems = join_problems_names(select_problems_of_course(courseId = courseId).subquery()).subquery()
+    problems = join_problems_names(select_problems_of_course(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
+                                                                                                                         courseId = courseId).subquery())).subquery()
     # Get ProblemList Count
     try:
         count = select_count(problems.c.problemId).first().\
@@ -87,8 +91,9 @@ def problem(courseId, problemId, pageNum):
     """
     # Get startDateOfSubmission of Problem
     try:
-        startDateOfSubmission = select_problems_of_course(courseId = courseId,
-                                                          problemId = problemId).first().\
+        startDateOfSubmission = select_problems_of_course(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
+                                                                                                                      courseId = courseId,
+                                                                                                                      problemId = problemId)).first().\
                                                           startDateOfSubmission
     except Exception:
         startDateOfSubmission = None
@@ -105,7 +110,9 @@ def problem(courseId, problemId, pageNum):
             languageInfoRecords = []
 
         try:
-            problemInformation = select_problem_informations(problemId = problemId).first()
+            problemInformation = select_problem_informations(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
+                                                                                                                         courseId = courseId,
+                                                                                                                         problemId = problemId)).first()
         except Exception:
             problemInformation = []    
 
@@ -170,20 +177,21 @@ def problem_record(courseId, problemId, sortCondition = OtherResources().const.R
                                    'Runtime Error']
     
     # last Submissions Info
-    submissions = select_all_submissions(lastSubmission = select_last_submissions(memberId = None,
-                                                                                  courseId = courseId,
-                                                                                  problemId = problemId).subquery(),
-                                        memberId = None,
-                                        courseId = courseId,
-                                        problemId = problemId).subquery()
+    submissions = select_all_submissions(lastSubmission = select_last_submissions(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
+                                                                                                                                              courseId = courseId,
+                                                                                                                                              problemId = problemId)).subquery(),
+                                        memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
+                                                                                                    courseId = courseId,
+                                                                                                    problemId = problemId)).subquery()
     try:
         # Submitted Members Count
         sumOfSubmissionPeopleCount = select_submissions_peoples_counts(submissions).subquery()
         # Solved Members Count
         sumOfSolvedPeopleCount = select_solved_peoples_counts(submissions).subquery()
         # Problem Rrecord
-        problemSubmittedRecords = select_submitted_records_of_problem(courseId = courseId,
-                                                                      problemId = problemId).subquery()
+        problemSubmittedRecords = select_submitted_records_of_problem(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
+                                                                                                                                  courseId = courseId,
+                                                                                                                                  problemId = problemId)).subquery()
         # Chart SubmissionRecords
         chartSubmissionRecords = select_problem_chart_submissions(sumOfSubmissionPeopleCount,
                                                                   sumOfSolvedPeopleCount,
@@ -194,7 +202,9 @@ def problem_record(courseId, problemId, sortCondition = OtherResources().const.R
         
     # Problem Information (LimitedTime, LimitedMemory
     try:
-        problemInformationRecords = select_problem_informations(problemId = problemId).first()
+        problemInformationRecords = select_problem_informations(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
+                                                                                                                            courseId = None,
+                                                                                                                            problemId = problemId)).first()
     except Exception:
         problemInformationRecords = []
     # Problem Solved Users
@@ -223,8 +233,9 @@ def submission_code(memberId, courseId, problemId, error = None):
     
     # Get endDateOfSubmission of Problem
     try:
-        endDateOfSubmission = select_problems_of_course(courseId = courseId,
-                                                        problemId = problemId).first().\
+        endDateOfSubmission = select_problems_of_course(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
+                                                                                                                    courseId = courseId,
+                                                                                                                    problemId = problemId)).first().\
                                                         endDateOfSubmission
     except Exception:
         endDateOfSubmission = None
@@ -235,14 +246,14 @@ def submission_code(memberId, courseId, problemId, error = None):
        or endDateOfSubmission <= datetime.now():
         
         # last Submissions Info
-        lastSubmission = select_last_submissions(memberId = memberId,
-                                                 courseId = courseId,
-                                                 problemId = problemId).subquery()
+        lastSubmission = select_last_submissions(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = memberId,
+                                                                                                             courseId = courseId,
+                                                                                                             problemId = problemId)).subquery()
         # Code View Count Up
         update_submission_code_view_count(lastSubmission,
-                                          memberId = memberId,
-                                          courseId = courseId,
-                                          problemId = problemId)
+                                          memberCourseProblemParameter = MemberCourseProblemParameter(memberId = memberId,
+                                                                                                      courseId = courseId,
+                                                                                                      problemId = problemId))
         # Commit Exception
         try:
             dao.commit()
@@ -252,7 +263,9 @@ def submission_code(memberId, courseId, problemId, error = None):
             
         # Problem Information (LimitedTime, LimitedMemory
         try:
-            problemName = select_problem_informations(problemId).first().\
+            problemName = select_problem_informations(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
+                                                                                                                  courseId = None,
+                                                                                                                  problemId = problemId)).first().\
                                                                  problemName
         except Exception:
             problemName = None
@@ -261,18 +274,18 @@ def submission_code(memberId, courseId, problemId, error = None):
         try:
             # last Submissions Info
             submissions = select_all_submissions(lastSubmission,
-                                                 memberId = memberId,
-                                                 courseId = courseId,
-                                                 problemId = problemId).subquery()
+                                                 memberCourseProblemParameter = MemberCourseProblemParameter(memberId = memberId,
+                                                                                                             courseId = courseId,
+                                                                                                             problemId = problemId)).subquery()
             problemSolvedMemberRecords = select_solved_submissions(submissions).first()
         except Exception:
             problemSolvedMemberRecords = []
             
         # Submitted Files Information
         try:
-            submittedFileRecords = select_submitted_files(memberId = memberId, 
-                                                          courseId = courseId,
-                                                          problemId = problemId).all()
+            submittedFileRecords = select_submitted_files(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = memberId, 
+                                                                                                                      courseId = courseId,
+                                                                                                                      problemId = problemId)).all()
             fileData = []
             for raw in submittedFileRecords:
                 # Open
