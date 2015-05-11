@@ -8,7 +8,7 @@
     :copyright: (c) 2015 by KookminUniv
 
 """
-from werkzeug import generate_password_hash
+
 """
 bug reporting
 
