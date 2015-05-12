@@ -41,6 +41,7 @@ import os
 import re
 import glob
 from __builtin__ import False
+from array import array
 
 projectPath = '/mnt/shared'
 problemsPath = '%s/Problems' % projectPath
@@ -92,6 +93,131 @@ def initialize_tripleDes_class():
                            padmode = PAD_PKCS5)
     return tripleDes
 
+def get_college_name(collegeIndex):
+    college_name = dao.query(Colleges).\
+                       filter(Colleges.collegeIndex == collegeIndex).\
+                       first().\
+                       collegeName
+                       
+    return college_name
+
+def get_department_name(departmentIndex):
+    department_name = dao.query(Departments).\
+                          filter(Departments.departmentIndex == departmentIndex).\
+                          first().\
+                          departmentName
+                          
+    return department_name
+'''
+@ Get form value and set into array
+
+keys : key dictionary which stores sort of keys
+forms : request.form
+array : 2-dimension array to store some information.
+        array[index][form_name]
+        'index' means each group of information(e.g. each user)
+        'form_name' means each keys(e.g. userId, userName, and more)
+'''
+def set_form_value_into_array(keys, forms, array):
+    error = None
+    try:
+        for form in forms:
+            if form != 'addIndivisualUser':
+                index, key_name, value = split_to_index_keyname(form)
+                
+                if key_name == 'userId':
+                    array[index-1][keys['memberId']] = value
+                elif key_name == 'username':
+                    array[index-1][keys['memberName']] = value
+                elif key_name == 'authority':
+                    array[index-1][keys['authority']] = value
+                elif key_name == 'college':
+                    array[index-1][keys['collegeIndex']] = value.split()[0]
+                    
+                    # actually data.split()[1] is collegeName but it can be wrong, 
+                    # so, here for checking the index is valid.
+                    try:
+                        array[index-1][keys['collegeName']] =\
+                            get_college_name(array[index-1][keys['collegeIndex']])
+                    except:
+                        # Let this do 'pass' because after all this work,
+                        # it checks all values are stored in the array
+                        pass
+                elif key_name == 'department':
+                    array[index-1][keys['departmentIndex']] = value.split()[0]
+                    
+                    try:
+                        array[index-1][keys['departmentName']] =\
+                            get_department_name(array[index-1][keys['departmentIndex']])
+                    except:
+                        pass
+                        
+                elif key_name == 'courseId':
+                    array[index-1][keys['courseId']] = value.strip()
+                    
+    except:
+        error = 'Error has been occurred while inserting into temporary array from request form'
+
+    return error, array
+
+def set_array_from_csv_form(keys, csv_form, array):
+    error = None
+    try:        
+        # 1. remove space and newline
+        # 2. slice and make information from 'key=value'
+        userInformation = csv_form.replace(' ', '').replace('\n', '').replace('\xef\xbb\xbf', '').split(',')
+        
+        for each_pair in userInformation:
+            if '=' in each_pair:
+                key, value = each_pair.split('=')
+                
+                if key == 'userId':
+                    array[keys['memberId']] = value 
+                elif key == 'username':
+                    array[keys['memberName']] = value
+                elif key == 'college':
+                    array[keys['collegeIndex']] = value
+                    try:
+                        array[keys['collegeName']] = dao.query(Colleges).\
+                                                         filter(Colleges.collegeIndex == value).\
+                                                         first().\
+                                                         collegeName
+                    except:
+                        pass
+                elif key == 'department':
+                    array[keys['departmentIndex']] = value
+                    try:
+                        array[keys['departmentName']] = dao.query(Departments).\
+                                                            filter(Departments.departmentIndex == value).\
+                                                            first().\
+                                                            departmentName
+                                         
+                    except:
+                        pass
+                else:
+                    error = 'Try again after check the manual'
+                    break
+                
+            else:
+                error = 'Try again after check the manual'
+                break
+    except:
+        error = 'Error has been occurred while inserting into temporary array from csv form'
+    
+    return error, array
+                                
+def split_to_index_keyname(form):
+    keyname,index = re.findall('\d+|\D+',form)
+    return int(index), keyname, request.form[form]
+
+def check_validation(user):
+    isValid = True
+    for key in user:
+        if not key or key == '':
+            isValid = False
+            break
+    return isValid
+            
 @GradeServer.route('/classmaster/user_submit')
 @check_invalid_access
 @login_required
@@ -205,7 +331,6 @@ def class_manage_problem():
         # courseId,courseName,problemId,problemName,isAllInputCaseInOneFile,startDate,endDate,openDate,closeDate
         newProblem = [['' for i in range(9)] for j in range(numberOfNewProblems+1)]
         for form in request.form:
-
             if DELETE in form:
                 isNewProblem = False
                 courseId,problemId = form.split('_')[1:]
@@ -274,6 +399,7 @@ def class_manage_problem():
                 newProblems.append(newProblem[index])
             for problem in newProblems:
                 # if openDate,closeDate are empty then same with startDate,endDate
+                
                 if not problem[keys['openDate']]:
                     problem[keys['openDate']] = problem[keys['startDate']]
                     
@@ -310,9 +436,9 @@ def class_manage_problem():
                                                          problem[keys['problemName']],
                                                          problem[keys['problemName']],
                                                          solutionCheckType)
-                
-                    numberOfTestCase = get_case_count(pathOfTestCase, problem[keys['isAllInputCaseInOneFile']])
                     
+                    numberOfTestCase = get_case_count(pathOfTestCase, problem[keys['isAllInputCaseInOneFile']])
+                                    
                 # validation check before insert new problem
                 isValid = True
                 for key in problem:
@@ -357,14 +483,14 @@ def class_manage_problem():
                     dao.rollback()
                     error = 'Error has been occurred while creating new record'
                     return render_template('/class_manage_problem.html',
-                               error = error, 
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               modalError = modalError,
-                               allProblems = allProblems,
-                               ownCourses = ownCourses,
-                               ownProblems = ownProblems)
-
+                                           error = error, 
+                                           SETResources = SETResources,
+                                           SessionResources = SessionResources,
+                                           modalError = modalError,
+                                           allProblems = allProblems,
+                                           ownCourses = ownCourses,
+                                           ownProblems = ownProblems)
+                
             newProblems = []
                 
             return redirect(url_for('.class_manage_problem'))
@@ -617,52 +743,24 @@ def class_add_user():
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id,name,college,department,authority)
             numberOfUsers = (len(request.form) - 1) / 5
-            newUser = [['' for i in range(8)] for j in range(numberOfUsers + 1)]
-            for form in request.form:
-                if form != 'addIndivisualUser':
-                    value,index = re.findall('\d+|\D+',form)
-                    index = int(index)
-                    data = request.form[form]
-                    if value == 'userId':
-                        newUser[index - 1][keys['memberId']] = data
-                    elif value == 'username':
-                        newUser[index - 1][keys['memberName']] = data
-                    elif value == 'authority':
-                        newUser[index - 1][keys['authority']] = data
-                    elif value == 'college':
-                        newUser[index - 1][keys['collegeIndex']] = data.split()[0]
-                        # actually data.split()[1] is collegeName but it can be wrong, 
-                        # so, here for checking the index is valid.
-                        try:
-                            newUser[index - 1][keys['collegeName']] =\
-                                dao.query(Colleges).\
-                                    filter(Colleges.collegeIndex == newUser[index - 1][keys['collegeIndex']]).\
-                                    first().\
-                                    collegeName
-                        except:
-                            pass
-                        
-                    elif value == 'department':
-                        newUser[index - 1][keys['departmentIndex']] = data.split()[0]
-                        try:
-                            newUser[index - 1][keys['departmentName']] =\
-                                dao.query(Departments).\
-                                    filter(Departments.departmentIndex == newUser[index - 1][keys['departmentIndex']]).\
-                                    first().\
-                                    departmentName
-                        except:
-                            pass
+            newUser = [['' for _ in range(8)] for __ in range(numberOfUsers + 1)]
+            
+            error, newUser = set_form_value_into_array(keys, request.form, newUser)
+            
+            if error:
+                return render_template('/class_add_user.html',
+                                       error = error, 
+                                       SETResources = SETResources,
+                                       SessionResources = SessionResources,
+                                       ownCourses = ownCourses,
+                                       allUsers = allUsers,
+                                       allColleges = allColleges,
+                                       allDepartments = allDepartments,
+                                       authorities = authorities,
+                                       newUsers = newUsers)
                             
-                    elif value == 'courseId':
-                        newUser[index-1][keys['courseId']] = data.strip()
-                        
             for index in range(numberOfUsers):
-                isValid = True
-                for value in newUser[index]:
-                    if not value:
-                        isValid = False
-                        pass
-                if isValid:
+                if check_validation(newUser[index]):
                     newUsers.append(newUser[index])
                 
         elif 'addUserGroup' in request.form:
@@ -674,72 +772,24 @@ def class_add_user():
                 for fileData in files:
                     # read each line    
                     for userData in fileData:
-                        # slice and make information from 'key=value'
-                        userInformation = userData.replace(' ', '').replace('\n', '').replace('\xef\xbb\xbf', '').split(',')
-                        
-                        # userId,userName,authority,collegeIndex,collegeName,departmentIndex,departmentName
                         newUser = [''] * 8
                         
-                        # all authority is user in adding user from text file
                         newUser[keys['authority']] = SETResources().const.USER
-                        newUser[keys['courseId']] = courseId
+                        newUser[keys['courseId']] = courseId 
                         
-                        for eachData in userInformation:
-                            if '=' in eachData:
-                                key, value = eachData.split('=')
-                                
-                                if key == 'userId':
-                                    newUser[keys['memberId']] = value 
-                                    
-                                elif key == 'username':
-                                    newUser[keys['memberName']] = value
-                                    
-                                elif key == 'college':
-                                    newUser[keys['collegeIndex']] = value
-                                    try:
-                                        newUser[keys['collegeName']] = dao.query(Colleges).\
-                                                                           filter(Colleges.collegeIndex == value).\
-                                                                           first().\
-                                                                           collegeName
-                                    except:
-                                        pass
-                                       
-                                elif key == 'department':
-                                    newUser[keys['departmentIndex']] = value
-                                    try:
-                                        newUser[keys['departmentName']] = dao.query(Departments).\
-                                                                              filter(Departments.departmentIndex == value).\
-                                                                              first().\
-                                                                              departmentName
-                                                         
-                                    except:
-                                        pass
-                                                                      
-                                else:
-                                    error = 'Try again after check the manual'
-                                    return render_template('/class_add_user.html',
-                                                           error = error, 
-                                                           SETResources = SETResources,
-                                                           SessionResources = SessionResources,
-                                                           ownCourses = ownCourses,
-                                                           allUsers = allUsers,
-                                                           allColleges = allColleges,
-                                                           allDepartments = allDepartments,
-                                                           authorities = authorities,
-                                                           newUsers = newUsers)
-                                    
-                            else:
-                                error = 'Try again after check the manual'
-                                return render_template('/class_add_user.html',
-                                                       error = error, 
-                                                       SETResources = SETResources,
-                                                       SessionResources = SessionResources,
-                                                       ownCourses = ownCourses,
-                                                       allUsers = allUsers,
-                                                       allColleges = allColleges,
-                                                       allDepartments = allDepartments,
-                                                       authorities = authorities,
-                                                       newUsers = newUsers)
+                        error, newUser = set_array_from_csv_form(keys, userData, newUser)
+                        
+                        if error:
+                            return render_template('/class_add_user.html',
+                                                   error = error, 
+                                                   SETResources = SETResources,
+                                                   SessionResources = SessionResources,
+                                                   ownCourses = ownCourses,
+                                                   allUsers = allUsers,
+                                                   allColleges = allColleges,
+                                                   allDepartments = allDepartments,
+                                                   authorities = authorities,
+                                                   newUsers = newUsers)
                         
                         for user in newUsers:
                             if user[keys['memberId']] == newUser[keys['memberId']] and\
@@ -757,12 +807,7 @@ def class_add_user():
                                                        authorities = authorities,
                                                        newUsers = newUsers)
                         
-                        isValid = True
-                        for key in newUser:
-                            if key == '':
-                                isValid = False
-                                break
-                        if isValid:
+                        if check_validation(newUser):
                             newUsers.append(newUser)
                         
         elif 'addUser' in request.form:
@@ -872,7 +917,6 @@ def class_add_user():
             # each target user id
             for targetUser in targetUserIdToDelete:
                 index = 0
-                #print targetUser
                 # each new user id
                 for newUser in newUsers:
                     # if target id and new user id are same
