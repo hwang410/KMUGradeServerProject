@@ -165,8 +165,8 @@ def set_array_from_csv_form(keys, csv_form, array):
     try:        
         # 1. remove space and newline
         # 2. slice and make information from 'key=value'
-        userInformation = csv_form.replace(' ', '').replace('\n', '').replace('\xef\xbb\xbf', '').split(',')
-        
+        userInformation = csv_form.replace(' ', '').replace('\n', '').replace('\r', '').replace('\xef\xbb\xbf', '').split(',')
+
         for each_pair in userInformation:
             if '=' in each_pair:
                 key, value = each_pair.split('=')
@@ -205,7 +205,42 @@ def set_array_from_csv_form(keys, csv_form, array):
         error = 'Error has been occurred while inserting into temporary array from csv form'
     
     return error, array
-                                
+                
+def set_array_from_file(files, keys, courseId):
+    error = None
+    try:
+        if list(files)[0].filename:
+            # read each file
+            for fileData in files:
+                # read each line    
+                for userData in fileData:
+                    newUser = [''] * 8
+                    
+                    error, newUser = set_array_from_csv_form(keys, userData, newUser)
+                    
+                    # Default authority of user group addition is 'User'
+                    newUser[keys['authority']] = SETResources().const.USER
+                    newUser[keys['courseId']] = courseId 
+                    
+                    if error:
+                        return error
+                    
+                    # compares with all registered members
+                    for user in newUsers:
+                        if user[keys['memberId']] == newUser[keys['memberId']] and\
+                           user[keys['collegeIndex']] == newUser[keys['collegeIndex']] and\
+                           user[keys['departmentIndex']] == newUser[keys['departmentIndex']]:
+                            error = 'There is a duplicated user ID. Check the file and added user list'
+                            return error
+                        
+                    if check_validation(newUser):
+                        newUsers.append(newUser)
+
+    except:
+        error = 'Error has been occurred while inserting values from user file'
+    
+    return error
+                                        
 def split_to_index_keyname(form):
     keyname,index = re.findall('\d+|\D+',form)
     return int(index), keyname, request.form[form]
@@ -216,6 +251,7 @@ def check_validation(user):
         if not key or key == '':
             isValid = False
             break
+    
     return isValid
             
 @GradeServer.route('/classmaster/user_submit')
@@ -236,18 +272,28 @@ def class_user_submit():
                                submissions = [])
         
     try:
-        submissions = (dao.query(Submissions,
-                                 RegisteredCourses,
-                                 Problems).\
-                           order_by(Submissions.codeSubmissionDate.desc()).\
-                           group_by(Submissions.memberId,
-                                    Submissions.courseId,
-                                    Submissions.problemId).\
-                           join(RegisteredCourses,
-                                RegisteredCourses.courseId == Submissions.courseId).\
-                           join(Problems,
-                                Problems.problemId == Submissions.problemId)).\
-                      all()
+        submissions = dao.query(Submissions.memberId,
+                                Submissions.courseId,
+                                Submissions.problemId,
+                                func.max(Submissions.submissionCount).label("maxSubmissionCount")).\
+                      group_by(Submissions.memberId,
+                               Submissions.courseId,
+                               Submissions.problemId).\
+                      subquery()
+
+        latestSubmissions = (dao.query(Submissions,
+                                      RegisteredCourses,
+                                      Problems).\
+                                filter(Submissions.memberId == submissions.c.memberId,
+                                       Submissions.courseId == submissions.c.courseId,
+                                       Submissions.problemId == submissions.c.problemId,
+                                       Submissions.submissionCount == submissions.c.maxSubmissionCount).\
+                                join(RegisteredCourses,
+                                     RegisteredCourses.courseId == Submissions.courseId).\
+                                join(Problems,
+                                     Problems.problemId == Submissions.problemId)).\
+                            all()
+                                
     except:
         error = 'Error has been occurred while searching submission records.'
         return render_template('/class_user_submit.html',
@@ -262,7 +308,7 @@ def class_user_submit():
                            SETResources = SETResources,
                            SessionResources = SessionResources,
                            ownCourses = ownCourses,
-                           submissions = submissions)
+                           submissions = latestSubmissions)
 
 @GradeServer.route('/classmaster/cm_manage_problem',methods=['GET','POST'])
 @check_invalid_access
@@ -674,6 +720,7 @@ def class_add_user():
                                allDepartments = [],
                                authorities = authorities,
                                newUsers = newUsers)
+        
     try:
         allUsers = (dao.query(Members,
                               Colleges,
@@ -687,7 +734,6 @@ def class_add_user():
                         join(Departments,
                              DepartmentsDetailsOfMembers.departmentIndex == Departments.departmentIndex)).\
                    all()
-                       
     except:
         error = 'Error has been occurred while searching all users'
         return render_template('/class_add_user.html',
@@ -766,49 +812,20 @@ def class_add_user():
         elif 'addUserGroup' in request.form:
             files = request.files.getlist('files')
             courseId = request.form['courseId'].split()[0]
+            
+            error = set_array_from_file(files, keys, courseId)
 
-            if list(files)[0].filename:
-                # read each file
-                for fileData in files:
-                    # read each line    
-                    for userData in fileData:
-                        newUser = [''] * 8
-                        
-                        newUser[keys['authority']] = SETResources().const.USER
-                        newUser[keys['courseId']] = courseId 
-                        
-                        error, newUser = set_array_from_csv_form(keys, userData, newUser)
-                        
-                        if error:
-                            return render_template('/class_add_user.html',
-                                                   error = error, 
-                                                   SETResources = SETResources,
-                                                   SessionResources = SessionResources,
-                                                   ownCourses = ownCourses,
-                                                   allUsers = allUsers,
-                                                   allColleges = allColleges,
-                                                   allDepartments = allDepartments,
-                                                   authorities = authorities,
-                                                   newUsers = newUsers)
-                        
-                        for user in newUsers:
-                            if user[keys['memberId']] == newUser[keys['memberId']] and\
-                               user[keys['collegeIndex']] == newUser[keys['collegeIndex']] and\
-                               user[keys['departmentIndex']] == newUser[keys['departmentIndex']]:
-                                error = 'There is a duplicated user id. Check the file and added user list'
-                                return render_template('/class_add_user.html',
-                                                       error = error, 
-                                                       SETResources = SETResources,
-                                                       SessionResources = SessionResources,
-                                                       ownCourses = ownCourses,
-                                                       allUsers = allUsers,
-                                                       allColleges = allColleges,
-                                                       allDepartments = allDepartments,
-                                                       authorities = authorities,
-                                                       newUsers = newUsers)
-                        
-                        if check_validation(newUser):
-                            newUsers.append(newUser)
+            if error:
+                return render_template('/class_add_user.html',
+                                       error = error, 
+                                       SETResources = SETResources,
+                                       SessionResources = SessionResources,
+                                       ownCourses = ownCourses,
+                                       allUsers = allUsers,
+                                       allColleges = allColleges,
+                                       allDepartments = allDepartments,
+                                       authorities = authorities,
+                                       newUsers = newUsers)
                         
         elif 'addUser' in request.form:
             for newUser in newUsers:
