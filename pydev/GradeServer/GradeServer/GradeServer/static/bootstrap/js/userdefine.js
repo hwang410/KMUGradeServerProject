@@ -33,15 +33,15 @@ $(window).load(function(){
 		setLegend();
 	}
 	function setLegend(){
-    	// solved, wrong answer, time over, compile error, runtime error
-    	var colors = new Array("#0c274c", "#18709c", "#19bdc4", "#fff6ee", "#ef4089");
-    	var errors = new Array("Solved", "Wrong Answer", "Time Over", "Compile Error", "Runtime Error");
-    	var target = document.getElementById("legend-box");
-    	for(var i=0;i<colors.length;i++){
-    		if(i==3) target.innerHTML += "<span class='label' style='color:black;background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
-    		else target.innerHTML += "<span class='label' style='background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
-    	}
-    }
+			// solved, wrong answer, time over, compile error, runtime error
+			var colors = new Array("#0c274c", "#18709c", "#19bdc4", "#fff6ee", "#ef4089");
+			var errors = new Array("Solved", "Wrong Answer", "Time Over", "Compile Error", "Runtime Error");
+			var target = document.getElementById("legend-box");
+			for(var i=0;i<colors.length;i++){
+				if(i==3) target.innerHTML += "<span class='label' style='color:black;background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
+				else target.innerHTML += "<span class='label' style='background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
+			}
+		}
 });
 
 var textarea = $('#getCode');
@@ -61,31 +61,31 @@ function selectLanguage(selectObj) {
 	if(selectObj.value == 11){ theme = "textmate"; }
 	if(selectObj.value == 12){ theme = "tomorrow"; }
 
-  editor.session.setMode("ace/mode/" + mode);
-  editor.setTheme("ace/theme/" + theme);
+	editor.session.setMode("ace/mode/" + mode);
+	editor.setTheme("ace/theme/" + theme);
 }
 
 //dropzone
 Dropzone.options.myDropzoneC = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
-  autoProcessQueue: false, // auto false
-  uploadMultiple: true,	// 
-  parallelUploads: 10,	// 
-  maxFiles: 10,			// 
-  maxFilesize: 0.5, 
-  addRemoveLinks: true,	// Remove 
-  acceptedFiles: ".c, .h",		// 
+	autoProcessQueue: false, // auto false
+	uploadMultiple: true,	// 
+	parallelUploads: 10,	// 
+	maxFiles: 10,			// 
+	maxFilesize: 0.5, 
+	addRemoveLinks: true,	// Remove 
+	acceptedFiles: ".c, .h",		// 
 
-    // The setting up of the dropzone
-    // submit-all 
-    //  processQueue()
-  init: function() {
-  	var myDropzone = this;
-  	$("#submit-all").click(function (e) {
-  		myDropzone.processQueue();
-      	});
-        
+		// The setting up of the dropzone
+		// submit-all 
+		//	processQueue()
+	init: function() {
+		var myDropzone = this;
+		$("#submit-all").click(function (e) {
+			myDropzone.processQueue();
+				});
+				
 		this.on("successmultiple", function(files, response) {
 		// Gets triggered when the files have successfully been sent.
 		// Redirect user or notify of success
@@ -97,23 +97,23 @@ Dropzone.options.myDropzoneC = { // The camelized version of the ID of the form 
 Dropzone.options.myDropzoneCpp = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
-    autoProcessQueue: false, // auto false
-    uploadMultiple: true,	// 
-    parallelUploads: 10,	// 
-    maxFiles: 10,			//
-    maxFilesize: 0.5, 
-    addRemoveLinks: true,	// Remove 
-    acceptedFiles: ".cpp, .h",		// 
+		autoProcessQueue: false, // auto false
+		uploadMultiple: true,	// 
+		parallelUploads: 10,	// 
+		maxFiles: 10,			//
+		maxFilesize: 0.5, 
+		addRemoveLinks: true,	// Remove 
+		acceptedFiles: ".cpp, .h",		// 
 
-    // The setting up of the dropzone
-    // submit-all 
-    //  processQueue()
-    init: function() {
-  	var myDropzone = this;
-  	$("#submit-all").click(function (e) {
-  		myDropzone.processQueue();
-      	});
-        
+		// The setting up of the dropzone
+		// submit-all 
+		//	processQueue()
+		init: function() {
+		var myDropzone = this;
+		$("#submit-all").click(function (e) {
+			myDropzone.processQueue();
+				});
+				
 		this.on("successmultiple", function(files, response) {
 		// Gets triggered when the files have successfully been sent.
 		// Redirect user or notify of success
@@ -126,23 +126,23 @@ Dropzone.options.myDropzoneCpp = { // The camelized version of the ID of the for
 Dropzone.options.myDropzoneJAVA = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
-    autoProcessQueue: false, // auto false
-    uploadMultiple: true,	// 
-    parallelUploads: 10,	// 
-    maxFiles: 10,			// 
-    maxFilesize: 0.5,
-    addRemoveLinks: true,	// Remove 
-    acceptedFiles: ".java, .class, .jar",		// 
+		autoProcessQueue: false, // auto false
+		uploadMultiple: true,	// 
+		parallelUploads: 10,	// 
+		maxFiles: 10,			// 
+		maxFilesize: 0.5,
+		addRemoveLinks: true,	// Remove 
+		acceptedFiles: ".java, .class, .jar",		// 
 
-    // The setting up of the dropzone
-    // submit-all 
-    //  processQueue()
-    init: function() {
-  	var myDropzone = this;
-  	$("#submit-all").click(function (e) {
-  		myDropzone.processQueue();
-      	});
-        
+		// The setting up of the dropzone
+		// submit-all 
+		//	processQueue()
+		init: function() {
+		var myDropzone = this;
+		$("#submit-all").click(function (e) {
+			myDropzone.processQueue();
+				});
+				
 		this.on("successmultiple", function(files, response) {
 		// Gets triggered when the files have successfully been sent.
 		// Redirect user or notify of success
@@ -154,23 +154,23 @@ Dropzone.options.myDropzoneJAVA = { // The camelized version of the ID of the fo
 Dropzone.options.myDropzonePYTHON = { // The camelized version of the ID of the form element
 	
 	// The configuration we've talked about above
-    autoProcessQueue: false, // auto false
-    uploadMultiple: true,	// 
-    parallelUploads: 10,	// 
-    maxFiles: 10,			// 
-    maxFilesize: 0.5,
-    addRemoveLinks: true,	// Remove 
-    acceptedFiles: ".py",		// 
+		autoProcessQueue: false, // auto false
+		uploadMultiple: true,	// 
+		parallelUploads: 10,	// 
+		maxFiles: 10,			// 
+		maxFilesize: 0.5,
+		addRemoveLinks: true,	// Remove 
+		acceptedFiles: ".py",		// 
 
-    // The setting up of the dropzone
-    // submit-all 
-    //  processQueue()
-    init: function() {
-  	var myDropzone = this;
-  	$("#submit-all").click(function (e) {
-  		myDropzone.processQueue();
-      	});
-        
+		// The setting up of the dropzone
+		// submit-all 
+		//	processQueue()
+		init: function() {
+		var myDropzone = this;
+		$("#submit-all").click(function (e) {
+			myDropzone.processQueue();
+				});
+				
 		this.on("successmultiple", function(files, response) {
 		// Gets triggered when the files have successfully been sent.
 		// Redirect user or notify of success
@@ -180,35 +180,41 @@ Dropzone.options.myDropzonePYTHON = { // The camelized version of the ID of the 
 }
 
 $('#myTabs a').click(function (e) {
-  e.preventDefault()
-  $(this).tab('show')
-})
+	e.preventDefault()
+	$(this).tab('show')
+});
 
 jQuery(document).ready(function ($) {
-    $('#language').tab();
-})
+		$('#language').tab();
+});
 
 $(document).on('click','.dropdown ul a',function(){
 	var className = $(this).attr('class');
 	if (!className) {
-    var text = $(this).text();
-    $(this).closest('.dropdown').children('a.dropdown-toggle').text(text);
-    }
+		var text = $(this).text();
+		$(this).closest('.dropdown').children('a.dropdown-toggle').text(text);
+		}
 	else {
 		if (className.substr(className.length-12, 12) != "main-checker") {
-    	var text = $(this).text();
-    	$(this).closest('.dropdown').children('a.dropdown-toggle').text(text);
-    	}
+			var text = $(this).text();
+			$(this).closest('.dropdown').children('a.dropdown-toggle').text(text);
+			}
  	}
-}) 	
+}); 	
 
 // @@ Show deletion modal
 // It shows different contents with modal up to 'target'
 function showingDeleteModal(target){
 	var items, checkboxes;
+
+	// If target is 'undefined' then, 'toUpperCase' doesn't work.
+	// So 'undefinedTab' variable needs.
+	var undefinedTab = true; 
+	
 	if(target == 'college' || target == 'department'){
 		items = $('.'+target+'-box-check').length;
 		checkboxes = $('.'+target+'-box-check');
+		undefinedTab = false;
 	}
 	else{
 		items = $('.box-check').length;
@@ -222,22 +228,26 @@ function showingDeleteModal(target){
 			break;
 		}
 	}
-	target[0] = target.toUpperCase()[0];
+
+	if(!undefinedTab){
+		target[0] = target.toUpperCase()[0];
+	}
+
 	if(cnt == 0){ 
-		if(target == 'College' || target == 'Department'){
-			$('#deleteNo'+target+'Item').modal();
+		if(undefinedTab){
+			$('#deleteNoItem').modal();
 		}
 		else{
-			$('#deleteNoItem').modal();
+			$('#deleteNo'+target+'Item').modal();
 		}
 	}
 
 	else{ 
-		if(target == 'College' || target == 'Department'){
-			$('#delete'+target+'Modal').modal();
+		if(undefinedTab){
+			$('#deleteModal').modal();
 		}
 		else{
-			$('#deleteModal').modal();
+			$('#delete'+target+'Modal').modal();
 		}
 	}
 }
@@ -269,7 +279,7 @@ function visibleButton(parent){
 
 // @@ Check All checkbox function
 // works up to 'Check All' checkbox's checked option
-// 'range' means the position of checkboxes. 
+// 'range' means the position of checkboxes.
 // it doesn't search in all page range.
 function selectAllCheckboxes(range){
 	var checkboxes = document.getElementById(range).getElementsByTagName("input");
