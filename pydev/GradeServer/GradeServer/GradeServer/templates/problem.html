@@ -93,12 +93,12 @@
 						<div>
 							{%- if languageInfoRecord.languageName == "C++" %}
 							<form class="dropzone"  id="my-dropzoneCpp" method="post"
-								    action="/problem_{{ courseId }}_{{ problemId }}_{{ problemName }}_{{ pageNum }}_{{ browserName }}"
+								    action="/problem_{{ courseId }}_{{ problemId }}_{{ problemName }}_{{ pageNum }}_{{ browserName }}_{{ browserVersion }}"
 								    enctype="multipart/form-data">
 							{%- else %}
 							<form class="dropzone" id="my-dropzone{{ languageInfoRecord.languageName }}"
 								    method="post" 
-								    action="/problem_{{ courseId }}_{{ problemId }}_{{ problemName }}_{{ pageNum }}_{{ browserName }}"
+								    action="/problem_{{ courseId }}_{{ problemId }}_{{ problemName }}_{{ pageNum }}_{{ browserName }}_{{ browserVersion }}"
 								    enctype="multipart/form-data">
 							{% endif -%}
 								<textarea name="usedLanguageName" style="display:none;">{{ languageInfoRecord.languageName }}</textarea>
