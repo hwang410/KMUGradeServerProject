@@ -16,6 +16,7 @@ encoding//GradeServer/GradeServer/controller/signUp.py=utf-8
 encoding//GradeServer/GradeServer/controller/team.py=utf-8
 encoding//GradeServer/GradeServer/controller/user.py=utf-8
 encoding//GradeServer/GradeServer/database.py=utf-8
+encoding//GradeServer/GradeServer/described_by_language.py=utf-8
 encoding//GradeServer/GradeServer/model/__init__.py=utf-8
 encoding//GradeServer/GradeServer/model/articlesOnBoard.py=utf-8
 encoding//GradeServer/GradeServer/model/colleges.py=utf-8
