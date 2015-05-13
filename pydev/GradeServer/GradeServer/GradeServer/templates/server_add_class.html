@@ -6,7 +6,10 @@
 {%- block body %}
 <style>
 .span3{
-	text-align: center;
+	text-align: left;
+}
+h4{
+	margin-left: 20px;
 }
 </style>
 <script>
@@ -33,7 +36,6 @@ $(function() {
 	<form id="addCourse" method="post">
 	<h3>Course Addition</h3>
 	<hr class="hidden-desktop hidden-tablet">
-	<div class="span12">
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
@@ -172,8 +174,7 @@ $(function() {
 			</h4>
 		</div>
 		<br>
-		</div>
-	<button class="btn" type="submit">Done</button>
+		<button class="btn" type="submit">Done</button>
 	</form>
 </div>
 {% endblock -%}

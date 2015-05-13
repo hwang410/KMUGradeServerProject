@@ -74,19 +74,19 @@
 								</label>
 							<td>
 								<input class="datepicker input-usmall" id="startDate1"
-										name="startDate1" data-date-format="yyyy-mm-dd" type="date"
+										name="startDate1" data-date-format="yyyy-mm-dd" type="udate"
 										autocomplete="off" placeholder="click">
 							<td>
 								<input class="datepicker input-usmall" id="endDate1"
-										name="endDate1" data-date-format="yyyy-mm-dd" type="date"
+										name="endDate1" data-date-format="yyyy-mm-dd" type="udate"
 										autocomplete="off" placeholder="click">
 							<td>
 								<input class="datepicker input-usmall" id="openDate1"
-										name="openDate1" data-date-format="yyyy-mm-dd" type="date"
+										name="openDate1" data-date-format="yyyy-mm-dd" type="udate"
 										autocomplete="off" placeholder="click">
 							<td>
 								<input class="datepicker input-usmall" id="closeDate1"
-										name="closeDate1" data-date-format="yyyy-mm-dd" type="date"
+										name="closeDate1" data-date-format="yyyy-mm-dd" type="udate"
 										autocomplete="off" placeholder="click">
 				</table>
 			</div>
@@ -300,8 +300,8 @@ $("#deleteButton").click(function(){
 });
 
 $(function(){
-	if (!Modernizr.inputtypes['date']) {
-		$('input[type=date]').datepicker({
+	if (!Modernizr.inputtypes['udate']) {
+		$('input[type=udate]').datepicker({
 			dateFormat: 'yy-mm-dd'
 		});
 	}
@@ -353,8 +353,8 @@ function modifySelector(target){
 	}
 }
 function showDatepicker() {
-	if (!Modernizr.inputtypes['date']) {
-		$('input[type=date]').datepicker({
+	if (!Modernizr.inputtypes['udate']) {
+		$('input[type=udate]').datepicker({
 			dateFormat: 'yy-mm-dd'
 		});
 	}
@@ -450,8 +450,8 @@ $("#addline_problem").bind('click', function(){
 		}
 		newRow.insertCell(i).innerHTML=uploadObj;
 	}
-	if (!Modernizr.inputtypes['date']) {
-		$('input[type=date]').datepicker({
+	if (!Modernizr.inputtypes['udate']) {
+		$('input[type=udate]').datepicker({
 			dateFormat: 'yy-mm-dd'
 		});
 	}
@@ -483,28 +483,28 @@ $("#resetAddProblemForm").bind('click', function(){
 			'<td>'+
 				'<input class="datepicker input-usmall" id="startDate1"'+
 						'name="startDate1"'+
-						'data-date-format="yyyy-mm-dd" type="date"'+
+						'data-date-format="yyyy-mm-dd" type="udate"'+
 						'autocomplete="off" placeholder="click">'+
 			'<td>'+
 				'<input class="datepicker input-usmall" id="endDate1"'+
 						'name="endDate1"'+
-						'data-date-format="yyyy-mm-dd" type="date"'+
+						'data-date-format="yyyy-mm-dd" type="udate"'+
 						'autocomplete="off" placeholder="click">'+
 			'<td>'+
 				'<input class="datepicker input-usmall" id="openDate1"'+
 						'name="openDate1"'+
-						'data-date-format="yyyy-mm-dd" type="date"'+
+						'data-date-format="yyyy-mm-dd" type="udate"'+
 						'autocomplete="off" placeholder="click">'+
 			'<td>'+
 				'<input class="datepicker input-usmall" id="closeDate1"'+
 						'name="closeDate1"'+
-						'data-date-format="yyyy-mm-dd" type="date"'+
+						'data-date-format="yyyy-mm-dd" type="udate"'+
 						'autocomplete="off" placeholder="click">' ;
 	
 	document.getElementById("modalError").style.display="none";
 
-	if (!Modernizr.inputtypes['date']) {
-		$('input[type=date]').datepicker({
+	if (!Modernizr.inputtypes['udate']) {
+		$('input[type=udate]').datepicker({
 			dateFormat: 'yy-mm-dd'
 		});
 	}
