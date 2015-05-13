@@ -38,7 +38,7 @@
 						       {%- else %}
 						       {% endif -%}'>
 				<td class="hidden-phone">
-					{{ (problemListRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}
+					{{ (pages['count'] - loop.index0) - (pages['pageNum'] - 1) * pages['LIST'] }}
 				<td>
 					<a href="{{ url_for('GradeServer.problem', courseId=courseRecords.courseId, problemId=problemListRecord.problemId, pageNum=pages['pageNum']) }}">
 						{%- if problemListRecord.problemName %}{{ problemListRecord.problemName }}{% endif -%}
