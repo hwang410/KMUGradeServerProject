@@ -56,13 +56,14 @@ newUsers = []
 newProblems = []
 
 def get_case_count(problemCasesPath, multipleFiles):
-    caseCount = len(glob.glob(os.path.join(problemCasesPath, '*.*')))/2
+    caseCount = len(glob.glob(problemCasesPath+'/*'))/2
     
     if caseCount > 1:
         if multipleFiles == ENUMResources().const.FALSE:
             caseCount -= 1
         else:
             caseCount = 1
+            
     return caseCount
 
 def get_own_problems(memberId):
@@ -375,7 +376,7 @@ def class_manage_problem():
                 "closeDate":8}
         
         # courseId,courseName,problemId,problemName,isAllInputCaseInOneFile,startDate,endDate,openDate,closeDate
-        newProblem = [['' for i in range(9)] for j in range(numberOfNewProblems+1)]
+        newProblem = [['' for _ in range(9)] for __ in range(numberOfNewProblems+1)]
         for form in request.form:
             if DELETE in form:
                 isNewProblem = False
@@ -410,7 +411,7 @@ def class_manage_problem():
                 # so when user pushes one of tab and modify the data,then we need to re-make the editTarget 
                 if TAB in editTarget:
                     editTarget = editTarget[:-3]
-                for registeredProblem,registeredCourse,problemName in ownProblems:
+                for registeredProblem, registeredCourse, problemName in ownProblems:
                     if registeredCourse.courseId == courseId and\
                        registeredProblem.problemId == int(problemId):
                         kwargs = { editTarget : targetData }
@@ -477,12 +478,13 @@ def class_manage_problem():
                                                ownCourses = ownCourses,
                                                ownProblems = ownProblems)
                     
-                    pathOfTestCase = '%s/%s_%s/%s_%s' % (problemsPath,
+                    pathOfTestCase = '%s/%s_%s/%s_%s_%s' % (problemsPath,
                                                          problem[keys['problemId']],
                                                          problem[keys['problemName']],
+                                                         problem[keys['problemId']],
                                                          problem[keys['problemName']],
                                                          solutionCheckType)
-                    
+
                     numberOfTestCase = get_case_count(pathOfTestCase, problem[keys['isAllInputCaseInOneFile']])
                                     
                 # validation check before insert new problem
