@@ -62,6 +62,23 @@ newDepartments = []
 
 currentTab = 'colleges'
 
+def add_new_problem(newProblemInfo):
+    error = None
+    nextIndex, problemId, problemName, solutionCheckType, limitedTime, limitedMemory, problemPath = newProblemInfo
+    
+    try:
+        newProblem = Problems(problemIndex = nextIndex, 
+                              problemId = problemId, 
+                              problemName = problemName, 
+                              solutionCheckType = solutionCheckType, 
+                              limitedTime = limitedTime,
+                              limitedMemory = limitedMemory, 
+                              problemPath = problemPath)
+    except:
+        error = "Error has been occurred while setting new problem to add"
+        
+    return error, newProblem
+                        
 @GradeServer.route('/master/manage_collegedepartment', methods = ['GET', 'POST'])
 @check_invalid_access
 @login_required
@@ -425,10 +442,7 @@ def server_add_class():
                                                    filter(RegisteredCourses.courseId.like(newCourseNum+'__')).\
                                                    first().\
                                                    num
-                    """
-                    수정할것!!count 사용해서
-                    func.count().label
-                    """
+                   
                     newCourseNum = '%s%02d' % (existCourse[0][:8], 
                                                NumberOfCurrentSubCourse + 1) # yyyysccc
                     isNewCourse = False
@@ -531,11 +545,18 @@ def server_manage_problem():
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
                                                uploadedProblems = [])
+                        
                 # read each uploaded file(zip)
                 for fileData in files:
+                    # create temporary path to store new problem before moving into 'Problems' folder
                     tmpPath = '%s/tmp' % projectPath
-                    # if 'tmp' folder exists, there had an error before while uploading a problem.
-                    # so, check and delete before unzip
+                    
+                    '''
+                    @@ Check and Delete temporary folder
+                    
+                    If temporary folder 'tmp' is exist, then it means it had an error at past request.
+                    So, remove the temporary folder 'tmp' first.
+                    '''
                     if os.path.exists(tmpPath):
                         try:
                             subprocess.call('rm -rf %s' % tmpPath, shell=True)
@@ -546,46 +567,115 @@ def server_manage_problem():
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
                                                    uploadedProblems = [])
-                            
+                    
                     # unzip file
                     with zipfile.ZipFile(fileData, 'r') as z:
                         z.extractall(tmpPath)
                     
-                    # splitting by .(dot) or _(under bar)
-                    # if the problem zip's made on window environment, problem name's broken.
-                    # so it needs to be decoded.
+                    '''
+                    @@ Decode problem name
+                    
+                    If the problem zip's made on window environment, problem name's broken
+                    So it needs to be decoded by cp949
+                    ''' 
                     rowProblemName = re.split('_|\.', os.listdir(tmpPath)[0])[0]
                     problemName = str(rowProblemName.decode('cp949'))
-
+                    
+                    '''
+                    @@ Make imitation of Original problem name
+                    
+                    Original problem name shows with question mark
+                    To find and change the name to decoded name, make fake temporary name
+                    '''
                     byteString = '?'*len(rowProblemName)
                     
                     os.chdir('%s' % tmpPath)
+                    try:
+                        # rename text file
+                        subprocess.call('mv %s.txt %s.txt' % (byteString, problemName), shell=True)
+                    except OSError:
+                        error = 'Error has been occurred while renaming .txt file'
+                        return render_template('/server_manage_problem.html', 
+                                               error = error, 
+                                               SETResources = SETResources,
+                                               SessionResources = SessionResources,
+                                               uploadedProblems = [])
+                        
+                    '''
+                    @@ Rename PDF file name
                     
-                    # rename text file
-                    subprocess.call('mv %s.txt %s.txt' % (byteString, problemName), shell=True)
+                    PDF file is optional so, doesn't block when error occurs.
+                    '''
+                    try:
+                        # rename pdf file
+                        subprocess.call('mv %s.pdf %s.pdf' % (byteString, problemName), shell=True)
+                    except OSError:
+                        print "pdf doesn't exist"
+                        
+                    '''
+                    @@ Rename _SOLUTION or _CHECKER folder name
                     
-                    # rename pdf file
-                    subprocess.call('mv %s.pdf %s.pdf' % (byteString, problemName), shell=True)
+                    Figure out its solution check type from folder name
+                    '''
+                    filesInCurrentDir = glob.glob(os.getcwd()+'/*')
+                    solCheckType = None
+                    for name in filesInCurrentDir:
+                        if '_SOLUTION' in name:
+                            solCheckType = 'SOLUTION'
+                            break
+                        if '_CHECKER' in name:
+                            solCheckType = 'CHECKER'
+                            break
                     
-                    # rename folders
-                    # checking for both check type because we can't check the type.
-                    subprocess.call('mv %s_SOLUTION %s_SOLUTION' % (byteString, problemName), shell=True)
-                    subprocess.call('mv %s_CHECKER %s_CHECKER' % (byteString, problemName), shell=True)
-                    
+                    if solCheckType:
+                        try:
+                            subprocess.call('mv %s_%s %s_%s' % (byteString, solCheckType, problemName, solCheckType), shell=True)
+                        except OSError:
+                            error = 'Error has been occurred while renaming folders'
+                            return render_template('/server_manage_problem.html', 
+                                                   error = error, 
+                                                   SETResources = SETResources,
+                                                   SessionResources = SessionResources,
+                                                   uploadedProblems = [])
+                            
+                    # If SOLUTION or CHEKER file doesn't exist then it's an error
+                    else:
+                        error = 'There is no \'SOLUTION\' or \'CHECKER\' directory'
+                        return render_template('/server_manage_problem.html', 
+                                               error = error, 
+                                               SETResources = SETResources,
+                                               SessionResources = SessionResources,
+                                               uploadedProblems = [])
+                                     
                     problemInformationPath = '%s/%s.txt' % (tmpPath, problemName)
-                    problemInformation = open(problemInformationPath, 'r').read()
+                    
+                    try:
+                        problemInformation = open(problemInformationPath, 'r').read()
+                    except:
+                        error = 'Error has been occurred while reading problem meta file(.txt)'
+                        return render_template('/server_manage_problem.html', 
+                                               error = error, 
+                                               SETResources = SETResources,
+                                               SessionResources = SessionResources,
+                                               uploadedProblems = [])
+                    
+                    '''
+                    @@ Decode problem meta information
+                    
+                    Problem meta information(.txt) file needs to be decoded as well as problem folder name
+                    '''
                     problemInformation = problemInformation.decode('cp949')
                     
                     nextIndex += 1
-                    # slice and make information from 'key=value, key=value, ...'
-                    problemInformation = problemInformation.split(', ')
+                    # slice and make key, value pairs from csv form
+                    problemInformation = problemInformation.replace(' ', '').split(',')
 
                     difficulty = 0
                     solutionCheckType = 0
                     limitedTime = 0
                     limitedMemory = 0
 
-                    # reslice and make information from 'key=value'
+                    # re-slice and make information from 'key=value'
                     for eachInformation in problemInformation:
                         key, value = eachInformation.split('=')
                         if key == 'Name':
@@ -598,22 +688,28 @@ def server_manage_problem():
                             limitedTime = int(value)
                         elif key == 'LimitedMemory':
                             limitedMemory = int(value)
+                            
                     numberOfProblemsOfDifficulty[difficulty - 1] += 1
-                             
+
                     # place the difficulty at the left most
                     problemId = difficulty * 10000 + numberOfProblemsOfDifficulty[difficulty - 1]
                     problemPath = '%s/%s' % (problemsPath,
                                              str(problemId) + '_' + problemName.replace(' ', ''))
                     
+                    newProblemInfo = nextIndex, problemId, problemName, solutionCheckType, limitedTime, limitedMemory, problemPath
+                    
+                    error, newProblem = add_new_problem(newProblemInfo)
+                    
+                    if error:
+                        return render_template('/server_manage_problem.html', 
+                                               error = error, 
+                                               SETResources = SETResources,
+                                               SessionResources = SessionResources,
+                                               uploadedProblems = [])
+                    
+                    dao.add(newProblem)
+                    
                     try:
-                        newProblem = Problems(problemIndex = nextIndex, 
-                                              problemId = problemId, 
-                                              problemName = problemName, 
-                                              solutionCheckType = solutionCheckType, 
-                                              limitedTime = limitedTime,
-                                              limitedMemory = limitedMemory, 
-                                              problemPath = problemPath)
-                        dao.add(newProblem)
                         dao.commit()
                     except:
                         dao.rollback()
@@ -628,14 +724,25 @@ def server_manage_problem():
                     os.chdir('%s/%s_%s' % (tmpPath, 
                                            problemName, 
                                            solutionCheckType))
+                    
                     # current path : ../tmp/problemName_solutionCheckType
                     
-                    inOutCases = [file for file in os.listdir(os.getcwd())]
-                    
-                    for file in inOutCases:
-                        rowFileName = file
+                    inOutCases = [filename for filename in os.listdir(os.getcwd())]
+
+                    for filename in inOutCases:
+                        rowFileName = filename
                         fileName = '%s_%s' % (problemName, rowFileName.split('_', 1)[1])
-                        subprocess.call('mv %s %s' % (rowFileName, str(fileName)), shell=True)
+
+                        try:
+                            # renaming
+                            subprocess.call('mv %s %s' % (rowFileName, str(fileName)), shell=True)
+                        except OSError:
+                            error = 'Error has been occurred while renaming files\' name'
+                            return render_template('/server_manage_problem.html', 
+                                                   error = error, 
+                                                   SETResources = SETResources,
+                                                   SessionResources = SessionResources,
+                                                   uploadedProblems = [])
                         
                     # remove space on file/directory names
                     try:
@@ -724,7 +831,7 @@ def server_manage_problem():
                                            SETResources = SETResources,
                                            SessionResources = SessionResources,
                                            uploadedProblems = [])
-
+        print "done"
         return redirect(url_for('.server_manage_problem'))
         
     else:
