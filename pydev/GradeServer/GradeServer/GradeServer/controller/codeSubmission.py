@@ -143,13 +143,12 @@ def to_process_uploaded_files(courseId, problemId, problemName, pageNum, browser
     filePath, tempPath = make_path(PATH, memberId, courseId, problemId, problemName)
     try:
         os.mkdir(tempPath)
-    
         uploadFiles = request.files.getlist(OtherResources.const.GET_FILES)
         usedLanguageName = request.form[OtherResources.const.USED_LANGUAGE_NAME]
         sumOfSubmittedFileSize = file_save(memberId, courseId, problemId, uploadFiles, tempPath, filePath)
         send_to_celery(memberId, courseId, problemId, usedLanguageName, sumOfSubmittedFileSize, problemName, filePath, tempPath)
     except OSError as e:
-        flash(get_message('askToMaster'))
+        flash(get_message('fileError'))
         return ie_page_move(courseId, pageNum, browserName, browserVersion)
     except Exception as e:
         dao.rollback()
@@ -175,7 +174,7 @@ def to_process_written_code(courseId, pageNum, problemId, problemName):
         insert_submitted_files(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
         send_to_celery(memberId, courseId, problemId, usedLanguageName, fileSize, problemName, filePath, tempPath)
     except OSError as e:
-        flash(get_message('askToMaster'))
+        flash(get_message('fileError'))
         return other_page_move(courseId, pageNum)
     except Exception as e:
         dao.rollback()

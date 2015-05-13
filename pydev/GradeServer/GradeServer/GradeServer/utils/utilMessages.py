@@ -42,7 +42,7 @@ def get_message(key ='unknown'):
                   
                   'dbError' : "DB 에러입니다.", 
                   'serverError' : "서버 오류입니다. 다시 제출해 주세요.",
-                  'fileSaveError' : "파일 저장 오류",
+                  'fileError' : "파일 관련 오류입니다.",
                   'askToMaster' : "관리자한테 문의하세요."}
 
     return messageDict[key]

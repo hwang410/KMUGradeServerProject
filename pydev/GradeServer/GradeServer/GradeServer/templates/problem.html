@@ -103,7 +103,21 @@
 							{% endif -%}
 								<textarea name="usedLanguageName" style="display:none;">{{ languageInfoRecord.languageName }}</textarea>
 									<div class="fallback">
-										<input name="file[]" type="file" multiple><br>
+										select number of files <select type="text" id="number" onchange="selectFiles(this)">
+											<option selected="selected" value="21"> 1 </option>
+											<option value="22"> 2 </option>
+											<option value="23"> 3 </option>
+											<option value="24"> 4 </option>
+											<option value="25"> 5 </option>
+											<option value="26"> 6 </option>
+											<option value="27"> 7 </option>
+											<option value="28"> 8 </option>
+											<option value="29"> 9 </option>
+											<option value="30"> 10 </option>
+										</select><br><br>
+										<div id="temp">
+											<input type="file" name="file[]"><br>
+										</div>
 										<input type="submit" value="submit files">
 									</div>
 							</form>
