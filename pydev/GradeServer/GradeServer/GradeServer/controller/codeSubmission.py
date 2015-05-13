@@ -125,16 +125,12 @@ def write_code_in_file(tempPath):
 
     return usedLanguageName, fileName
 
-def ie_page_move(courseId, pageNum, browserName = None, browserVersion = None):
-    if browserName == 'msie' and len(browserVersion) != 4:
+def page_move(courseId, pageNum, browserName = None, browserVersion = None):
+    if (browserName == 'msie' and len(browserVersion) != 4) or browserName == None:
         return redirect(url_for(RouteResources.const.PROBLEM_LIST,
                                 courseId = courseId,
                                 pageNum = pageNum))
     return "0"
-def other_page_move(courseId, pageNum):
-    return redirect(url_for(RouteResources.const.PROBLEM_LIST,
-                                courseId = courseId,
-                                pageNum = pageNum))
 @GradeServer.route('/problem_<courseId>_<problemId>_<problemName>_<pageNum>_<browserName>_<browserVersion>', methods = ['POST'])
 @check_invalid_access
 @login_required
@@ -149,15 +145,15 @@ def to_process_uploaded_files(courseId, problemId, problemName, pageNum, browser
         send_to_celery(memberId, courseId, problemId, usedLanguageName, sumOfSubmittedFileSize, problemName, filePath, tempPath)
     except OSError as e:
         flash(get_message('fileError'))
-        return ie_page_move(courseId, pageNum, browserName, browserVersion)
+        return page_move(courseId, pageNum, browserName, browserVersion)
     except Exception as e:
         dao.rollback()
         os.system("rm -rf %s" % tempPath)
         flash(get_message('dbError'))
-        return ie_page_move(courseId, pageNum, browserName, browserVersion)
+        return page_move(courseId, pageNum, browserName, browserVersion)
         
     time.sleep(0.4)
-    return ie_page_move(courseId, pageNum, browserName, browserVersion)
+    return page_move(courseId, pageNum, browserName, browserVersion)
 @GradeServer.route('/problem_<courseId>_page<pageNum>_<problemId>_<problemName>', methods = ['POST'])
 @check_invalid_access
 @login_required
@@ -175,12 +171,12 @@ def to_process_written_code(courseId, pageNum, problemId, problemName):
         send_to_celery(memberId, courseId, problemId, usedLanguageName, fileSize, problemName, filePath, tempPath)
     except OSError as e:
         flash(get_message('fileError'))
-        return other_page_move(courseId, pageNum)
+        return page_move(courseId, pageNum)
     except Exception as e:
         dao.rollback()
         os.system("rm -rf %s" % tempPath)
         flash(get_message('dbError'))
-        return other_page_move(courseId, pageNum)
+        return page_move(courseId, pageNum)
         
     time.sleep(0.4)
-    return other_page_move(courseId, pageNum)
+    return page_move(courseId, pageNum)
