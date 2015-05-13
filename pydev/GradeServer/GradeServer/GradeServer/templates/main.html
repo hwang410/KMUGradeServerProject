@@ -68,7 +68,7 @@
 						<li>
 							<a href="{{ url_for('GradeServer.board', activeTabCourseId = 'All', pageNum =1) }}">Board</a>
 						</li>
-						<li>
+						<li class="hidden">
 							<a href="{{ url_for('GradeServer.team', pageNum =1) }}">Team</a>
 						</li>
 						
@@ -125,8 +125,7 @@
 						{% endif -%}
 					</ul>
 					{%- if session['memberId'] == NULL %}
-					<a class="btn pull-right" href="{{ url_for('GradeServer.sign_up') }}" style="margin:15px 5px 10px 0px">Sign up</a>
-					<!--<button type="button" class="btn pull-right" style="margin:15px 5px 10px 0px;" onclick="alert('It might be no need')">Sign up</button>-->
+					<a class="btn pull-right hidden" href="{{ url_for('GradeServer.sign_up') }}" style="margin:15px 5px 10px 0px">Sign up</a>
 					{% endif -%}
 				</div>
 			</div>
