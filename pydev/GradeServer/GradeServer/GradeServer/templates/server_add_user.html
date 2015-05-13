@@ -315,20 +315,21 @@ $("#college1").change(function(){
 	RowOnClickController(1);
 });
 function RowOnClickController(IdxOfRow){
-	var selectedText = $("#college"+IdxOfRow+" option:selected").text();
+	var selectedText = $("#college"+IdxOfRow+" option:selected").text().replace(/\t/g, "").replace(/\n/g, "");
+
 	var index = selectedText.split(' ')[0];
 	var name = selectedText.split(' ')[1];
 	var initialOptions = document.getElementById("college"+IdxOfRow).innerHTML;
+
+	// FIrst time to choose 'college' select
 	if(initialOptions.indexOf("select college") != -1){
+		// Remove 'select college' option from option list
+		// and remove tab space for new 'college' options.
 		var OptionsWithoutDefault = 
-			initialOptions.replace("<option> select college </option>", "");
-		
-		// remove tab spaces
-		OptionsWithoutDefault = OptionsWithoutDefault.replace(/\t/g, "");
+			initialOptions.replace("<option> select college </option>", "").replace(/\t/g, "").replace(/\n/g, "");
 
 		// split for checking selected value
 		OptionsWithoutDefault = OptionsWithoutDefault.split(' ');
-
 		var newOptions = "";
 		for(var i=0;i<OptionsWithoutDefault.length;i++){
 			// if an option's index and name are same then gives 'selected'
@@ -354,6 +355,7 @@ function RowOnClickController(IdxOfRow){
 		{% endfor -%}
 	}
 	{% endfor -%}
+
 }
 </script>
 {% endblock -%}
