@@ -99,7 +99,7 @@
 			</div>
 		</div>
 
-	<form method="post">
+	<form id="problemForm" method="post">
 		<div class="tab-content">
 			<div class="tab-pane active" id="all">
 				<table class="table" id="allProblems">
@@ -295,6 +295,10 @@
 	</div>
 </div>
 <script>
+$("#deleteButton").click(function(){
+	document.getElementById("problemForm").submit();
+});
+
 $(function(){
 	if (!Modernizr.inputtypes['date']) {
 		$('input[type=date]').datepicker({
