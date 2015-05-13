@@ -78,7 +78,8 @@ def board(activeTabCourseId, pageNum):
                                              myCourses).subquery()
                 # 과목 공지글    
         try:  
-            articleNoticeRecords = get_page_record((select_sorted_articles(activeTabCourseId = articlesOnBoard,
+            print len(dao.query(articlesOnBoard).all())
+            articleNoticeRecords = get_page_record((select_sorted_articles(articlesOnBoard,
                                                                            isNotice = ENUMResources().const.TRUE)),
                                                    pageNum = int(1),
                                                    LIST = OtherResources().const.NOTICE_LIST).all()
