@@ -23,6 +23,7 @@ def get_page_pointed(pageNum, count, BLOCK = OtherResources().const.BLOCK, LIST 
         
     return {'LIST': LIST,
             'BLOCK': BLOCK,
+            'count': count,
             'pageNum': pageNum,
             'startList': startList,
             'endList': endList,
