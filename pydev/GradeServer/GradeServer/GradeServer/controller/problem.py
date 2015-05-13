@@ -49,7 +49,7 @@ def problem_list(courseId, pageNum):
     
     # Get Problem Informations
     problems = join_problems_names(select_problems_of_course(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = None,
-                                                                                                                         courseId = courseId).subquery())).subquery()
+                                                                                                                         courseId = courseId)).subquery()).subquery()
     # Get ProblemList Count
     try:
         count = select_count(problems.c.problemId).first().\
