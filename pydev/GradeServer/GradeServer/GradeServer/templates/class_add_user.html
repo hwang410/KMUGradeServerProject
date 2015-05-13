@@ -169,7 +169,25 @@ $(function() {
 					// authority
 					case 5:
 						selectedItem=document.getElementById(keys[i]+"1");
-						index=selectedItem.options[selectedItem.selectedIndex].index+1;
+						numOfOptions=document.getElementById(keys[i]+"1").length;
+						index = 0;
+
+						// When course administrator pick user who already registered in server,
+						// Actually only one option is in 'select' tag.
+						// In this case, it needs to search matching authority from 'authorities'
+						// 
+						// If the user is new user then get its index from 'options' function.
+						if(numOfOptions == 1){
+							{%- for authority in authorities %}
+								if(selectedItem.options[selectedItem.selectedIndex].text == "{{ authority }}"){
+									index = "{{ loop.index }}";
+								}
+							{% endfor -%}
+						}
+						else{
+							index=selectedItem.options[selectedItem.selectedIndex].index+1;
+						}
+						
 						{%- for authority in authorities %}
 						uploadObj+="<option";
 						if(index == "{{ loop.index }}"){
@@ -268,6 +286,10 @@ $(function() {
 						   	   "{% endfor -%}";
 		document.getElementById("college1").innerHTML=initialOptions;
 		document.getElementById("department1").innerHTML="";
+
+		initialOptions="<option> Course Admin </option>"+
+						"<option> User </option>";
+		document.getElementById("authority1").innerHTML = initialOptions;
 	});
 
 	$("#resetIndivisualUserForm").bind('click',function(){
