@@ -40,8 +40,6 @@ from GradeServer.resource.otherResources import OtherResources
 import os
 import re
 import glob
-from __builtin__ import False
-from array import array
 
 projectPath = '/mnt/shared'
 problemsPath = '%s/Problems' % projectPath
@@ -80,10 +78,16 @@ def get_own_problems(memberId):
     return ownProblems
 
 def get_own_courses(memberId):
-    ownCourses = dao.query(RegisteredCourses).\
-                     filter(RegisteredCourses.courseAdministratorId == memberId).\
-                     all()
-    return ownCourses
+    error = None
+
+    try:
+        ownCourses = dao.query(RegisteredCourses).\
+                         filter(RegisteredCourses.courseAdministratorId == memberId).\
+                         all()
+    except:
+        error = 'Error has been occurred while searching own courses'
+        
+    return error, ownCourses
 
 from GradeServer.py3Des.pyDes import *
 def initialize_tripleDes_class():
@@ -255,16 +259,40 @@ def check_validation(user):
     
     return isValid
             
+def get_own_members(memberId):
+    error = None
+    try:
+        ownMembers = dao.query(Registrations).\
+                     join(RegisteredCourses,
+                          RegisteredCourses.courseId == Registrations.courseId).\
+                     filter(RegisteredCourses.courseAdministratorId == session[memberId]).\
+                     all()
+    except:
+        error = 'Error has been occurred while searching own members'
+        
+    return error, ownMembers
+
+def get_all_problems():
+    error = None
+    
+    try:
+        allProblems = dao.query(Problems).\
+                          filter(Problems.isDeleted == ENUMResources().const.FALSE).\
+                          all()
+    except:
+        error = "Error has been occurred while searching all problems"
+        
+    return error, allProblems
+        
 @GradeServer.route('/classmaster/user_submit')
 @check_invalid_access
 @login_required
 def class_user_submit():        
     error = None
     
-    try:
-        ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
-    except:
-        error = 'Error has been occurred while searching registered courses.'
+    error, ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
+    
+    if error:
         return render_template('/class_user_submit.html',
                                error = error, 
                                SETResources = SETResources,
@@ -320,13 +348,9 @@ def class_manage_problem():
     
     error = None
     modalError = None
-    
-    try:
-        allProblems = dao.query(Problems).\
-                          filter(Problems.isDeleted == ENUMResources().const.FALSE).\
-                          all()
-    except:
-        error = 'Error has been occurred while searching problems'
+
+    error, allProblems = get_all_problems()
+    if error:
         return render_template('/class_manage_problem.html',
                                error = error, 
                                SETResources = SETResources,
@@ -336,10 +360,9 @@ def class_manage_problem():
                                ownCourses = [],
                                ownProblems = [])
     
-    try:
-        ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
-    except:
-        error = 'Error has been occurred while searching registered courses'
+    error, ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
+    
+    if error:
         return render_template('/class_manage_problem.html',
                                error = error, 
                                SETResources = SETResources,
@@ -376,7 +399,7 @@ def class_manage_problem():
                 "closeDate":8}
         
         # courseId,courseName,problemId,problemName,isAllInputCaseInOneFile,startDate,endDate,openDate,closeDate
-        newProblem = [['' for _ in range(9)] for __ in range(numberOfNewProblems+1)]
+        newProblem = [['' for _ in range(len(keys.keys()))] for __ in range(numberOfNewProblems+1)]
         for form in request.form:
             if DELETE in form:
                 isNewProblem = False
@@ -706,12 +729,9 @@ def class_add_user():
             'departmentName':6,
             'courseId':7}
     
-    try:
-        ownCourses = dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID]).\
-                         all()
-    except:
-        error = 'Error has been occurred while searching own courses'
+    error, ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
+    
+    if error:
         return render_template('/class_add_user.html',
                                error = error, 
                                SETResources = SETResources,
@@ -791,7 +811,7 @@ def class_add_user():
         if 'addIndivisualUser' in request.form:
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id,name,college,department,authority)
             numberOfUsers = (len(request.form) - 1) / 5
-            newUser = [['' for _ in range(8)] for __ in range(numberOfUsers + 1)]
+            newUser = [['' for _ in range(len(keys.keys()))] for __ in range(numberOfUsers + 1)]
             
             error, newUser = set_form_value_into_array(keys, request.form, newUser)
             
@@ -989,13 +1009,10 @@ def user_submit_summary():
                                ownProblems=[],
                                ownMembers=[],
                                submissions=[])     
-    try:                 
-        ownMembers = dao.query(Registrations).\
-                         join(RegisteredCourses,
-                              RegisteredCourses.courseId == Registrations.courseId).\
-                         filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID]).\
-                         all()
-    except:
+    
+    error, ownMembers = get_own_members(session[SessionResources().const.MEMBER_ID])
+    
+    if error:    
         return render_template('/class_user_submit_summary.html',
                                error=error, 
                                SETResources = SETResources,
