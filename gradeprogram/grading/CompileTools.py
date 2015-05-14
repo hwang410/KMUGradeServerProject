@@ -82,7 +82,7 @@ class CompileTools(object):
             return "%s%s%s" % ('gcc ', self.filePath, '*.c -o main -lm -w 2>error.err')
             
         elif self.usingLang == 'C++':
-            return "%s%s%s" % ('g++', self.filePath, '*.cpp -o main -lm -w 2>error.err')
+            return "%s%s%s" % ('g++ ', self.filePath, '*.cpp -o main -lm -w 2>error.err')
         
         elif self.usingLang == 'JAVA':
             return "%s%s%s" % ('javac -nowarn -d ./', self.filePath, '*.java 2>error.err')
