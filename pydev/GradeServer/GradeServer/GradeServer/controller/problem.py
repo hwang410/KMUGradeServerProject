@@ -32,7 +32,7 @@ from GradeServer.model.registeredCourses import RegisteredCourses
 from itertools import count
 
 
-@GradeServer.route('/problem_list/<courseId>/page<pageNum>')
+@GradeServer.route('/problem_list/<courseId>/page<int:pageNum>')
 @check_invalid_access
 @login_required
 def problem_list(courseId, pageNum):
@@ -57,7 +57,7 @@ def problem_list(courseId, pageNum):
         try:
             problemListRecords = get_page_record(join_problem_lists_submissions(problems,
                                                                                 submissions),
-                                                 pageNum = int(pageNum)).all()
+                                                 pageNum = pageNum).all()
         except Exception:
             problemListRecords = []
             
@@ -75,13 +75,13 @@ def problem_list(courseId, pageNum):
                                SessionResources = SessionResources,
                                courseRecords = courseRecords,
                                problemListRecords = problemListRecords,
-                               pages = get_page_pointed(pageNum = int(pageNum),
+                               pages = get_page_pointed(pageNum = pageNum,
                                                         count = count))
     except Exception:
         return unknown_error()
 
 
-@GradeServer.route('/problem/<courseId>/<problemId>?page<pageNum>')
+@GradeServer.route('/problem/<courseId>/<problemId>?page<int:pageNum>')
 @check_invalid_access
 @login_required
 def problem(courseId, problemId, pageNum):
