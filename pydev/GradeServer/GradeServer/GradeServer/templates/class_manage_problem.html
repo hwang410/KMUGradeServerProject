@@ -295,6 +295,20 @@
 	</div>
 </div>
 <script>
+/*
+@@ Confirm(edition) button click event
+
+When 'Confirm' button's clicked, submit data
+*/
+$("#editButton").click(function(){
+	document.getElementById("problemForm").submit();
+});
+
+/*
+@@ Confirm(Delete) button click event
+
+When 'Confirm' button's clicked, submit data
+*/
 $("#deleteButton").click(function(){
 	document.getElementById("problemForm").submit();
 });
@@ -306,6 +320,7 @@ $(function(){
 		});
 	}
 });
+
 // target == isAllInputCaseInOneFile_ or startDateOfSubmission_ or endDateOfSubmission_ or openDate_ or closeDate_ or delete_
 function modifySelector(target){ 
 	document.getElementById("editButton").style.display="";
@@ -340,18 +355,20 @@ function modifySelector(target){
 	}
 	// about dates
 	else{
-		var date = targetValue.replace(/\t/g, '').split(' ')[0];
+		var date = targetValue.replace(/\t/g, '').split('<\/script>')[1];
+		alert(date);
 		document.getElementById(target).innerHTML=
 			"<input class='datepicker input-usmall'"+
 				    "'id='"+target+
 				    "'name='edit_"+target+
 				    "'data-date-format='yyyy-mm-dd'"+
-				    "type='date'"+
+				    "type='udate'"+
 				    "value='"+date+
 				    "'autocomplete='off'"+
 				    "placeholder='click' onmousedown='showDatepicker();'>";
 	}
 }
+
 function showDatepicker() {
 	if (!Modernizr.inputtypes['udate']) {
 		$('input[type=udate]').datepicker({
@@ -442,7 +459,7 @@ $("#addline_problem").bind('click', function(){
 							"<input class='"+formsize[i]+
 								    "'id='"+keys[i]+numOfRow+
 								    "'name='"+keys[i]+numOfRow+
-								    "'type='date'"+
+								    "'type='udate'"+
 								    "data-date-format='yyyy-mm-dd'"+
 								    "autocomplete='off'"+
 								    "placeholder='"+placeholders[i]+
