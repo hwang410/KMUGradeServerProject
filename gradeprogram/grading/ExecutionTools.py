@@ -9,16 +9,15 @@ from shutil import copyfile
 RUN_COMMAND_LIST = []
 
 class ExecutionTools(object):
-    def __init__(self, usingLang, limitTime, limitMemory, answerPath, version,
-                 runFileName, problemName, caseCount):
-        self.usingLang = usingLang
-        self.limitTime = limitTime
-        self.limitMemory = limitMemory
-        self.answerPath = answerPath
-        self.version = version
-        self.runFileName = runFileName
-        self.problemName = problemName
-        self.caseCount = caseCount
+    def __init__(self, parameter):
+        self.usingLang = parameter.usingLang
+        self.limitTime = parameter.limitTime
+        self.limitMemory = parameter.limitMemory
+        self.answerPath = parameter.answerPath
+        self.version = parameter.version
+        self.runFileName = parameter.runFileName
+        self.problemName = parameter.problemName
+        self.caseCount = parameter.caseCount
         
     def Execution(self):
         # copy input data
