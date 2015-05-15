@@ -65,6 +65,14 @@ function selectLanguage(selectObj) {
 	editor.setTheme("ace/theme/" + theme);
 }
 
+function selectFiles(selectObj) {
+	var tag = "";
+	for(var i=20; i<selectObj.value; i++) {
+		tag += '<input type="file" name="file[]"><br>';
+	}
+	document.getElementById("multipleFiles").innerHTML = tag;
+}
+
 //dropzone
 Dropzone.options.myDropzoneC = { // The camelized version of the ID of the form element
 	
