@@ -694,7 +694,9 @@
       clearMenus()
 
       if (!isActive) {
-        if ('ontouchstart' in document.documentElement) {
+        // 'a' tag under 'dropdown' was not working in mobile size
+        // So, changed 'ontouchstart' to 'disable-ontouchstart'
+        if ('disable-ontouchstart' in document.documentElement) {
           // if mobile we we use a backdrop because click events don't delegate
           $('<div class="dropdown-backdrop"/>').insertBefore($(this)).on('click', clearMenus)
         }
@@ -2342,7 +2344,7 @@ $(window).resize(function(){
  * limitations under the License.
  * ========================================================= */
 
-(function( $ ) {
+!function( $ ) {
 
   var $window = $(window);
 
@@ -3716,7 +3718,7 @@ $(window).resize(function(){
     $('[data-provide="datepicker-inline"]').datepicker();
   });
 
-}( window.jQuery ));
+}( window.jQuery );
 
 /*
   Bootstrap - File Input

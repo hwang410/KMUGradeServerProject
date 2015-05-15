@@ -74,19 +74,19 @@
 								</label>
 							<td>
 								<input class="datepicker input-usmall" id="startDate1"
-										name="startDate1" data-date-format="yyyy-mm-dd" type="date"
+										name="startDate1" data-date-format="yyyy-mm-dd" type="udate"
 										autocomplete="off" placeholder="click">
 							<td>
 								<input class="datepicker input-usmall" id="endDate1"
-										name="endDate1" data-date-format="yyyy-mm-dd" type="date"
+										name="endDate1" data-date-format="yyyy-mm-dd" type="udate"
 										autocomplete="off" placeholder="click">
 							<td>
 								<input class="datepicker input-usmall" id="openDate1"
-										name="openDate1" data-date-format="yyyy-mm-dd" type="date"
+										name="openDate1" data-date-format="yyyy-mm-dd" type="udate"
 										autocomplete="off" placeholder="click">
 							<td>
 								<input class="datepicker input-usmall" id="closeDate1"
-										name="closeDate1" data-date-format="yyyy-mm-dd" type="date"
+										name="closeDate1" data-date-format="yyyy-mm-dd" type="udate"
 										autocomplete="off" placeholder="click">
 				</table>
 			</div>
@@ -99,7 +99,7 @@
 			</div>
 		</div>
 
-	<form method="post">
+	<form id="problemForm" method="post">
 		<div class="tab-content">
 			<div class="tab-pane active" id="all">
 				<table class="table" id="allProblems">
@@ -295,13 +295,32 @@
 	</div>
 </div>
 <script>
+/*
+@@ Confirm(edition) button click event
+
+When 'Confirm' button's clicked, submit data
+*/
+$("#editButton").click(function(){
+	document.getElementById("problemForm").submit();
+});
+
+/*
+@@ Confirm(Delete) button click event
+
+When 'Confirm' button's clicked, submit data
+*/
+$("#deleteButton").click(function(){
+	document.getElementById("problemForm").submit();
+});
+
 $(function(){
-	if (!Modernizr.inputtypes['date']) {
-		$('input[type=date]').datepicker({
+	if (!Modernizr.inputtypes['udate']) {
+		$('input[type=udate]').datepicker({
 			dateFormat: 'yy-mm-dd'
 		});
 	}
 });
+
 // target == isAllInputCaseInOneFile_ or startDateOfSubmission_ or endDateOfSubmission_ or openDate_ or closeDate_ or delete_
 function modifySelector(target){ 
 	document.getElementById("editButton").style.display="";
@@ -336,21 +355,22 @@ function modifySelector(target){
 	}
 	// about dates
 	else{
-		var date = targetValue.replace(/\t/g, '').split(' ')[0];
+		var date = targetValue.replace(/\t/g, '').split('<\/script>')[1];
 		document.getElementById(target).innerHTML=
 			"<input class='datepicker input-usmall'"+
 				    "'id='"+target+
 				    "'name='edit_"+target+
 				    "'data-date-format='yyyy-mm-dd'"+
-				    "type='date'"+
+				    "type='udate'"+
 				    "value='"+date+
 				    "'autocomplete='off'"+
 				    "placeholder='click' onmousedown='showDatepicker();'>";
 	}
 }
+
 function showDatepicker() {
-	if (!Modernizr.inputtypes['date']) {
-		$('input[type=date]').datepicker({
+	if (!Modernizr.inputtypes['udate']) {
+		$('input[type=udate]').datepicker({
 			dateFormat: 'yy-mm-dd'
 		});
 	}
@@ -438,7 +458,7 @@ $("#addline_problem").bind('click', function(){
 							"<input class='"+formsize[i]+
 								    "'id='"+keys[i]+numOfRow+
 								    "'name='"+keys[i]+numOfRow+
-								    "'type='date'"+
+								    "'type='udate'"+
 								    "data-date-format='yyyy-mm-dd'"+
 								    "autocomplete='off'"+
 								    "placeholder='"+placeholders[i]+
@@ -446,8 +466,8 @@ $("#addline_problem").bind('click', function(){
 		}
 		newRow.insertCell(i).innerHTML=uploadObj;
 	}
-	if (!Modernizr.inputtypes['date']) {
-		$('input[type=date]').datepicker({
+	if (!Modernizr.inputtypes['udate']) {
+		$('input[type=udate]').datepicker({
 			dateFormat: 'yy-mm-dd'
 		});
 	}
@@ -479,28 +499,28 @@ $("#resetAddProblemForm").bind('click', function(){
 			'<td>'+
 				'<input class="datepicker input-usmall" id="startDate1"'+
 						'name="startDate1"'+
-						'data-date-format="yyyy-mm-dd" type="date"'+
+						'data-date-format="yyyy-mm-dd" type="udate"'+
 						'autocomplete="off" placeholder="click">'+
 			'<td>'+
 				'<input class="datepicker input-usmall" id="endDate1"'+
 						'name="endDate1"'+
-						'data-date-format="yyyy-mm-dd" type="date"'+
+						'data-date-format="yyyy-mm-dd" type="udate"'+
 						'autocomplete="off" placeholder="click">'+
 			'<td>'+
 				'<input class="datepicker input-usmall" id="openDate1"'+
 						'name="openDate1"'+
-						'data-date-format="yyyy-mm-dd" type="date"'+
+						'data-date-format="yyyy-mm-dd" type="udate"'+
 						'autocomplete="off" placeholder="click">'+
 			'<td>'+
 				'<input class="datepicker input-usmall" id="closeDate1"'+
 						'name="closeDate1"'+
-						'data-date-format="yyyy-mm-dd" type="date"'+
+						'data-date-format="yyyy-mm-dd" type="udate"'+
 						'autocomplete="off" placeholder="click">' ;
 	
 	document.getElementById("modalError").style.display="none";
 
-	if (!Modernizr.inputtypes['date']) {
-		$('input[type=date]').datepicker({
+	if (!Modernizr.inputtypes['udate']) {
+		$('input[type=udate]').datepicker({
 			dateFormat: 'yy-mm-dd'
 		});
 	}

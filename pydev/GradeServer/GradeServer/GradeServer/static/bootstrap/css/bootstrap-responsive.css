@@ -163,6 +163,10 @@
   .span4 {
     width: 370px;
   }
+  /* carousel item witdh */
+  .carousel-span{
+    width: 320px;
+  }
   .span3 {
     width: 270px;
   }
@@ -273,6 +277,10 @@
   .row-fluid .span4 {
     width: 31.623931623931625%;
     *width: 31.570740134569924%;
+  }
+  .row-fluid .carousel-span{
+    width: 27%;
+    *width: 27%;
   }
   .row-fluid .span3 {
     width: 23.076923076923077%;
@@ -435,6 +443,13 @@
   .uneditable-input.span4 {
     width: 356px;
   }
+
+  input.carousel-span,
+  textarea.carousel-span,
+  .uneditable-input.carousel-span {
+    width: 306px;
+  }
+
   input.span3,
   textarea.span3,
   .uneditable-input.span3 {
@@ -512,6 +527,9 @@
   }
   .span4 {
     width: 228px;
+  }
+  .carousel-span{
+    width: 180px;
   }
   .span3 {
     width: 166px;
@@ -623,6 +641,10 @@
   .row-fluid .span4 {
     width: 31.491712707182323%;
     *width: 31.43852121782062%;
+  }
+  .row-fluid .carousel-span{
+    width: 25%;
+    *width: 25%;
   }
   .row-fluid .span3 {
     width: 22.92817679558011%;
@@ -785,6 +807,12 @@
   .uneditable-input.span4 {
     width: 214px;
   }
+  input.carousel-span,
+  textarea.carousel-span,
+  .uneditable-input.carousel-span {
+    width: 183px;
+  }
+
   input.span3,
   textarea.span3,
   .uneditable-input.span3 {

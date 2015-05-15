@@ -108,7 +108,7 @@
 						<!-- Course Article -->
 						{% for articleRecord in articleRecords %}
 						<tr>
-							<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}
+							<td>{{ (pages['count'] - loop.index0) - (pages['pageNum'] - 1) * pages['LIST'] }}
 							<td>{% if articleRecord.courseId and articleRecord.courseName %}{{ articleRecord.courseId}} {{ articleRecord.courseName }}{% endif %}
 							<td>
 								<a href='{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleRecord.articleIndex) }}'>
@@ -218,7 +218,7 @@
 					<!-- Course Article -->
 					{% for articleRecord in articleRecords %}
 					<tr>
-						<td>{{ (articleRecords|length - loop.index0) + (pages['pageNum'] - 1) * pages['LIST'] }}
+						<td>{{ (pages['count'] - loop.index0) - (pages['pageNum'] - 1) * pages['LIST'] }}
 						<td>{% if articleRecord.courseId and articleRecord.courseName %}{{ articleRecord.courseId}} {{ articleRecord.courseName }}{% endif %}
 						<td>
 							<a href='{{ url_for ("GradeServer.read", activeTabCourseId = activeTabCourseId, articleIndex = articleRecord.articleIndex) }}'>

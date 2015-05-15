@@ -5,6 +5,8 @@ from datetime import datetime
 
 from GradeServer.database import dao
 
+from GradeServer.utils.memberCourseProblemParameter import MemberCourseProblemParameter
+
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.submissions import Submissions
 from GradeServer.model.problems import Problems
@@ -13,19 +15,19 @@ from GradeServer.model.problems import Problems
 '''
 Get Problem Information
 '''
-def select_problem_informations(problemId):
+def select_problem_informations(memberCourseProblemParameter = MemberCourseProblemParameter()):
     return dao.query(Problems).\
-               filter(Problems.problemId == problemId)
+               filter(Problems.problemId == memberCourseProblemParameter.problemId)
                
                
                
 '''
 Get Problems of Course
 '''
-def select_problems_of_course(courseId, problemId = None):
+def select_problems_of_course(memberCourseProblemParameter = MemberCourseProblemParameter()):
     return dao.query(RegisteredProblems).\
-               filter(RegisteredProblems.courseId == courseId,
-                      (RegisteredProblems.problemId == problemId if problemId
+               filter(RegisteredProblems.courseId == memberCourseProblemParameter.courseId,
+                      (RegisteredProblems.problemId == memberCourseProblemParameter.problemId if memberCourseProblemParameter.problemId
                        else RegisteredProblems.openDate <= datetime.now()))
 
 
@@ -56,10 +58,10 @@ def join_problem_lists_submissions(problems, submissions):
 '''
 Submission code View Counting
 '''
-def update_submission_code_view_count(lastSubmission, memberId, courseId, problemId):
+def update_submission_code_view_count(lastSubmission, memberCourseProblemParameter = MemberCourseProblemParameter()):
     dao.query(Submissions).\
-        filter(Submissions.memberId == memberId,
-               Submissions.courseId == courseId,
-               Submissions.problemId == problemId,
+        filter(Submissions.memberId == memberCourseProblemParameter.memberId,
+               Submissions.courseId == memberCourseProblemParameter.courseId,
+               Submissions.problemId == memberCourseProblemParameter.problemId,
                Submissions.submissionCount == lastSubmission.c.submissionCount).\
         update(dict(viewCount = Submissions.viewCount + 1))

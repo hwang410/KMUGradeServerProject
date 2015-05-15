@@ -6,105 +6,112 @@
 {%- block body %}
 <div class="container">
 	<h3>Personal Information</h3>
-	<div class="span12">
+	<h4>
+		<div class="row-fluid">
+			<div class="span3">
+				ID
+			</div>
+			<div class="span8">
+				{%- if memberInformation.memberId %}{{ memberInformation.memberId }}{% endif -%}
+			</div>
+		</div>
+	</h4>
+	<hr class="hidden-tablet hidden-desktop">
+	<form method="post">
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					ID
+					Password
 				</div>
-				<div class="span8">
-					{% if memberInformation.memberId %}{{ memberInformation.memberId }}{% endif %}
+				<div class="span2">
+					<input type="password" name="password" class="input-large"
+							placeholder="Input password" autofocus>
 				</div>
 			</div>
 		</h4>
-		<form method="post">
-			<h4>
-				<div class="row-fluid">
-					<div class="span3">
-						Password
-					</div>
-					<div class="span2">
-						<input type="password" name="password" class="input-large"
-								placeholder="Input password" autofocus>
-					</div>
+		<h4>
+			<div class="row-fluid">
+				<div class="span3">
+					Password(confirm)
 				</div>
-			</h4>
-			<h4>
-				<div class="row-fluid">
-					<div class="span3">
-						Password(confirm)
-					</div>
-					<div class="span8">
-						<input type="password" name="passwordConfirm" class="input-large"
-								placeholder="Confirm password">
-					</div>
+				<div class="span8">
+					<input type="password" name="passwordConfirm" class="input-large"
+							placeholder="Confirm password">
 				</div>
-			</h4>
-			<h4>
-				<div class="row-fluid">
-					<div class="span3">
-						Department
-					</div>
-					<div class="span8">
-						{% if memberInformation.departmentName %}{{ memberInformation.departmentName }}{% endif %}
-					</div>
+			</div>
+		</h4>
+		<hr class="hidden-tablet hidden-desktop">
+		<h4>
+			<div class="row-fluid">
+				<div class="span3">
+					Department
 				</div>
-			</h4>
-			<h4>
-				<div class="row-fluid">
-					<div class="span3">
-						Name
-					</div>
-					<div class="span8">
-						{% if memberInformation.memberName %}{{ memberInformation.memberName }}{% endif %}
-					</div>
+				<div class="span8">
+					{%- if memberInformation.departmentName %}{{ memberInformation.departmentName }}{% endif -%}
 				</div>
-			</h4>
-			<h4>
-				<div class="row-fluid">
-					<div class="span3">
-						Contact Number
-					</div>
-					<div class="span8">
-						<input type="text" class="input-large" name="contactNumber"
-								placeholder="Contact number"
-								{% if memberInformation.contactNumber %}
-								value="{{ memberInformation.contactNumber }}"
-								{% endif -%}>
-					</div>
+			</div>
+		</h4>
+		<hr class="hidden-tablet hidden-desktop">
+		<h4>
+			<div class="row-fluid">
+				<div class="span3">
+					Name
 				</div>
-			</h4>
-			<h4>
-				<div class="row-fluid">
-					<div class="span3">
-						E-mail
-					</div>
-					<div class="span8">
-						<input type="text" class="input-large" name="emailAddress"
-								placeholder="E-mail"
-								{% if memberInformation.emailAddress %}
-								value="{{ memberInformation.emailAddress }}"
-								{% endif -%}>
-					</div>
+				<div class="span8">
+					{%- if memberInformation.memberName %}{{ memberInformation.memberName }}{% endif -%}
 				</div>
-			</h4>
-			<h4>
-				<div class="row-fluid">
-					<div class="span3">
-						Comment
-					</div>
-					<div class="span8">
-						<input type="text" class="input-xxlarge" name="comment"
-								placeholder="Short comment"
-								{% if memberInformation.comment %}
-								value="{{ memberInformation.comment }}"
-								{% endif -%}>
-					</div>
+			</div>
+		</h4>
+		<hr class="hidden-tablet hidden-desktop">
+		<h4>
+			<div class="row-fluid">
+				<div class="span3">
+					Contact Number
 				</div>
-			</h4>
-			<br>
-			<button type="submit" class="btn">Confirm</button>
-		</div>
+				<div class="span8">
+					<input type="text" class="input-large" name="contactNumber"
+							placeholder="Contact number"
+							{%- if memberInformation.contactNumber %}
+							value="{{ memberInformation.contactNumber }}"
+							{% endif -%}>
+				</div>
+			</div>
+		</h4>
+		<h4>
+			<div class="row-fluid">
+				<div class="span3">
+					E-mail
+				</div>
+				<div class="span8">
+					<input type="text" class="input-large" name="emailAddress"
+							placeholder="E-mail"
+							{%- if memberInformation.emailAddress %}
+							value="{{ memberInformation.emailAddress }}"
+							{% endif -%}>
+				</div>
+			</div>
+		</h4>
+		<h4>
+			<div class="row-fluid">
+				<div class="span3">
+					Comment
+				</div>
+				<div class="span8">
+					<input type="text" class="input-xxlarge" name="comment"
+							placeholder="Short comment"
+							{%- if memberInformation.comment %}
+							value="{{ memberInformation.comment }}"
+							{% endif -%}>
+				</div>
+			</div>
+		</h4>
+		<br>
+		<button type="submit" class="btn">Confirm</button>
 	</form>
 </div>
+<style>
+h4{
+	margin-left:20px;
+}
+</style>
 {% endblock -%}

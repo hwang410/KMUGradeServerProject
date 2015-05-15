@@ -14,15 +14,21 @@ import socket
 from flask import render_template, request, session, redirect, url_for, flash
 from datetime import datetime
 
-from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
-from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.loginRequired import login_required
 from GradeServer.utils.checkInvalidAccess import check_invalid_access
+
+from GradeServer.utils.utilPaging import get_page_pointed, get_page_record
+from GradeServer.utils.utilMessages import unknown_error, get_message
 from GradeServer.utils.utilArticleQuery import join_courses_names, select_articles, select_article, select_sorted_articles, select_article_is_like,\
                                                select_replies_on_board, select_replies_on_board_is_like, select_replies_on_board_like, update_view_reply_counting,\
                                                update_article_like_counting, update_article_is_like, update_replies_on_board_like_counting,\
                                                update_replies_on_board_is_like, update_replies_on_board_delete, update_replies_on_board_modify, update_article_delete
 from GradeServer.utils.utilQuery import select_accept_courses, select_count, select_current_courses
+
+from GradeServer.utils.filterFindParameter import FilterFindParameter
+from GradeServer.utils.memberCourseProblemParameter import MemberCourseProblemParameter
+from GradeServer.utils.articleParameter import ArticleParameter
+from GradeServer.utils.replyParameter import ReplyParameter
 
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
@@ -35,6 +41,7 @@ from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 from GradeServer.model.likesOnBoard import LikesOnBoard
 from GradeServer.model.repliesOnBoard import RepliesOnBoard
 from GradeServer.model.likesOnReplyOfBoard import LikesOnReplyOfBoard
+
 from GradeServer.database import dao
 from GradeServer.GradeServer_logger import Log
 from GradeServer.GradeServer_blueprint import GradeServer 
@@ -66,11 +73,12 @@ def board(activeTabCourseId, pageNum):
         # TabActive Course or All Articles
         # get course or All Articles 
         articlesOnBoard = join_courses_names(# get TabActive Articles
-                                             select_articles(activeTabCourseId,
+                                             select_articles(activeTabCourseId = activeTabCourseId,
                                                              isDeleted = ENUMResources().const.FALSE).subquery(),
                                              myCourses).subquery()
                 # 과목 공지글    
         try:  
+            print len(dao.query(articlesOnBoard).all())
             articleNoticeRecords = get_page_record((select_sorted_articles(articlesOnBoard,
                                                                            isNotice = ENUMResources().const.TRUE)),
                                                    pageNum = int(1),
@@ -95,8 +103,8 @@ def board(activeTabCourseId, pageNum):
                 
             articlesOnBoardSub = select_sorted_articles(articlesOnBoard,
                                                         isNotice = ENUMResources().const.FALSE,
-                                                        filterCondition = filterCondition,
-                                                        keyWord = keyWord)
+                                                        filterFindParameter = FilterFindParameter(filterCondition,
+                                                                                                  keyWord))
             count = select_count(articlesOnBoardSub.subquery().\
                                                     c.articleIndex).first().\
                                                                     count
@@ -145,7 +153,7 @@ def article_notice(activeTabCourseId, pageNum):
         # TabActive Course or All Articles
         # get course or All Articles 
         articlesOnBoard = join_courses_names(# get TabActive Articles
-                                             select_articles(activeTabCourseId,
+                                             select_articles(activeTabCourseId = activeTabCourseId,
                                                              isDeleted = ENUMResources().const.FALSE).subquery(),
                                              myCourses).subquery()
                 # 과목 공지글 
@@ -167,8 +175,8 @@ def article_notice(activeTabCourseId, pageNum):
             # Notices Sorted
             articleNoticeRecords = select_sorted_articles(articlesOnBoard,
                                                           isNotice = ENUMResources().const.TRUE,
-                                                          filterCondition = filterCondition,
-                                                          keyWord = keyWord)
+                                                          filterFindParameter = FilterFindParameter(filterCondition,
+                                                                                                    keyWord))
             # Get Notices count
             count = select_count(articleNoticeRecords.subquery().\
                                                       c.articleIndex).\
@@ -215,7 +223,7 @@ def read(activeTabCourseId, articleIndex, error = None):
     ''' when you push a title of board content '''
             # 게시글 정보
     try:
-        articlesOnBoard = select_article(articleIndex,
+        articlesOnBoard = select_article(articleParameter = ArticleParameter(articleIndex = articleIndex),
                                          isDeleted = ENUMResources().const.FALSE)
             
         articlesOnBoard = join_courses_names(articlesOnBoard.subquery(), 
@@ -225,19 +233,19 @@ def read(activeTabCourseId, articleIndex, error = None):
         
         # 내가 게시글에 누른 좋아요 정보
     try:
-        isPostLike = select_article_is_like(articleIndex,
-                                            session[SessionResources().const.MEMBER_ID]).first().\
-                                                                                         isLikeCancelled
+        isPostLike = select_article_is_like(articleParameter = ArticleParameter(articleIndex = articleIndex,
+                                                                                boardLikerId = session[SessionResources().const.MEMBER_ID])).first().\
+                                                                                                                                             isLikeCancelled
     except Exception:
         # Non-Exist Case
         isPostLike = None
     try:
         # replies 정보
-        repliesOnBoardRecords = select_replies_on_board(articleIndex,
+        repliesOnBoardRecords = select_replies_on_board(articleParameter = ArticleParameter(articleIndex = articleIndex),
                                                         isDeleted = ENUMResources().const.FALSE)
                 # 내가 게시글 리플에 누른 좋아요 정보
         repliesOnBoardIsLikeRecords = select_replies_on_board_like(repliesOnBoardRecords.subquery(),
-                                                                   session[SessionResources().const.MEMBER_ID]).all()
+                                                                   memberCourseProblemParameter = MemberCourseProblemParameter(memberId = session[SessionResources().const.MEMBER_ID])).all()
     except Exception:
         repliesOnBoardIsLikeRecords = []
     try:
@@ -261,8 +269,8 @@ def read(activeTabCourseId, articleIndex, error = None):
                 break 
     if request.method == 'GET':
                 # 읽은 횟수 카운팅
-        update_view_reply_counting(articleIndex,
-                          VIEW_INCREASE = 1)
+        update_view_reply_counting(articleParameter = ArticleParameter(articleIndex = articleIndex),
+                                   VIEW_INCREASE = 1)
         
         # Commit Exception
         try:
@@ -302,7 +310,7 @@ def read(activeTabCourseId, articleIndex, error = None):
                         LIKE_INCREASE = -1
                         isLikeCancelled = ENUMResources().const.TRUE
                     
-                update_article_like_counting(articleIndex,
+                update_article_like_counting(articleParameter = ArticleParameter(articleIndex = articleIndex),
                                              LIKE_INCREASE = LIKE_INCREASE)
                 if not isPostLike:
                     # Insert Like
@@ -310,12 +318,12 @@ def read(activeTabCourseId, articleIndex, error = None):
                                          boardLikerId = session[SessionResources().const.MEMBER_ID]))
                 else:
                     # Update Like
-                    update_article_is_like(articleIndex,
-                                           session[SessionResources().const.MEMBER_ID],
+                    update_article_is_like(articleParameter = ArticleParameter(articleIndex = articleIndex,
+                                                                               boardLikerId = session[SessionResources().const.MEMBER_ID]),
                                            isLikeCancelled = isLikeCancelled)
                 # remove duplicated read count
-                update_view_reply_counting(articleIndex,
-                                  VIEW_INCREASE = -1)
+                update_view_reply_counting(articleParameter = ArticleParameter(articleIndex = articleIndex),
+                                           VIEW_INCREASE = -1)
                 
                 break 
                         # 댓글 달기
@@ -327,9 +335,9 @@ def read(activeTabCourseId, articleIndex, error = None):
                                        boardReplierIp = socket.gethostbyname(socket.gethostname()),
                                        boardRepliedDate = datetime.now()))
                 # remove duplicated read count
-                update_view_reply_counting(articleIndex,
-                                  VIEW_INCREASE = -1,
-                                  REPLY_INCREASE = 1)
+                update_view_reply_counting(articleParameter = ArticleParameter(articleIndex = articleIndex),
+                                           VIEW_INCREASE = -1,
+                                           REPLY_INCREASE = 1)
                 
                 flashMsg =get_message('writtenComment')
                 
@@ -339,9 +347,9 @@ def read(activeTabCourseId, articleIndex, error = None):
                 idIndex = len('articleReplyLike')
                                 # 내가 게시글에 누른 좋아요 정보
                 try:
-                    isReplyLike = select_replies_on_board_is_like(int(form[idIndex:]),
-                                                                  session[SessionResources().const.MEMBER_ID]).first().\
-                                                                                                             isLikeCancelled
+                    isReplyLike = select_replies_on_board_is_like(replyParameter = ReplyParameter(boardReplyIndex = int(form[idIndex:]),
+                                                                                                  boardReplyLikerId = session[SessionResources().const.MEMBER_ID])).first().\
+                                                                                                                                                                    isLikeCancelled
                 except Exception:
                     # Non-Exist Case
                     isReplyLike = None
@@ -362,7 +370,7 @@ def read(activeTabCourseId, articleIndex, error = None):
                         isLikeCancelled = ENUMResources().const.TRUE
                         
                 # Like or UnLIke
-                update_replies_on_board_like_counting(int(form[idIndex:]),
+                update_replies_on_board_like_counting(replyParameter = ReplyParameter(boardReplyIndex = int(form[idIndex:])),
                                                       LIKE_INCREASE = LIKE_INCREASE)
                 if not isReplyLike:
                     # Insert Like
@@ -370,24 +378,24 @@ def read(activeTabCourseId, articleIndex, error = None):
                                                 boardReplyLikerId = session[SessionResources().const.MEMBER_ID]))
                 else:
                     # Update Like
-                    update_replies_on_board_is_like(int(form[idIndex:]),
-                                                    session[SessionResources().const.MEMBER_ID],
+                    update_replies_on_board_is_like(replyParameter = ReplyParameter(boardReplyIndex = int(form[idIndex:]),
+                                                                                    boardReplyLikerId = session[SessionResources().const.MEMBER_ID]),
                                                     isLikeCancelled = isLikeCancelled)
                 # remove duplicated read count
-                update_view_reply_counting(articleIndex,
-                                  VIEW_INCREASE = -1)
+                update_view_reply_counting(articleParameter = ArticleParameter(articleIndex = articleIndex),
+                                           VIEW_INCREASE = -1)
                 
                 break 
                         # 댓글 삭제   
             elif 'deleteArticleReply' in form:
                 idIndex = len('deleteArticleReply')
                 
-                update_replies_on_board_delete(int(form[idIndex:]),
+                update_replies_on_board_delete(replyParameter = ReplyParameter(boardReplyIndex = int(form[idIndex:])),
                                                isDeleted = ENUMResources().const.TRUE)
                 # remove duplicated read count
-                update_view_reply_counting(articleIndex,
-                                  VIEW_INCREASE = -1,
-                                  REPLY_INCREASE = -1)
+                update_view_reply_counting(articleParameter = ArticleParameter(articleIndex = articleIndex),
+                                           VIEW_INCREASE = -1,
+                                           REPLY_INCREASE = -1)
                 
                 flashMsg = get_message('deletedComment')
                 
@@ -397,11 +405,12 @@ def read(activeTabCourseId, articleIndex, error = None):
                 idIndex = len('modifyConfirmArticleComment')
                 
                 #update comment
-                update_replies_on_board_modify(int(form[idIndex:]),
-                                               request.form['modifyConfirmArticleComment' + form[idIndex:]])
+                update_replies_on_board_modify(replyParameter = ReplyParameter(boardReplyIndex = int(form[idIndex:]),
+                                                                               boardReplyLikerId = None,
+                                                                               boardReplyContent = request.form['modifyConfirmArticleComment' + form[idIndex:]]))
                 # remove duplicated read count
-                update_view_reply_counting(articleIndex,
-                                  VIEW_INCREASE = -1)
+                update_view_reply_counting(articleParameter = ArticleParameter(articleIndex = articleIndex),
+                                           VIEW_INCREASE = -1)
                 
                
                 flashMsg =get_message('modifiedComment')
@@ -425,7 +434,7 @@ def read(activeTabCourseId, articleIndex, error = None):
                         # 게시물 삭제
             elif form == 'deleteArticle':
 
-                    update_article_delete(articleIndex,
+                    update_article_delete(articleParameter = ArticleParameter(articleIndex = articleIndex),
                                           isDeleted = ENUMResources().const.TRUE)                    
                     # Commit Exception
                     try:
@@ -476,7 +485,7 @@ def write(activeTabCourseId, articleIndex, error =None):
         # Modify Case
         if int(articleIndex) > 0: 
             try:
-                articlesOnBoard = join_courses_names(select_article(articleIndex,
+                articlesOnBoard = join_courses_names(select_article(articleParameter = ArticleParameter(articleIndex = articleIndex),
                                                                     isDeleted = ENUMResources().const.FALSE).subquery(),
                                                      myCourses).first()
             except Exception:
@@ -542,7 +551,7 @@ def write(activeTabCourseId, articleIndex, error =None):
                                         # 게시물 수정    
                     else:
                                                 # 수정 할 글 정보
-                        articlesOnBoard = select_article(articleIndex,
+                        articlesOnBoard = select_article(articleParameter = ArticleParameter(articleIndex = articleIndex),
                                                          isDeleted = ENUMResources().const.FALSE).update(dict(courseId = courseId,
                                                                                                               title = title,
                                                                                                               content = content,

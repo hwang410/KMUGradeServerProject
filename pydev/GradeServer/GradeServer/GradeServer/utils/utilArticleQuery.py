@@ -10,6 +10,11 @@ from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.otherResources import OtherResources
 
+from GradeServer.utils.filterFindParameter import FilterFindParameter
+from GradeServer.utils.memberCourseProblemParameter import MemberCourseProblemParameter
+from GradeServer.utils.articleParameter import ArticleParameter
+from GradeServer.utils.replyParameter import ReplyParameter
+
 from GradeServer.utils.utilPaging import get_page_record
 
 from GradeServer.model.members import Members
@@ -49,17 +54,17 @@ def select_articles(activeTabCourseId, isDeleted = ENUMResources().const.FALSE):
 '''
 Board Article
 '''
-def select_article(articleIndex, isDeleted = ENUMResources().const.FALSE):   
+def select_article(articleParameter = ArticleParameter(), isDeleted = ENUMResources().const.FALSE):   
       
     return dao.query(ArticlesOnBoard).\
-               filter(ArticlesOnBoard.articleIndex == articleIndex,
+               filter(ArticlesOnBoard.articleIndex == articleParameter.articleIndex,
                       ArticlesOnBoard.isDeleted == isDeleted)
                
                               
 '''
 Board Notice Classification
 '''
-def select_sorted_articles(articlesOnBoard, isNotice = ENUMResources().const.FALSE, filterCondition = None, keyWord = None):
+def select_sorted_articles(articlesOnBoard, isNotice = ENUMResources().const.FALSE, filterFindParameter = FilterFindParameter()):
     articlesOnBoard = dao.query(articlesOnBoard).\
                           filter(articlesOnBoard.c.isNotice == isNotice,
                                  (or_(articlesOnBoard.c.courseName == None,
@@ -67,30 +72,30 @@ def select_sorted_articles(articlesOnBoard, isNotice = ENUMResources().const.FAL
                                   else articlesOnBoard.c.courseName != None)).\
                           subquery()
     # Filter Case
-    if filterCondition: 
+    if filterFindParameter\
+       and filterFindParameter.filterCondition: 
         articlesOnBoard = search_articles(articlesOnBoard,
-                                          filterCondition = filterCondition,
-                                          keyWord = keyWord).subquery()
+                                          filterFindParameter).subquery()
         
     return dao.query(articlesOnBoard).\
                order_by(articlesOnBoard.c.articleIndex.desc())
 '''
 게시판 검색
 '''
-def search_articles(articlesOnBoard, filterCondition, keyWord =''):
+def search_articles(articlesOnBoard, filterFindParameter = FilterFindParameter()):
     # condition은 All, Id, Title&Content로 나누어서 검새
-    if filterCondition == '모두': # Filters[0] is '모두'
+    if filterFindParameter.filterCondition == '모두': # Filters[0] is '모두'
         articlesOnBoard = dao.query(articlesOnBoard).\
-                             filter(or_(articlesOnBoard.c.writerId.like('%' + keyWord + '%'), 
-                                        articlesOnBoard.c.title.like('%' + keyWord + '%'),
-                                        articlesOnBoard.c.content.like('%' + keyWord + '%')))
-    elif filterCondition == '작성자': # Filters[1] is '작성자'
+                             filter(or_(articlesOnBoard.c.writerId.like('%' + filterFindParameter.keyWord + '%'), 
+                                        articlesOnBoard.c.title.like('%' + filterFindParameter.keyWord + '%'),
+                                        articlesOnBoard.c.content.like('%' + filterFindParameter.keyWord + '%')))
+    elif filterFindParameter.filterCondition == '작성자': # Filters[1] is '작성자'
         articlesOnBoard = dao.query(articlesOnBoard).\
-                              filter(articlesOnBoard.c.writerId.like('%' + keyWord + '%'))
+                              filter(articlesOnBoard.c.writerId.like('%' + filterFindParameter.keyWord + '%'))
     else: # Filters[2] is '제목&내용'
         articlesOnBoard = dao.query(articlesOnBoard).\
-                              filter(or_(articlesOnBoard.c.title.like('% '+ keyWord + '%'), 
-                                         articlesOnBoard.c.content.like('%' + keyWord + '%')))
+                              filter(or_(articlesOnBoard.c.title.like('% '+ filterFindParameter.keyWord + '%'), 
+                                         articlesOnBoard.c.content.like('%' + filterFindParameter.keyWord + '%')))
 
     return articlesOnBoard
                        
@@ -99,9 +104,9 @@ def search_articles(articlesOnBoard, filterCondition, keyWord =''):
 '''
 Article View Counting
 '''
-def update_view_reply_counting(articleIndex, VIEW_INCREASE = 1, REPLY_INCREASE = 0):
+def update_view_reply_counting(articleParameter = ArticleParameter(), VIEW_INCREASE = 1, REPLY_INCREASE = 0):
     dao.query(ArticlesOnBoard).\
-            filter(ArticlesOnBoard.articleIndex == articleIndex).\
+            filter(ArticlesOnBoard.articleIndex == articleParameter.articleIndex).\
             update(dict(viewCount = ArticlesOnBoard.viewCount + VIEW_INCREASE,
                         replyCount = ArticlesOnBoard.replyCount + REPLY_INCREASE))
             
@@ -110,46 +115,46 @@ def update_view_reply_counting(articleIndex, VIEW_INCREASE = 1, REPLY_INCREASE =
 '''
  Board IsLike
 '''
-def select_article_is_like(articleIndex, boardLikerId):
+def select_article_is_like(articleParameter = ArticleParameter()):
     return dao.query(LikesOnBoard).\
-               filter(LikesOnBoard.articleIndex == articleIndex,
-                      LikesOnBoard.boardLikerId == boardLikerId)
+               filter(LikesOnBoard.articleIndex == articleParameter.articleIndex,
+                      LikesOnBoard.boardLikerId == articleParameter.boardLikerId)
                
 
 '''
 Board Article Like Counting
 '''
-def update_article_like_counting(articleIndex, LIKE_INCREASE = 1):
+def update_article_like_counting(articleParameter = ArticleParameter(), LIKE_INCREASE = 1):
     dao.query(ArticlesOnBoard).\
-        filter(ArticlesOnBoard.articleIndex == articleIndex).\
+        filter(ArticlesOnBoard.articleIndex == articleParameter.articleIndex).\
         update(dict(sumOfLikeCount = ArticlesOnBoard.sumOfLikeCount + LIKE_INCREASE))   
         
         
 '''
 Board Article isLike update
 '''
-def update_article_is_like(articleIndex, boardLikerId, isLikeCancelled = ENUMResources().const.FALSE):
+def update_article_is_like(articleParameter = ArticleParameter(), isLikeCancelled = ENUMResources().const.FALSE):
     dao.query(LikesOnBoard).\
-        filter(LikesOnBoard.articleIndex == articleIndex,
-               LikesOnBoard.boardLikerId == boardLikerId).\
+        filter(LikesOnBoard.articleIndex == articleParameter.articleIndex,
+               LikesOnBoard.boardLikerId == articleParameter.boardLikerId).\
         update(dict(isLikeCancelled = isLikeCancelled))
              
 
 '''
 Board Article delete
 '''
-def update_article_delete(articleIndex, isDeleted = ENUMResources().const.TRUE): 
+def update_article_delete(articleParameter = ArticleParameter(), isDeleted = ENUMResources().const.TRUE): 
     dao.query(ArticlesOnBoard).\
-        filter(ArticlesOnBoard.articleIndex == articleIndex).\
+        filter(ArticlesOnBoard.articleIndex == articleParameter.articleIndex).\
         update(dict(isDeleted = isDeleted))  
         
                     
 '''
 Replies on Board
 '''
-def select_replies_on_board(articleIndex, isDeleted = ENUMResources().const.FALSE):
+def select_replies_on_board(articleParameter = ArticleParameter(), isDeleted = ENUMResources().const.FALSE):
     return dao.query(RepliesOnBoard).\
-               filter(RepliesOnBoard.articleIndex == articleIndex,
+               filter(RepliesOnBoard.articleIndex == articleParameter.articleIndex,
                       RepliesOnBoard.isDeleted == ENUMResources().const.FALSE).\
                order_by(RepliesOnBoard.boardReplyIndex.desc())
                
@@ -157,57 +162,57 @@ def select_replies_on_board(articleIndex, isDeleted = ENUMResources().const.FALS
 '''
 Replies on Board isLike
 '''
-def select_replies_on_board_is_like(boardReplyIndex, boardReplyLikerId):
+def select_replies_on_board_is_like(replyParameter = ReplyParameter()):
     return dao.query(LikesOnReplyOfBoard).\
-               filter(LikesOnReplyOfBoard.boardReplyLikerId == boardReplyLikerId,
-                      LikesOnReplyOfBoard.boardReplyIndex == boardReplyIndex)
+               filter(LikesOnReplyOfBoard.boardReplyLikerId == replyParameter.boardReplyLikerId,
+                      LikesOnReplyOfBoard.boardReplyIndex == replyParameter.boardReplyIndex)
                
 
 '''
 Replies on Board isLike
 '''
-def select_replies_on_board_like(repliesOnBoard, memberId):
+def select_replies_on_board_like(repliesOnBoard, memberCourseProblemParameter = MemberCourseProblemParameter()):
     return dao.query(LikesOnReplyOfBoard).\
                join(repliesOnBoard,
                     and_(LikesOnReplyOfBoard.boardReplyIndex == repliesOnBoard.c.boardReplyIndex,
-                         LikesOnReplyOfBoard.boardReplyLikerId == memberId)).\
+                         LikesOnReplyOfBoard.boardReplyLikerId == memberCourseProblemParameter.memberId)).\
                order_by(LikesOnReplyOfBoard.boardReplyIndex.desc())
                
 
 '''
 Repllies on Board Like Counting
 '''
-def update_replies_on_board_like_counting(boardReplyIndex, LIKE_INCREASE = 1):
+def update_replies_on_board_like_counting(replyParameter = ReplyParameter(), LIKE_INCREASE = 1):
     dao.query(RepliesOnBoard).\
-        filter(RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
+        filter(RepliesOnBoard.boardReplyIndex == replyParameter.boardReplyIndex).\
         update(dict(sumOfLikeCount = RepliesOnBoard.sumOfLikeCount + LIKE_INCREASE))  
         
 '''
 REplies on Board is LIke
 '''
-def update_replies_on_board_is_like(boardReplyIndex, boardReplyLikerId, isLikeCancelled = ENUMResources().const.FALSE):
+def update_replies_on_board_is_like(replyParameter = ReplyParameter(), isLikeCancelled = ENUMResources().const.FALSE):
     dao.query(LikesOnReplyOfBoard).\
-        filter(LikesOnReplyOfBoard.boardReplyIndex == boardReplyIndex,
-               LikesOnReplyOfBoard.boardReplyLikerId == boardReplyLikerId).\
+        filter(LikesOnReplyOfBoard.boardReplyIndex == replyParameter.boardReplyIndex,
+               LikesOnReplyOfBoard.boardReplyLikerId == replyParameter.boardReplyLikerId).\
         update(dict(isLikeCancelled = isLikeCancelled))
 
 
 '''
 Replies on Board Update
 '''
-def update_replies_on_board_modify(boardReplyIndex, boardReplyContent):
+def update_replies_on_board_modify(replyParameter = ReplyParameter()):
     dao.query(RepliesOnBoard).\
-        filter(RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
-        update(dict(boardReplyContent = boardReplyContent,
+        filter(RepliesOnBoard.boardReplyIndex == replyParameter.boardReplyIndex).\
+        update(dict(boardReplyContent = replyParameter.boardReplyContent,
                     boardRepliedDate = datetime.now()))
         
         
 '''
 Repllies on Board delete
 '''
-def update_replies_on_board_delete(boardReplyIndex, isDeleted = ENUMResources().const.TRUE):
+def update_replies_on_board_delete(replyParameter = ReplyParameter(), isDeleted = ENUMResources().const.TRUE):
     dao.query(RepliesOnBoard).\
-        filter(RepliesOnBoard.boardReplyIndex == boardReplyIndex).\
+        filter(RepliesOnBoard.boardReplyIndex == replyParameter.boardReplyIndex).\
         update(dict(isDeleted = isDeleted)) 
 
 
