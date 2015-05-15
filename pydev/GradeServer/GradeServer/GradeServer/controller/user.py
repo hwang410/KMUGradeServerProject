@@ -43,7 +43,7 @@ def close_db_session(exception = None):
 """
 로그인한 유저가 제출 했던 모든기록
 """
-@GradeServer.route('/submission_record/<memberId>-<sortCondition>/page<pageNum>')
+@GradeServer.route('/submission_record/<memberId>-<sortCondition>/page<int:pageNum>')
 @check_invalid_access
 @login_required
 def submission_record(memberId, sortCondition, pageNum):
@@ -79,7 +79,7 @@ def submission_record(memberId, sortCondition, pageNum):
             # Sorted
             submissionRecords = get_page_record(submissions_sorted(submissions,
                                                                    sortCondition = sortCondition),
-                                                pageNum = int(pageNum)).all()
+                                                pageNum = pageNum).all()
         except Exception:
             #None Type Exception
             submissionRecords = []
@@ -92,7 +92,7 @@ def submission_record(memberId, sortCondition, pageNum):
                                submissionRecords = submissionRecords,
                                chartSubmissionDescriptions = chartSubmissionDescriptions,
                                chartSubmissionRecords = chartSubmissionRecords,
-                               pages = get_page_pointed(pageNum = int(pageNum),
+                               pages = get_page_pointed(pageNum = pageNum,
                                                         count = count))
     except Exception:
         # Unknow Error

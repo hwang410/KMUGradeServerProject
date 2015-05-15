@@ -4,15 +4,14 @@ from shutil import copyfile
 from subprocess import call
 
 class GradingTools(object):
-    def __init__(self, gradeMethod, caseCount, usingLang, version, answerPath,
-                 problemName, filePath):
-        self.gradeMethod =gradeMethod 
-        self.caseCount = caseCount
-        self.usingLang = usingLang
-        self.version = version
-        self.answerPath = answerPath
-        self.problemName = problemName
-        self.filePath = filePath
+    def __init__(self, parameter):
+        self.gradeMethod = parameter.gradeMethod 
+        self.caseCount = parameter.caseCount
+        self.usingLang = parameter.usingLang
+        self.version = parameter.version
+        self.answerPath = parameter.answerPath
+        self.problemName = parameter.problemName
+        self.filePath = parameter.filePath
         
     def Grade(self):
         if self.gradeMethod == 'SOLUTION':   # solution
@@ -166,8 +165,7 @@ class GradingTools(object):
         command = self.MakeMulticaseCommand()
         
         try:
-            copyCommand = "%s%s%s" % (self.answerPath, self.problemName,
-                                        '.out')
+            copyCommand = "%s%s%s" % (self.answerPath, self.problemName, '.out')
             copyfile(copyCommand, 'checker.out')
         except Exception as e:
                 print e
