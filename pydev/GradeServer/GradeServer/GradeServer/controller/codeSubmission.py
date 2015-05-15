@@ -131,6 +131,12 @@ def page_move(courseId, pageNum, browserName = None, browserVersion = None):
                                 courseId = courseId,
                                 pageNum = pageNum))
     return "0"
+
+def submit_error(tempPath, courseId, pageNum, error, browserName = None, browserVersion = None):
+    os.system("rm -rf %s" % tempPath)
+    flash(get_message(error))
+    return page_move(courseId, pageNum, browserName, browserVersion)
+
 @GradeServer.route('/problem_<courseId>_<problemId>_<problemName>_<pageNum>_<browserName>_<browserVersion>', methods = ['POST'])
 @check_invalid_access
 @login_required
@@ -144,13 +150,10 @@ def to_process_uploaded_files(courseId, problemId, problemName, pageNum, browser
         sumOfSubmittedFileSize = file_save(memberId, courseId, problemId, uploadFiles, tempPath, filePath)
         send_to_celery(memberId, courseId, problemId, usedLanguageName, sumOfSubmittedFileSize, problemName, filePath, tempPath)
     except OSError as e:
-        flash(get_message('fileError'))
-        return page_move(courseId, pageNum, browserName, browserVersion)
+        submit_error(tempPath, courseId, pageNum, 'fileError', browserName, browserVersion)
     except Exception as e:
         dao.rollback()
-        os.system("rm -rf %s" % tempPath)
-        flash(get_message('dbError'))
-        return page_move(courseId, pageNum, browserName, browserVersion)
+        submit_error(tempPath, courseId, pageNum, 'dbError', browserName, browserVersion)
         
     time.sleep(0.4)
     return page_move(courseId, pageNum, browserName, browserVersion)
@@ -162,7 +165,6 @@ def to_process_written_code(courseId, pageNum, problemId, problemName):
     filePath, tempPath = make_path(PATH, memberId, courseId, problemId, problemName)
     try:
         os.mkdir(tempPath)
-
         usedLanguageName, fileName = write_code_in_file(tempPath)
         fileSize = os.stat(os.path.join(tempPath, fileName)).st_size
         fileIndex = 1
@@ -170,13 +172,10 @@ def to_process_written_code(courseId, pageNum, problemId, problemName):
         insert_submitted_files(memberId, courseId, problemId, fileIndex, fileName, filePath, fileSize)
         send_to_celery(memberId, courseId, problemId, usedLanguageName, fileSize, problemName, filePath, tempPath)
     except OSError as e:
-        flash(get_message('fileError'))
-        return page_move(courseId, pageNum)
+        submit_error(tempPath, courseId, pageNum, 'fileError')
     except Exception as e:
         dao.rollback()
-        os.system("rm -rf %s" % tempPath)
-        flash(get_message('dbError'))
-        return page_move(courseId, pageNum)
+        submit_error(tempPath, courseId, pageNum, 'dbError')
         
     time.sleep(0.4)
     return page_move(courseId, pageNum)
