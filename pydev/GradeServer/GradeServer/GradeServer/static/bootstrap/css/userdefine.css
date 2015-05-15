@@ -197,7 +197,7 @@ thead{
 }
 
 /* search bar -- problems */
-#search-problems { 
+#search-problems {
 	display: block; 
 }
  
@@ -231,21 +231,21 @@ thead{
 /*****************************/
 
 /* autocomplete search */
-.autocomplete-suggestions { 
+.autocomplete-suggestions {
 	border: 1px solid #999; 
 	background: #fff; 
 	cursor: default; 
 	overflow: auto; 
 }
-.autocomplete-suggestion { 
+.autocomplete-suggestion {
 	padding: 10px 5px;
 	white-space: nowrap;
 	overflow: hidden; 
 }
-.autocomplete-selected { 
+.autocomplete-selected {
 	background: #f0f0f0; 
 }
-.autocomplete-suggestions strong { 
+.autocomplete-suggestions strong {
 	font-weight: normal; 
 	color: #3399ff; 
 }
@@ -280,3 +280,22 @@ thead{
 .label-searchLine, .badge-searchLine {
 	background-color: #FFFFA2;
 }
+
+.navbar{
+	font-weight: bold;
+	font-size: 18px;
+}
+
+.carousel-inner .active.left {
+	left: -33%; 
+}
+
+.carousel-inner .next        {
+	left:  33%; 
+}
+
+.carousel-inner .prev        {
+	left: -33%; 
+}
+
+
