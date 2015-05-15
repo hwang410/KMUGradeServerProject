@@ -33,10 +33,10 @@
 			</tr>
 		<tbody>
 			{% for problemListRecord in problemListRecords %}
-			<tr class='alert {%- if problemListRecord.status == "SOLVED" %}alert-info
-						       {% elif problemListRecord.status == "WRONG_ANSWER" %}alert-error
-						       {%- else %}
-						       {% endif -%}'>
+			<tr class='alert{%- if problemListRecord.status == "SOLVED" %} alert-info
+						      {% elif problemListRecord.status == "WRONG_ANSWER" %} alert-error
+						      {%- else %}
+						      {% endif -%}'>
 				<td class="hidden-phone">
 					{{ (pages['count'] - loop.index0) - (pages['pageNum'] - 1) * pages['LIST'] }}
 				<td>
