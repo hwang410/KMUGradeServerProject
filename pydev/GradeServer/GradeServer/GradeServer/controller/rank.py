@@ -36,7 +36,7 @@ def close_db_session(exception = None):
 로그인한 유저가 랭크 페이지를 눌렀을 때
 페이지 별로 보여줌
 """    
-@GradeServer.route('/rank/<activeTabCourseId>-<sortCondition>/page<pageNum>', methods = ['GET', 'POST'])
+@GradeServer.route('/rank/<activeTabCourseId>-<sortCondition>/page<int:pageNum>', methods = ['GET', 'POST'])
 @check_invalid_access
 @login_required
 def rank(activeTabCourseId, sortCondition, pageNum, error =None):
@@ -61,7 +61,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
             count = 0
             
         # Paging Pointed
-        pages = get_page_pointed(pageNum = int(pageNum),
+        pages = get_page_pointed(pageNum = pageNum,
                                  count = count)
         submissions = ranks_sorted(submissions,
                                    sortCondition = sortCondition)
@@ -94,7 +94,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
                 # 랭크 정보
         try:
             rankMemberRecords = get_page_record(submissions,
-                                                pageNum = int(pageNum)).all()
+                                                pageNum = pageNum).all()
         except Exception:
             rankMemberRecords = []
         
