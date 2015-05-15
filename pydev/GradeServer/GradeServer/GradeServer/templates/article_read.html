@@ -91,11 +91,6 @@
 	<hr style ='margin-top:0%;margin-bottom:0%'>
 	<div class='row-fluid'>
 		<form method="post" id="myform">
-			<a href='{{ url_for ("GradeServer.submission_record", memberId=repliesOnBoardRecord.boardReplierId, sortCondition="submissionDate", pageNum=1) }}'>
-				{% if repliesOnBoardRecord.boardReplierId %}{{ repliesOnBoardRecord.boardReplierId }}{% endif %}</a>
-			:
-			<!-- Content, WrittenDate -->
-			
 			{% if boardReplyIndex and boardReplyIndex == repliesOnBoardRecord.boardReplyIndex %}
 			<div class='row-fluid'>
 				<div class="span11">
@@ -106,13 +101,24 @@
 				</div>
 			</div>
 			
+			<!-- Content, WrittenDate -->
 			{% else %}
+			
 			<div class='row-fluid'>
 				<div class="span11">
 					<textarea class="span11" style="width:100%" readonly ="reaonly" onclick="autoSize(this)" rows=6>{% if repliesOnBoardRecord.boardReplyContent %}{{ repliesOnBoardRecord.boardReplyContent }}{% endif %}
 					</textarea>
-				{% if repliesOnBoardRecord.boardRepliedDate %}{{ repliesOnBoardRecord.boardRepliedDate }}{% endif %}
-			<!-- like button -->
+					
+					<a href='{{ url_for ("GradeServer.submission_record", memberId=repliesOnBoardRecord.boardReplierId, sortCondition="submissionDate", pageNum=1) }}'>
+					{% if repliesOnBoardRecord.boardReplierId %}{{ repliesOnBoardRecord.boardReplierId }}{% endif %}
+					</a>
+					:
+			
+				{% if repliesOnBoardRecord.boardRepliedDate %}
+				{{ repliesOnBoardRecord.boardRepliedDate }}
+				{% endif %}
+				
+					<!-- like button -->
 					<button class="like btn btn-link" href="#" name="articleReplyLike{{ repliesOnBoardRecord.boardReplyIndex }}" type="submit">
 						{% if isLikeRecords[loop.index0] == 'TRUE' %} 
 						<i class="icon-thumbs-up"></i>
@@ -120,10 +126,16 @@
 						<i class="icon-thumbs-down"></i>
 						{% endif %}
 					</button>
-					{% if repliesOnBoardRecord.sumOfLikeCount %}{{ repliesOnBoardRecord.sumOfLikeCount }}{% else %}0{% endif %}&nbsp;&nbsp;
+					
+					{% if repliesOnBoardRecord.sumOfLikeCount %}
+					{{ repliesOnBoardRecord.sumOfLikeCount }}
+					{% else %}0
+					{% endif %}
+					
+					&nbsp;&nbsp;
 			
-			<!-- delete button -->
-			<!-- replier and masters are availables to delete the comments -->
+					<!-- delete button -->
+					<!-- replier and masters are availables to delete the comments -->
 					{% if repliesOnBoardRecord.boardReplierId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
 					<a href="#deleteArticleReply{{ repliesOnBoardRecord.boardReplyIndex }}" role="button" class="btn btn-link" data-toggle="modal">
 						<i class="icon-trash"></i>
@@ -156,10 +168,22 @@
 </div>
 <style> textarea {width:300px;overflow:visible} </style>
 <script>
+	// Auto Size
 	function autoSize(obj) {
+	
 	  obj.style.height="1px";
 	  obj.style.height=(20 + obj.scrollHeight) + "px";
-}
+	}
+	
+	// Reply Like Button
+	function replyLikeClick (string){
+                 	
+		var dropDownCondition = document.getElementById("dropDownCondition") ;
+		dropDownCondition.innerHTML = string + "<b class = 'caret'></b>" ;
+		
+		var filterCondition = document.getElementById("filterCondition") ;
+		filterCondition.name = string ;
+     }
 </script>
 <!-- end comment block -->
 {% endblock %}
