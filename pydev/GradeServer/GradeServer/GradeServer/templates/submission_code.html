@@ -24,7 +24,7 @@
 						<tr>
 							<td>{% if problemSolvedMemberRecords.memberId %}{{ problemSolvedMemberRecords.memberId }}{% endif %}</td>
 							<td>{% if problemSolvedMemberRecords.runTime %}{{ problemSolvedMemberRecords.runTime }}{% else %}0{% endif %} ms</td>
-							<td>{% if problemSolvedMemberRecords.usedMemroy %}{{ problemSolvedMemberRecords.usedMemory }}{% else %}0{% endif %} MB</td>
+							<td>{% if problemSolvedMemberRecords.usedMemory %}{{ problemSolvedMemberRecords.usedMemory }}{% else %}0{% endif %} MB</td>
 							<td>{% if problemSolvedMemberRecords.sumOfSubmittedFileSize %}{{ problemSolvedMemberRecords.sumOfSubmittedFileSize }}{% endif %} Byte</td>
 							<td style="text-align: center"><button type="button" id="code-down">Download source code</button></td>
 						</tr>
