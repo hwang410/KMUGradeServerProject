@@ -1000,6 +1000,7 @@ def user_submit_summary():
                                RegisteredProblems.courseId == RegisteredCourses.courseId).\
                           filter(RegisteredCourses.courseAdministratorId == session[SessionResources().const.MEMBER_ID]).\
                           all()
+                          
     except:
         return render_template('/class_user_submit_summary.html',
                                error=error, 
@@ -1010,9 +1011,9 @@ def user_submit_summary():
                                ownMembers=[],
                                submissions=[])     
     
-    error, ownMembers = get_own_members(session[SessionResources().const.MEMBER_ID])
-    
-    if error:    
+    error, ownMembers = get_own_members(SessionResources().const.MEMBER_ID)
+
+    if error:
         return render_template('/class_user_submit_summary.html',
                                error=error, 
                                SETResources = SETResources,
@@ -1022,8 +1023,13 @@ def user_submit_summary():
                                ownMembers=[],
                                submissions=[])                     
     try:
-        submissions = dao.query(Submissions.memberId,Submissions.courseId,Submissions.problemId,func.max(Submissions.submissionCount).label("maxSubmissionCount")).\
-                      group_by(Submissions.memberId,Submissions.courseId,Submissions.problemId).\
+        submissions = dao.query(Submissions.memberId,
+                                Submissions.courseId,
+                                Submissions.problemId,
+                                func.max(Submissions.submissionCount).label("maxSubmissionCount")).\
+                      group_by(Submissions.memberId,
+                               Submissions.courseId,
+                               Submissions.problemId).\
                       subquery()
 
         latestSubmissions = dao.query(Submissions).\
