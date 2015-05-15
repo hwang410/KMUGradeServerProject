@@ -47,26 +47,29 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 		</h4>
 	</div>
 	<div class="row-fluid" style="padding-top:50px">
-		<div class="span3">
+		<div class="span4">
 			<!-- chart section -->
 			<div class="row-fluid" style="text-align:center">
 				<div class="spanX">
-					<canvas id="submitChart" width="200%"></canvas>
+					<canvas id="submitChart" width="180px"></canvas>
 				</div>
 				<div class="spanY">
-					{% for i in range (0, chartSubmissionDescriptions|length) %}
-					<!--  chartSubmissionRecords is Value, chartSubmissionDescriptions is Description -->
-					<h4 style ="padding-bottom:5px">
-						{{ chartSubmissionDescriptions[i] }}
-						{% if not chartSubmissionRecords[i] %}0{% else %}{{ chartSubmissionRecords[i] }}{% endif %}
-						<br>
+					<h4>
+						<!--  chartSubmissionRecords is Value, chartSubmissionDescriptions is Description -->
+						<table style="padding-bottom:5px;width:100%">
+						{% for i in range (0, chartSubmissionDescriptions|length) %}
+						<tr>
+							<td style="width:69%">{{ chartSubmissionDescriptions[i] }}
+							<td style="width:31%">{% if not chartSubmissionRecords[i] %}0{% else %}{{ chartSubmissionRecords[i] }}{% endif %}
+						</tr>
+						{% endfor %}
+						</table>
 					</h4>
-					{% endfor %}
 				</div>
 			</div>
 		</div>
 		<!-- user list section -->
-		<div class="user_list span9" style="text-align:center">
+		<div class="user_list span8" style="text-align:center">
 			<table class="problem_list table table-bordered">
 				<thead>
 					<tr>
@@ -96,8 +99,8 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 													courseId = courseId, 
 													problemId = problemInformationRecords.problemId, 
 													sortCondition = "submissionDate") }}'>Date
-						<td><span class="hidden-phone">Code</span>View
-						<td class="hidden-phone">View Count
+						<td>Code
+						<td class="hidden-phone">View
 					</tr>
 				<tbody>
 				{% for problemSolvedMemberRecord in problemSolvedMemberRecords %}
@@ -120,8 +123,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 						{% else %}
 						0
 						{% endif %}
-						<span class="hidden-phone hidden-tablet"> Byte</span>
-						<span class="visible-phone visible-tablet"> B</span>
+						KB
 					<td>
 						{% if problemSolvedMemberRecord.sumOfSubmittedFileSize %}
 						{{ problemSolvedMemberRecord.sumOfSubmittedFileSize }}
@@ -133,9 +135,18 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 					<td>
 						{% if problemSolvedMemberRecord.codeSubmissionDate %}
 						<script>
-						var newDate = "{{ problemSolvedMemberRecord.codeSubmissionDate }}";
-						document.write(newDate.substring(2,16));
+							var newDate = "{{ problemSolvedMemberRecord.codeSubmissionDate }}";
 						</script>
+						<span class="visible-desktop">
+							<script>
+								document.write(newDate.substring(2,16));
+							</script>
+						</span>
+						<span class="visible-tablet visible-phone">
+							<script>
+								document.write(newDate.substring(2,10));
+							</script>
+						</span>
 						{% endif %}
 					<td style ='vertical-align'>
 						<a href='{{ url_for("GradeServer.submission_code", courseId = courseId, problemId = problemInformationRecords.problemId, memberId = problemSolvedMemberRecord.memberId) }}'>

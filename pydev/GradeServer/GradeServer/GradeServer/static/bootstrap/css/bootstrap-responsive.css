@@ -62,13 +62,13 @@
 }
 
 .visible-desktop {
-  display: inherit !important;
+  display: inline-block !important;
 }
 
 /* Portrait tablet to landscape and desktop */
 @media (min-width: 768px) and (max-width: 979px) {
   .hidden-desktop {
-    display: inherit !important;
+    display: inline-block !important;
   }
   .visible-desktop {
     display: none !important ;
@@ -84,7 +84,7 @@
 /* Landscape phone to portrait tablet */
 @media (max-width: 767px) {
   .hidden-desktop {
-    display: inherit !important;
+    display: inline-block !important;
   }
   .visible-desktop {
     display: none !important;

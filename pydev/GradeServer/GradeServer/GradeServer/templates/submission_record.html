@@ -46,37 +46,52 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 			{% endif -%}
 				's submission history
 		</h3>
+		<div class="visible-phone visible-tablet" style="margin-bottom:10px">
+			<style>
+			.alert{
+				padding: 5px;
+			}
+			</style>
+			<span class="alert alert-info">Solved</span>
+			<span class="alert alert-error">Wrong</span>
+			<span class="alert">NeverSubmitted & Error</span>
+		</div>
 	</div>
 	<div class="row-fluid" style="padding-top:20px">
-		<div class="span3">
+		<div class="span4">
 			<!-- Chart -->
 			<div class="row-fluid" style="text-align:center">
 				<div class="spanX">
-					<canvas id="submitChart" width="200%"></canvas>
+					<canvas id="submitChart" width="180px"></canvas>
 				</div>
 				<div class="spanY">
 					<style> h4{ padding-bottom: 5px; } </style>
-					{%- for i in range (0, chartSubmissionDescriptions|length) %}
 					<h4>
+						<table style="width:100%">
 						<!--  chartSubmissionRecords is Value, chartSubmissionDescriptions is Description -->
-						{{ chartSubmissionDescriptions[i] }} :&nbsp;{%- if chartSubmissionRecords[i] %}{{ chartSubmissionRecords[i] }}{%- else %}0{% endif -%}
-						<br>
+						{%- for i in range (0, chartSubmissionDescriptions|length) %}
+						<tr>
+							<td style="width:69%">{{ chartSubmissionDescriptions[i] }}
+							<td style="width:31%">{%- if chartSubmissionRecords[i] %}{{ chartSubmissionRecords[i] }}{%- else %}0{% endif -%}
+						</tr>
+						{% endfor -%}
+						</table>
 					</h4>
-					{% endfor -%}
 				</div>
 			</div>
 		</div>
 		<!-- end Chart -->
 		<!--  startList -->
-		<div class="span9" style="text-align:center">
-			<table class="problem_list table table-striped">
+		<div class="span8" style="text-align:center">
+			<table class="problem_list table table-bordered">
 				<thead>
 					<tr>
 						<td>Problem
-						<td>Status
+						<td class="hidden-phone hidden-tablet">Status
 						<td>Score
 						<td class="hidden-phone">
-							Language
+							<span class="hidden-tablet hidden-phone">Language</span>
+							<span class="hidden-desktop">Lang</span>
 						<td class="hidden-phone">
 							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='runTime', pageNum = pages['pageNum']) }}">
 							Runtime
@@ -87,28 +102,27 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 							</a>
 						<td class="hidden-phone">
 							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='codeLength', pageNum = pages['pageNum']) }}">
-							Length
+								<span class="hidden-tablet hidden-phone">Length</span>
+								<span class="hidden-desktop">Len</span>
 							</a>
 						<td>
 							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='submissionDate', pageNum = pages['pageNum']) }}">
 							Date
 							</a>
 					</tr>
-				</thead>
+				<tbody>
 					{%- for submissionRecord in submissionRecords %}
-					<tr>
+					<tr class='alert{%- if submissionRecord.status == "SOLVED" %} alert-info
+								      {% elif submissionRecord.status == "WRONG_ANSWER" %} alert-error
+								      {%- else %}
+								      {% endif -%}'>
 						<td>
 							{%- if submissionRecord.problemName %}
 							{{ submissionRecord.problemName }}
 							{% endif -%}
-						<td>
+						<td  class="hidden-phone hidden-tablet">
 							{%- if submissionRecord.status %}
-							<span class='label label-
-											{%- if submissionRecord.status == 'SOLVED' %}info
-											{%- elif submissionRecord.status == 'WRONG_ANSWER' %}important
-											{%- else %}warning{% endif -%}'>
-								{{ submissionRecord.status }}
-							</span>
+							{{ submissionRecord.status }}
 							{% endif -%}
 						<td>
 							{%- if submissionRecord.score %}
@@ -133,15 +147,24 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 							{%- else %}
 							0
 							{% endif -%}
-							Byte
+							KB
 						<td class="hidden-phone">
 							{%- if submissionRecord.sumOfSubmittedFileSize %}
 							{{ submissionRecord.sumOfSubmittedFileSize }}
 							{% endif -%}
-							Byte
+							<span class="hidden-tablet hidden-phone">Byte</span>
+							<span class="hidden-desktop">B</span>
 						<td>
 							{%- if submissionRecord.codeSubmissionDate %}
-							<script> var newDate = "{{ submissionRecord.codeSubmissionDate }}"; document.write(newDate.substring(2,16)); </script>
+							<script> 
+								var newDate = "{{ submissionRecord.codeSubmissionDate }}"; 
+							</script>
+							<span class="hidden-tablet hidden-phone">
+								<script>document.write(newDate.substring(2,16)); </script>
+							</span>
+							<span class="hidden-desktop">
+								<script>document.write(newDate.substring(2,10)); </script>
+							</span>
 							{% endif -%}
 					</tr>
 					{% endfor -%}
@@ -176,5 +199,12 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 		</div>
 	</div>
 </div>
+<script>
+$(window).resize(function(){
+	if($(window).width() < 768){
+
+	}
+});
+</script>
 {% endblock -%}
 
