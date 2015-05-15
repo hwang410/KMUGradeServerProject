@@ -22,9 +22,9 @@
 	<link rel="shortcut icon" href="../../static/bootstrap/img/kookmin_logo_white.jpg"> 
 </head>
 <body>
-	<!-- /////////////////////////////////////
-		navigation bar section
-	//////////////////////////////////// -->
+	<!-- 
+	@@ Navigation bar 
+	-->
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
@@ -33,17 +33,17 @@
 					<span class="icon-bar"></span>	
 					<span class="icon-bar"></span>
 				</button>
-				<a class="link-main" href="{{ url_for('GradeServer.sign_in') }}" width="10px"><img src="../../static/bootstrap/img/kookmin_logo_dark.jpg" style="height:40px;width:40px"> KMU Grade Server </a>
+				<a class="link-main" href="{{ url_for('GradeServer.sign_in') }}" width="10px" style=""><img src="../../static/bootstrap/img/kookmin_logo_dark.jpg" style="height:40px;width:40px"> KMU Grade Server </a>
 				<div class="nav-collapse collapse" >
 					<ul class="nav">
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Problem<b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Problems<b class="caret"></b></a>
 							{%- if session['memberId'] != NULL %}
 							<ul class="dropdown-menu">
 								<li class="nav-header">Current Class</li>
 								{%- if session[SessionResources.const.OWN_CURRENT_COURSES] %}
 									{%- for course in session[SessionResources.const.OWN_CURRENT_COURSES] %}
-									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="currentClasses main-checker">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum=1) }}" class="currentClasses main-checker">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
 								<li class="disabled"><a tabindex="-1" href="#" class="main-checker">None</a></li>
@@ -54,7 +54,7 @@
 								<li class="nav-header">Past Class</li>
 								{%- if session[SessionResources.const.OWN_PAST_COURSES] %}
 									{%- for course in session[SessionResources.const.OWN_PAST_COURSES] %}
-									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum = 1) }}" class="pastClasses main-checker">{{ course.courseId }} {{ course.courseName }}</a></li>
+									<li><a href="{{ url_for('GradeServer.problem_list', courseId=course.courseId, pageNum=1) }}" class="pastClasses main-checker">{{ course.courseId }} {{ course.courseName }}</a></li>
 									{% endfor -%}
 								{%- else %}
 								<li class="disabled"><a tabindex="-1" href="#" class="main-checker">None</a></li>
@@ -63,161 +63,216 @@
 							{% endif -%}
 						</li>
 						<li>
-							<a href="{{ url_for('GradeServer.rank', activeTabCourseId = 'All', sortCondition ='rate', pageNum = 1) }}">Rank</a>
+							<a href="{{ url_for('GradeServer.rank', activeTabCourseId='All', sortCondition='rate', pageNum=1) }}">Rank</a>
 						</li>
 						<li>
-							<a href="{{ url_for('GradeServer.board', activeTabCourseId = 'All', pageNum =1) }}">Board</a>
+							<a href="{{ url_for('GradeServer.board', activeTabCourseId='All', pageNum=1) }}">Board</a>
 						</li>
+						<!--
+						@@ Team menu
+
+						Team menu is supposed to move into 'Problems'
+						Hidden from navigation bar
+						-->
 						<li class="hidden">
-							<a href="{{ url_for('GradeServer.team', pageNum =1) }}">Team</a>
+							<a href="{{ url_for('GradeServer.team', pageNum=1) }}">Team</a>
 						</li>
 						
-						<!-- changing section after signing in -->
+						<!--
+						@@ Section up to state of signing
+						-->
 						{%- if session['memberId'] != NULL %}
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ session['memberId'] }}<b class="caret"></b></a>
+							<a class="dropdown-toggle" href="#" data-toggle="dropdown">{{ session['memberId'] }}<b class="caret"></b></a>
 							<ul class="dropdown-menu">
+								<!--
+								@@ Menus up to authority
+								-->
 								{%- if SETResources.const.SERVER_ADMINISTRATOR not in session['authority'] and SETResources.const.COURSE_ADMINISTRATOR not in session['authority'] %}
 								<li>
-									<a href="{{ url_for('GradeServer.submission_record', memberId =session['memberId'], sortCondition ='submissionDate', pageNum =1) }}" class="main-checker">Record</a>
+									<a class="main-checker" href="{{ url_for('GradeServer.submission_record', memberId=session['memberId'], sortCondition='submissionDate', pageNum=1) }}">Record</a>
 								</li>
 								{% endif %}
-								<li><a href="{{ url_for('GradeServer.id_check', select='account') }}" class="main-checker">Account</a></li>
-								<li><a href="{{ url_for('GradeServer.article_notice', activeTabCourseId = 'All', pageNum =1) }}" class="main-checker">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
-								<li><a href="#" class="main-checker">Manual</a></li>
+								<li><a class="main-checker" href="{{ url_for('GradeServer.id_check', select='account') }}">Account</a></li>
+								<li><a class="main-checker" href="{{ url_for('GradeServer.article_notice', activeTabCourseId='All', pageNum=1) }}">Notice</a></li> <!-- same with board, the difference is db-query for contents -->
+								<li><a class="main-checker" href="#">Manual</a></li>
 								{%- if SETResources.const.SERVER_ADMINISTRATOR in session['authority'] %}
 								<li class="dropdown-submenu">
 									<a class="dropdown-toggle main-checker" data-toggle="dropdown" href="#" id="server-management">Server Management</a>
 									<ul class="dropdown-menu" id="menu-box">
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_collegedepartment') }}" id='manage-collegedepartment' class="main-checker">College&Department</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_class') }}" id='manage-class' class="main-checker">Class</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_problem') }}" id='manage-problem' class="main-checker">Problem</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_user') }}" id='manage-user' class="main-checker">User</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='server_manage_service') }}" id='manage-service' class="main-checker">Service</a></li>
+										<li><a class="main-checker" id='manage-collegedepartment' href="{{ url_for('GradeServer.id_check', select='server_manage_collegedepartment') }}">College&Department</a></li>
+										<li><a class="main-checker" id='manage-class' href="{{ url_for('GradeServer.id_check', select='server_manage_class') }}">Class</a></li>
+										<li><a class="main-checker" id='manage-problem' href="{{ url_for('GradeServer.id_check', select='server_manage_problem') }}">Problem</a></li>
+										<li><a class="main-checker" id='manage-user' href="{{ url_for('GradeServer.id_check', select='server_manage_user') }}">User</a></li>
+										<li><a class="main-checker" id='manage-service' href="{{ url_for('GradeServer.id_check', select='server_manage_service') }}">Service</a></li>
 									</ul>
 								</li>
 								{%- elif SETResources.const.COURSE_ADMINISTRATOR in session['authority'] %}
 								<li class="dropdown-submenu">
-									<a class="dropdown-toggle main-checker" data-toggle="dropdown" href="#" id="class-server-management">Class Management</a>
+									<a class="dropdown-toggle main-checker" id="class-server-management" data-toggle="dropdown" href="#">Class Management</a>
 									<ul class="dropdown-menu" id="menu-box">
-										<li><a href="{{ url_for('GradeServer.id_check', select='user_submit') }}" id='manage-problem' class="main-checker">User Submit</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_problem') }}" id='manage-class' class="main-checker">Problem</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_user') }}" id='manage-user' class="main-checker">User</a></li>
-										<li><a href="{{ url_for('GradeServer.id_check', select='cm_manage_service') }}" id='manage-service' class="main-checker">Service</a></li>
+										<li><a class="main-checker" id='manage-problem' href="{{ url_for('GradeServer.id_check', select='user_submit') }}">User Submit</a></li>
+										<li><a class="main-checker" id='manage-class' href="{{ url_for('GradeServer.id_check', select='cm_manage_problem') }}">Problem</a></li>
+										<li><a class="main-checker" id='manage-user' href="{{ url_for('GradeServer.id_check', select='cm_manage_user') }}">User</a></li>
+										<li><a class="main-checker" id='manage-service' href="{{ url_for('GradeServer.id_check', select='cm_manage_service') }}">Service</a></li>
 									</ul>
 								</li>
 								{% endif -%}
-								<li><a href="{{ url_for('GradeServer.sign_out') }}" class="main-checker">Sign out</a></li>
+								<li><a class="main-checker" href="{{ url_for('GradeServer.sign_out') }}">Sign out</a></li>
 							</ul>
 						</li>
 						<li style="display:none"><a href="#"><i class="icon-bell icon-white"></i></a></li>
 						{%- else %}
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><abbr title="Big welcome!">Sign in </abbr><b class="caret"></b></a>
+							<a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign in <b class="caret"></b></a>
 							<ul class="dropdown-menu">
-								<form class="sign-in" method="post" action = '{{ url_for("GradeServer.sign_in") }}'>
-									<div><input class="span2" id="id" name="memberId" type="text" placeholder="ID" autocomplete="off" autofocus ="autofocus"></div>
-									<div><input class="span2" id="pw" name="password" type="password" placeholder="Password"></div>
+								<form class="sign-in" method="post" action='{{ url_for("GradeServer.sign_in") }}'>
+									<div>
+										<input class="span2" id="id" name="memberId" type="text" placeholder="ID" autocomplete="off" autofocus="autofocus">
+									</div>
+									<div>
+										<input class="span2" id="pw" name="password" type="password" placeholder="Password">
+									</div>
 									<button type="submit" class="btn">Sign in</button>
 								</form>
 							</ul>
 						</li>
 						{% endif -%}
 					</ul>
-					{%- if session['memberId'] == NULL %}
+					<!--
+					@@ Sign up button
+					
+					Members will be registered by course administrator.
+					It can be showing up if you allow users sign up into this service by themselves.
+
+					Currently users should be registered by adminitrators, so its state is hidden.
+					-->
+					{%- if session['memberId']==NULL %}
 					<a class="btn pull-right hidden" href="{{ url_for('GradeServer.sign_up') }}" style="margin:15px 5px 10px 0px">Sign up</a>
 					{% endif -%}
 				</div>
 			</div>
 		</div>
 	</div>
-	
-	<!-- ///////////////////////////////////
-		flash pop section
-	//////////////////////////////////// -->
-	{%- with flashes = get_flashed_messages() %}
-	{%- if flashes %}
-	<ul class="flashes">
-		{%- for message in flashes %}
-		<li>{{ message }}</li>
-		{% endfor -%}
-	</ul>
-	{% endif -%}
-	{% endwith -%}
+
 	<!-- ///////////////////////////////////
 		container section
 	//////////////////////////////////// -->
 	<!-- ///// body section ///// -->
 	<div class="body">
-		{%- if error %}<div class="container"><div class="error alert alert-error" id="errorAlert" style="width:100%;padding-right:0px;margin-bottom:0px"> {{ error }}</div></div>{% endif -%}
+		<!-- 
+		@@ Flash message
+	
+		This will display success message of works.
+		-->
+		{%- with flashes=get_flashed_messages() %}
+		{%- if flashes %}
+		<div class="container">
+			<div class="alert alert-info">
+				{%- for message in flashes %}
+				{{ message }}
+				{% endfor -%}
+			</div>
+		</div>
+		{% endif -%}
+		{% endwith -%}
+
+		<!--
+		@@ Error message
+
+		This will display error message of works.
+		Usually shows from 'return' command in python.
+		-->
+		{%- if error %}
+		<div class="container">
+			<div class="error alert alert-error" id="errorAlert" style="width:100%;padding-right:0px;margin-bottom:0px"> {{ error }}</div>
+		</div>
+		{% endif -%}
+		
 		{%- block body %}
 		<div class="container">
 			<h2>Kookmin University Online Judge System</h2>
 		</div>
-		<div class="container" style="height:300px">
-			<!-- ///// carousel section ///// -->
-			<div id="myCarousel" class="carousel slide" data-ride="carousel">
-				<!-- Indicators -->
-				<ol class="carousel-indicators" style="width:51.5%">
-				{%- for noticeRecord in noticeRecords %}
-					{% if loop.index0 == 0 %} 
-						<li data-target='#myCarousel' data-slide-to='{{ loop.index0 }}' class='active'></li>
-					{% else %}
-						<li data-target='#myCarousel' data-slide-to='{{ loop.index0 }}'></li>
-					{% endif %}
-				{% endfor -%}
-				</ol>
-				<div class="carousel-inner" role="listbox">
+		<div class="container">
+			<!--
+			@@ Carousel section
+			-->
+			<div class="carousel slide" id="myCarousel" style="width:98%" data-ride="carousel">
+				<div class="carousel-inner" style="position:relative;left:10px">
 					{%- for noticeRecord in noticeRecords %}
-						{% if loop.index0 == 0 %}
-						<div class='item active'>
-						{% else %}
-						<div class='item'>
-						{% endif %}
-							<div class="container">
-								<div class="carousel-caption">
-									<a href ="{{ url_for ('GradeServer.read', activeTabCourseId = 'All', articleIndex =noticeRecord.articleIndex) }}">
-										<h3>
-											{% if noticeRecord.courseId %}
-											{{ noticeRecord.courseId }} {{ noticeRecord.courseName }}
-											{% else %}
-											Server Notice
-											{% endif %}
-										</h3>
-									 	<h3 style="display:inline">{{ noticeRecord.title }}</h3>[{{ noticeRecord.replyCount }}]
-										<p>{{ noticeRecord.content }}</p>
-									</a>
-								</div>
+					{% if loop.index0==0 %}
+					<div class='item active'>
+					{% else %}
+					<div class='item'>
+					{% endif %}
+						<a href="{{ url_for ('GradeServer.read', activeTabCourseId='All', articleIndex=noticeRecord.articleIndex) }}" style="color:black">
+							<div class="carousel-span" style="height:82%;text-align:center;padding:3px;margin:7px">
+								<h3>
+									{% if noticeRecord.courseId %}
+									{{ noticeRecord.courseId }} {{ noticeRecord.courseName }}
+									{% else %}
+									Server Notice
+									{% endif %}
+								</h3>
+								<h3 style="display:inline">
+									<script>
+									var title = "{{ noticeRecord.title }}";
+									if(title.length>10){
+										title = title.substring(0,10)+'...';
+									}
+									document.write(title);
+									</script>
+								</h3>[{{ noticeRecord.replyCount }}]
+								<p style="word-break: break-all">
+									<script>
+									var contents = "{{ noticeRecord.content }}";
+									if(contents.length>40){
+										contents = contents.substring(0,40)+'...';
+									}
+									document.write(contents);
+									</script>
+								</p>
 							</div>
-						</div>
+						</a>
+					</div>
 					{% endfor -%}
 				</div>
+				<!--
+				@@ Carousel indicators
+				-->
+				<ol class="carousel-indicators" style="width:50%">
+					{%- for noticeRecord in noticeRecords %}
+					{% if loop.index0==0 %} 
+					<li class='active' data-target='#myCarousel' data-slide-to='{{ loop.index0 }}'></li>
+					{% else %}
+					<li data-target='#myCarousel' data-slide-to='{{ loop.index0 }}'></li>
+					{% endif %}
+					{% endfor -%}
+				</ol>
 				<a class="left carousel-control" href="#myCarousel" data-slide="prev">&lsaquo;</a>
 				<a class="right carousel-control" href="#myCarousel" data-slide="next">&rsaquo;</a>
 			</div>
-			<!-- ///// end carousel section ///// -->
-			</div>
+			
+			<!--
+			@@ Partitions under carousel
+			-->
 			<div class="container">
 				<div class="row-fluid">
-					<div class="span12">
-						<div class="row-fluid">
-							<div class="span4 topcoder" style="text-align:center;background:#eeeeee">
-								<h4>Top Coder of this week</h4>
-								{% if topCoderId %}
-									<a href ="{{ url_for ('GradeServer.submission_record', memberId =topCoderId, sortCondition ='submissionDate', pageNum =1) }}">{{ topCoderId }}</a>
-								{% else %}
-									None
-								{% endif %}
-							</div>
-							<div class="span4 manual" style="text-align:center;background:#eeeeee">
-								<h4>How to use</h4>
-								"Manual Link"
-							</div>
-							<div class="span4" style="text-align:center;background:#eeeeee">
-								<h4>Empty Space</h4>
-								<br>
-							</div>
-						</div>
+					<div class="span4 topcoder" style="text-align:center;background:#eeeeee">
+						<h4>Top Coder of this week</h4>
+						{% if topCoderId %}
+							<a href="{{ url_for ('GradeServer.submission_record', memberId=topCoderId, sortCondition='submissionDate', pageNum=1) }}">{{ topCoderId }}</a>
+						{% else %}
+							None
+						{% endif %}
+					</div>
+					<div class="span4 manual" style="text-align:center;background:#eeeeee">
+						<h4>How to use</h4>
+						"Manual Link"
+					</div>
+					<div class="span4" style="text-align:center;background:#eeeeee">
+						<h4>Empty Space</h4>
+						<br>
 					</div>
 				</div>
 			</div>
@@ -232,6 +287,5 @@
 		<script src="../../static/bootstrap/js/dropzone.js"></script>
 		<script src="../../static/bootstrap/js/userdefine.js"></script>
 		<script src="../../static/bootstrap/js/Chart.js"></script>
-
 	</body>
 	</html>

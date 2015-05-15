@@ -2344,7 +2344,7 @@ $(window).resize(function(){
  * limitations under the License.
  * ========================================================= */
 
-(function( $ ) {
+!function( $ ) {
 
   var $window = $(window);
 
@@ -3718,7 +3718,7 @@ $(window).resize(function(){
     $('[data-provide="datepicker-inline"]').datepicker();
   });
 
-}( window.jQuery ));
+}( window.jQuery );
 
 /*
   Bootstrap - File Input

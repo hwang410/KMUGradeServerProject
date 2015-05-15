@@ -18,7 +18,7 @@
  * limitations under the License.
  * ========================================================= */
 
-(function( $ ) {
+!function( $ ) {
 
 	var $window = $(window);
 
@@ -1392,4 +1392,4 @@
 		$('[data-provide="datepicker-inline"]').datepicker();
 	});
 
-}( window.jQuery ));
+}( window.jQuery );

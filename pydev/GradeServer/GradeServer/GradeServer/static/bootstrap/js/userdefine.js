@@ -4,44 +4,21 @@
 		when you click 'Title', link to its information
 		*/
 
-// the way of submit(default)
-$(window).load(function(){
-	document.getElementsByClassName("positionOfForms")[0].innerHTML 
-	= "Upload File Form<br>"+"<form class='file_upload' method='post'><input type='button' value='file'><br><button id='submitCode' type='submit' class='fluid-btn'>Submit</button></form>";
-});
-
-// submit button event
-function showSourceCodeForm(parent){
-	var className = parent.className;
-	// class name is not the unique value. 
-	// so need to put index of its last to use the exact value
-	var target = document.getElementsByClassName("positionOfForms")[0];
-	if(className == "file_upload btn"){
-		target.innerHTML = "Upload File Form<br>"+"<form class='file_upload' method='post'><input type='button' value='file'><br><button id='submitCode' type='submit' class='fluid-btn'>Submit</button></form>";
-	}
-	else if(className == "code_writing btn"){
-		target.innerHTML = "Write Code Form<br>"+"<form class='code_writing' method='post'><textarea class='content input-xxlarge' style='margin-left:0px'></textarea><br><button id='submitCode' type='submit' class='fluid-btn'>Submit</button></form>";
-	}
-	else{
-		alert("error");
-	}
-}
-
 // load function after all window's loaded
 $(window).load(function(){
 	window.onload = function(){
 		setLegend();
 	}
 	function setLegend(){
-			// solved, wrong answer, time over, compile error, runtime error
-			var colors = new Array("#0c274c", "#18709c", "#19bdc4", "#fff6ee", "#ef4089");
-			var errors = new Array("Solved", "Wrong Answer", "Time Over", "Compile Error", "Runtime Error");
-			var target = document.getElementById("legend-box");
-			for(var i=0;i<colors.length;i++){
-				if(i==3) target.innerHTML += "<span class='label' style='color:black;background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
-				else target.innerHTML += "<span class='label' style='background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
-			}
+		// solved, wrong answer, time over, compile error, runtime error
+		var colors = new Array("#0c274c", "#18709c", "#19bdc4", "#fff6ee", "#ef4089");
+		var errors = new Array("Solved", "Wrong Answer", "Time Over", "Compile Error", "Runtime Error");
+		var target = document.getElementById("legend-box");
+		for(var i=0;i<colors.length;i++){
+			if(i==3) target.innerHTML += "<span class='label' style='color:black;background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
+			else target.innerHTML += "<span class='label' style='background-color:"+colors[i]+"'>"+errors[i]+"</span>"+"<br>";
 		}
+	}
 });
 
 var textarea = $('#getCode');
@@ -299,3 +276,22 @@ function selectAllCheckboxes(range){
 		}
 	}
 }
+
+$("#myCarousel").carousel({
+	interval: 10000
+});
+
+$('.carousel .item').each(function(){
+	var next = $(this).next();
+	if (!next.length) {
+		next = $(this).siblings(':first');
+	}
+	next.children(':first-child').clone().appendTo($(this));
+
+	if (next.next().length>0) {
+		next.next().children(':first-child').clone().appendTo($(this));
+	}
+	else {
+		$(this).siblings(':first').children(':first-child').clone().appendTo($(this));
+	}
+});
