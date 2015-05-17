@@ -5,6 +5,7 @@ import string
 import ptrace
 import resource
 from shutil import copyfile
+from FileTools import FileTools
 
 RUN_COMMAND_LIST = []
 
@@ -43,31 +44,18 @@ class ExecutionTools(object):
         
         userTime = int(time * 1000)
         
-        if result == 'TimeOver':
-            print result, 0, userTime, usingMem
-            sys.exit()
-            
-        elif result == 'RunTimeError':
-            print result, 0, 0, 0
-            sys.exit()
-        
-        if userTime > self.limitTime:
-            print 'TimeOver', 0, userTime, usingMem
-            sys.exit()
-        
-        coreSize = 0
         coreList = glob.glob('core.[0-9]*')
         
-        if len(coreList) > 0:
-            coreSize = os.path.getsize(coreList[0])
+        if len(coreList) > 0 and os.path.getsize(coreList[0]) > 0:
+            result = 'RunTimeError'
         
-        if coreSize == 0:  # if not exist core file -> evaluate output
-            return 'Grading', userTime, usingMem
+        elif userTime > self.limitTime:
+            result = 'TimeOver' 
         
-        else:
-            print 'RunTimeError', 0, 0, 0
-            sys.exit()
+        if result != 'ok':
+            self.ResultError(result, userTime, usingMem)
         
+        return 'Grading', userTime, usingMem
         
     def MakeCommand(self):
         # make execution command
@@ -125,9 +113,11 @@ class ExecutionTools(object):
             
             exitCode = os.WEXITSTATUS(status)
             if exitCode != 5 and exitCode != 0 and exitCode != 17:
+                ptrace.kill(pid)
                 return 'RunTimeError', 0, 0 
                 
             elif os.WIFSIGNALED(status):
+                ptrace.kill(pid)
                 return 'TimeOver', res[0], usingMem
             
             else:
@@ -138,8 +128,7 @@ class ExecutionTools(object):
                 
     def GetUsingMemory(self, pid, usingMem):
         procFileOpenCommand = "%s%i%s" % ('/proc/', pid, '/status') 
-        procFile = open(procFileOpenCommand, 'r')
-        fileLines = procFile.readlines()
+        fileLines = FileTools.ReadFileLines(procFileOpenCommand)
         split = string.split
 
         for i in range(15,20):
@@ -150,6 +139,10 @@ class ExecutionTools(object):
                 break;
         
         if temp > usingMem:
-                    usingMem = temp
+            usingMem = temp
         
         return usingMem
+    
+    def ResultError(self, result, userTime, usingMem):
+        print result, 0, userTime, usingMem
+        sys.exit()

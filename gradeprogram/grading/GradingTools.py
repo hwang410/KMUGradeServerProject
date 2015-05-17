@@ -1,6 +1,6 @@
 import sys
 import string
-from shutil import copyfile
+from FileTools import FileTools
 from subprocess import call
 
 class GradingTools(object):
@@ -46,20 +46,10 @@ class GradingTools(object):
         
     def SolutionSingle(self):
         # user output file each line compare with answer file each line.
-        try:
-            answerOpenCommand = "%s%s%s" % (self.answerPath, self.problemName, '_cases_total_outputs.txt')
-            answerFile = open(answerOpenCommand, 'r')
-            stdOutput = open('output.txt', 'r')
-        except Exception as e:
-            print e
-            print 'ServerError', 0, 0, 0
-            sys.exit()
+        answerOpenCommand = "%s%s%s" % (self.answerPath, self.problemName, '_cases_total_outputs.txt')
         
-        stdLines = stdOutput.readlines()
-        answerLines = answerFile.readlines()
-        
-        answerFile.close()
-        stdOutput.close()
+        stdLines = FileTools.ReadFileLines('output.txt')
+        answerLines = FileTools.ReadFileLines(answerOpenCommand)
         
         count = len(stdLines) - len(answerLines)
         
@@ -88,73 +78,50 @@ class GradingTools(object):
         return result, score
         
     def CheckerSingle(self):
-        try:
-            copyCommand = "%s%s%s" % (self.answerPath, self.problemName, '.out')
-            copyfile(copyCommand,'checker.out')
-            call('./checker.out 1>result.txt', shell = True)
-        except Exception as e:
-            print e
-            'ServerError', 0, 0, 0
-            sys.exit()
+        copyCommand = "%s%s%s" % (self.answerPath, self.problemName, '.out')
+        FileTools.CopyFile(copyCommand,'checker.out')
         
-        rf = open('result.txt', 'r')
+        call('./checker.out 1>result.txt', shell = True)
         
-        score = rf.readline()
+        score = self.GetScore('result.txt')
         
-        rf.close()
-        
-        return int(score[0])
+        if score ==100:
+            return 'Solved', score
+        else:
+            return 'WrongAnswer', score
     
     def SolutionMulti(self):
         count = 0
         
         _list = []
         append = _list.append
-        strip = string.rstrip
         
         command = self.MakeMulticaseCommand()
         
         for i in range(1, self.caseCount+1):
-            try:
-                copyCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName,
-                                              '_case', i, '_input.txt')
-                answerOpenCommand = "%s%s%s%i%s" % (self.answerPath,
-                                                    self.problemName,
-                                                    '_case', i, '_output.txt')
-                
-                # input.txt file copy
-                call('rm -r input.txt', shell = True)
-                copyfile(copyCommand, 'input.txt')
-                
-                # program run
-                call(command, shell = True)
+            copyCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName,
+                                          '_case', i, '_input.txt')
+            answerOpenCommand = "%s%s%s%i%s" % (self.answerPath,
+                                                self.problemName,
+                                                '_case', i, '_output.txt')
+
+            FileTools.CopyFile(copyCommand, 'input.txt')
             
-                answerFile = open(answerOpenCommand, 'r') # answer output open
-                stdOutput = open('output.txt', 'r') # student output open
-            except Exception as e:
-                print e
-                print 'ServerError', 0, 0, 0
-                sys.exit()
+            call(command, shell = True)
             
-            answer = answerFile.read()
-            student = stdOutput.read()
-            
-            answerFile.close()
-            stdOutput.close()
-            
-            answer = strip(answer, '\r\n')
-            student = strip(student, '\r\n')
+            answer = FileTools.ReadFileAll(answerOpenCommand)
+            student = FileTools.ReadFileAll('output.txt')
             
             if answer != student:
                 count += 1
-                append(i)
+                append(str(i) + ' ')
            
         if count == 0:
-            return 100
+            return 'Solved', 100
         
         else:
             self.MakeCaseList(_list)
-            return int( ((self.caseCount - count) * 100) / self.caseCount )
+            return 'WrongAnswer', int( ((self.caseCount - count) * 100) / self.caseCount )
         
     def CheckerMulti(self):
         count = 0
@@ -164,63 +131,38 @@ class GradingTools(object):
         
         command = self.MakeMulticaseCommand()
         
-        try:
-            copyCommand = "%s%s%s" % (self.answerPath, self.problemName, '.out')
-            copyfile(copyCommand, 'checker.out')
-        except Exception as e:
-                print e
-                print 'ServerError', 0, 0, 0
-                sys.exit()
+        copyCommand = "%s%s%s" % (self.answerPath, self.problemName, '.out')
+        
+        FileTools.CopyFile(copyCommand, 'checker.out')
         
         for i in range(1, self.caseCount+1):
-            try:
-                copyCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName,
-                                              '_case', i, '_input.txt input.txt')
-                # input.txt file copy
-                call('rm -r input.txt', shell = True)
-                copyfile(copyCommand, 'input.txt')
-                
-                # program run
-                call(command, shell = True)
+            copyCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName,
+                                          '_case', i, '_input.txt input.txt')
+            FileTools.CopyFile(copyCommand, 'input.txt')
             
-                call('./checker.out 1>result.txt', shell = True)
-                rf = open('reuslt.txt', 'r')
-            except Exception as e:
-                print e
-                print 'ServerError', 0, 0, 0
-                sys.exit()
+            call(command, shell = True)
             
-            score = rf.readline()
+            call('./checker.out 1>result.txt', shell = True)
             
-            rf.close()
-            
-            if int(score[0]) != 100:
+            if self.GetScore('result.txt') != 100:
                 count += 1
-                append(i)
+                append(str(i) + ' ')
            
         if count == 0:
-            return 100
+            return 'Solved', 100
         
         else:
             self.MakeCaseList(_list)
-            return int( ((self.caseCount - count) * 100) / self.caseCount )
+            return 'WrongAnswer', int( ((self.caseCount - count) * 100) / self.caseCount )
         
     def MakeCaseList(self, _list):
         wf = open('caselist.txt', 'w')
-        size = len(_list)
-        find = string.find
-        wf.wrtie(str(size))
             
-        for i in size:
-            answerOpenCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName, '_case', _list[i], '.txt')
-            rf = open(answerOpenCommand, 'r')
-            
-            case = rf.readlines()
-            rf.close()
-                
-            if find(case[-1], '\n'):
-                case[-1] = "%s%s" % (case[-1], '\n')
-                
-            wf.write(case)
+        wf.writelines(_list)
                 
         wf.close()
+            
+    def GetScore(self, fileName):
+        scores = FileTools.ReadFileLines('result.txt')
+        
+        return int(scores[0])
