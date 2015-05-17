@@ -19,6 +19,7 @@ from sqlalchemy import and_
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.sessionResources import SessionResources
 from GradeServer.resource.otherResources import OtherResources
+from GradeServer.resource.languageResources import LanguageResources
 
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.model.colleges import Colleges
@@ -125,6 +126,7 @@ def sign_up():
         return render_template("sign_up.html",
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                colleges = '',
                                departments = '',
                                error = error)
@@ -137,6 +139,7 @@ def sign_up():
         return render_template("sign_up.html",
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                colleges = colleges,
                                departments = '',
                                error = error)
@@ -154,6 +157,7 @@ def sign_up():
             return render_template("sign_up.html",
                                    SETResources = SETResources,
                                    SessionResources = SessionResources,
+                                   LanguageResources = LanguageResources,
                                    colleges = colleges,
                                    departments = departments,
                                    error = error)
@@ -183,6 +187,7 @@ def sign_up():
                         return render_template("sign_up.html",
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                colleges = colleges,
                                                departments = departments,
                                                error = error)
@@ -196,6 +201,7 @@ def sign_up():
                             return render_template("sign_up.html",
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
+                                                   LanguageResources = LanguageResources,
                                                    colleges = colleges,
                                                    departments = departments,
                                                    error = error)
@@ -208,6 +214,7 @@ def sign_up():
                     return render_template("sign_up.html",
                                            SETResources = SETResources,
                                            SessionResources = SessionResources,
+                                           LanguageResources = LanguageResources,
                                            colleges = colleges,
                                            departments = departments,
                                            error = error)
@@ -217,6 +224,7 @@ def sign_up():
                 return render_template("sign_up.html",
                                        SETResources = SETResources,
                                        SessionResources = SessionResources,
+                                       LanguageResources = LanguageResources,
                                        colleges = colleges,
                                        departments = departments,
                                        error = error)
@@ -224,6 +232,7 @@ def sign_up():
     return render_template('/sign_up.html',
                            SETResources = SETResources,
                            SessionResources = SessionResources,
+                           LanguageResources = LanguageResources,
                            colleges = colleges,
                            departments = departments,
                            error = error)

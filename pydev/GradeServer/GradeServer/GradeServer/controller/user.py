@@ -21,6 +21,7 @@ from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.htmlResources import HTMLResources
 from GradeServer.resource.routeResources import RouteResources
 from GradeServer.resource.sessionResources import SessionResources
+from GradeServer.resource.languageResources import LanguageResources
 
 from GradeServer.database import dao
 
@@ -87,6 +88,7 @@ def submission_record(memberId, sortCondition, pageNum):
         return render_template(HTMLResources().const.SUBMISSION_RECORD_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                memberId = memberId,
                                sortCondition = sortCondition,
                                submissionRecords = submissionRecords,
@@ -162,6 +164,7 @@ def id_check(select, error = None):
     return render_template(HTMLResources().const.ID_CHECK_HTML,
                            SETResources = SETResources,
                            SessionResources = SessionResources,
+                           LanguageResources = LanguageResources,
                            error = error)
 
 """
@@ -236,6 +239,7 @@ def edit_personal(error = None):
         return render_template(HTMLResources().const.EDIT_PERSONAL_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                memberInformation = memberInformation,
                                gContactNumber = gContactNumber,
                                gEmailAddress = gEmailAddress,

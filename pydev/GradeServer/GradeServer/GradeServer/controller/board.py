@@ -36,6 +36,7 @@ from GradeServer.resource.htmlResources import HTMLResources
 from GradeServer.resource.routeResources import RouteResources
 from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.sessionResources import SessionResources
+from GradeServer.resource.languageResources import LanguageResources
 
 from GradeServer.model.articlesOnBoard import ArticlesOnBoard
 from GradeServer.model.likesOnBoard import LikesOnBoard
@@ -124,6 +125,7 @@ def board(activeTabCourseId, pageNum):
         return render_template(HTMLResources().const.BOARD_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                articleRecords = articleRecords,
                                articleNoticeRecords =  articleNoticeRecords,
                                myCourses = myCourses,
@@ -199,6 +201,7 @@ def article_notice(activeTabCourseId, pageNum):
         return render_template(HTMLResources().const.ARTICLE_NOTICE_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                articleNoticeRecords =  articleNoticeRecords,
                                myCourses = myCourses,
                                pages = get_page_pointed(int(pageNum),
@@ -278,6 +281,7 @@ def read(activeTabCourseId, articleIndex, error = None):
             return render_template(HTMLResources().const.ARTICLE_READ_HTML,
                                    SETResources = SETResources,
                                    SessionResources = SessionResources,
+                                   LanguageResources = LanguageResources,
                                    articlesOnBoard = articlesOnBoard,
                                    activeTabCourseId = activeTabCourseId,
                                    repliesOnBoardRecords = repliesOnBoardRecords,
@@ -424,6 +428,7 @@ def read(activeTabCourseId, articleIndex, error = None):
                 return render_template(HTMLResources().const.ARTICLE_READ_HTML,
                                        SETResources = SETResources,
                                        SessionResources = SessionResources,
+                                       LanguageResources = LanguageResources,
                                        activeTabCourseId = activeTabCourseId,
                                        articlesOnBoard = articlesOnBoard,
                                        repliesOnBoardRecords = repliesOnBoardRecords,
@@ -580,6 +585,7 @@ def write(activeTabCourseId, articleIndex, error =None):
         return render_template(HTMLResources().const.ARTICLE_WRITE_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                myCourses = myCourses,
                                articlesOnBoard = articlesOnBoard,
                                title = title,

@@ -24,12 +24,36 @@
 		<thead>
 			<tr>
 				<td class="hidden-phone">Num
-				<td>Title
-				<td>Score
-				<td class="hidden-phone">Status
-				<td>Due Date
-				<td>Count
-				<td>Record
+				<td>
+					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.ProblemTitle_kr }}
+					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.ProblemTitle_en }}
+					{%- else %}{{ LanguageResources.const.ProblemTitle_en }} <!-- default -->
+					{% endif -%}
+				<td>
+					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Score_kr }}
+					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Score_en }}
+					{%- else %}{{ LanguageResources.const.Score_en }} <!-- default -->
+					{% endif -%}
+				<td class="hidden-phone">
+					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Status_kr }}
+					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Status_en }}
+					{%- else %}{{ LanguageResources.const.Status_en }} <!-- default -->
+					{% endif -%}
+				<td>
+					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.DueDate_kr }}
+					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.DueDate_en }}
+					{%- else %}{{ LanguageResources.const.DueDate_en }} <!-- default -->
+					{% endif -%}
+				<td>
+					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Count_kr }}
+					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Count_en }}
+					{%- else %}{{ LanguageResources.const.Count_en }} <!-- default -->
+					{% endif -%}
+				<td>
+					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.ProblemRecord_kr }}
+					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.ProblemRecord_en }}
+					{%- else %}{{ LanguageResources.const.ProblemRecord_en }} <!-- default -->
+					{% endif -%}
 			</tr>
 		<tbody>
 			{% for problemListRecord in problemListRecords %}

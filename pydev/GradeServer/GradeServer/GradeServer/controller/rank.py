@@ -18,6 +18,7 @@ from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.htmlResources import HTMLResources
 from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.sessionResources import SessionResources
+from GradeServer.resource.languageResources import LanguageResources
 
 from GradeServer.database import dao
 from GradeServer.GradeServer_logger import Log
@@ -108,6 +109,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
         return render_template(HTMLResources().const.RANK_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                activeTabCourseId = activeTabCourseId,
                                sortCondition =  sortCondition,
                                memberRecords = memberRecords,

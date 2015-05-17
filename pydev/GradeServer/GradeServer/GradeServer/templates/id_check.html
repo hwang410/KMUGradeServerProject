@@ -5,9 +5,13 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
-	<div class="alert alert-error" id="alertDiv" style="display:none;width:100%;padding-right:0px">Please Enter your password</div>
 	<div width="100%" align="center" style="position:absolute;left: 50%;margin-left:-125px;width:250px">
-		<h3>Identification Check</h3>
+		<h3>
+			{%- if session['language'] == 'kr' %}{{ LanguageResources.const.IdentificationCheck_kr }}
+			{%- elif session['language'] == 'en' %}{{ LanguageResources.const.IdentificationCheck_en }}
+			{%- else %}{{ LanguageResources.const.IdentificationCheck_en }} <!-- default -->
+			{% endif -%}
+		</h3>
 		<div class="row-fluid">
 			<h4>
 				<div class="span6">
@@ -22,7 +26,10 @@
 			<div class="row-fluid">
 				<h4>
 					<div class="span6">
-						Password
+						{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Password_kr }}
+						{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Password_en }}
+						{%- else %}{{ LanguageResources.const.Password_en }} <!-- default -->
+						{% endif -%}
 					</div>
 					<div class="span6">
 						<input class="input-small" id="password" name="password" type="password" autofocus ="autofocus" style="text-align:center">
@@ -30,7 +37,12 @@
 				</h4>
 			</div>
 			<br>
-			<button class="btn" type="submit">Confirm</button>
+			<button class="btn" type="submit">
+				{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Confirm_kr }}
+				{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Confirm_en }}
+				{%- else %}{{ LanguageResources.const.Confirm_en }} <!-- default -->
+				{% endif -%}
+			</button>
 		</form>
 	</div>
 </div>
