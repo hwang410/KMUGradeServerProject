@@ -213,9 +213,9 @@ function showingDeleteModal(target){
 			break;
 		}
 	}
-
+	
 	if(!undefinedTab){
-		target[0] = target.toUpperCase()[0];
+		target = target.charAt(0).toUpperCase()+target.slice(1);
 	}
 
 	if(cnt == 0){ 

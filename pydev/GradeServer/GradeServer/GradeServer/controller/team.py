@@ -17,6 +17,7 @@ from GradeServer.resource.htmlResources import HTMLResources
 from GradeServer.resource.routeResources import RouteResources
 from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.sessionResources import SessionResources
+from GradeServer.resource.languageResources import LanguageResources
 
 from GradeServer.database import dao
 from GradeServer.model.registeredTeamMembers import RegisteredTeamMembers
@@ -101,6 +102,7 @@ def team(pageNum = 1, error = None):
         return render_template(HTMLResources().const.TEAM_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                teamInvitationRecords = teamInvitationRecords,
                                teamRecords = teamRecords,
                                pages = get_page_pointed(pageNum = int(pageNum),
@@ -185,6 +187,7 @@ def make_team(error = None):
             return render_template(HTMLResources().const.TEAM_MAKE_HTML,
                                    SETResources = SETResources,
                                    SessionResources = SessionResources,
+                                   LanguageResources = LanguageResources,
                                    memberRecords = memberRecords)
               
         elif request.method == 'POST':
@@ -201,6 +204,7 @@ def make_team(error = None):
                         return render_template(HTMLResources().const.TEAM_MAKE_HTML,
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                memberRecords = memberRecords,
                                                gTeamMembersId = gTeamMembersId,
                                                gTeamDescription = gTeamDescription,
@@ -213,6 +217,7 @@ def make_team(error = None):
                             return render_template(HTMLResources().const.TEAM_MAKE_HTML,
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
+                                                   LanguageResources = LanguageResources,
                                                    memberRecords = memberRecords,
                                                    gTeamMembersId = gTeamMembersId,
                                                    gTeamDescription = gTeamDescription,
@@ -281,6 +286,7 @@ def make_team(error = None):
             return render_template(HTMLResources().const.TEAM_MAKE_HTML,
                                    SETResources = SETResources,
                                    SessionResources = SessionResources,
+                                   LanguageResources = LanguageResources,
                                    memberRecords = memberRecords,
                                    gTeamMembersId = gTeamMembersId,
                                    gTeamName = gTeamName,
@@ -323,6 +329,7 @@ def team_information(teamName, error = None):
         return render_template(HTMLResources().const.TEAM_INFORMATION_HTML,
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                teamInformation = teamInformation,
                                teamMemberRecords = teamMemberRecords)
     except Exception:
@@ -395,6 +402,7 @@ def team_manage(teamName, error = None):
             return render_template(HTMLResources().const.TEAM_MANAGE_HTML,
                                    SETResources = SETResources,
                                    SessionResources = SessionResources,
+                                   LanguageResources = LanguageResources,
                                    memberRecords = memberRecords,
                                    teamInformation =teamInformation, 
                                    gTeamMembersId = gTeamMembersId,
@@ -460,6 +468,7 @@ def team_manage(teamName, error = None):
                     return render_template(HTMLResources().const.TEAM_MANAGE_HTML,
                                            SETResources = SETResources,
                                            SessionResources = SessionResources,
+                                           LanguageResources = LanguageResources,
                                            memberRecords = memberRecords,
                                            teamInformation = teamInformation, 
                                            gTeamMembersId = gTeamMembersId,
@@ -474,6 +483,7 @@ def team_manage(teamName, error = None):
                     return render_template(HTMLResources().const.TEAM_MANAGE_HTML,
                                            SETResources = SETResources,
                                            SessionResources = SessionResources,
+                                           LanguageResources = LanguageResources,
                                            memberRecords = memberRecords,
                                            teamInformation = teamInformation, 
                                            gTeamMembersId = gTeamMembersId,

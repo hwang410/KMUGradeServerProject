@@ -1,17 +1,35 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
-	<h3>College&Department Management</h3>
+	<h3>
+		{%- if session['language'] == 'kr' %}
+			{{ LanguageResources.const.College_kr }}&{{ LanguageResources.const.Department_kr }} {{ LanguageResources.const.Management_kr }}
+		{%- elif session['language'] == 'en' %}
+			{{ LanguageResources.const.College_en }}&{{ LanguageResources.const.Department_en }} {{ LanguageResources.const.Management_en }}
+		{% endif -%}
+	</h3>
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
 			<li id="collegeTab">
-				<a id="college" data-toggle="tab" href="#colleges">College</a>
+				<a id="college" data-toggle="tab" href="#colleges">
+					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.College_kr }}
+					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.College_en }}
+					{% endif -%}
+				</a>
 			<li id="departmentTab">
 				<a id="department" data-toggle="tab"
-					href="#departments">Department</a></li>
+					href="#departments">
+					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Department_kr }}
+					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Department_en }}
+					{% endif -%}
+				</a></li>
 			<div style="text-align:right">
 				<a class="btn" id="addModal" data-toggle="modal" href="#collegeModal"
-				 	rol="button">Add</a>
+				 	rol="button">
+				 	{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Add_kr }}
+					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Add_en }}
+					{% endif -%}
+				 </a>
 			</div>	
 		</ul>
 		<!-- ///// College Modal ///// -->
@@ -23,7 +41,11 @@
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button"
 						  aria-hidden="true">x</button>
-				<h3 id="addCollegeModalLabel">College Addition</h3>
+				<h3 id="addCollegeModalLabel">
+					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.College_kr }} {{ LanguageResources.const.Addition_kr }} 
+					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.College_en }} {{ LanguageResources.const.Addition_en }}
+					{% endif -%}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<p></p>
@@ -33,8 +55,14 @@
 				<table class="table table-bordered" id='Colleges' style="margin-top:10px">
 					<thead>
 						<tr>
-							<td>College Code
-							<td>College Name
+							<td>
+								{%- if session['language'] == 'kr' %}{{ LanguageResources.const.College_kr }} {{ LanguageResources.const.Code_kr }} 
+								{%- elif session['language'] == 'en' %}{{ LanguageResources.const.College_en }} {{ LanguageResources.const.Code_en }}
+								{% endif -%}
+							<td>
+								{%- if session['language'] == 'kr' %}{{ LanguageResources.const.College_kr }} {{ LanguageResources.const.Name_kr }} 
+								{%- elif session['language'] == 'en' %}{{ LanguageResources.const.College_en }} {{ LanguageResources.const.Name_en }}
+								{% endif -%}
 					<tbody id="addCollegeForm">
 						<tr>
 							<td>

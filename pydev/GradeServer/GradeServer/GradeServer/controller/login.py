@@ -15,7 +15,7 @@ bug reporting
 if path is a/b/c/d, it can't recognize any .css and .js file.
 (a/b/c is okay)
 """
-from flask import request, redirect, session, url_for, render_template, flash
+from flask import request, redirect, session, url_for, render_template, flash, make_response
 from datetime import datetime
 
 from GradeServer.database import dao
@@ -58,65 +58,86 @@ def sign_in():
     from GradeServer.resource.setResources import SETResources
     from GradeServer.resource.htmlResources import HTMLResources
     from GradeServer.resource.sessionResources import SessionResources
-    
+    from GradeServer.resource.languageResources import LanguageResources
+
     error = None
     if request.method == 'POST':
-        if not request.form['memberId']:
-            error = '아이디'  + get_message('fillData')
-        elif not request.form['password']:
-            error = '암호'  + get_message('fillData')
-        else:
-            try:
-                """ DB Password check """
-                memberId = request.form['memberId']
-                password = request.form['password']
+        checker = True
+        for form in request.form:
+            if "language" in form:
+                checker = False
+                resp = make_response(render_template(HTMLResources().const.MAIN_HTML,
+                                                     SETResources = SETResources,
+                                                     SessionResources = SessionResources,
+                                                     LanguageResources = LanguageResources,
+                                                     noticeRecords = select_notices(), 
+                                                     topCoderId = select_top_coder(),
+                                                     error = error))
+                resp.set_cookie('language', request.form['language'])
+                session['language'] = request.form['language']
                 
-                check = select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = memberId)).first()
-                
-                from werkzeug.security import check_password_hash
-                
-                from GradeServer.resource.otherResources import OtherResources
-                from GradeServer.py3Des.pyDes import *
-                
-                tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
-                                       mode = ECB,
-                                       IV = "\0\0\0\0\0\0\0\0",
-                                       pad = None,
-                                       padmode = PAD_PKCS5)
-                #Checking Success
-                if check_password_hash (check.password,
-                                        tripleDes.encrypt(str(password))):
-                    flash(get_message('login'))
-                    #push Session Cache 
-                    session[SessionResources().const.MEMBER_ID] = memberId
-                    session[SessionResources().const.AUTHORITY] = list(check.authority)
-                    session[SessionResources().const.LAST_ACCESS_DATE] = datetime.now()
-                    ownCourses = select_accept_courses().subquery()
-                    # Get My Accept Courses
-                    try:
-                        session[SessionResources().const.OWN_CURRENT_COURSES] = select_current_courses(ownCourses).all()
-                    except Exception:
-                        session[SessionResources().const.OWN_CURRENT_COURSES] = []
-                    try:
-                        session[SessionResources().const.OWN_PAST_COURSES] = select_past_courses(ownCourses).all()
-                    except Exception:
-                        session[SessionResources().const.OWN_PAST_COURSES] = []
-                    update_recent_access_date(memberId)
-                    # Commit Exception
-                    try:
-                        dao.commit()
-                    except Exception:
-                        dao.rollback()
-                        error = get_message('updateFailed')
-                else:
-                    error = get_message('tryAgain')
-            # Not Exist MemberId
-            except Exception:
-                error = get_message('notExists')
-
+        if checker:        
+            if not request.form['memberId']:
+                error = '아이디'  + get_message('fillData')
+            elif not request.form['password']:
+                error = '암호'  + get_message('fillData')
+            else:
+                try:
+                    """ DB Password check """
+                    memberId = request.form['memberId']
+                    password = request.form['password']
+                    
+                    check = select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = memberId)).first()
+                    
+                    from werkzeug.security import check_password_hash
+                    
+                    from GradeServer.resource.otherResources import OtherResources
+                    from GradeServer.py3Des.pyDes import *
+                    
+                    tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
+                                           mode = ECB,
+                                           IV = "\0\0\0\0\0\0\0\0",
+                                           pad = None,
+                                           padmode = PAD_PKCS5)
+                    #Checking Success
+                    if check_password_hash (check.password,
+                                            tripleDes.encrypt(str(password))):
+                        flash(get_message('login'))
+                        #push Session Cache 
+                        session[SessionResources().const.MEMBER_ID] = memberId
+                        session[SessionResources().const.AUTHORITY] = list(check.authority)
+                        session[SessionResources().const.LAST_ACCESS_DATE] = datetime.now()
+                        
+                        # set default language
+                        session['language'] = 'en'
+                                                    
+                        ownCourses = select_accept_courses().subquery()
+                        # Get My Accept Courses
+                        try:
+                            session[SessionResources().const.OWN_CURRENT_COURSES] = select_current_courses(ownCourses).all()
+                        except Exception:
+                            session[SessionResources().const.OWN_CURRENT_COURSES] = []
+                        try:
+                            session[SessionResources().const.OWN_PAST_COURSES] = select_past_courses(ownCourses).all()
+                        except Exception:
+                            session[SessionResources().const.OWN_PAST_COURSES] = []
+                        update_recent_access_date(memberId)
+                        # Commit Exception
+                        try:
+                            dao.commit()
+                        except Exception:
+                            dao.rollback()
+                            error = get_message('updateFailed')
+                    else:
+                        error = get_message('tryAgain')
+                # Not Exist MemberId
+                except Exception:
+                    error = get_message('notExists')
+            
     return render_template(HTMLResources().const.MAIN_HTML,
                            SETResources = SETResources,
                            SessionResources = SessionResources,
+                           LanguageResources = LanguageResources,
                            noticeRecords = select_notices(),
                            topCoderId = select_top_coder(),
                            error = error)
