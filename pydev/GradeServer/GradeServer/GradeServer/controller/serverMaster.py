@@ -35,6 +35,7 @@ from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.sessionResources import SessionResources
 from GradeServer.resource.otherResources import OtherResources
+from GradeServer.resource.languageResources import LanguageResources
 
 import re
 import zipfile
@@ -101,6 +102,7 @@ def server_manage_collegedepartment():
                                error=error, 
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                allColleges = [],
                                allDepartments = [])
     try:    
@@ -120,6 +122,7 @@ def server_manage_collegedepartment():
                                error=error, 
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                allColleges = allColleges,
                                allDepartments = [])
     
@@ -173,6 +176,7 @@ def server_manage_collegedepartment():
                                                error=error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
                     currentTab = 'colleges'
@@ -201,6 +205,7 @@ def server_manage_collegedepartment():
                                                error=error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
                     currentTab = 'departments'
@@ -223,6 +228,7 @@ def server_manage_collegedepartment():
                                                error=error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
             newColleges = []
@@ -246,6 +252,7 @@ def server_manage_collegedepartment():
                                                error=error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
                     try:
@@ -261,6 +268,7 @@ def server_manage_collegedepartment():
                                                error=error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
                         
@@ -268,10 +276,12 @@ def server_manage_collegedepartment():
             currentTab = 'departments'
             
         return redirect(url_for('.server_manage_collegedepartment'))
+        
     return render_template('/server_manage_collegedepartment.html', 
                            error=error, 
                            SETResources = SETResources,
                            SessionResources = SessionResources,
+                           LanguageResources = LanguageResources,
                            currentTab = currentTab,
                            allColleges = allColleges,
                            allDepartments = allDepartments)
@@ -324,6 +334,7 @@ def server_manage_class():
                            error = error,  
                            SETResources = SETResources,
                            SessionResources = SessionResources,
+                           LanguageResources = LanguageResources,
                            courses = courses, 
                            languagesOfCourse = languagesOfCourse)
     
@@ -396,6 +407,7 @@ def server_add_class():
                                        error = error, 
                                        SETResources = SETResources,
                                        SessionResources = SessionResources,
+                                       LanguageResources = LanguageResources,
                                        courseAdministrator = courseAdministrator,
                                        semester = semester,
                                        courseDescription = courseDescription,
@@ -419,6 +431,7 @@ def server_add_class():
                                        error = error, 
                                        SETResources = SETResources,
                                        SessionResources = SessionResources,
+                                       LanguageResources = LanguageResources,
                                        courseAdministrator = courseAdministrator,
                                        semester = semester,
                                        courseDescription = courseDescription,
@@ -466,6 +479,7 @@ def server_add_class():
                                        error = error, 
                                        SETResources = SETResources,
                                        SessionResources = SessionResources,
+                                       LanguageResources = LanguageResources,
                                        courses = allCourses, 
                                        languages = allLanguages)
             
@@ -488,6 +502,7 @@ def server_add_class():
                                            error = error, 
                                            SETResources = SETResources,
                                            SessionResources = SessionResources,
+                                           LanguageResources = LanguageResources,
                                            courses = allCourses, 
                                            languages = allLanguages)
             return redirect(url_for('.server_manage_class'))
@@ -496,6 +511,7 @@ def server_add_class():
                            error = error, 
                            SETResources = SETResources,
                            SessionResources = SessionResources,
+                           LanguageResources = LanguageResources,
                            courseAdministrator = courseAdministrator,
                            semester = semester,
                            courseDescription = courseDescription,
@@ -544,6 +560,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                         
                 # read each uploaded file(zip)
@@ -566,6 +583,7 @@ def server_manage_problem():
                                                    error = error, 
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
+                                                   LanguageResources = LanguageResources,
                                                    uploadedProblems = [])
                     
                     # unzip file
@@ -599,6 +617,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                         
                     '''
@@ -636,6 +655,7 @@ def server_manage_problem():
                                                    error = error, 
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
+                                                   LanguageResources = LanguageResources,
                                                    uploadedProblems = [])
                             
                     # If SOLUTION or CHEKER file doesn't exist then it's an error
@@ -645,6 +665,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                                      
                     problemInformationPath = '%s/%s.txt' % (tmpPath, problemName)
@@ -657,6 +678,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                     
                     '''
@@ -705,6 +727,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                     
                     dao.add(newProblem)
@@ -718,6 +741,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                     
                     # rename new problem folder
@@ -742,6 +766,7 @@ def server_manage_problem():
                                                    error = error, 
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
+                                                   LanguageResources = LanguageResources,
                                                    uploadedProblems = [])
                         
                     # remove space on file/directory names
@@ -753,6 +778,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                     
                     # put problemId ahead
@@ -764,6 +790,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                         
                     problemName = problemName.replace(' ', '')
@@ -780,6 +807,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                     
                     try:
@@ -790,6 +818,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                         
                     # create final goal path
@@ -810,6 +839,7 @@ def server_manage_problem():
                                                error = error, 
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                uploadedProblems = [])
                     
                     try:
@@ -830,6 +860,7 @@ def server_manage_problem():
                                            error = error, 
                                            SETResources = SETResources,
                                            SessionResources = SessionResources,
+                                           LanguageResources = LanguageResources,
                                            uploadedProblems = [])
         print "done"
         return redirect(url_for('.server_manage_problem'))
@@ -846,6 +877,7 @@ def server_manage_problem():
                            error = error, 
                            SETResources = SETResources,
                            SessionResources = SessionResources,
+                           LanguageResources = LanguageResources,
                            uploadedProblems = uploadedProblems)
 
 @GradeServer.route('/master/manage_users', methods = ['GET', 'POST'])
@@ -873,6 +905,7 @@ def server_manage_user():
                                error = error, 
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                users = [], 
                                index = len(users))
     
@@ -925,6 +958,7 @@ def server_manage_user():
                                        error = error, 
                                        SETResources = SETResources,
                                        SessionResources = SessionResources,
+                                       LanguageResources = LanguageResources,
                                        users = combineSameUsers, 
                                        index = len(users))
                 
@@ -934,6 +968,7 @@ def server_manage_user():
                            error = error,
                            SETResources = SETResources,
                            SessionResources = SessionResources,
+                           LanguageResources = LanguageResources,
                            users = combineSameUsers, 
                            index = len(users))
 
@@ -956,6 +991,7 @@ def server_add_user():
                                error = error,  
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                allColleges = [],
                                allDepartments = [],
                                authorities = authorities,
@@ -975,6 +1011,7 @@ def server_add_user():
                                error = error,  
                                SETResources = SETResources,
                                SessionResources = SessionResources,
+                               LanguageResources = LanguageResources,
                                allColleges = allColleges,
                                allDepartments = [],
                                authorities = authorities,
@@ -1019,6 +1056,7 @@ def server_add_user():
                                                    error = error,  
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
+                                                   LanguageResources = LanguageResources,
                                                    allColleges = allColleges,
                                                    allDepartments = allDepartments,
                                                    authorities = authorities,
@@ -1036,6 +1074,7 @@ def server_add_user():
                                                    error = error,  
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
+                                                   LanguageResources = LanguageResources,
                                                    allColleges = allColleges,
                                                    allDepartments = allDepartments,
                                                    authorities = authorities,
@@ -1088,6 +1127,7 @@ def server_add_user():
                                                                error = error,  
                                                                SETResources = SETResources,
                                                                SessionResources = SessionResources,
+                                                               LanguageResources = LanguageResources,
                                                                allColleges = allColleges,
                                                                allDepartments = allDepartments,
                                                                authorities = authorities,
@@ -1107,6 +1147,7 @@ def server_add_user():
                                                                error = error,  
                                                                SETResources = SETResources,
                                                                SessionResources = SessionResources,
+                                                               LanguageResources = LanguageResources,
                                                                allColleges = allColleges,
                                                                allDepartments = allDepartments,
                                                                authorities = authorities,
@@ -1118,6 +1159,7 @@ def server_add_user():
                                                            error = error,  
                                                            SETResources = SETResources,
                                                            SessionResources = SessionResources,
+                                                           LanguageResources = LanguageResources,
                                                            allColleges = allColleges,
                                                            allDepartments = allDepartments,
                                                            authorities = authorities,
@@ -1129,6 +1171,7 @@ def server_add_user():
                                                        error = error,  
                                                        SETResources = SETResources,
                                                        SessionResources = SessionResources,
+                                                       LanguageResources = LanguageResources,
                                                        allColleges = allColleges,
                                                        allDepartments = allDepartments,
                                                        authorities = authorities,
@@ -1143,6 +1186,7 @@ def server_add_user():
                                                        error = error,  
                                                        SETResources = SETResources,
                                                        SessionResources = SessionResources,
+                                                       LanguageResources = LanguageResources,
                                                        allColleges = allColleges,
                                                        allDepartments = allDepartments,
                                                        authorities = authorities,
@@ -1163,6 +1207,7 @@ def server_add_user():
                                                error = error,  
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments,
                                                authorities = authorities,
@@ -1219,6 +1264,7 @@ def server_add_user():
                            error = error,  
                            SETResources = SETResources,
                            SessionResources = SessionResources,
+                           LanguageResources = LanguageResources,
                            allColleges = allColleges,
                            allDepartments = allDepartments,
                            authorities = authorities,

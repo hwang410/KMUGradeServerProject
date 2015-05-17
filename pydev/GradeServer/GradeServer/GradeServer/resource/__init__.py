@@ -13,6 +13,7 @@ __all__ = ['const',
            'enumResources',
            'htmlResources',
            'routeResources',
+           'languageResources',
            'setResources',
            'otherResources',
            'sessionResources']
