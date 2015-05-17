@@ -3,7 +3,7 @@
 <problem name>
 	L <problem name>.txt
 	L <problem name>.pdf(optional)
-	L <problem name>_Solution | <problem name>_Checker
+	L <problem name>_SOLUTION | <problem name>_CHECKER
 ```
 Following is each items' description.
 #### `1. <problem name>.txt`
@@ -21,7 +21,7 @@ Following is each items' description.
 #### `2. <problem name>.pdf`
   It contains problem's descriptions. Problem's few input/output cases can be attached. This will show up on problem page, unless you don't contain this file.
 
-#### `3. <problem name>_Solution | <problem name>_Checker`
+#### `3. <problem name>_SOLUTION | <problem name>_CHECKER`
   It contains its standard file for judging. It can be Solution or Checker up to the meta data in <problem name>.txt file.<br>
   If it is Solution, it will contain
  ```
