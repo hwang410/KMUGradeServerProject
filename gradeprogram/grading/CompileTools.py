@@ -3,6 +3,7 @@ import sys
 import glob
 import string
 from subprocess import call
+from FileTools import FileTools
 
 class CompileTools(object):
     def __init__(self, filePath, usingLang, version, runFileName):
@@ -36,11 +37,12 @@ class CompileTools(object):
             sys.exit()
         
         # if not make execution file
-        elif len(glob.glob('./'+self.runFileName)) == 0 and len(glob.glob(self.runFileName + '.class')) == 0:
+        elif os.path.exists(self.runFileName) or os.path.exists(self.runFileName + '.class'):
+            return True
+        
+        else:
             print 'ServerError', 0, 0, 0
             sys.exit()
-        
-        return True
         
         
     def MakeErrorList(self):
@@ -49,13 +51,12 @@ class CompileTools(object):
         
         try:
             wf = open('errorlist.txt', 'w')
-            rf = open('error.err', 'r')
         except Exception as e:
             print 'make compile error list file open error'
             print 'ServerError', 0, 0, 0
             sys.exit()
         
-        lines = rf.readlines()
+        lines = FileTools.ReadFileLines('error.err')
         _list = []
         append = _list.append
         
@@ -73,7 +74,6 @@ class CompileTools(object):
         wf.writelines(_list)
                 
         wf.close()
-        rf.close()
         
     def MakeCommand(self):
         # make compile command 
