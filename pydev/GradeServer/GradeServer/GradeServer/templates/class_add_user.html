@@ -390,20 +390,22 @@ $(function() {
 </script>
 <div class="container">
 	<div>
-		<h3>User Addition</h3>
+		<h3>
+			{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+		</h3>
 		<!--
 		@@ Navigation for modal
 		It matches each button to each modal.
 		-->
 		<div style="text-align:right">
 			<a class="btn" href="#addUserModal" data-toggle="modal" role="button">
-				Individual
+				{{ LanguageResources.const.Indivisual[session['language']] }}
 			</a>
 			<a class="btn" href="#addGroupModal" data-toggle="modal" role="button">
-				Group
+				{{ LanguageResources.const.Group[session['language']] }}
 			</a>
 			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">
-				Delete
+				{{ LanguageResources.const.Deletion[session['language']] }}
 			</a>
 		</div>
 		<!-- End navigation -->
@@ -418,25 +420,35 @@ $(function() {
 			<div class="modal-header">
 				<button class="close" type="button"
 						  data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="addUserModalLabel">User Addition</h3>
+				<h3 id="addUserModalLabel">
+					{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<p>
 					You can edit form data until you click 'Done'
 				</p>
 				<div style="text-align:right">
-					<button class="btn" id="addline" type="button" >Add line</button>
+					<button class="btn" id="addline" type="button" >
+						{{ LanguageResources.const.AddLine[session['language']] }}
+					</button>
 				</div>
 				<table class="table table-bordered" id="indivisual"
 							 style="margin-top:10px">
 					<thead>
 						<tr>
-							<td>Course
-							<td>ID
-							<td>Name
-							<td>College
-							<td>Department
-							<td>Authority
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }}
+							<td>
+								{{ LanguageResources.const.ID[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Name[session['language']] }}
+							<td>
+								{{ LanguageResources.const.College[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Department[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Authority[session['language']] }}
 					<tbody id="indivisualUserForm">
 						<tr>
 							<td>
@@ -474,9 +486,13 @@ $(function() {
 				</table>
 			</div>
 			<div class="modal-footer">
-				<button class="btn" name="addIndivisualUser" onclick="activateDisabledOption();">Done</button>
+				<button class="btn" name="addIndivisualUser" onclick="activateDisabledOption();">
+					{{ LanguageResources.const.Done[session['language']] }}
+				</button>
 				<button class="btn" id="resetIndivisualUserForm"
-						  data-dismiss="modal" aria-hidden="true">Close</button>
+						  data-dismiss="modal" aria-hidden="true">
+					{{ LanguageResources.const.Close[session['language']] }}
+				</button>
 			</div>
 		</div>
 		</form>
@@ -497,14 +513,18 @@ $(function() {
 				<div class="modal-header">
 					<button class="close" data-dismiss="modal"
 									type="button" aria-hidden="true">x</button>
-					<h3 id="addGroupModalLabel">User Addition</h3>
+					<h3 id="addGroupModalLabel">
+						{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+					</h3>
 				</div>
 				<div class="modal-body">
 					<p>
 						Authority will be set '<b>USER(student)</b>'<br>
 						File contents should be like the form below<br>
 						<b>userId=user_bot1, username=test_user, college=1, department=1</b><br>
-						<div style="width:120px;display:inline-block;text-align:center">Course</div>
+						<div style="width:120px;display:inline-block;text-align:center">
+							{{ LanguageResources.const.Course[session['language']] }}
+						</div>
 						<select id="courseId" name="courseId" style="display:inline-block">
 						{%- for ownCourse in ownCourses %}
 						<option>
@@ -520,10 +540,10 @@ $(function() {
 				</div>
 				<div class="modal-footer">
 					<button class="btn" name="addUserGroup" type="submit">
-						Done
+						{{ LanguageResources.const.Done[session['language']] }}
 					</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">
-						Close
+						{{ LanguageResources.const.Close[session['language']] }}
 					</button>
 				</div>
 			</form>
@@ -539,12 +559,19 @@ $(function() {
 			<thead>
 				<tr>
 					<td>Index
-					<td>ID
-					<td>Name
-					<td>Authority
-					<td>College
-					<td>Department
-					<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('pendingUserTable');">
+					<td>
+						{{ LanguageResources.const.ID[session['language']] }}
+					<td>
+						{{ LanguageResources.const.Name[session['language']] }}
+					<td>
+						{{ LanguageResources.const.Authority[session['language']] }}
+					<td>
+						{{ LanguageResources.const.College[session['language']] }}
+					<td>
+						{{ LanguageResources.const.Department[session['language']] }}
+					<td>
+						{{ LanguageResources.const.Check[session['language']] }}
+						<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('pendingUserTable');">
 			<tbody>
 <form method="post">
 				<script> index=0; </script>
@@ -564,7 +591,9 @@ $(function() {
 				{% endfor -%}
 		</table>
 		<a href="{{ url_for('GradeServer.server_add_user') }}">
-			<button class="btn" name="addUser" type="submit">Done</button>
+			<button class="btn" name="addUser" type="submit">
+				{{ LanguageResources.const.Done[session['language']] }}
+			</button>
 		</a>
 	</div>
 		<!-- End holding user list -->
@@ -579,17 +608,19 @@ $(function() {
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
 								type="button" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">User Deletion</h3>
+				<h3 id="deleteModalLabel">
+					{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.Deletion[session['language']] }}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<p>Do you really want to delete it?</p>
 			</div>
 			<div class="modal-footer">
 					<button class="btn" name="deleteUser" type="submit">
-						Confirm
+						{{ LanguageResources.const.Confirm[session['language']] }}
 					</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">
-						Close
+						{{ LanguageResources.const.Close[session['language']] }}
 					</button>
 </form>
 			</div>
@@ -600,14 +631,16 @@ $(function() {
 			<div class="modal-header">
 				<button class="close" type="button"
 								data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">User Deletion</h3>
+				<h3 id="deleteModalLabel">
+					{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.Deletion[session['language']] }}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<p>No items choosed</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn" data-dismiss="modal" aria-hidden="true">
-					Close
+					{{ LanguageResources.const.Close[session['language']] }}
 				</button>
 			</div>
 		</div>

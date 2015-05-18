@@ -7,26 +7,17 @@
 <div class="container">
 	<div>
 		<h3>
-			{%- if session['language'] %}	{{ LanguageResources.const.Problem[session['language']] }}
-			{%- else %}{{ LanguageResources.const.Problem[0] }}<!-- default -->
-			{% endif -%}
-			&nbsp;
-			{%- if session['language'] %}	{{ LanguageResources.const.Management[session['language']] }}
-			{%- else %}{{ LanguageResources.const.Management[0] }}<!-- default -->
-			{% endif -%}
+			{{ LanguageResources.const.Problem[session['language']] }}
+			{{ LanguageResources.const.Management[session['language']] }}
 		</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
 			<a class="btn" data-toggle="modal" role="button" href="#addModal">
-				{%- if session['language'] %}	{{ LanguageResources.const.Addition[session['language']] }}
-				{%- else %}{{ LanguageResources.const.Addition[0] }}<!-- default -->
-				{% endif -%}
+				{{ LanguageResources.const.Addition[session['language']] }}
 			</a>
 			<a class="btn" data-toggle="modal" role="button"
 				onclick="showingDeleteModal()">
-				{%- if session['language'] %}	{{ LanguageResources.const.Deletion[session['language']] }}
-				{%- else %}{{ LanguageResources.const.Deletion[0] }}<!-- default -->
-				{% endif -%}
+				{{ LanguageResources.const.Deletion[session['language']] }}
 			</a>
 		</div>
 
@@ -39,13 +30,8 @@
 					<button class="close" data-dismiss="modal" type="button"
 							  aria-hidden="true">x</button>
 					<h3 id="addModalLabel">
-						{%- if session['language'] %}	{{ LanguageResources.const.Problem[session['language']] }}
-						{%- else %}{{ LanguageResources.const.Problem[0] }}<!-- default -->
-						{% endif -%}
-						&nbsp;
-						{%- if session['language'] %}	{{ LanguageResources.const.Addition[session['language']] }}
-						{%- else %}{{ LanguageResources.const.Addition[0] }}<!-- default -->
-						{% endif -%}
+						{{ LanguageResources.const.Problem[session['language']] }}
+						{{ LanguageResources.const.Addition[session['language']] }}
 					</h3>
 				</div>
 				<div class="modal-body">
@@ -54,14 +40,10 @@
 				</div>
 				<div class="modal-footer">
 					<button class="btn" name="upload" type="submit">
-						{%- if session['language'] %}	{{ LanguageResources.const.ProblemUpload[session['language']] }}
-						{%- else %}{{ LanguageResources.const.ProblemUpload[0] }}<!-- default -->
-						{% endif -%}
+						{{ LanguageResources.const.ProblemUpload[session['language']] }}
 					</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">
-						{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
-						{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
-						{% endif -%}
+						{{ LanguageResources.const.Close[session['language']] }}
 					</button>
 				</div>
 			</form>
@@ -74,13 +56,8 @@
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">
-					{%- if session['language'] %}	{{ LanguageResources.const.Problem[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Problem[0] }}<!-- default -->
-					{% endif -%}
-					&nbsp;
-					{%- if session['language'] %}	{{ LanguageResources.const.Deletion[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Deletion[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Problem[session['language']] }}
+					{{ LanguageResources.const.Deletion[session['language']] }}
 				</h3>
 			</div>
 			<div class="modal-body">
@@ -89,14 +66,10 @@
 			<div class="modal-footer">
 				<form id="deleteProblem" method="post">
 					<button class="btn" type="submit">
-						{%- if session['language'] %}	{{ LanguageResources.const.Confirm[session['language']] }}
-						{%- else %}{{ LanguageResources.const.Confirm[0] }}<!-- default -->
-						{% endif -%}
+						{{ LanguageResources.const.Confirm[session['language']] }}
 					</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">
-						{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
-						{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
-						{% endif -%}
+						{{ LanguageResources.const.Close[session['language']] }}
 					</button>
 				<!-- In IE, it doesn't send its form values to server if 'form tags' are out of '<form></form>'  -->
 			</div>
@@ -108,13 +81,8 @@
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
 				<h3 id="deleteModalLabel">
-					{%- if session['language'] %}	{{ LanguageResources.const.Problem[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Problem[0] }}<!-- default -->
-					{% endif -%}
-					&nbsp;
-					{%- if session['language'] %}	{{ LanguageResources.const.Deletion[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Deletion[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Problem[session['language']] }}
+					{{ LanguageResources.const.Deletion[session['language']] }}
 				</h3>
 			</div>
 			<div class="modal-body">
@@ -122,9 +90,7 @@
 			</div>
 			<div class="modal-footer">
 				<button class="btn" data-dismiss="modal" aria-hidden="true">
-					{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Close[session['language']] }}
 				</button>
 			</div>
 		</div>
@@ -134,20 +100,13 @@
 			<thead>
 				<tr>
 					<td>
-						{%- if session['language'] %}	{{ LanguageResources.const.ID[session['language']] }}
-						{%- else %}{{ LanguageResources.const.ID[0] }}<!-- default -->
-						{% endif -%}
+						{{ LanguageResources.const.ID[session['language']] }}
 					<td>
-						{%- if session['language'] %}	{{ LanguageResources.const.Name[session['language']] }}
-						{%- else %}{{ LanguageResources.const.Name[0] }}<!-- default -->
-						{% endif -%}
+						{{ LanguageResources.const.Name[session['language']] }}
 					<td>
 						Solution/Checker
 					<td>
-						{%- if session['language'] %}	{{ LanguageResources.const.Check[session['language']] }}
-						{%- else %}{{ LanguageResources.const.Check[0] }}<!-- default -->
-						{% endif -%}
-						&nbsp;
+						{{ LanguageResources.const.Check[session['language']] }}
 						<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('registeredProblems');">
 			<tbody>
 				{%- for uploadedProblem in uploadedProblems %}

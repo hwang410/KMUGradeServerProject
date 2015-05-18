@@ -18,7 +18,6 @@
 	<script src="../../static/bootstrap/js/jquery-ui-1.10.1.min.js"></script>
 	<script src="../../static/bootstrap/js/jquery.autocomplete.js"></script>
 	<script src="../../static/bootstrap/js/src/ace.js"></script>
-	<script src="../../static/lang/language.js"></script>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- responsible design -->
 	<link rel="shortcut icon" href="../../static/bootstrap/img/kookmin_logo_white.jpg"> 
@@ -339,16 +338,16 @@
 			<!--
 			@@ Carousel section
 			-->
-			<div class="carousel slide" id="myCarousel" style="width:100%;position:relative;left:-15px" data-ride="carousel">
-				<div class="carousel-inner" style="position:relative;left:20px">
+			<div class="carousel slide" id="myCarousel" style="width:100%" data-ride="carousel">
+				<div class="carousel-inner">
 					{%- for noticeRecord in noticeRecords %}
 					{% if loop.index0==0 %}
 					<div class='item active'>
 					{% else %}
 					<div class='item'>
 					{% endif %}
-						<a href="{{ url_for ('GradeServer.read', activeTabCourseId='All', articleIndex=noticeRecord.articleIndex) }}" style="color:black">
-							<div class="carousel-span" style="background:#f0f0f0;height:100%;text-align:center;padding:3px;margin:7px">
+						<a href="{{ url_for ('GradeServer.read', activeTabCourseId='All', articleIndex=noticeRecord.articleIndex) }}">
+							<div class="carousel-span" style="background:#f0f0f0;height:100%;text-align:center;padding:3px;border:2px solid white">
 								<h3>
 									{% if noticeRecord.courseId %}
 									{{ noticeRecord.courseId }} {{ noticeRecord.courseName }}

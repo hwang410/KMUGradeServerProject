@@ -7,31 +7,37 @@
 
 <div class="container">
 	<h3>{% if problemName %}{{ problemName }}{% endif %}</h3>
-		<!-- code information -->
-		<div class="container">
-			<div class="row-fluid">
-				<table class="user_code table table-bordered">
-					<div class="span3">
-						<thead>
-							<tr>
-								<td>MemberId</td>
-								<td>Run Time</td>
-								<td>Used Memory</td>
-								<td>Code Length</td>
-								<td>&nbsp;</td>
-							</tr>
-						</thead>
-						<tr>
-							<td>{% if problemSolvedMemberRecords.memberId %}{{ problemSolvedMemberRecords.memberId }}{% endif %}</td>
-							<td>{% if problemSolvedMemberRecords.runTime %}{{ problemSolvedMemberRecords.runTime }}{% else %}0{% endif %} ms</td>
-							<td>{% if problemSolvedMemberRecords.usedMemory %}{{ problemSolvedMemberRecords.usedMemory }}{% else %}0{% endif %} MB</td>
-							<td>{% if problemSolvedMemberRecords.sumOfSubmittedFileSize %}{{ problemSolvedMemberRecords.sumOfSubmittedFileSize }}{% endif %} Byte</td>
-							<td style="text-align: center"><button type="button" id="code-down">Download source code</button></td>
-						</tr>
-					</div>
-				</table>
+	<!-- code information -->
+	<div class="container">
+		<table class="user_code table table-bordered">
+			<div class="span3">
+				<thead>
+					<tr>
+						<td>
+							{{ LanguageResources.const.ID[session['language']] }}
+						<td>
+							{{ LanguageResources.const.Runtime[session['language']] }}
+						<td>
+							{{ LanguageResources.const.Memory[session['language']] }}
+						<td>
+							{{ LanguageResources.const.FileSize[session['language']] }}
+						<td>
+							&nbsp;
+					</tr>
+				</thead>
+				<tr>
+					<td>{% if problemSolvedMemberRecords.memberId %}{{ problemSolvedMemberRecords.memberId }}{% endif %}
+					<td>{% if problemSolvedMemberRecords.runTime %}{{ problemSolvedMemberRecords.runTime }}{% else %}0{% endif %} ms
+					<td>{% if problemSolvedMemberRecords.usedMemory %}{{ problemSolvedMemberRecords.usedMemory }}{% else %}0{% endif %} MB
+					<td>{% if problemSolvedMemberRecords.sumOfSubmittedFileSize %}{{ problemSolvedMemberRecords.sumOfSubmittedFileSize }}{% endif %} Byte
+					<td style="text-align: center">
+						<button type="button" id="code-down">
+							{{ LanguageResources.const.DownloadCode[session['language']] }}
+						</button>
+				</tr>
 			</div>
-		</div>
+		</table>
+	</div>
 	<!-- end code information -->
 	
 	<!-- code section -->
@@ -57,7 +63,7 @@
 					{% else %}
 				<div id="{{ loop.index0 }}" class="tab-pane">
 					{% endif %}
-					</select>Theme :
+					</select>{{ LanguageResources.const.Theme[session['language']] }} :
 					<select type = "text" onchange="selectTheme{{ loop.index0 }}(this)">
 						<option value = "6"> chrome </option>
 						<option value = "7"> clouds </option>

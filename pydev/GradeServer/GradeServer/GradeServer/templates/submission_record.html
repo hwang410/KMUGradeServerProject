@@ -44,7 +44,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 			{%- if memberId %}
 				{{ memberId }}
 			{% endif -%}
-				's submission history
+				's {{ LanguageResources.const.Submission[session['language']] }} {{ LanguageResources.const.History[session['language']] }}
 		</h3>
 		<div class="visible-phone visible-tablet" style="margin-bottom:10px">
 			<style>
@@ -86,28 +86,35 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 			<table class="problem_list table table-bordered">
 				<thead>
 					<tr>
-						<td>Problem
-						<td class="hidden-phone hidden-tablet">Status
-						<td>Score
+						<td>
+							{{ LanguageResources.const.Problems[session['language']] }}
+						<td class="hidden-phone hidden-tablet">
+							{{ LanguageResources.const.Status[session['language']] }}
+						<td>
+							{{ LanguageResources.const.Score[session['language']] }}
 						<td class="hidden-phone">
-							<span class="hidden-tablet hidden-phone">Language</span>
+							<span class="hidden-tablet hidden-phone">
+								{{ LanguageResources.const.Language[session['language']] }}
+							</span>
 							<span class="hidden-desktop">Lang</span>
 						<td class="hidden-phone">
 							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='runTime', pageNum = pages['pageNum']) }}">
-							Runtime
+							{{ LanguageResources.const.Runtime[session['language']] }}
 							</a>
 						<td class="hidden-phone">
 							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='usedMemory', pageNum = pages['pageNum']) }}">
-							Memory
+							{{ LanguageResources.const.Memory[session['language']] }}
 							</a>
 						<td class="hidden-phone">
 							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='codeLength', pageNum = pages['pageNum']) }}">
-								<span class="hidden-tablet hidden-phone">Length</span>
+								<span class="hidden-tablet hidden-phone">
+									{{ LanguageResources.const.FileSize[session['language']] }}
+								</span>
 								<span class="hidden-desktop">Len</span>
 							</a>
 						<td>
 							<a href="{{ url_for('GradeServer.submission_record', memberId = memberId, sortCondition ='submissionDate', pageNum = pages['pageNum']) }}">
-							Date
+								{{ LanguageResources.const.SubmissionDate[session['language']] }}
 							</a>
 					</tr>
 				<tbody>
@@ -199,12 +206,5 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 		</div>
 	</div>
 </div>
-<script>
-$(window).resize(function(){
-	if($(window).width() < 768){
-
-	}
-});
-</script>
 {% endblock -%}
 

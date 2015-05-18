@@ -5,8 +5,9 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
-	<h3 style="display:inline-block">Submission Management</h3>
-	<h4 style="display:inline-block"> - Summary mode</h4>
+	<h3 style="display:inline-block">
+		{{ LanguageResources.const.User[session['language']] }}{{ LanguageResources.const.Submission[session['language']] }} {{ LanguageResources.const.Management[session['language']] }}</h3>
+	<h4 style="display:inline-block"> - {{ LanguageResources.const.SummaryMode[session['language']] }}</h4>
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
 			<li class="disabled"><a id="link-all" data-toggle="" href="" onclick="return false">all</a>
@@ -19,7 +20,11 @@
 				<a id="link-{{ ownCourse.courseId }}" data-toggle="tab" href="#{{ ownCourse.courseId }}" onclick="visibleButton(this)">{{ ownCourse.courseId }} {{ ownCourse.courseName }}</a></li>
 			{% endfor -%}
 			<div style="text-align:right">
-				<a href="{{ url_for('GradeServer.class_user_submit') }}"><button id="detail" type="button" style="display">Detail</button></a>
+				<a href="{{ url_for('GradeServer.class_user_submit') }}">
+					<button id="detail" type="button" style="display">
+						{{ LanguageResources.const.Detail[session['language']] }}
+					</button>
+				</a>
 			</div>
 		</ul>
 		<div style="text-align:center">
@@ -38,11 +43,11 @@
 				<!-- registered problems of the course -->
 					<thead>
 						<tr>
-							<td>
+							<td>{{ LanguageResources.const.ID[session['language']] }}
 							{%- for ownProblem in ownProblems %} <!-- RegisteredProblems -->
-								{%- if ownCourse.courseId == ownProblem.courseId %}
-									<td>{{ ownProblem.problemId }}
-								{% endif -%}
+							{%- if ownCourse.courseId == ownProblem.courseId %}
+							<td>{{ ownProblem.problemId }}
+							{% endif -%}
 							{% endfor -%}
 					<tbody>
 					<!-- registered members of the course -->

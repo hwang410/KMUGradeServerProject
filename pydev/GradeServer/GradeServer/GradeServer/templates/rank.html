@@ -21,7 +21,9 @@ $(function() {
 </script>
 
 <div class="container">
-	<h2>Ranking</h2>
+	<h2>
+		{{ LanguageResources.const.Ranking[session['language']] }}
+	</h2>
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
 		<!-- tab active setting -->
@@ -61,17 +63,21 @@ $(function() {
 					<table class="table">
 						<thead>
 							<tr>
-								<td>Rank
-								<td>User ID
-								<td>Comment
-								<td>Tries
+								<td>
+									{{ LanguageResources.const.Rank[session['language']] }}
+								<td>
+									{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.ID[session['language']] }}
+								<td>
+									{{ LanguageResources.const.Comment[session['language']] }}
+								<td>
+									{{ LanguageResources.const.Tries[session['language']] }}
 								<td>
 									<a href="{{ url_for('GradeServer.rank', activeTabCourseId = myCourse, sortCondition ='solvedProblem', pageNum = pages['pageNum']) }}">
-										Solved Problems
+										{{ LanguageResources.const.SolvedProblems[session['language']] }}
 									</a>
 								<td>
 									<a href="{{ url_for('GradeServer.rank', activeTabCourseId = myCourse, sortCondition ='rate', pageNum = pages['pageNum']) }}">
-										Rate
+										{{ LanguageResources.const.Rate[session['language']] }}
 									</a>
 						<tbody>
 							{%- for rankMemberRecord in rankMemberRecords %}
@@ -124,17 +130,21 @@ $(function() {
 				<table class="table">
 					<thead>
 						<tr>
-							<td>Rank
-							<td>User ID
-							<td>Comment
+							<td>
+								{{ LanguageResources.const.Rank[session['language']] }}
+							<td>
+								{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.ID[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Comment[session['language']] }}
 							<td>
 								<a href="{{ url_for('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition ='solvedProblem', pageNum = pages['pageNum']) }}">
-									Solved Problems
+									{{ LanguageResources.const.SolvedProblems[session['language']] }}
 								</a>
-							<td>Tries
+							<td>
+								{{ LanguageResources.const.Tries[session['language']] }}
 							<td>
 								<a href="{{ url_for('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition ='rate', pageNum = pages['pageNum']) }}">
-									Rate
+									{{ LanguageResources.const.Rate[session['language']] }}
 								</a>
 					<tbody>
 						{%- for rankMemberRecord in rankMemberRecords %}
@@ -190,7 +200,9 @@ $(function() {
 		<div id="all" class="tab-pane active" style="text-align: center">
 			<div class="input-append" style="margin-bottom: 0px">
 				<input class ="span3" id ="search-members" name ="memberId" type="text" placeholder="Member ID">
-				<button name="findMemberId" class="btn" type="submit">Find<i class="icon-search"></i></button>
+				<button name="findMemberId" class="btn" type="submit">
+				{{ LanguageResources.const.Find[session['language']] }}<i class="icon-search"></i>
+				</button>
 			</div>
 		</div>
 	</form>

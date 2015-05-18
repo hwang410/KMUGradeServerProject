@@ -128,7 +128,13 @@
   [class*="span"] {
     float: left;
     min-height: 1px;
-    margin-left: 30px;
+    margin-left: 20px;
+  }
+  .left{
+    left: 0%;
+  }
+  .right{
+    right: 5%;
   }
   .container,
   .navbar-static-top .container,
@@ -165,7 +171,7 @@
   }
   /* carousel item witdh */
   .carousel-span{
-    width: 320px;
+    width: 350px;
   }
   .span3 {
     width: 270px;
@@ -279,8 +285,8 @@
     *width: 31.570740134569924%;
   }
   .row-fluid .carousel-span{
-    width: 27%;
-    *width: 27%;
+    width: 29%;
+    *width: 29%;
   }
   .row-fluid .span3 {
     width: 23.076923076923077%;
@@ -447,7 +453,7 @@
   input.carousel-span,
   textarea.carousel-span,
   .uneditable-input.carousel-span {
-    width: 306px;
+    width: 336px;
   }
 
   input.span3,
@@ -476,7 +482,7 @@
   }
 }
 
-@media (min-width: 768px) and (max-width: 979px) {
+@media (min-width: 768px) and (max-width: 1199px) {
   .row {
     margin-left: -20px;
     *zoom: 1;
@@ -493,8 +499,9 @@
   [class*="span"] {
     float: left;
     min-height: 1px;
-    margin-left: 20px;
+    margin-left: 17px;
   }
+
   .container,
   .navbar-static-top .container,
   .navbar-fixed-top .container,
@@ -529,7 +536,7 @@
     width: 228px;
   }
   .carousel-span{
-    width: 180px;
+    width: 208px;
   }
   .span3 {
     width: 166px;
@@ -643,8 +650,8 @@
     *width: 31.43852121782062%;
   }
   .row-fluid .carousel-span{
-    width: 25%;
-    *width: 25%;
+    width: 29%;
+    *width: 29%;
   }
   .row-fluid .span3 {
     width: 22.92817679558011%;
@@ -810,7 +817,7 @@
   input.carousel-span,
   textarea.carousel-span,
   .uneditable-input.carousel-span {
-    width: 183px;
+    width: 190px;
   }
 
   input.span3,

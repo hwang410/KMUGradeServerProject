@@ -2,11 +2,19 @@
 {%- block body %}
 <div class="container">
 	<div>
-		<h3>User Addition</h3>
+		<h3>
+			{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+		</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
-			<a href="{{ url_for('GradeServer.class_add_user') }}"><button class="btn" type="button">Add</button></a>
-			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">Delete</a>
+			<a href="{{ url_for('GradeServer.class_add_user') }}">
+				<button class="btn" type="button">
+					{{ LanguageResources.const.Addition[session['language']] }}
+				</button>
+			</a>
+			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">
+				{{ LanguageResources.const.Deletion[session['language']] }}
+			</a>
 		</div>
 
 		<!-- hidden modal pop -->
@@ -14,15 +22,21 @@
 		<div class="modal hide fade" id="deleteModal" aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">User Deletion</h3>
+				<h3 id="deleteModalLabel">
+					{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.Deletion[session['language']] }}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<p>Do you really want to delete it?</p>
 			</div>
 			<div class="modal-footer">
 				<form id="deleteUser" method="post">
-					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-					<button class="btn" type="submit">Done</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true">
+						{{ LanguageResources.const.Close[session['language']] }}
+					</button>
+					<button class="btn" type="submit">
+						{{ LanguageResources.const.Done[session['language']] }}
+					</button>
 				
 			</div>
 		</div>
@@ -30,13 +44,17 @@
 		<div class="modal hide fade" id="deleteNoItem" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">User Deletion</h3>
+				<h3 id="deleteModalLabel">
+					{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.Deletion[session['language']] }}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<p>No items choiced</p>
 			</div>
 			<div class="modal-footer">
-				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">
+					{{ LanguageResources.const.Close[session['language']] }}
+				</button>
 			</div>
 		</div>
 		<!-- end hidden modal pop -->
@@ -45,11 +63,17 @@
 			<thead>
 				<tr>
 					<td>Index
-					<td>Course
-					<td>ID
-					<td>Name
-					<td>College&Department
-					<td>Check All <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('registeredUsers');">
+					<td>
+						{{ LanguageResources.const.Course[session['language']] }}
+					<td>
+						{{ LanguageResources.const.ID[session['language']] }}
+					<td>
+						{{ LanguageResources.const.Name[session['language']] }}
+					<td>
+						{{ LanguageResources.const.College[session['language']] }}&{{ LanguageResources.const.Department[session['language']] }}
+					<td>
+						{{ LanguageResources.const.Check[session['language']] }}
+						<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('registeredUsers');">
 			<tbody>
 				{%- for eachUser in ownUsers %}
 				<tr>
