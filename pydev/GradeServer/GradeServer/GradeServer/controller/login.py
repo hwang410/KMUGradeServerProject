@@ -61,20 +61,17 @@ def sign_in():
     from GradeServer.resource.languageResources import LanguageResources
 
     error = None
+    
     if request.method == 'POST':
         checker = True
+        language = {'en':0,
+                    'kr':1}
+        
         for form in request.form:
             if "language" in form:
                 checker = False
-                resp = make_response(render_template(HTMLResources().const.MAIN_HTML,
-                                                     SETResources = SETResources,
-                                                     SessionResources = SessionResources,
-                                                     LanguageResources = LanguageResources,
-                                                     noticeRecords = select_notices(), 
-                                                     topCoderId = select_top_coder(),
-                                                     error = error))
-                resp.set_cookie('language', request.form['language'])
-                session['language'] = request.form['language']
+                lang = request.form['language']
+                session['language'] = language[lang]
                 
         if checker:        
             if not request.form['memberId']:
@@ -109,7 +106,7 @@ def sign_in():
                         session[SessionResources().const.LAST_ACCESS_DATE] = datetime.now()
                         
                         # set default language
-                        session['language'] = 'en'
+                        session['language'] = language['en']
                                                     
                         ownCourses = select_accept_courses().subquery()
                         # Get My Accept Courses
