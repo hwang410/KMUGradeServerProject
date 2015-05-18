@@ -83,6 +83,13 @@ class LanguageResources(object):
     const.FileSize = ['Size', '길이']
     const.SubmissionDate = ['Date', '제출일']
     
+    
+    '''
+    ==@@ User's code
+    '''
+    const.DownloadCode = ['Download sourcecode', '소스코드 다운로드']
+    
+    
     '''
     @@ Rank page
     '''
@@ -136,7 +143,7 @@ class LanguageResources(object):
     @@ College&Department Management
     '''
     const.Management = ['Management', '관리']
-    const.Check = ['Check', '체크']
+    const.Check = ['Check', '선택']
     const.Code = ['Code', '코드']
     
     
@@ -147,6 +154,8 @@ class LanguageResources(object):
     const.Administrator = ['Administrator', '관리자']
     const.StartDate = ['Start Date', '시작일']
     const.FinishDate = ['Finish Date', '종료일']
+    const.OpenDate = ['Open Date', '공개일']
+    const.CloseDate = ['Close Date', '공개종료일']
     
     
     '''
@@ -191,6 +200,7 @@ class LanguageResources(object):
     const.DetailMode = ['Detail mode', '자세히 보기']
     const.Summary = ['Summary', '요약']
     const.SummaryMode = ['Summary mode', '간략히 보기']
+    const.History = ['History', '기록']
 
     '''
     @@ Service management

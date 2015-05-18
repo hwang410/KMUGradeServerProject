@@ -2,20 +2,26 @@
 {%- block body %}
 <div class="container">
 	<div>
-		<h3>Service Management</h3>
+		<h3>
+			{{ LanguageResources.const.Service[session['language']] }} {{ LanguageResources.const.Management[session['language']] }}
+		</h3>
 		<table class="table">
 			<tr>
-				<td>Judging
+				<td>
+					{{ LanguageResources.const.Judging[session['language']] }}
 				<td>
 					<label class="radio inline"><input id="serveron" name="server" type="radio" value="serveron" checked>On</label>
 					<label class="radio inline"><input id="serveroff" name="server" type="radio" value="serveroff">Off</label>
 			<tr>
-				<td>Board
+				<td>
+					{{ LanguageResources.const.Board[session['language']] }}
 				<td>
 					<label class="radio inline"><input id="judgeon" name="judge" type="radio" value="judgeon" checked>On</label>
 					<label class="radio inline"><input id="judgeoff" name="judge" type="radio" value="judgeoff">Off</label>
 		</table>
-		<a href="#"><button class="btn" type="button">Done</button></a>
+		<button class="btn" type="button">
+			{{ LanguageResources.const.Done[session['language']] }}
+		</button>
 	</div>
 </div>
 {% endblock -%}

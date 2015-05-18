@@ -79,13 +79,25 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<td>Course ID
-							<td>Course Name
-							<td>Problem Name
-							<td>Member ID
-							<td>Status
-							<td>Submission Count
-							<td>Submission Date
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }}
+								{{ LanguageResources.const.Number[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }}
+								{{ LanguageResources.const.Name[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Problem[session['language']] }}
+								{{ LanguageResources.const.Name[session['language']] }}
+							<td>
+								{{ LanguageResources.const.User[session['language']] }}
+								{{ LanguageResources.const.ID[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Status[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Submission[session['language']] }}
+								{{ LanguageResources.const.Count[session['language']] }}
+							<td>
+								{{ LanguageResources.const.SubmissionDate[session['language']] }}
 					<tbody>
 						{%- for submission, registeredCourse, problem in submissions %}
 						{%- if submission.courseId == ownCourse.courseId %}
@@ -138,7 +150,9 @@
 		<div class="input-append" style="margin-bottom:0px">
 			<input class="span3" id="appendedInputButton"
 					name="keyword" type="text" placeholder="Type Keyword">
-			<button class="btn" type="submit">Find</button>
+			<button class="btn" type="submit">
+				{{ LanguageResources.const.Find[session['language']] }}
+			</button>
 		</div>
 	</div>
 </div>

@@ -18,8 +18,16 @@
 				</a>
 			{% endfor %}</li> <!-- without li closing tag, div tag is recognized as a part of the second tag -->
 			<div style="text-align:right">
-				<div class="visible-desktop"><a class="btn" data-toggle="modal" href="#addProblemModal" rol="button">Add</a></div>
-				<div class="visible-phone visible-tablet"><button class="btn" onclick="alert('not available in this window size');">Add</button></div>
+				<div class="visible-desktop">
+					<a class="btn" data-toggle="modal" href="#addProblemModal" rol="button">
+						{{ LanguageResources.const.Addition[session['language']] }}
+					</a>
+				</div>
+				<div class="visible-phone visible-tablet">
+					<button class="btn" onclick="alert('not available in this window size');">
+						{{ LanguageResources.const.Addition[session['language']] }}
+					</button>
+				</div>
 			</div>	
 		</ul>
 		<!-- hidden modal pop -->
@@ -32,25 +40,35 @@
 				<div id="modalError" class="error" style="display:none;width:97%"></div>
 				<button class="close" data-dismiss="modal"
 						  type="button" aria-hidden="true">x</button>
-				<h3 id="addProblemModalLabel">Problem Addition</h3>
+				<h3 id="addProblemModalLabel">
+					{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<p>If you don't choose open/close date, then the dates will be same with start/end date<br></p>
 				<div style="text-align:right">
-					<button class="btn" type="button" id="addline_problem">Add line
+					<button class="btn" type="button" id="addline_problem">
+						{{ LanguageResources.const.AddLine[session['language']] }}
 					</button>
 				</div>
 				<table class="table table-bordered" id='problems'
-							 style="margin-top:10px">
+					     style="margin-top:10px">
 					<thead>
 						<tr>
-							<td>Course ID
-							<td>Problem Name
-							<td><abbr title="All Input cases in One File">AIOF</abbr>
-							<td>Start Date
-							<td>End Date
-							<td>Open Date
-							<td>Close Date
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }} {{ LanguageResources.const.Number[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Name[session['language']] }}
+							<td>
+								<abbr title="All Input cases in One File">AIOF</abbr>
+							<td>
+								{{ LanguageResources.const.StartDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.FinishDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.OpenDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.CloseDate[session['language']] }}
 					<tbody id="addProblemForm">
 						<tr>
 							<td>
@@ -91,10 +109,14 @@
 				</table>
 			</div>
 			<div class="modal-footer">
-				<a class="btn" onclick="checkFormValidation()">Done</a>
+				<a class="btn" onclick="checkFormValidation()">
+					{{ LanguageResources.const.Done[session['language']] }}
+				</a>
 				<!--<button class="btn" name="add" onclick="checkFormValidation()">Done</button>-->
 				<button class="btn" id="resetAddProblemForm"
-						  data-dismiss="modal" aria-hidden="true">Close</button>
+						  data-dismiss="modal" aria-hidden="true">
+					{{ LanguageResources.const.Close[session['language']] }}
+				</button>
 </form>
 			</div>
 		</div>
@@ -105,15 +127,24 @@
 				<table class="table" id="allProblems">
 					<thead>
 						<tr>
-							<td>Course ID
-							<td>Class Name
-							<td>Problem Name
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }} {{ LanguageResources.const.Number[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }} {{ LanguageResources.const.Name[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
 							<td><abbr title="All Input cases in One File">AIOF</abbr>
-							<td>Start Date
-							<td>End Date
-							<td>Open Date
-							<td>Close Date
-							<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('allProblems');">
+							<td>
+								{{ LanguageResources.const.StartDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.FinishDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.OpenDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.CloseDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Check[session['language']] }}
+								<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('allProblems');">
 					<tbody>
 						{% for registeredProblem, registeredCourse, problem in ownProblems %}
 						<tr>
@@ -158,15 +189,24 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<td>Course ID
-							<td>Class Name
-							<td>Problem Name
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }} {{ LanguageResources.const.Number[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }} {{ LanguageResources.const.Name[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
 							<td><abbr title="All Input cases in One File">AIOF</abbr>
-							<td>Start Date
-							<td>End Date
-							<td>Open Date
-							<td>Close Date
-							<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('{{ course.courseId }}');">
+							<td>
+								{{ LanguageResources.const.StartDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.FinishDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.OpenDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.CloseDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Check[session['language']] }}
+								<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('{{ course.courseId }}');">
 					<tbody>
 						{% for registeredProblem, registeredCourse, problem in ownProblems %}
 						{% if course.courseId == registeredProblem.courseId %}
@@ -212,11 +252,13 @@
 	<div style="text-align:right">		
 		<label for="hidden_editButton" style="display:inline">
 			<button class="btn" id="editButton" style="display:None"> <!-- real submit tag -->
-				Confirm
+				{{ LanguageResources.const.Confirm[session['language']] }}
 			</button> 
 		</label>
 		<a class="btn" data-toggle="modal" role="button"
-		 	onclick="showingDeleteModal()">Delete</a>
+		 	onclick="showingDeleteModal()">
+		 	{{ LanguageResources.const.Deletion[session['language']] }}
+		</a>
 	</div>
 
 	<!-- ///// Delete case ///// -->
@@ -226,7 +268,9 @@
 		<div class="modal-header">
 			<button class="close" type="button"
 					  data-dismiss="modal" aria-hidden="true">x</button>
-			<h3 id="deleteProblemModalLabel">Problem Deletion</h3>
+			<h3 id="deleteProblemModalLabel">
+				{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Deletion[session['language']] }}
+			</h3>
 		</div>
 		<div class="modal-body">
 			<p>Do you really want to delete it?</p>
@@ -234,11 +278,11 @@
 		<div class="modal-footer">
 			<label for="hidden_deleteButton" style="display:inline">
 				<button class="btn" id="deleteButton"> 
-					Confirm
+					{{ LanguageResources.const.Confirm[session['language']] }}
 				</button>
 			</label>
 			<button class="btn" data-dismiss="modal" aria-hidden="true">
-				Close
+				{{ LanguageResources.const.Close[session['language']] }}
 			</button>
 		</div>
 	</div>
@@ -249,14 +293,16 @@
 		<div class="modal-header">
 			<button class="close" type="button"
 					  data-dismiss="modal" aria-hidden="true">x</button>
-			<h3 id="deleteModalLabel">Problem Deletion</h3>
+			<h3 id="deleteModalLabel">
+				{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Deletion[session['language']] }}
+			</h3>
 		</div>
 		<div class="modal-body">
 			<p>No items choosed</p>
 		</div>
 		<div class="modal-footer">
 			<button class="btn" data-dismiss="modal" aria-hidden="true">
-				Close
+				{{ LanguageResources.const.Close[session['language']] }}
 			</button>
 		</div>
 	</div>
@@ -290,7 +336,9 @@
 			</div>
 			<input class="span3" id="prependedDropdownButton" name="keyword"
 				 	type="text" placeholder="Type keyword">
-				<button class="btn" type="submit">Find</button>
+				<button class="btn" type="submit">
+					{{ LanguageResources.const.Find[session['language']] }}
+				</button>
 		</div>
 	</div>
 </div>

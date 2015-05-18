@@ -1093,5 +1093,5 @@ def class_manage_service():
     return render_template('/class_manage_service.html',
                            error = error,
                            SETResources = SETResources,
-                           SessionResources = SessionResources,)
-    LanguageResources = LanguageResources,
+                           SessionResources = SessionResources,
+                           LanguageResources = LanguageResources)
