@@ -6,15 +6,16 @@
 {%- block body %}
 <div class="container">
 	<h3>
-		{%- if session['language'] == 'kr' %}{{ LanguageResources.const.PersonalInformation_kr }}
-		{%- elif session['language'] == 'en' %}{{ LanguageResources.const.PersonalInformation_en }}
-		{%- else %}{{ LanguageResources.const.PersonalInformation_en }} <!-- default -->
+		{%- if session['language'] %}	{{ LanguageResources.const.PersonalInformation[session['language']] }}
+		{%- else %}{{ LanguageResources.const.PersonalInformation[0] }}<!-- default -->
 		{% endif -%}
 	</h3>
 	<h4>
 		<div class="row-fluid">
 			<div class="span3">
-				ID
+				{%- if session['language'] %}	{{ LanguageResources.const.ID[session['language']] }}
+				{%- else %}{{ LanguageResources.const.ID[0] }}<!-- default -->
+				{% endif -%}
 			</div>
 			<div class="span8">
 				{%- if memberInformation.memberId %}{{ memberInformation.memberId }}{% endif -%}
@@ -26,9 +27,8 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Password_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Password_en }}
-					{%- else %}{{ LanguageResources.const.Password_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.Password[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Password[0] }}<!-- default -->
 					{% endif -%}
 				</div>
 				<div class="span2">
@@ -40,9 +40,8 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Password_kr }}({{ LanguageResources.const.Confirm_kr }})
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Password_en }}({{ LanguageResources.const.Confirm_en }})
-					{%- else %}{{ LanguageResources.const.Password_en }}({{ LanguageResources.const.Confirm_en }} <!-- default -->)
+					{%- if session['language'] %}	{{ LanguageResources.const.Password[session['language']] }}({{ LanguageResources.const.Confirm[session['language']] }})
+					{%- else %}{{ LanguageResources.const.Password[0] }}({{ LanguageResources.const.Confirm[0] }})<!-- default -->
 					{% endif -%}
 				</div>
 				<div class="span8">
@@ -55,9 +54,8 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Department_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Department_en }}
-					{%- else %}{{ LanguageResources.const.Department_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.Department[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Department[0] }}<!-- default -->
 					{% endif -%}
 				</div>
 				<div class="span8">
@@ -69,9 +67,8 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Name_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Name_en }}
-					{%- else %}{{ LanguageResources.const.Name_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.Name[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Name[0] }}<!-- default -->
 					{% endif -%}
 				</div>
 				<div class="span8">
@@ -83,9 +80,8 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.ContactNumber_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.ContactNumber_en }}
-					{%- else %}{{ LanguageResources.const.ContactNumber_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.ContactNumber[session['language']] }}
+					{%- else %}{{ LanguageResources.const.ContactNumber[0] }}<!-- default -->
 					{% endif -%}
 				</div>
 				<div class="span8">
@@ -100,9 +96,8 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Email_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Email_en }}
-					{%- else %}{{ LanguageResources.const.Email_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.Email[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Email[0] }}<!-- default -->
 					{% endif -%}
 				</div>
 				<div class="span8">
@@ -117,9 +112,8 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Comment_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Comment_en }}
-					{%- else %}{{ LanguageResources.const.Comment_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.Comment[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Comment[0] }}<!-- default -->
 					{% endif -%}
 				</div>
 				<div class="span8">
@@ -133,9 +127,8 @@
 		</h4>
 		<br>
 		<button type="submit" class="btn">
-			{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Confirm_kr }}
-			{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Confirm_en }}
-			{%- else %}{{ LanguageResources.const.Confirm_en }} <!-- default -->
+			{%- if session['language'] %}	{{ LanguageResources.const.Confirm[session['language']] }}
+			{%- else %}{{ LanguageResources.const.Confirm[0] }}<!-- default -->
 			{% endif -%}
 		</button>
 	</form>

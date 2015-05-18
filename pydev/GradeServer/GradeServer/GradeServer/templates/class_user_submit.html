@@ -5,8 +5,12 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
-	<h3 style="display:inline-block">Submission Management</h3>
-	<h4 style="display:inline-block"> - Detail mode</h4>
+	<h3 style="display:inline-block">
+		{{ LanguageResources.const.User[session['language']] }}{{ LanguageResources.const.Submission[session['language']] }} 	{{ LanguageResources.const.Management[session['language']] }}
+	</h3>
+	<h4 style="display:inline-block"> - 
+		{{ LanguageResources.const.DetailMode[session['language']] }}
+	</h4>
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
 			<li class="active">
@@ -24,7 +28,7 @@
 			<div style="text-align:right">
 				<a href="{{ url_for('GradeServer.user_submit_summary') }}">
 					<button id="summary" type="submit" style="display:none">
-						Summary
+						{{ LanguageResources.const.Summary[session['language']] }}
 					</button>
 				</a>
 			</div>
@@ -35,13 +39,25 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<td>Course ID
-							<td>Course Name
-							<td>Problem Name
-							<td>Member ID
-							<td>Status
-							<td>Submission Count
-							<td>Submission Date
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }}
+								{{ LanguageResources.const.Number[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }}
+								{{ LanguageResources.const.Name[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Problem[session['language']] }}
+								{{ LanguageResources.const.Name[session['language']] }}
+							<td>
+								{{ LanguageResources.const.User[session['language']] }}
+								{{ LanguageResources.const.ID[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Status[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Submission[session['language']] }}
+								{{ LanguageResources.const.Count[session['language']] }}
+							<td>
+								{{ LanguageResources.const.SubmissionDate[session['language']] }}
 					<tbody>
 						{%- for submission, registeredCourse, problem in submissions %}
 						<tr>

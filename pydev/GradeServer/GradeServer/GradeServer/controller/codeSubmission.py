@@ -23,6 +23,8 @@ from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.sessionResources import SessionResources
 from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.routeResources import RouteResources
+from GradeServer.resource.languageResources import LanguageResources
+
 from sqlalchemy import and_, func, update
 from GradeServer.celeryServer import Grade
 

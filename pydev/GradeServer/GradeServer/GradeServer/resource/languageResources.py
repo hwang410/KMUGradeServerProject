@@ -50,7 +50,6 @@ class LanguageResources(object):
     const.Course = ['Course', '수업']
     
     # for course administrator
-    const.UserSubmission = ['User Submission', '제출 기록']
     
     # for user
     const.UserRecord = ['Record', '제출 정보']
@@ -73,13 +72,16 @@ class LanguageResources(object):
     const.UploadFiles = ['Upload Files', '파일로 제출']
     const.WriteCode = ['Write Code', '코드 작성']
     const.ProblemScript = ['Problem Script', '문제 보기']
-    const.Submit = ['Submit', '제출']
+    const.Submission = ['Submission', '제출']
     const.Language = ['Language', '사용 언어']
     const.Theme = ['Theme', '에디터 테마']
     const.Limitation = ['Limitation', '제한']
     const.Time = ['Time', '시간']
     const.Memory = ['Memory', '메모리']
     const.Select = ['Select', '선택']
+    const.Runtime = ['Runtime', '실행시간']
+    const.FileSize = ['Size', '길이']
+    const.SubmissionDate = ['Date', '제출일']
     
     '''
     @@ Rank page
@@ -123,6 +125,7 @@ class LanguageResources(object):
     @@ Account
     '''
     const.PersonalInformation = ['Personal Information', '개인 정보']
+    const.ID = ['ID', '아이디']
     const.Password = ['Password', '암호']
     const.Name = ['Name', '이름']
     const.ContactNumber = ['Contact Number', '연락처']
@@ -134,8 +137,6 @@ class LanguageResources(object):
     '''
     const.Management = ['Management', '관리']
     const.Check = ['Check', '체크']
-    const.Add = ['Add', '추가']
-    const.Delete = ['Delete', '삭제']
     const.Code = ['Code', '코드']
     
     
@@ -186,9 +187,12 @@ class LanguageResources(object):
     '''
     @@ Submission management
     '''
-    const.SubmissionManagement = ['Submission Management', '사용자 제출 관리']
     const.Detail = ['Detail', '자세히']
     const.DetailMode = ['Detail mode', '자세히 보기']
     const.Summary = ['Summary', '요약']
     const.SummaryMode = ['Summary mode', '간략히 보기']
 
+    '''
+    @@ Service management
+    '''
+    const.Judging = ['Judging', '채점']

@@ -25,34 +25,28 @@
 			<tr>
 				<td class="hidden-phone">Num
 				<td>
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.ProblemTitle_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.ProblemTitle_en }}
-					{%- else %}{{ LanguageResources.const.ProblemTitle_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.ProblemTitle[session['language']] }}
+					{%- else %}{{ LanguageResources.const.ProblemTitle[0] }}<!-- default -->
 					{% endif -%}
 				<td>
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Score_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Score_en }}
-					{%- else %}{{ LanguageResources.const.Score_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.Score[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Score[0] }}<!-- default -->
 					{% endif -%}
 				<td class="hidden-phone">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Status_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Status_en }}
-					{%- else %}{{ LanguageResources.const.Status_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.Status[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Status[0] }}<!-- default -->
 					{% endif -%}
 				<td>
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.DueDate_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.DueDate_en }}
-					{%- else %}{{ LanguageResources.const.DueDate_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.DueDate[session['language']] }}
+					{%- else %}{{ LanguageResources.const.DueDate[0] }}<!-- default -->
 					{% endif -%}
 				<td>
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Count_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Count_en }}
-					{%- else %}{{ LanguageResources.const.Count_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.Count[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Count[0] }}<!-- default -->
 					{% endif -%}
 				<td>
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.ProblemRecord_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.ProblemRecord_en }}
-					{%- else %}{{ LanguageResources.const.ProblemRecord_en }} <!-- default -->
+					{%- if session['language'] %}	{{ LanguageResources.const.ProblemRecord[session['language']] }}
+					{%- else %}{{ LanguageResources.const.ProblemRecord[0] }}<!-- default -->
 					{% endif -%}
 			</tr>
 		<tbody>
