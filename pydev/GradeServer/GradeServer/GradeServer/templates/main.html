@@ -12,11 +12,13 @@
 	<link href="../../static/bootstrap/css/jquery-ui.css" rel="stylesheet">
 	<link href="../../static/bootstrap/css/jquery-ui.structure.css" rel="stylesheet">
 	<link href="../../static/bootstrap/themes/smoothness/jquery-ui.css" rel="stylesheet">
+
 	<script src="../../static/bootstrap/js/modernizr-2.6.2.min.js"></script>
 	<script src="../../static/bootstrap/js/jquery.js"></script>
 	<script src="../../static/bootstrap/js/jquery-ui-1.10.1.min.js"></script>
 	<script src="../../static/bootstrap/js/jquery.autocomplete.js"></script>
 	<script src="../../static/bootstrap/js/src/ace.js"></script>
+	<script src="../../static/lang/language.js"></script>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- responsible design -->
 	<link rel="shortcut icon" href="../../static/bootstrap/img/kookmin_logo_white.jpg"> 
@@ -38,18 +40,16 @@
 					<ul class="nav">
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-								{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Problems_kr }}
-								{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Problems_en }}
-								{%- else %}{{ LanguageResources.const.Problems_en }} <!-- default -->
+								{%- if session['language'] %}	{{ LanguageResources.const.Problems[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Problems[0] }} <!-- default -->
 								{% endif -%}
 								<b class="caret"></b>
 							</a>
 							{%- if session['memberId'] != NULL %}
 							<ul class="dropdown-menu">
 								<li class="nav-header">
-									{%- if session['language'] == 'kr' %}{{ LanguageResources.const.CurrentCourse_kr }}
-									{%- elif session['language'] == 'en' %}{{ LanguageResources.const.CurrentCourse_en }}
-									{%- else %}{{ LanguageResources.const.CurrentCourse_en }} <!-- default -->
+									{%- if session['language'] %}	{{ LanguageResources.const.CurrentCourse[session['language']] }}
+									{%- else %}{{ LanguageResources.const.CurrentCourse[0] }} <!-- default -->
 									{% endif -%}
 								</li>
 								{%- if session[SessionResources.const.OWN_CURRENT_COURSES] %}
@@ -63,9 +63,8 @@
 								<li class="divider"></li> <!-- seperation line -->
 
 								<li class="nav-header">
-									{%- if session['language'] == 'kr' %}{{ LanguageResources.const.PastCourse_kr }}
-									{%- elif session['language'] == 'en' %}{{ LanguageResources.const.PastCourse_en }}
-									{%- else %}{{ LanguageResources.const.PastCourse_en }} <!-- default -->
+									{%- if session['language'] %}	{{ LanguageResources.const.PastCourse[session['language']] }}
+									{%- else %}{{ LanguageResources.const.PastCourse[0] }} <!-- default -->
 									{% endif -%}
 								</li>
 								{%- if session[SessionResources.const.OWN_PAST_COURSES] %}
@@ -75,9 +74,8 @@
 								{%- else %}
 								<li class="disabled">
 									<a tabindex="-1" href="#" class="main-checker">
-										{%- if session['language'] == 'kr' %}{{ LanguageResources.const.None_kr }}
-										{%- elif session['language'] == 'en' %}{{ LanguageResources.const.None_en }}
-										{%- else %}{{ LanguageResources.const.None_en }} <!-- default -->
+										{%- if session['language'] %}	{{ LanguageResources.const.none[session['language']] }}
+										{%- else %}{{ LanguageResources.const.none[0] }} <!-- default -->
 										{% endif -%}
 									</a>
 								</li>
@@ -87,17 +85,15 @@
 						</li>
 						<li>
 							<a href="{{ url_for('GradeServer.rank', activeTabCourseId='All', sortCondition='rate', pageNum=1) }}">
-								{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Rank_kr }}
-								{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Rank_en }}
-								{%- else %}{{ LanguageResources.const.Rank_en }} <!-- default -->
+								{%- if session['language'] %}	{{ LanguageResources.const.Rank[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Rank[0] }} <!-- default -->
 								{% endif -%}
 							</a>
 						</li>
 						<li>
 							<a href="{{ url_for('GradeServer.board', activeTabCourseId='All', pageNum=1) }}">
-								{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Board_kr }}
-								{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Board_en }}
-								{%- else %}{{ LanguageResources.const.Board_en }} <!-- default -->
+								{%- if session['language'] %}	{{ LanguageResources.const.Board[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Board[0] }} <!-- default -->
 								{% endif -%}
 							</a>
 						</li>
@@ -109,9 +105,8 @@
 						-->
 						<li class="hidden">
 							<a href="{{ url_for('GradeServer.team', pageNum=1) }}">
-								{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Team_kr }}
-								{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Team_en }}
-								{%- else %}{{ LanguageResources.const.Team_en }} <!-- default -->
+								{%- if session['language'] %}	{{ LanguageResources.const.Team[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Team[0] }} <!-- default -->
 								{% endif -%}
 							</a>
 						</li>
@@ -129,83 +124,73 @@
 								{%- if SETResources.const.SERVER_ADMINISTRATOR not in session['authority'] and SETResources.const.COURSE_ADMINISTRATOR not in session['authority'] %}
 								<li>
 									<a class="main-checker" href="{{ url_for('GradeServer.submission_record', memberId=session['memberId'], sortCondition='submissionDate', pageNum=1) }}">
-										{%- if session['language'] == 'kr' %}{{ LanguageResources.const.UserRecord_kr }}
-										{%- elif session['language'] == 'en' %}{{ LanguageResources.const.UserRecord_en }}
-										{%- else %}{{ LanguageResources.const.UserRecord_en }} <!-- default -->
-										{% endif -%}
+										{%- if session['language'] %}	{{ LanguageResources.const.UserRecord[session['language']] }}
+										{%- else %}{{ LanguageResources.const.UserRecord[0] }} <!-- default -->
+										{% endif -%}}
 									</a>
 								</li>
 								{% endif %}
 								<li>
 									<a class="main-checker" href="{{ url_for('GradeServer.id_check', select='account') }}">
-										{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Account_kr }}
-										{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Account_en }}
-										{%- else %}{{ LanguageResources.const.Account_en }} <!-- default -->
+										{%- if session['language'] %}	{{ LanguageResources.const.Account[session['language']] }}
+										{%- else %}{{ LanguageResources.const.Account[0] }} <!-- default -->
 										{% endif -%}
 									</a>
 								</li>
 								<li>
 									<a class="main-checker" href="{{ url_for('GradeServer.article_notice', activeTabCourseId='All', pageNum=1) }}">
-										{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Notice_kr }}
-										{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Notice_en }}
-										{%- else %}{{ LanguageResources.const.Notice_en }} <!-- default -->
+										{%- if session['language'] %}	{{ LanguageResources.const.Notice[session['language']] }}
+										{%- else %}{{ LanguageResources.const.Notice[0] }} <!-- default -->
 										{% endif -%}
 									</a>
 								</li> <!-- same with board, the difference is db-query for contents -->
 								<li>
 									<a class="main-checker" href="#">
-										{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Manual_kr }}
-										{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Manual_en }}
-										{%- else %}{{ LanguageResources.const.Manual_en }} <!-- default -->
+										{%- if session['language'] %}	{{ LanguageResources.const.Manual[session['language']] }}
+										{%- else %}{{ LanguageResources.const.Manual[0] }} <!-- default -->
 										{% endif -%}
 									</a>
 								</li>
 								{%- if SETResources.const.SERVER_ADMINISTRATOR in session['authority'] %}
 								<li class="dropdown-submenu">
 									<a class="dropdown-toggle main-checker" data-toggle="dropdown" href="#" id="server-management">
-										{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Management_kr }}
-										{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Management_en }}
-										{%- else %}{{ LanguageResources.const.Management_en }} <!-- default -->
+										{%- if session['language'] %}	{{ LanguageResources.const.Management[session['language']] }}
+										{%- else %}{{ LanguageResources.const.Management[0] }} <!-- default -->
 										{% endif -%}
 									</a>
 									<ul class="dropdown-menu" id="menu-box">
 										<li>
 											<a class="main-checker" id='manage-collegedepartment' href="{{ url_for('GradeServer.id_check', select='server_manage_collegedepartment') }}">
-												{%- if session['language'] == 'kr' %}{{ LanguageResources.const.College_kr }}&{{ LanguageResources.const.Department_kr }}
-												{%- elif session['language'] == 'en' %}{{ LanguageResources.const.College_en }}&{{ LanguageResources.const.Department_en }}
-												{%- else %}{{ LanguageResources.const.College_en }}&{{ LanguageResources.const.Department_en }} <!-- default -->
+												{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }}&{{ LanguageResources.const.Department[session['language']] }}
+												{%- else %}{{ LanguageResources.const.College[0] }}&{{ LanguageResources.const.Department[0] }} <!-- default -->
 												{% endif -%}
 											</a>
 										</li>
 										<li>
 											<a class="main-checker" id='manage-class' href="{{ url_for('GradeServer.id_check', select='server_manage_class') }}">
-												{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Course_kr }}
-												{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Course_en }}
-												{%- else %}{{ LanguageResources.const.Course_en }} <!-- default -->
+												{%- if session['language'] %}	{{ LanguageResources.const.Course[session['language']] }}
+												{%- else %}{{ LanguageResources.const.Course[0] }} <!-- default -->
 												{% endif -%}
 											</a>
 										</li>
 										<li>
 											<a class="main-checker" id='manage-problem' href="{{ url_for('GradeServer.id_check', select='server_manage_problem') }}">
-												{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Problem_kr }}
-												{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Problem_en }}
-												{%- else %}{{ LanguageResources.const.Problem_en }} <!-- default -->
+												{%- if session['language'] %}	{{ LanguageResources.const.Problem[session['language']] }}
+												{%- else %}{{ LanguageResources.const.Problem[0] }} <!-- default -->
 												{% endif -%}
 											</a>
 										</li>
 										<li>
 											<a class="main-checker" id='manage-user' href="{{ url_for('GradeServer.id_check', select='server_manage_user') }}">
-												{%- if session['language'] == 'kr' %}{{ LanguageResources.const.User_kr }}
-												{%- elif session['language'] == 'en' %}{{ LanguageResources.const.User_en }}
-												{%- else %}{{ LanguageResources.const.User_en }} <!-- default -->
+												{%- if session['language'] %}	{{ LanguageResources.const.User[session['language']] }}
+												{%- else %}{{ LanguageResources.const.User[0] }} <!-- default -->
 												{% endif -%}
 											</a>
 										</li>
 										<li>
 											<a class="main-checker" id='manage-service' href="{{ url_for('GradeServer.id_check', select='server_manage_service') }}">
-												{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Service_kr }}
-												{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Service_en }}
-												{%- else %}{{ LanguageResources.const.Service_en }} <!-- default -->
+												{%- if session['language'] %}	{{ LanguageResources.const.Service[session['language']] }}
+												{%- else %}{{ LanguageResources.const.Service[0] }} <!-- default -->
 												{% endif -%}
 											</a>
 										</li>
@@ -214,41 +199,36 @@
 								{%- elif SETResources.const.COURSE_ADMINISTRATOR in session['authority'] %}
 								<li class="dropdown-submenu">
 									<a class="dropdown-toggle main-checker" id="class-server-management" data-toggle="dropdown" href="#">
-										{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Management_kr }}
-										{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Management_en }}
-										{%- else %}{{ LanguageResources.const.Management_en }} <!-- default -->
+										{%- if session['language'] %}	{{ LanguageResources.const.Management[session['language']] }}
+										{%- else %}{{ LanguageResources.const.Management[0] }} <!-- default -->
 										{% endif -%}
 									</a>
 									<ul class="dropdown-menu" id="menu-box">
 										<li>
 											<a class="main-checker" id='manage-problem' href="{{ url_for('GradeServer.id_check', select='user_submit') }}">
-												{%- if session['language'] == 'kr' %}{{ LanguageResources.const.User_kr }} {{ LanguageResources.const.UserSubmission_kr }}
-												{%- elif session['language'] == 'en' %}{{ LanguageResources.const.User_en }} {{ LanguageResources.const.UserSubmission_en }}
-												{%- else %}{{ LanguageResources.const.User_en }} {{ LanguageResources.const.UserSubmission_en }} <!-- default -->
+												{%- if session['language'] %}	{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.UserSubmission[session['language']] }}
+												{%- else %}{{ LanguageResources.const.User[0] }} {{ LanguageResources.const.UserSubmission[0] }}<!-- default -->
 												{% endif -%}
 											</a>
 										</li>
 										<li>
 											<a class="main-checker" id='manage-class' href="{{ url_for('GradeServer.id_check', select='cm_manage_problem') }}">
-												{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Problem_kr }}
-												{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Problem_en }}
-												{%- else %}{{ LanguageResources.const.Problem_en }} <!-- default -->
+												{%- if session['language'] %}	{{ LanguageResources.const.Problem[session['language']] }}
+												{%- else %}{{ LanguageResources.const.Problem[0] }} <!-- default -->
 												{% endif -%}
 											</a>
 										</li>
 										<li>
 											<a class="main-checker" id='manage-user' href="{{ url_for('GradeServer.id_check', select='cm_manage_user') }}">
-												{%- if session['language'] == 'kr' %}{{ LanguageResources.const.User_kr }}
-												{%- elif session['language'] == 'en' %}{{ LanguageResources.const.User_en }}
-												{%- else %}{{ LanguageResources.const.User_en }} <!-- default -->
+												{%- if session['language'] %}	{{ LanguageResources.const.User[session['language']] }}
+												{%- else %}{{ LanguageResources.const.User[0] }} <!-- default -->
 												{% endif -%}
 											</a>
 										</li>
 										<li>
 											<a class="main-checker" id='manage-service' href="{{ url_for('GradeServer.id_check', select='cm_manage_service') }}">
-												{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Service_kr }}
-												{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Service_en }}
-												{%- else %}{{ LanguageResources.const.Service_en }} <!-- default -->
+												{%- if session['language'] %}	{{ LanguageResources.const.Service[session['language']] }}
+												{%- else %}{{ LanguageResources.const.Service[0] }} <!-- default -->
 												{% endif -%}
 											</a>
 										</li>
@@ -257,9 +237,8 @@
 								{% endif -%}
 								<li>
 									<a class="main-checker" href="{{ url_for('GradeServer.sign_out') }}">
-										{%- if session['language'] == 'kr' %}{{ LanguageResources.const.SignOut_kr }}
-										{%- elif session['language'] == 'en' %}{{ LanguageResources.const.SignOut_en }}
-										{%- else %}{{ LanguageResources.const.SignOut_en }} <!-- default -->
+										{%- if session['language'] %}	{{ LanguageResources.const.SignOut[session['language']] }}
+										{%- else %}{{ LanguageResources.const.SignOut[0] }} <!-- default -->
 										{% endif -%}
 									</a>
 								</li>
@@ -269,9 +248,8 @@
 						{%- else %}
 						<li class="dropdown">
 							<a class="dropdown-toggle" href="#" data-toggle="dropdown">
-								{%- if session['language'] == 'kr' %}{{ LanguageResources.const.SignIn_kr }}
-								{%- elif session['language'] == 'en' %}{{ LanguageResources.const.SignIn_en }}
-								{%- else %}{{ LanguageResources.const.SignIn_en }} <!-- default -->
+								{%- if session['language'] %}	{{ LanguageResources.const.SignIn[session['language']] }}
+								{%- else %}{{ LanguageResources.const.SignIn[0] }} <!-- default -->
 								{% endif -%} <b class="caret"></b>
 							</a>
 							<ul class="dropdown-menu">
@@ -283,9 +261,8 @@
 										<input class="span2" id="pw" name="password" type="password" placeholder="Password">
 									</div>
 									<button type="submit" class="btn">
-										{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Confirm_kr }}
-										{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Confirm_en }}
-										{%- else %}{{ LanguageResources.const.Confirm_en }} <!-- default -->
+										{%- if session['language'] %}	{{ LanguageResources.const.Confirm[session['language']] }}
+										{%- else %}{{ LanguageResources.const.Confirm[0] }} <!-- default -->
 										{% endif -%}
 									</button>
 								</form>
@@ -303,9 +280,8 @@
 					-->
 					{%- if session['memberId']==NULL %}
 					<a class="btn pull-right hidden" href="{{ url_for('GradeServer.sign_up') }}" style="margin:15px 5px 10px 0px">
-						{%- if session['language'] == 'kr' %}{{ LanguageResources.const.SignUp_kr }}
-						{%- elif session['language'] == 'en' %}{{ LanguageResources.const.SignUp_en }}
-						{%- else %}{{ LanguageResources.const.SignUp_en }} <!-- default -->
+						{%- if session['language'] %}	{{ LanguageResources.const.SignUp[session['language']] }}
+						{%- else %}{{ LanguageResources.const.SignUp[0] }} <!-- default -->
 						{% endif -%}
 					</a>
 					{% endif -%}
@@ -415,11 +391,10 @@
 									{% if noticeRecord.courseId %}
 									{{ noticeRecord.courseId }} {{ noticeRecord.courseName }}
 									{% else %}
-									{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Server_kr }} {{ LanguageResources.const.Notice_kr }}
-									{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Server_en }} {{ LanguageResources.const.Notice_en }}
-									{%- else %}{{ LanguageResources.const.Server_en }} {{ LanguageResources.const.Notice_en }} <!-- default -->
+									{%- if session['language'] %}	{{ LanguageResources.const.Server[session['language']] }} {{ LanguageResources.const.Notice[session['language']] }}
+									{%- else %}{{ LanguageResources.const.Server[0] }} {{ LanguageResources.const.Notice[0] }}<!-- default -->
 									{% endif -%}
-									{% endif %}
+									{% endif -%}
 								</h3>
 								<h3 style="display:inline">
 									<script>
@@ -467,34 +442,30 @@
 				<div class="row-fluid">
 					<div class="span4 topcoder" style="text-align:center;background:#eeeeee">
 						<h4>
-							{%- if session['language'] == 'kr' %}{{ LanguageResources.const.TopCoder_kr }}
-							{%- elif session['language'] == 'en' %}{{ LanguageResources.const.TopCoder_en }}
-							{%- else %}{{ LanguageResources.const.TopCoder_en }} <!-- default -->
+							{%- if session['language'] %}	{{ LanguageResources.const.Server[session['language']] }}
+							{%- else %}{{ LanguageResources.const.Server[0] }}<!-- default -->
 							{% endif -%}
 						</h4>
 						{% if topCoderId %}
 							<a href="{{ url_for ('GradeServer.submission_record', memberId=topCoderId, sortCondition='submissionDate', pageNum=1) }}">{{ topCoderId }}</a>
 						{% else %}
-							{%- if session['language'] == 'kr' %}{{ LanguageResources.const.None_kr }}
-							{%- elif session['language'] == 'en' %}{{ LanguageResources.const.None_en }}
-							{%- else %}{{ LanguageResources.const.None_en }} <!-- default -->
+							{%- if session['language'] %}	{{ LanguageResources.const.none[session['language']] }}
+							{%- else %}{{ LanguageResources.const.none[0] }}<!-- default -->
 							{% endif -%}
 						{% endif %}
 					</div>
 					<div class="span4 manual" style="text-align:center;background:#eeeeee">
 						<h4>
-							{%- if session['language'] == 'kr' %}{{ LanguageResources.const.HowToUse_kr }}
-							{%- elif session['language'] == 'en' %}{{ LanguageResources.const.HowToUse_en }}
-							{%- else %}{{ LanguageResources.const.HowToUse_en }} <!-- default -->
+							{%- if session['language'] %}	{{ LanguageResources.const.HowToUse[session['language']] }}
+							{%- else %}{{ LanguageResources.const.HowToUse[0] }}<!-- default -->
 							{% endif -%}
 						</h4>
 						"Manual Link"
 					</div>
 					<div class="span4" style="text-align:center;background:#eeeeee">
 						<h4>
-							{%- if session['language'] == 'kr' %}{{ LanguageResources.const.EmptySpace_kr }}
-							{%- elif session['language'] == 'en' %}{{ LanguageResources.const.EmptySpace_en }}
-							{%- else %}{{ LanguageResources.const.EmptySpace_en }} <!-- default -->
+							{%- if session['language'] %}	{{ LanguageResources.const.EmptySpace[session['language']] }}
+							{%- else %}{{ LanguageResources.const.EmptySpace[0] }}<!-- default -->
 							{% endif -%}
 						</h4>
 						<br>
