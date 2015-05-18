@@ -25,6 +25,7 @@ def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
     containerCreadeCommand = "%s%i%s" % ('sudo docker exec grade_container',
                                          worker_num,
                                          ' python /gradeprogram/rungrade.py ')
+    dirName = "%i %s%s%s%i/" % (worker_num, stdNum, problemNum, courseNum, submitCount)
 
     print 'program start'
     message = Popen(containerCreadeCommand + argsList, shell=True, stdout=PIPE)
@@ -32,6 +33,8 @@ def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
     messageLines = message.stdout.readlines()
     
     resultUpdate(messageLines[-1], stdNum, problemNum, courseNum, submitCount)
+    
+    os.system('rm -rf container' + dirName)
     
 @app.task(name = 'task.ServerOn')
 def ServerOn():

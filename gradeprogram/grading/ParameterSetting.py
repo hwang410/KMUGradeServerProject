@@ -25,7 +25,7 @@ class ParameterSetting(object):
         self.filePath = "%s%s" % (self.filePath, '/')
         self.runFileName = self.MakeRunFileName()
         
-        dirName = "%s%i%i" % (self.stdNum, self.problemNum, self.submitCount)
+        dirName = "%s%i%i%i" % (self.stdNum, self.problemNum, self.courseNum, self.submitCount)
         os.mkdir(dirName)
         os.chdir(dirName)
         
