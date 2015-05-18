@@ -10,21 +10,12 @@
 	<div class="nav problem" text-align="center">
 		<h2 class="problem_title">{{ problemInformation.problemName }}</h2>
 		<h4 class="problem_constraints">
-			{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Limitation_kr }}
-			{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Limitation_en }}
-			{%- else %}{{ LanguageResources.const.Limitation_en }} <!-- default -->
-			{% endif -%}
-			&nbsp;-&nbsp;
-			{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Time_kr }}
-			{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Time_en }}
-			{%- else %}{{ LanguageResources.const.Time_en }} <!-- default -->
-			{% endif -%}
-			&nbsp;:&nbsp;{{ problemInformation.limitedTime }} ms |&nbsp;
-			{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Memory_kr }}
-			{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Memory_en }}
-			{%- else %}{{ LanguageResources.const.Memory_en }} <!-- default -->
-			{% endif -%}
-			&nbsp;:&nbsp;{{ problemInformation.limitedMemory }} MB
+			{{ LanguageResources.const.Limitation[session['language']] }}
+			{{ LanguageResources.const.Time[session['language']] }}
+			:&nbsp;{{ problemInformation.limitedTime }} ms |
+			{{ LanguageResources.const.Limitation[session['language']] }}
+			{{ LanguageResources.const.Memory[session['language']] }}
+			:&nbsp;{{ problemInformation.limitedMemory }} MB
 		</h4>
 	</div>
 
@@ -33,40 +24,25 @@
 		<ul class="nav nav-tabs" id="myTabs">
 			<li class="active">
 				<a href="#upload" data-toggle="tab">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.UploadFiles_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.UploadFiles_en }}
-					{%- else %}{{ LanguageResources.const.UploadFiles_en }} <!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.UploadFiles[session['language']] }}
 				</a>
 			{%- if browserName != "msie" or browserVersion|length > 3  %}
 			<li>
 				<a href="#write" data-toggle="tab">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.WriteCode_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.WriteCode_en }}
-					{%- else %}{{ LanguageResources.const.WriteCode_en }} <!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.WriteCode[session['language']] }}
 				</a>
 			<li>
 				<a href="#info" data-toggle="tab">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.ProblemScript_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.ProblemScript_en }}
-					{%- else %}{{ LanguageResources.const.ProblemScript_en }} <!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.ProblemScript[session['language']] }}
 				</a>
 			{%- else %}
 			<li class="disabled">
 				<a href="" data-toggle="">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.WriteCode_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.WriteCode_en }}
-					{%- else %}{{ LanguageResources.const.WriteCode_en }} <!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.WriteCode[session['language']] }}
 				</a>
 			<li class="disabled">
 				<a href="" data-toggle="">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.ProblemScript_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.ProblemScript_en }}
-					{%- else %}{{ LanguageResources.const.ProblemScript_en }} <!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.ProblemScript[session['language']] }}
 				</a>
 			{% endif -%}
 		</ul>
@@ -81,15 +57,10 @@
 							{%- if languageInfoRecords|length == 1 %}
 								{{ languageInfoRecords[0].languageName }}
 							</a>
-							
 							{%- elif languageInfoRecords|length > 1 %}
-								{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Language_kr }} {{ LanguageResources.const.Select_kr }}
-								{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Language_en }} {{ LanguageResources.const.Select_en }}
-								{%- else %}{{ LanguageResources.const.Language_en }} {{ LanguageResources.const.Select_en }} <!-- default -->
-								{% endif -%}
+								{{ LanguageResources.const.Language[session['language']] }} 	{{ LanguageResources.const.Select[session['language']] }}
 								<span class="caret"></span>
 							</a>
-							
 							<ul class="dropdown-menu" id="myTabDrop1-contents" role="menu"
 								aria-labelledby="myTabDrop1">
 								{%- for languageInfoRecord in languageInfoRecords %}
@@ -100,7 +71,6 @@
 										{%- if languageInfoRecord.languageVersion != "0" %}
 										{{ languageInfoRecord.languageVersion }}
 										{% endif -%}
-				
 									{%- else %}
 									<li>
 										<a href="#{{languageInfoRecord.languageName}}" role="tab"
@@ -109,7 +79,6 @@
 										{%- if languageInfoRecord.languageVersion != "0" %}
 										{{ languageInfoRecord.languageVersion }}
 										{% endif -%}
-										
 									{% endif -%}
 									</a>
 								{% endfor -%}
@@ -172,10 +141,7 @@
 			</div>
 			{%- if browserName != "msie" or browserVersion|length > 3  %}
 			<button class="btn" id="submit-all" type="submit" style="margin-top:5px">
-				{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Submit_kr }}
-				{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Submit_en }}
-				{%- else %}{{ LanguageResources.const.Submit_en }} <!-- default -->
-				{% endif -%}
+				{{ LanguageResources.const.Submission[session['language']] }}
 			</button>
 			{% endif -%}
 		</div>
@@ -184,10 +150,7 @@
 				<form action="/problem_{{courseId}}_page{{ pageNum }}_{{ problemId }}_{{ problemName }}"
 					    method="post" enctype="multipart/form-data">				
 					<div style="margin-bottom:10px">
-						{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Language_kr }}
-						{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Language_en }}
-						{%- else %}{{ LanguageResources.const.Language_en }} <!-- default -->
-						{% endif -%}
+						{{ LanguageResources.const.Language[session['language']] }}
 						&nbsp;:
 						<select type="text" id="language" name="language" onchange="selectLanguage(this)">
 							{%- for languageInfoRecord in languageInfoRecords %}
@@ -199,10 +162,7 @@
 							{% endfor -%}
 						</select>
 						&nbsp; &nbsp; &nbsp; &nbsp; 
-						{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Theme_kr }}
-						{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Theme_en }}
-						{%- else %}{{ LanguageResources.const.Theme_en }} <!-- default -->
-						{% endif -%}
+						{{ LanguageResources.const.Theme[session['language']] }}
 						&nbsp;:
 						<select type="text" id="language" name="language" onchange="selectLanguage(this)">
 							<option value="6"> chrome </option>
@@ -217,10 +177,7 @@
 					<pre id="editor"></pre>
 					<div class="actions">
 						<button class="btn" type="submit">
-							{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Submit_kr }}
-							{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Submit_en }}
-							{%- else %}{{ LanguageResources.const.Submit_en }} <!-- default -->
-							{% endif -%}
+							{{ LanguageResources.const.Submission[session['language']] }}
 						</button>
 					</div>
 					<textarea name="getCode" id="getCode" style="display:none;"></textarea>

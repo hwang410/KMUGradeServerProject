@@ -145,17 +145,31 @@ $(function() {
 </script>
 <div class="container">
 	<div>
-		<h3>User Addition</h3>
+		<h3>
+			{%- if session['language'] %}	{{ LanguageResources.const.User[session['language']] }}
+			{%- else %}{{ LanguageResources.const.User[0] }}<!-- default -->
+			{% endif -%}
+			&nbsp;
+			{%- if session['language'] %}	{{ LanguageResources.const.Addition[session['language']] }}
+			{%- else %}{{ LanguageResources.const.Addition[0] }}<!-- default -->
+			{% endif -%}
+		</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
 			<a class="btn" href="#addUserModal" data-toggle="modal" role="button">
-				Individual
+				{%- if session['language'] %}	{{ LanguageResources.const.Indivisual[session['language']] }}
+				{%- else %}{{ LanguageResources.const.Indivisual[0] }}<!-- default -->
+				{% endif -%}
 			</a>
 			<a class="btn" href="#addGroupModal" data-toggle="modal" role="button">
-				Group
+				{%- if session['language'] %}	{{ LanguageResources.const.Group[session['language']] }}
+				{%- else %}{{ LanguageResources.const.Group[0] }}<!-- default -->
+				{% endif -%}
 			</a>
 			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">
-				Delete
+				{%- if session['language'] %}	{{ LanguageResources.const.Deletion[session['language']] }}
+				{%- else %}{{ LanguageResources.const.Deletion[0] }}<!-- default -->
+				{% endif -%}
 			</a>
 		</div>
 
@@ -169,21 +183,48 @@ $(function() {
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">
 				x
 				</button>
-				<h3 id="addUserModalLabel">User Addition</h3>
+				<h3 id="addUserModalLabel">
+					{%- if session['language'] %}	{{ LanguageResources.const.User[session['language']] }}
+					{%- else %}{{ LanguageResources.const.User[0] }}<!-- default -->
+					{% endif -%}
+					&nbsp;
+					{%- if session['language'] %}	{{ LanguageResources.const.Addition[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Addition[0] }}<!-- default -->
+					{% endif -%}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<div style="text-align:right">
-					<button class="btn" type="button" id="addline">Add line</button>
+					<button class="btn" type="button" id="addline">
+						{%- if session['language'] %}	{{ LanguageResources.const.AddLine[session['language']] }}
+						{%- else %}{{ LanguageResources.const.AddLine[0] }}<!-- default -->
+						{% endif -%}
+					</button>
 				</div>
 				<!--  leeyoungchan  add table id(indivisual') -->
 				<table class="table table-bordered" id="indivisual" style="margin-top:10px">
 					<thead>
 					<tr>
-						<td>ID
-						<td>Name
-						<td>College
-						<td>Department
-						<td>Authority
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.ID[session['language']] }}
+							{%- else %}{{ LanguageResources.const.ID[0] }}<!-- default -->
+							{% endif -%}	
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.Name[session['language']] }}
+							{%- else %}{{ LanguageResources.const.Name[0] }}<!-- default -->
+							{% endif -%}
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }}
+							{%- else %}{{ LanguageResources.const.College[0] }}<!-- default -->
+							{% endif -%}
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.Department[session['language']] }}
+							{%- else %}{{ LanguageResources.const.Department[0] }}<!-- default -->
+							{% endif -%}
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.Authority[session['language']] }}
+							{%- else %}{{ LanguageResources.const.Authority[0] }}<!-- default -->
+							{% endif -%}
 
 					<tbody id="indivisualUserForm">
 						<tr class="formLine">
@@ -214,9 +255,17 @@ $(function() {
 				</table>
 			</div>
 			<div class="modal-footer">
-				<button class="btn" name="addIndivisualUser" type="submit">Done</button>
+				<button class="btn" name="addIndivisualUser" type="submit">
+					{%- if session['language'] %}	{{ LanguageResources.const.Done[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Done[0] }}<!-- default -->
+					{% endif -%}
+				</button>
 				<button class="btn" id="resetIndivisualUserForm" 
-						  data-dismiss="modal" aria-hidden="true" >Close</button>
+						  data-dismiss="modal" aria-hidden="true" >
+				  	{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
+					{% endif -%}
+				</button>
 			</div>
 		</div>
 		</form>
@@ -226,7 +275,15 @@ $(function() {
 			<form method="post" enctype="multipart/form-data">
 				<div class="modal-header">
 					<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
-					<h3 id="addGroupModalLabel">User Addition</h3>
+					<h3 id="addGroupModalLabel">
+						{%- if session['language'] %}	{{ LanguageResources.const.User[session['language']] }}
+						{%- else %}{{ LanguageResources.const.User[0] }}<!-- default -->
+						{% endif -%}
+						&nbsp;
+						{%- if session['language'] %}	{{ LanguageResources.const.Addition[session['language']] }}
+						{%- else %}{{ LanguageResources.const.Addition[0] }}<!-- default -->
+						{% endif -%}
+					</h3>
 				</div>
 				<div class="modal-body">
 					<p>default authority is "User(student)"</p>
@@ -234,8 +291,16 @@ $(function() {
 					File(*.txt) : <input type="file" name="files" multiple>
 				</div>
 				<div class="modal-footer">
-					<button class="btn" name="addUserGroup" type="submit">Done</button>
-					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+					<button class="btn" name="addUserGroup" type="submit">
+						{%- if session['language'] %}	{{ LanguageResources.const.Done[session['language']] }}
+						{%- else %}{{ LanguageResources.const.Done[0] }}<!-- default -->
+						{% endif -%}
+					</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true">
+						{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
+						{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
+						{% endif -%}	
+					</button>
 				</div>
 			</form>
 		</div>
@@ -246,15 +311,31 @@ $(function() {
 			  aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">User Deletion</h3>
+				<h3 id="deleteModalLabel">
+					{%- if session['language'] %}	{{ LanguageResources.const.User[session['language']] }}
+					{%- else %}{{ LanguageResources.const.User[0] }}<!-- default -->
+					{% endif -%}
+					&nbsp;
+					{%- if session['language'] %}	{{ LanguageResources.const.Deletion[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Deletion[0] }}<!-- default -->
+					{% endif -%}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<p>Do you really want to delete it?</p>
 			</div>
 			<div class="modal-footer">
 				<form id="delete" method="post">
-					<button class="btn" name="deleteUser" type="submit">Confirm</button>
-					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+					<button class="btn" name="deleteUser" type="submit">
+						{%- if session['language'] %}	{{ LanguageResources.const.Confirm[session['language']] }}
+						{%- else %}{{ LanguageResources.const.Confirm[0] }}<!-- default -->
+						{% endif -%}
+					</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true">
+						{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
+						{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
+						{% endif -%}
+					</button>
 				</form>
 			</div>
 		</div>
@@ -263,13 +344,25 @@ $(function() {
 			  aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="deleteModalLabel">User Deletion</h3>
+				<h3 id="deleteModalLabel">
+					{%- if session['language'] %}	{{ LanguageResources.const.User[session['language']] }}
+					{%- else %}{{ LanguageResources.const.User[0] }}<!-- default -->
+					{% endif -%}
+					&nbsp;
+					{%- if session['language'] %}	{{ LanguageResources.const.Deletion[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Deletion[0] }}<!-- default -->
+					{% endif -%}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<p>No items choosed</p>
 			</div>
 			<div class="modal-footer">
-				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">
+					{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
+					{% endif -%}
+				</button>
 			</div>
 		</div>
 		<!-- ///// end hidden modal pop ///// -->
@@ -278,12 +371,32 @@ $(function() {
 				<thead>
 					<tr>
 						<td>Index
-						<td>ID
-						<td>Name
-						<td>Authority
-						<td>College
-						<td>Department
-						<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('pendingUsers');">
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.ID[session['language']] }}
+							{%- else %}{{ LanguageResources.const.ID[0] }}<!-- default -->
+							{% endif -%}	
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.Name[session['language']] }}
+							{%- else %}{{ LanguageResources.const.Name[0] }}<!-- default -->
+							{% endif -%}
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.Authority[session['language']] }}
+							{%- else %}{{ LanguageResources.const.Authority[0] }}<!-- default -->
+							{% endif -%}
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }}
+							{%- else %}{{ LanguageResources.const.College[0] }}<!-- default -->
+							{% endif -%}
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.Department[session['language']] }}
+							{%- else %}{{ LanguageResources.const.Department[0] }}<!-- default -->
+							{% endif -%}
+						<td>
+							{%- if session['language'] %}	{{ LanguageResources.const.Check[session['language']] }}
+							{%- else %}{{ LanguageResources.const.Check[0] }}<!-- default -->
+							{% endif -%}
+							&nbsp;
+							<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('pendingUsers');">
 				<tbody>
 					<script> index = 0; </script>
 					{%- for newUser in newUsers %}
@@ -304,7 +417,11 @@ $(function() {
 					{% endfor -%}
 			</table>
 			<a href="{{ url_for('GradeServer.server_add_user') }}">
-				<button class="btn" name="addUser" type="submit">Done</button>
+				<button class="btn" name="addUser" type="submit">
+					{%- if session['language'] %}	{{ LanguageResources.const.Done[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Done[0] }}<!-- default -->
+					{% endif -%}
+				</button>
 			</a>
 		</form>
 	</div>

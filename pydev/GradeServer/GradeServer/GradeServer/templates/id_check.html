@@ -7,15 +7,16 @@
 <div class="container">
 	<div width="100%" align="center" style="position:absolute;left: 50%;margin-left:-125px;width:250px">
 		<h3>
-			{%- if session['language'] == 'kr' %}{{ LanguageResources.const.IdentificationCheck_kr }}
-			{%- elif session['language'] == 'en' %}{{ LanguageResources.const.IdentificationCheck_en }}
-			{%- else %}{{ LanguageResources.const.IdentificationCheck_en }} <!-- default -->
+			{%- if session['language'] %}	{{ LanguageResources.const.IdentificationCheck[session['language']] }}
+			{%- else %}{{ LanguageResources.const.IdentificationCheck[0] }}<!-- default -->
 			{% endif -%}
 		</h3>
 		<div class="row-fluid">
 			<h4>
 				<div class="span6">
-					ID
+					{%- if session['language'] %}	{{ LanguageResources.const.ID[session['language']] }}
+					{%- else %}{{ LanguageResources.const.ID[0] }}<!-- default -->
+					{% endif -%}
 				</div>
 				<div class="span6">
 					{% if session['memberId'] %}{{ session['memberId'] }}{% endif %}
@@ -26,10 +27,7 @@
 			<div class="row-fluid">
 				<h4>
 					<div class="span6">
-						{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Password_kr }}
-						{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Password_en }}
-						{%- else %}{{ LanguageResources.const.Password_en }} <!-- default -->
-						{% endif -%}
+						{{ LanguageResources.const.Password[session['language']] }}
 					</div>
 					<div class="span6">
 						<input class="input-small" id="password" name="password" type="password" autofocus ="autofocus" style="text-align:center">
@@ -38,9 +36,8 @@
 			</div>
 			<br>
 			<button class="btn" type="submit">
-				{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Confirm_kr }}
-				{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Confirm_en }}
-				{%- else %}{{ LanguageResources.const.Confirm_en }} <!-- default -->
+				{%- if session['language'] %}	{{ LanguageResources.const.Confirm[session['language']] }}
+				{%- else %}{{ LanguageResources.const.Confirm[0] }}<!-- default -->
 				{% endif -%}
 			</button>
 		</form>

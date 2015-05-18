@@ -12,22 +12,22 @@
 		<ul class="nav nav-tabs">
 			<li id="collegeTab">
 				<a id="college" data-toggle="tab" href="#colleges">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.College_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.College_en }}
+					{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }}
+					{%- else %}{{ LanguageResources.const.College[0] }}<!-- default -->
 					{% endif -%}
 				</a>
 			<li id="departmentTab">
 				<a id="department" data-toggle="tab"
 					href="#departments">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Department_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Department_en }}
+					{%- if session['language'] %}	{{ LanguageResources.const.Department[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Department[0] }}<!-- default -->
 					{% endif -%}
 				</a></li>
 			<div style="text-align:right">
 				<a class="btn" id="addModal" data-toggle="modal" href="#collegeModal"
 				 	rol="button">
-				 	{%- if session['language'] == 'kr' %}{{ LanguageResources.const.Add_kr }}
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.Add_en }}
+				 	{%- if session['language'] %}	{{ LanguageResources.const.Add[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Add[0] }}<!-- default -->
 					{% endif -%}
 				 </a>
 			</div>	
@@ -42,26 +42,30 @@
 				<button class="close" data-dismiss="modal" type="button"
 						  aria-hidden="true">x</button>
 				<h3 id="addCollegeModalLabel">
-					{%- if session['language'] == 'kr' %}{{ LanguageResources.const.College_kr }} {{ LanguageResources.const.Addition_kr }} 
-					{%- elif session['language'] == 'en' %}{{ LanguageResources.const.College_en }} {{ LanguageResources.const.Addition_en }}
+					{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+					{%- else %}{{ LanguageResources.const.College[0] }} {{ LanguageResources.const.Addition[0] }}<!-- default -->
 					{% endif -%}
 				</h3>
 			</div>
 			<div class="modal-body">
 				<p></p>
 				<div style="text-align:right">
-					<button class="btn" type="button" id="addline_college">Add line</button>
+					<button class="btn" type="button" id="addline_college">
+						{%- if session['language'] %}	{{ LanguageResources.const.AddLine[session['language']] }}
+					{%- else %}{{ LanguageResources.const.AddLine[0] }}<!-- default -->
+					{% endif -%}
+					</button>
 				</div>
 				<table class="table table-bordered" id='Colleges' style="margin-top:10px">
 					<thead>
 						<tr>
 							<td>
-								{%- if session['language'] == 'kr' %}{{ LanguageResources.const.College_kr }} {{ LanguageResources.const.Code_kr }} 
-								{%- elif session['language'] == 'en' %}{{ LanguageResources.const.College_en }} {{ LanguageResources.const.Code_en }}
+								{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }} {{ LanguageResources.const.Code[session['language']] }}
+								{%- else %}{{ LanguageResources.const.College[0] }} {{ LanguageResources.const.Code[0] }}<!-- default -->
 								{% endif -%}
 							<td>
-								{%- if session['language'] == 'kr' %}{{ LanguageResources.const.College_kr }} {{ LanguageResources.const.Name_kr }} 
-								{%- elif session['language'] == 'en' %}{{ LanguageResources.const.College_en }} {{ LanguageResources.const.Name_en }}
+								{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }} {{ LanguageResources.const.Name[session['language']] }}
+								{%- else %}{{ LanguageResources.const.College[0] }} {{ LanguageResources.const.Name[0] }}<!-- default -->
 								{% endif -%}
 					<tbody id="addCollegeForm">
 						<tr>
@@ -74,9 +78,17 @@
 				</table>
 			</div>
 			<div class="modal-footer">
-				<button class="btn" name="addCollege" type="submit">Done</button>
+				<button class="btn" name="addCollege" type="submit">
+					{%- if session['language'] %}	{{ LanguageResources.const.Done[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Done[0] }}<!-- default -->
+					{% endif -%}
+				</button>
 				<button class="btn" id="resetAddCollegeForm"
-						  data-dismiss="modal" aria-hidden="true">Close</button>
+						  data-dismiss="modal" aria-hidden="true">
+					{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
+					{% endif -%}
+				</button>
 			</div>
 		</div>
 		</form>
@@ -95,14 +107,27 @@
 			<div class="modal-body">
 				<p></p>
 				<div style="text-align:right">
-					<button class="btn" id="addline_department" type="button">Add line</button>
+					<button class="btn" id="addline_department" type="button">
+						{%- if session['language'] %}	{{ LanguageResources.const.AddLine[session['language']] }}
+						{%- else %}{{ LanguageResources.const.AddLine[0] }}<!-- default -->
+						{% endif -%}
+					</button>
 				</div>
 				<table class="table table-bordered" id='Departments' style="margin-top:10px">
 					<thead>
 						<tr>
-							<td>College
-							<td class="hidden-phone input-medium">Department Code
-							<td>Department Name
+							<td>
+								{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }}
+								{%- else %}{{ LanguageResources.const.College[0] }}<!-- default -->
+								{% endif -%}
+							<td class="hidden-phone input-medium">
+								{%- if session['language'] %}	{{ LanguageResources.const.Department[session['language']] }} {{ LanguageResources.const.Code[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Department[0] }} {{ LanguageResources.const.Code[0] }}<!-- default -->
+								{% endif -%}
+							<td>
+								{%- if session['language'] %}	{{ LanguageResources.const.Department[session['language']] }} {{ LanguageResources.const.Name[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Department[0] }} {{ LanguageResources.const.Name[0] }}<!-- default -->
+								{% endif -%}
 					<tbody id="addDepartmentForm">
 						<tr>
 							<td>
@@ -122,9 +147,17 @@
 				</table>
 			</div>
 			<div class="modal-footer">
-				<button class="btn" name="addDepartment" type="submit">Done</button>
+				<button class="btn" name="addDepartment" type="submit">
+					{%- if session['language'] %}	{{ LanguageResources.const.Done[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Done[0] }}<!-- default -->
+					{% endif -%}
+				</button>
 				<button class="btn" id="resetAddDepartmentForm"
-						  data-dismiss="modal" aria-hidden="true">Close</button>
+						  data-dismiss="modal" aria-hidden="true">
+					{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
+					{% endif -%}
+				</button>
 			</div>
 		</div>
 		</form>
@@ -137,9 +170,20 @@
 					<thead>
 						<tr>
 							<td>Index
-							<td class='hidden-phone'>Code
-							<td>Name
-							<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('colleges');">
+							<td class='hidden-phone'>
+								{%- if session['language'] %}	{{ LanguageResources.const.Code[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Code[0] }}<!-- default -->
+								{% endif -%}
+							<td>
+								{%- if session['language'] %}	{{ LanguageResources.const.Name[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Name[0] }}<!-- default -->
+								{% endif -%}
+							<td>
+								{%- if session['language'] %}	{{ LanguageResources.const.Check[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Check[0] }}<!-- default -->
+								{% endif -%}
+								&nbsp;
+								<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('colleges');">
 					<tbody>
 						{%- for college in allColleges %}
 						<tr>
@@ -161,7 +205,14 @@
 				<div class="modal-header">
 					<button class="close" type="button"
 							  data-dismiss="modal" aria-hidden="true">x</button>
-					<h3 id="deleteCollegeModalLabel">College Deletion</h3>
+					<h3 id="deleteCollegeModalLabel">
+						{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }}
+						{%- else %}{{ LanguageResources.const.College[0] }}<!-- default -->
+						{% endif -%}
+						&nbsp;
+						{%- if session['language'] %}	{{ LanguageResources.const.Deletion[session['language']] }}
+						{%- else %}{{ LanguageResources.const.Deletion[0] }}<!-- default -->
+						{% endif -%}</h3>
 				</div>
 				<div class="modal-body">
 					<p>Do you really want to delete it?</p>
@@ -171,7 +222,9 @@
 						Save changes
 					</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">
-						Close
+						{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
+						{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
+						{% endif -%}
 					</button>
 				</div>
 			</div>
@@ -182,14 +235,24 @@
 				<div class="modal-header">
 					<button class="close" type="button" data-dismiss="modal"
 							  aria-hidden="true">x</button>
-					<h3 id="deleteModalLabel">College Deletion</h3>
+					<h3 id="deleteModalLabel">
+						{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }}
+						{%- else %}{{ LanguageResources.const.College[0] }}<!-- default -->
+						{% endif -%} 
+						&nbsp;
+						{%- if session['language'] %}	{{ LanguageResources.const.Deletion[session['language']] }}
+						{%- else %}{{ LanguageResources.const.Deletion[0] }}<!-- default -->
+						{% endif -%}
+					</h3>
 				</div>
 				<div class="modal-body">
 					<p>No items choiced</p>
 				</div>
 				<div class="modal-footer">
 					<button class="btn" data-dismiss="modal" aria-hidden="true">
-						Close
+						{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
+						{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
+						{% endif -%}
 					</button>
 				</div>
 			</form>	
@@ -202,10 +265,23 @@
 					<thead>
 						<tr>
 							<td>Index
-							<td>College
-							<td class='hidden-phone'>Code
-							<td>Name
-							<td>Check <input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('departments');">
+							<td>
+								{%- if session['language'] %}	{{ LanguageResources.const.College[session['language']] }}
+								{%- else %}{{ LanguageResources.const.College[0] }}<!-- default -->
+								{% endif -%}
+							<td class='hidden-phone'>
+								{%- if session['language'] %}	{{ LanguageResources.const.Code[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Code[0] }}<!-- default -->
+								{% endif -%}
+							<td>
+								{%- if session['language'] %}	{{ LanguageResources.const.Name[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Name[0] }}<!-- default -->
+								{% endif -%}
+							<td>
+								{%- if session['language'] %}	{{ LanguageResources.const.Check[session['language']] }}
+								{%- else %}{{ LanguageResources.const.Check[0] }}<!-- default -->
+								{% endif -%}
+								&nbsp;<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('departments');">
 					<tbody>
 						{%- for relation, college, department in allDepartments %}
 						<tr>
@@ -229,7 +305,15 @@
 		<div class="modal-header">
 			<button class="close" type="button"
 					  data-dismiss="modal" aria-hidden="true">x</button>
-			<h3 id="deleteDepartmentModalLabel">Department Deletion</h3>
+			<h3 id="deleteDepartmentModalLabel">
+				{%- if session['language'] %}	{{ LanguageResources.const.Department[session['language']] }}
+				{%- else %}{{ LanguageResources.const.Department[0] }}<!-- default -->
+				{% endif -%}
+				&nbsp;
+				{%- if session['language'] %}	{{ LanguageResources.const.Code[session['language']] }}
+				{%- else %}{{ LanguageResources.const.Code[0] }}<!-- default -->
+				{% endif -%}
+			</h3>
 		</div>
 		<div class="modal-body">
 			<p>Do you really want to delete it?</p>
@@ -239,7 +323,9 @@
 				Save changes
 			</button>
 			<button class="btn" data-dismiss="modal" aria-hidden="true">
-				Close
+				{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
+				{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
+				{% endif -%}
 			</button>
 		</div>
 		</form>
@@ -251,14 +337,24 @@
 		<div class="modal-header">
 			<button class="close" type="button" data-dismiss="modal"
 					  aria-hidden="true">x</button>
-			<h3 id="deleteModalLabel">Department Deletion</h3>
+			<h3 id="deleteModalLabel">
+				{%- if session['language'] %}	{{ LanguageResources.const.Department[session['language']] }}
+				{%- else %}{{ LanguageResources.const.Department[0] }}<!-- default -->
+				{% endif -%}
+				&nbsp;
+				{%- if session['language'] %}	{{ LanguageResources.const.Deletion[session['language']] }}
+				{%- else %}{{ LanguageResources.const.Deletion[0] }}<!-- default -->
+				{% endif -%}
+			</h3>
 		</div>
 		<div class="modal-body">
 			<p>No items choiced</p>
 		</div>
 		<div class="modal-footer">
 			<button class="btn" data-dismiss="modal" aria-hidden="true">
-				Close
+				{%- if session['language'] %}	{{ LanguageResources.const.Close[session['language']] }}
+				{%- else %}{{ LanguageResources.const.Close[0] }}<!-- default -->
+				{% endif -%}
 			</button>
 		</div>
 	</div>
@@ -266,7 +362,11 @@
 
 	<div id="deleteButton" style="text-align:right">
 		<a class="btn" data-toggle="modal" role="button"
-			onclick="showingDeleteModal('college')"> Delete </a>
+			onclick="showingDeleteModal('college')">
+			{%- if session['language'] %}	{{ LanguageResources.const.Delete[session['language']] }}
+			{%- else %}{{ LanguageResources.const.Delete[0] }}<!-- default -->
+			{% endif -%}
+		</a>
 	</div>
 </div>
 <script>
@@ -300,19 +400,13 @@ function attrUpToTab(tab){
 }
  
 function changeOnClickEvent(tab){
-	var innerhtml=document.getElementById('deleteButton').innerHTML.split(' ');
+	var innerhtml=document.getElementById('deleteButton').innerHTML;
 	var newinnerhtml='';
-	for(var i=0;i<innerhtml.length;i++){
-		if(innerhtml[i].indexOf('onclick') > -1){
-			newinnerhtml+="onclick=\"showingDeleteModal('"+tab+"')\"";
-		}
-		else if(innerhtml[i].indexOf('>') > -1){
-			newinnerhtml+='> Delete </a>';
-			break;
-		}
-		else{
-			newinnerhtml+=innerhtml[i]+' ';
-		}
+	if(innerhtml.indexOf('college') != -1){
+		newinnerhtml = innerhtml.replace('college', tab);
+	}
+	else{
+		newinnerhtml = innerhtml.replace('department', tab);
 	}
 	document.getElementById('deleteButton').innerHTML=newinnerhtml;
 }

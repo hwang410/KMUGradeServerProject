@@ -34,12 +34,22 @@ $(function() {
 </script>
 <div class="container">
 	<form id="addCourse" method="post">
-	<h3>Course Addition</h3>
+	<h3>
+		{%- if session['language'] %}	{{ LanguageResources.const.Course[session['language']] }}
+		{%- else %}{{ LanguageResources.const.Course[0] }}<!-- default -->
+		{% endif -%}
+		&nbsp;
+		{%- if session['language'] %}	{{ LanguageResources.const.Addition[session['language']] }}
+		{%- else %}{{ LanguageResources.const.Addition[0] }}<!-- default -->
+		{% endif -%}
+	</h3>
 	<hr class="hidden-desktop hidden-tablet">
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
-					Name
+					{%- if session['language'] %}	{{ LanguageResources.const.Name[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Name[0] }}<!-- default -->
+					{% endif -%}
 				</div>
 				<div class="span9">
 					<select class="input-large" id="courseId"
@@ -59,7 +69,9 @@ $(function() {
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
-					Administrator
+					{%- if session['language'] %}	{{ LanguageResources.const.Administrator[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Administrator[0] }}<!-- default -->
+					{% endif -%}
 				</div>
 				<div class="span9">
 					<div id="searchfield" style="display:inline">
@@ -73,7 +85,9 @@ $(function() {
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
-					Semester
+					{%- if session['language'] %}	{{ LanguageResources.const.Semester[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Semester[0] }}<!-- default -->
+					{% endif -%}
 				</div>
 				<div class="span9">
 					<script>
@@ -97,7 +111,9 @@ $(function() {
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
-					Language
+					{%- if session['language'] %}	{{ LanguageResources.const.Language[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Language[0] }}<!-- default -->
+					{% endif -%}
 				</div>
 				<div class="span9">
 					{%- for language in languages %}
@@ -128,7 +144,9 @@ $(function() {
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
-					Description
+					{%- if session['language'] %}	{{ LanguageResources.const.Description[session['language']] }}
+					{%- else %}{{ LanguageResources.const.Description[0] }}<!-- default -->
+					{% endif -%}
 				</div>
 				<div class="span9">
 					<input class="input-xlarge" name="courseDescription" type="text"
@@ -150,7 +168,9 @@ $(function() {
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
-					Start Date
+					{%- if session['language'] %}	{{ LanguageResources.const.StartDate[session['language']] }}
+					{%- else %}{{ LanguageResources.const.StartDate[0] }}<!-- default -->
+					{% endif -%}
 				</div>
 				<div class="span9">
 					<input class="datepicker input-large" id="startDateOfCourse"
@@ -163,7 +183,9 @@ $(function() {
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
-					End Date
+					{%- if session['language'] %}	{{ LanguageResources.const.FinishDate[session['language']] }}
+					{%- else %}{{ LanguageResources.const.FinishDate[0] }}<!-- default -->
+					{% endif -%}
 				</div>
 				<div class="span9">
 					<input class="datepicker input-large" id="endDateOfCourse"
@@ -174,7 +196,11 @@ $(function() {
 			</h4>
 		</div>
 		<br>
-		<button class="btn" type="submit">Done</button>
+		<button class="btn" type="submit">
+			{%- if session['language'] %}	{{ LanguageResources.const.Done[session['language']] }}
+			{%- else %}{{ LanguageResources.const.Done[0] }}<!-- default -->
+			{% endif -%}
+		</button>
 	</form>
 </div>
 {% endblock -%}

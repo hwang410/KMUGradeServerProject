@@ -1278,4 +1278,5 @@ def server_manage_service():
     return render_template('/server_manage_service.html',
                            error = error,
                            SETResources = SETResources,
-                           SessionResources = SessionResources)
+                           SessionResources = SessionResources,
+                           LanguageResources = LanguageResources)
