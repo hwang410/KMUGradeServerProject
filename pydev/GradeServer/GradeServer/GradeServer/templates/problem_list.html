@@ -25,29 +25,17 @@
 			<tr>
 				<td class="hidden-phone">Num
 				<td>
-					{%- if session['language'] %}	{{ LanguageResources.const.ProblemTitle[session['language']] }}
-					{%- else %}{{ LanguageResources.const.ProblemTitle[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.ProblemTitle[session['language']] }}
 				<td>
-					{%- if session['language'] %}	{{ LanguageResources.const.Score[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Score[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Score[session['language']] }}
 				<td class="hidden-phone">
-					{%- if session['language'] %}	{{ LanguageResources.const.Status[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Status[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Status[session['language']] }}
 				<td>
-					{%- if session['language'] %}	{{ LanguageResources.const.DueDate[session['language']] }}
-					{%- else %}{{ LanguageResources.const.DueDate[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.DueDate[session['language']] }}
 				<td>
-					{%- if session['language'] %}	{{ LanguageResources.const.Count[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Count[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Count[session['language']] }}
 				<td>
-					{%- if session['language'] %}	{{ LanguageResources.const.ProblemRecord[session['language']] }}
-					{%- else %}{{ LanguageResources.const.ProblemRecord[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.ProblemRecord[session['language']] }}
 			</tr>
 		<tbody>
 			{% for problemListRecord in problemListRecords %}

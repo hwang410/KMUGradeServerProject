@@ -158,7 +158,7 @@ td.span {
 .carousel .item {
   height: 300px;
   background-color: #ffffff;
-  margin: 0px 50px 0px 50px;
+  margin: 0px;
 }
 
 .carousel-caption h1,

@@ -249,7 +249,6 @@ a:hover, a:focus {
 [class*="span"] {
 	float: left;
 	min-height: 1px;
-	margin-left: 20px;
 }
 
 .container, .navbar-static-top .container, .navbar-fixed-top .container,
@@ -294,7 +293,7 @@ a:hover, a:focus {
 }
 
 .carousel-span{
-	width: 240px;
+	width: 270px;
 }
 
 .span3 {
@@ -5717,7 +5716,7 @@ to {
 }
 
 .carousel-control.right {
-	right: 15px;
+	/*right: 15px;*/
 	left: auto;
 }
 

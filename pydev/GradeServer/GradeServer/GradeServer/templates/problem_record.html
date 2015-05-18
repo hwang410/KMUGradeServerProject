@@ -31,8 +31,8 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
   		color: colors[{{ i }}],
   		label: '{{ chartSubmissionDescriptions[i + 3] }}',
   		highlight: highlightColors[{{ i }}]
-  		})
-		{% endif %}
+		})
+	{% endif %}
   {% endfor %}
 });
 </script>
@@ -42,25 +42,17 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 		<h4>
 			<div style="row-fluid">
 				<div class="span6" id="time-limit">
-					{%- if session['language'] %}	{{ LanguageResources.const.Limitation[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Limitation[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Limitation[session['language']] }}
 					&nbsp;
-					{%- if session['language'] %}	{{ LanguageResources.const.Time[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Time[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Time[session['language']] }}
 					&nbsp;:&nbsp;
 					{{ problemInformationRecords.limitedTime }}
 					&nbsp;&nbsp;&nbsp;<span class="hidden-phone">|</span>
 				</div>
 				<div class="span6" id="memory-limit">
-					{%- if session['language'] %}	{{ LanguageResources.const.Limitation[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Limitation[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Limitation[session['language']] }}
 					&nbsp;
-					{%- if session['language'] %}	{{ LanguageResources.const.Memory[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Memory[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Memory[session['language']] }}
 					&nbsp;:&nbsp;
 					{{ problemInformationRecords.limitedMemory }}
 				</div>
@@ -95,9 +87,7 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 				<thead>
 					<tr>
 						<td>
-							{%- if session['language'] %}	{{ LanguageResources.const.Rank[session['language']] }}
-							{%- else %}{{ LanguageResources.const.Rank[0] }}<!-- default -->
-							{% endif -%}
+							{{ LanguageResources.const.Rank[session['language']] }}
 						<td>
 							<a href = '{{ url_for("GradeServer.problem_record", 
 													courseId = courseId, 
@@ -108,41 +98,29 @@ $.getScript('../../static/bootstrap/js/Chart.js',function(){
 													courseId = courseId, 
 													problemId = problemInformationRecords.problemId, 
 													sortCondition = "runTime") }}'>
-								{%- if session['language'] %}	{{ LanguageResources.const.Runtime[session['language']] }}
-								{%- else %}{{ LanguageResources.const.Runtime[0] }}<!-- default -->
-								{% endif -%}
+								{{ LanguageResources.const.Runtime[session['language']] }}
 						<td>
 							<a href = '{{ url_for("GradeServer.problem_record", 
 													courseId = courseId, 
 													problemId = problemInformationRecords.problemId, 
 													sortCondition = "usedMemory") }}'>
-								{%- if session['language'] %}	{{ LanguageResources.const.Memory[session['language']] }}
-								{%- else %}{{ LanguageResources.const.Memory[0] }}<!-- default -->
-								{% endif -%}
+								{{ LanguageResources.const.Memory[session['language']] }}
 						<td>
 							<a href = '{{ url_for("GradeServer.problem_record", 
 													courseId = courseId, 
 													problemId = problemInformationRecords.problemId, 
 													sortCondition = "codeLength") }}'>
-								{%- if session['language'] %}	{{ LanguageResources.const.FileSize[session['language']] }}
-								{%- else %}{{ LanguageResources.const.FileSize[0] }}<!-- default -->
-								{% endif -%}
+								{{ LanguageResources.const.FileSize[session['language']] }}
 						<td>
 							<a href = '{{ url_for("GradeServer.problem_record", 
 													courseId = courseId, 
 													problemId = problemInformationRecords.problemId, 
 													sortCondition = "submissionDate") }}'>
-								{%- if session['language'] %}	{{ LanguageResources.const.SubmissionDate[session['language']] }}
-								{%- else %}{{ LanguageResources.const.SubmissionDate[0] }}<!-- default -->
-								{% endif -%}
+								{{ LanguageResources.const.SubmissionDate[session['language']] }}
 						<td>
-							{%- if session['language'] %}	{{ LanguageResources.const.Code[session['language']] }}
-							{%- else %}{{ LanguageResources.const.Code[0] }}<!-- default -->
-							{% endif -%}
+							{{ LanguageResources.const.Code[session['language']] }}
 						<td class="hidden-phone">
-							{%- if session['language'] %}	{{ LanguageResources.const.View[session['language']] }}
-							{%- else %}{{ LanguageResources.const.View[0] }}<!-- default -->
-							{% endif -%}
+							{{ LanguageResources.const.View[session['language']] }}
 					</tr>
 				<tbody>
 				{% for problemSolvedMemberRecord in problemSolvedMemberRecords %}

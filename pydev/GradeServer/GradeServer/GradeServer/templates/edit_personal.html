@@ -6,16 +6,12 @@
 {%- block body %}
 <div class="container">
 	<h3>
-		{%- if session['language'] %}	{{ LanguageResources.const.PersonalInformation[session['language']] }}
-		{%- else %}{{ LanguageResources.const.PersonalInformation[0] }}<!-- default -->
-		{% endif -%}
+		{{ LanguageResources.const.PersonalInformation[session['language']] }}
 	</h3>
 	<h4>
 		<div class="row-fluid">
 			<div class="span3">
-				{%- if session['language'] %}	{{ LanguageResources.const.ID[session['language']] }}
-				{%- else %}{{ LanguageResources.const.ID[0] }}<!-- default -->
-				{% endif -%}
+				{{ LanguageResources.const.ID[session['language']] }}
 			</div>
 			<div class="span8">
 				{%- if memberInformation.memberId %}{{ memberInformation.memberId }}{% endif -%}
@@ -27,9 +23,7 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] %}	{{ LanguageResources.const.Password[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Password[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Password[session['language']] }}
 				</div>
 				<div class="span2">
 					<input type="password" name="password" class="input-large"
@@ -40,9 +34,7 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] %}	{{ LanguageResources.const.Password[session['language']] }}({{ LanguageResources.const.Confirm[session['language']] }})
-					{%- else %}{{ LanguageResources.const.Password[0] }}({{ LanguageResources.const.Confirm[0] }})<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Password[session['language']] }}({{ LanguageResources.const.Confirm[session['language']] }})
 				</div>
 				<div class="span8">
 					<input type="password" name="passwordConfirm" class="input-large"
@@ -54,9 +46,7 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] %}	{{ LanguageResources.const.Department[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Department[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Department[session['language']] }}
 				</div>
 				<div class="span8">
 					{%- if memberInformation.departmentName %}{{ memberInformation.departmentName }}{% endif -%}
@@ -67,9 +57,7 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] %}	{{ LanguageResources.const.Name[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Name[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Name[session['language']] }}
 				</div>
 				<div class="span8">
 					{%- if memberInformation.memberName %}{{ memberInformation.memberName }}{% endif -%}
@@ -80,9 +68,7 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] %}	{{ LanguageResources.const.ContactNumber[session['language']] }}
-					{%- else %}{{ LanguageResources.const.ContactNumber[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.ContactNumber[session['language']] }}
 				</div>
 				<div class="span8">
 					<input type="text" class="input-large" name="contactNumber"
@@ -96,9 +82,7 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] %}	{{ LanguageResources.const.Email[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Email[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Email[session['language']] }}
 				</div>
 				<div class="span8">
 					<input type="text" class="input-large" name="emailAddress"
@@ -112,9 +96,7 @@
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
-					{%- if session['language'] %}	{{ LanguageResources.const.Comment[session['language']] }}
-					{%- else %}{{ LanguageResources.const.Comment[0] }}<!-- default -->
-					{% endif -%}
+					{{ LanguageResources.const.Comment[session['language']] }}
 				</div>
 				<div class="span8">
 					<input type="text" class="input-xxlarge" name="comment"
@@ -127,9 +109,7 @@
 		</h4>
 		<br>
 		<button type="submit" class="btn">
-			{%- if session['language'] %}	{{ LanguageResources.const.Confirm[session['language']] }}
-			{%- else %}{{ LanguageResources.const.Confirm[0] }}<!-- default -->
-			{% endif -%}
+			{{ LanguageResources.const.Confirm[session['language']] }}
 		</button>
 	</form>
 </div>

@@ -64,8 +64,8 @@ def sign_in():
     
     if request.method == 'POST':
         checker = True
-        language = {'en':0,
-                    'kr':1}
+        language = {'kr':0, # default
+                    'en':1}
         
         for form in request.form:
             if "language" in form:
