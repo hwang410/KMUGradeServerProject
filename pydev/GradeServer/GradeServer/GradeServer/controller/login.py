@@ -106,7 +106,7 @@ def sign_in():
                         session[SessionResources().const.LAST_ACCESS_DATE] = datetime.now()
                         
                         # set default language
-                        session['language'] = language['en']
+                        session['language'] = language['kr']
                                                     
                         ownCourses = select_accept_courses().subquery()
                         # Get My Accept Courses
@@ -150,8 +150,8 @@ def update_recent_access_date(memberId):
         filter(Members.memberId == memberId).\
         update(dict(lastAccessDate = datetime.now()))
         
-        
 """
+        
 로그아웃
 """
 from GradeServer.utils.loginRequired import login_required
