@@ -143,8 +143,8 @@ $(function() {
 		<script>
 		// date picker for start/end date
 		$(function() {
-		    	if (!Modernizr.inputtypes['date']) {
-		        	$('input[type=date]').datepicker({
+		    	if (!Modernizr.inputtypes['udate']) {
+		        	$('input[type=udate]').datepicker({
 		            	dateFormat: 'yy-mm-dd'
 		        	});
 		    	}
@@ -157,7 +157,7 @@ $(function() {
 				</div>
 				<div class="span9">
 					<input class="datepicker input-large" id="startDateOfCourse"
-							name="startDateOfCourse" type="date" data-date-format="yyyy-mm-dd"
+							name="startDateOfCourse" type="udate" data-date-format="yyyy-mm-dd"
 							autocomplete="off" form="addCourse" placeholder="click and choose"
 							value="{%- if startDateOfCourse %}{{ startDateOfCourse }}{% endif -%}">
 				</div>
@@ -170,7 +170,7 @@ $(function() {
 				</div>
 				<div class="span9">
 					<input class="datepicker input-large" id="endDateOfCourse"
-							name="endDateOfCourse" type="date" data-date-format="yyyy-mm-dd"
+							name="endDateOfCourse" type="udate" data-date-format="yyyy-mm-dd"
 							autocomplete="off" form="addCourse" placeholder="click and choose"
 							value="{%- if endDateOfCourse %}{{ endDateOfCourse }}{% endif -%}">
 				</div>

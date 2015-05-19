@@ -183,7 +183,50 @@ def add_new_departments(departmentCode, departmentName):
     
     return error
                         
-                        
+
+def delete_registered_course(courseId):
+    error = None
+    
+    try:
+        deleteTarget = dao.query(RegisteredCourses).\
+                           filter(RegisteredCourses.courseId == courseId).\
+                           first()
+        dao.delete(deleteTarget)
+        dao.commit()
+    except:
+        error = "Error has been occurred while deleting registered course"
+    
+    return error
+                
+
+def get_registered_courses():
+    try:
+        courses = (dao.query(RegisteredCourses,
+                             Members).\
+                   join(Members,
+                        Members.memberId == RegisteredCourses.courseAdministratorId).\
+                   order_by(RegisteredCourses.endDateOfCourse.desc())).\
+        all()
+    except:
+        courses = []
+        
+    return courses
+        
+                    
+def get_languages_of_course():    
+    try:
+        languagesOfCourse = dao.query(LanguagesOfCourses.courseId, 
+                                      Languages.languageIndex,
+                                      Languages.languageName).\
+                                 join(Languages,
+                                      LanguagesOfCourses.languageIndex == Languages.languageIndex).\
+                            all()
+    except:
+        languagesOfCourse = []
+    
+    return languagesOfCourse
+        
+                                                        
 projectPath = '/mnt/shared'
 problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
 problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/ProblemDescriptions' % (projectPath)
@@ -210,8 +253,10 @@ def add_new_problem(newProblemInfo):
     except:
         error = "Error has been occurred while setting new problem to add"
         
-    return error, newProblem
-                        
+    return newProblem
+
+
+                     
 @GradeServer.route('/master/manage_collegedepartment', methods = ['GET', 'POST'])
 @check_invalid_access
 @login_required
@@ -387,46 +432,23 @@ def server_manage_collegedepartment():
 @GradeServer.route('/master/manage_class', methods = ['GET', 'POST'])
 @check_invalid_access
 @login_required
-def server_manage_class():
+def server_manage_class():       
     error = None
+     
+    courses = get_registered_courses()
+    languagesOfCourse = get_languages_of_course()
     
-    try:
-        courses = (dao.query(RegisteredCourses,
-                             Members).\
-                       join(Members,
-                            Members.memberId == RegisteredCourses.courseAdministratorId).\
-                       order_by(RegisteredCourses.endDateOfCourse.desc())).\
-                  all()
-    except:
-        courses = []
-        #error = 'No courses exists'
-        
-    try:
-        languagesOfCourse = dao.query(LanguagesOfCourses.courseId, 
-                                      Languages.languageIndex,
-                                      Languages.languageName).\
-                                 join(Languages,
-                                      LanguagesOfCourses.languageIndex == Languages.languageIndex).\
-                            all()
-    except:
-        languagesOfCourse = []
-        #error = 'No information of languages of courses'
-
     if request.method == 'POST':
         for form in request.form:
-            try:
-                deleteTarget = dao.query(RegisteredCourses).\
-                                   filter(RegisteredCourses.courseId == form).\
-                                   first()
-                dao.delete(deleteTarget)
-                dao.commit()
-            except:
-                dao.rollback()
-                print 'Deletion Error'
-                
+            error = delete_registered_course(form)
+            
+            if error:
+                break
+            
         return redirect(url_for('.server_manage_class'))
     
-    session['ownCourses'] = dao.query(RegisteredCourses).all()
+    if not error:
+        session['ownCourses'] = dao.query(RegisteredCourses).all()
     
     return render_template('/server_manage_class.html',
                            error = error,  
