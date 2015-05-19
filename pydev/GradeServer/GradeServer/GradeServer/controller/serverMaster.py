@@ -105,18 +105,16 @@ def get_departments_of_college(collegeIndex):
 
 
 def change_abolishment_of_department_true(collegeIndex):
-    error = None
-    
     error, departments = get_departments_of_college(collegeIndex)
+    
     if error:
         return error
     
-    for department in departments:
-        print "abo:", department.isAbolished 
-        if department.isAbolished == 'FALSE':
+    for _, departmentInfo in departments: 
+        if departmentInfo.isAbolished == 'FALSE':
             try:
                 dao.query(Departments).\
-                    filter(Departments.departmentIndex == department.departmentIndex).\
+                    filter(Departments.departmentIndex == departmentInfo.departmentIndex).\
                     update(dict(isAbolished = SETResources().const.TRUE))
                 dao.commit()
             except:
@@ -177,6 +175,7 @@ def server_manage_collegedepartment():
                                LanguageResources = LanguageResources,
                                allColleges = [],
                                allDepartments = [])
+        
     try:    
         allDepartments = (dao.query(DepartmentsOfColleges,
                                     Colleges,
@@ -235,19 +234,10 @@ def server_manage_collegedepartment():
                         
             elif 'deleteCollege' in request.form:
                 if 'college' in form:
-                    try:
-                        collegeIndex = re.findall('\d+|\D+', form)[1]
-                        error = change_abolishment_of_college_true(collegeIndex)
-                        if error:
-                            return render_template('/server_manage_collegedepartment.html', 
-                                                   error=error, 
-                                                   SETResources = SETResources,
-                                                   SessionResources = SessionResources,
-                                                   LanguageResources = LanguageResources,
-                                                   allColleges = allColleges,
-                                                   allDepartments = allDepartments)
-                    except:
-                        error = change_abolishment_of_department_true(collegeIndex)
+                    collegeIndex = re.findall('\d+|\D+', form)[1]
+                    
+                    error = change_abolishment_of_college_true(collegeIndex)
+                    if error:
                         return render_template('/server_manage_collegedepartment.html', 
                                                error=error, 
                                                SETResources = SETResources,
@@ -255,6 +245,17 @@ def server_manage_collegedepartment():
                                                LanguageResources = LanguageResources,
                                                allColleges = allColleges,
                                                allDepartments = allDepartments)
+                        
+                    error = change_abolishment_of_department_true(collegeIndex)
+                    if error:
+                        return render_template('/server_manage_collegedepartment.html', 
+                                               error=error, 
+                                               SETResources = SETResources,
+                                               SessionResources = SessionResources,
+                                               LanguageResources = LanguageResources,
+                                               allColleges = allColleges,
+                                               allDepartments = allDepartments)
+                        
                     currentTab = 'colleges'
                     
             elif 'deleteDepartment' in request.form:
@@ -364,7 +365,7 @@ def server_manage_collegedepartment():
             currentTab = 'departments'
             
         return redirect(url_for('.server_manage_collegedepartment'))
-        
+
     return render_template('/server_manage_collegedepartment.html', 
                            error=error, 
                            SETResources = SETResources,
