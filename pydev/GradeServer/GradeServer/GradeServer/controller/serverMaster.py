@@ -122,6 +122,68 @@ def change_abolishment_of_department_true(collegeIndex):
     
     return error
                 
+                
+def delete_relation_in_college_department(collegeIndex, departmentIndex):
+    error = None
+    try:
+        if collegeIndex:
+            target = dao.query(DepartmentsOfColleges).\
+                         filter(DepartmentsOfColleges.collegeIndex == collegeIndex).\
+                         first()
+        else:
+            target = dao.query(DepartmentsOfColleges).\
+                         filter(DepartmentsOfColleges.departmentIndex == departmentIndex).\
+                         first()
+        dao.delete(target)
+        dao.commit()
+    except:
+        error = "Error has been occurred while deleting relation of college and department"
+    
+    return error
+
+
+def add_relation_in_college_department(collegeIndex, departmentIndex):
+    error = None
+    
+    try:
+        relationToCollege = DepartmentsOfColleges(collegeIndex = collegeIndex,
+                                                  departmentIndex = departmentIndex)
+        dao.add(relationToCollege)
+        dao.commit()
+    except:
+        error = 'Error has been occurred while making new relation of department'
+
+    return error
+                        
+                                            
+def add_new_college(collegeCode, collegeName):
+    error = None
+    
+    try:
+        newCollege = Colleges(collegeCode = collegeCode,
+                              collegeName = collegeName)
+        dao.add(newCollege)
+        dao.commit()
+    except:
+        error = "Error has been occurred while making new college"
+        
+    return error
+                        
+                        
+def add_new_departments(departmentCode, departmentName):
+    error = None
+    
+    try:
+        newDepartment = Departments(departmentCode = departmentCode,
+                                    departmentName = departmentName)
+        dao.add(newDepartment)
+        dao.commit()
+    except:
+        error = "Error has been occurred while making new department"
+    
+    return error
+                        
+                        
 projectPath = '/mnt/shared'
 problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
 problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/ProblemDescriptions' % (projectPath)
@@ -156,6 +218,7 @@ def add_new_problem(newProblemInfo):
 def server_manage_collegedepartment():
     global newColleges, newDepartments
     global currentTab
+    
     # moved from other page, then show 'college' tab
     if request.referrer.rsplit('/', 1)[1] != "manage_collegedepartment":
         currentTab = 'colleges'
@@ -168,13 +231,7 @@ def server_manage_collegedepartment():
                           all()
     except:
         error = 'Error has been occurred while searching colleges'
-        return render_template('/server_manage_collegedepartment.html', 
-                               error=error, 
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               LanguageResources = LanguageResources,
-                               allColleges = [],
-                               allDepartments = [])
+        allColleges = []
         
     try:    
         allDepartments = (dao.query(DepartmentsOfColleges,
@@ -189,14 +246,20 @@ def server_manage_collegedepartment():
                          all()
     except:
         error = 'Error has been occurred while searching departments'
+        allDepartments = []
+        
+    ''' 
+    Handling error for GET request
+    '''
+    if error:
         return render_template('/server_manage_collegedepartment.html', 
                                error=error, 
                                SETResources = SETResources,
                                SessionResources = SessionResources,
                                LanguageResources = LanguageResources,
                                allColleges = allColleges,
-                               allDepartments = [])
-    
+                               allDepartments = allDepartments)
+        
     if request.method == 'POST':
         # initialization
         isNewCollege = False
@@ -234,138 +297,84 @@ def server_manage_collegedepartment():
                         
             elif 'deleteCollege' in request.form:
                 if 'college' in form:
+                    currentTab = 'colleges'
+                    
                     collegeIndex = re.findall('\d+|\D+', form)[1]
                     
                     error = change_abolishment_of_college_true(collegeIndex)
                     if error:
-                        return render_template('/server_manage_collegedepartment.html', 
-                                               error=error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               allColleges = allColleges,
-                                               allDepartments = allDepartments)
+                        break
                         
                     error = change_abolishment_of_department_true(collegeIndex)
                     if error:
-                        return render_template('/server_manage_collegedepartment.html', 
-                                               error=error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               allColleges = allColleges,
-                                               allDepartments = allDepartments)
+                        break
                         
-                    currentTab = 'colleges'
+                    
                     
             elif 'deleteDepartment' in request.form:
                 if 'department' in form:
-                    try:
-                        departmentIndex = re.findall('\d+|\D+', form)[1]
-                        
-                        # updates abolition 
-                        dao.query(Departments).\
-                            filter(Departments.departmentIndex == departmentIndex).\
-                            update(dict(isAbolished = SETResources().const.TRUE))
-                        dao.commit()
-                        
-                        # delete its relation
-                        target = dao.query(DepartmentsOfColleges).\
-                                     filter(DepartmentsOfColleges.departmentIndex == departmentIndex).\
-                                     first()
-                        dao.delete(target)
-                        dao.commit()
-                    except:
-                        error = 'Error has been occurred while searching departments'
-                        dao.rollback()
-                        return render_template('/server_manage_collegedepartment.html', 
-                                               error=error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               allColleges = allColleges,
-                                               allDepartments = allDepartments)
                     currentTab = 'departments'
-        
-                
+                    
+                    departmentIndex = re.findall('\d+|\D+', form)[1]
+                    
+                    error = change_abolishment_of_department_true(departmentIndex)
+                    if error:
+                        break
+                    
+        '''
+        If there's an error, set flags to False so it will be reached 'return' command at the last in this function
+        '''
+        if error:
+            isNewCollege = isNewDepartment = False
+                    
         if isNewCollege:
             for index in range(numberOfColleges):
                 newColleges.append(newCollege[index])
             for newPart in newColleges:
                 if newPart[1]:
-                    try:
-                        if is_exist_college(newPart[1]):
-                            error = change_abolishment_of_college_false(newPart[1])
-                            if error:
-                                return render_template('/server_manage_collegedepartment.html', 
-                                                       error=error, 
-                                                       SETResources = SETResources,
-                                                       SessionResources = SessionResources,
-                                                       LanguageResources = LanguageResources,
-                                                       allColleges = allColleges,
-                                                       allDepartments = allDepartments)
-                            continue
+                    if is_exist_college(newPart[1]):
+                        error = change_abolishment_of_college_false(newPart[1])
+                        break
+                    
+                    error = add_new_college(newPart[0], newPart[1])
                         
-                        newCollege = Colleges(collegeCode = newPart[0],
-                                              collegeName = newPart[1])
-                        dao.add(newCollege)
-                        dao.commit()
-                    except:
-                        error = 'Error has been occurred while making new college'
-                        dao.rollback()
-                        return render_template('/server_manage_collegedepartment.html', 
-                                               error=error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               allColleges = allColleges,
-                                               allDepartments = allDepartments)
             newColleges = []
             currentTab = 'colleges'
-            
+        
+        '''
+        If There is an error while adding new college, isNewDepartment can never be 'True'
+        So it doesn't need to change flag value
+        '''
         if isNewDepartment:
             for index in range(numberOfDepartments):
                 newDepartments.append(newDepartment[index])
+                
             newDepartment = []
             for newPart in newDepartments:
                 if newPart[1]:
-                    try:
-                        newDepartment = Departments(departmentCode = newPart[0],
-                                                    departmentName = newPart[1])
-                        dao.add(newDepartment)
-                        dao.commit()
-                    except:
-                        error = 'Error has been occurred while making new department'
-                        dao.rollback()
-                        return render_template('/server_manage_collegedepartment.html', 
-                                               error=error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               allColleges = allColleges,
-                                               allDepartments = allDepartments)
-                    try:
-                        index = dao.query(func.max(Departments.departmentIndex)).scalar()
-                        relationToCollege = DepartmentsOfColleges(collegeIndex = newPart[2],
-                                                                  departmentIndex = index)
-                        dao.add(relationToCollege)
-                        dao.commit()
-                    except:
-                        error = 'Error has been occurred while making new relation of department'  
-                        dao.rollback()
-                        return render_template('/server_manage_collegedepartment.html', 
-                                               error=error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               allColleges = allColleges,
-                                               allDepartments = allDepartments)
+                    error = add_new_departments(newPart[0], newPart[1])
+                    if error:
+                        break
+                    
+                    index = dao.query(func.max(Departments.departmentIndex)).scalar()
+                    error = add_relation_in_college_department(newPart[2], index)
                         
             newDepartments = []
             currentTab = 'departments'
             
+        # if there's an error in the last loop, can't handle in the loop with current structure
+        # So, needs additional code out of the loop 
+        if error:
+            return render_template('/server_manage_collegedepartment.html', 
+                                   error=error, 
+                                   SETResources = SETResources,
+                                   SessionResources = SessionResources,
+                                   LanguageResources = LanguageResources,
+                                   allColleges = allColleges,
+                                   allDepartments = allDepartments)
+            
         return redirect(url_for('.server_manage_collegedepartment'))
-
+        
     return render_template('/server_manage_collegedepartment.html', 
                            error=error, 
                            SETResources = SETResources,
