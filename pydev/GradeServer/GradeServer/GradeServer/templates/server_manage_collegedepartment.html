@@ -18,7 +18,7 @@
 			<div style="text-align:right">
 				<a class="btn" id="addModal" data-toggle="modal" href="#collegeModal"
 				 	rol="button">
-				 	{{ LanguageResources.const.Add[session['language']] }}
+				 	{{ LanguageResources.const.Addition[session['language']] }}
 				 </a>
 			</div>	
 		</ul>
@@ -80,7 +80,9 @@
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
 						  type="button" aria-hidden="true">x</button>
-				<h3 id="addDepartmentModalLabel">Department Addition</h3>
+				<h3 id="addDepartmentModalLabel">
+				{{ LanguageResources.const.Department[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+				</h3>
 			</div>
 			<div class="modal-body">
 				<p></p>
@@ -169,7 +171,7 @@
 						{{ LanguageResources.const.Deletion[session['language']] }}
 				</div>
 				<div class="modal-body">
-					<p>Do you really want to delete it?</p>
+					<p>All departments in the college will be abolished<br>Do you really want to delete it?</p>
 				</div>
 				<div class="modal-footer">
 					<button class="btn" name="deleteCollege" type="submit">
@@ -286,7 +288,7 @@
 	<div id="deleteButton" style="text-align:right">
 		<a class="btn" data-toggle="modal" role="button"
 			onclick="showingDeleteModal('college')">
-			{{ LanguageResources.const.Delete[session['language']] }}
+			{{ LanguageResources.const.Deletion[session['language']] }}
 		</a>
 	</div>
 </div>

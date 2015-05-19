@@ -52,6 +52,78 @@ def initialize_tripleDes_class():
                            padmode = PAD_PKCS5)
     return tripleDes
 
+def is_exist_college(collegeName):
+    try:
+        dao.query(Colleges).\
+            filter(Colleges.collegeName == str(collegeName)).\
+            first().\
+            collegeName
+    except:
+        return False
+    
+    return True
+
+
+def change_abolishment_of_college_false(collegeName):
+    error = None
+    try:
+        dao.query(Colleges).\
+            filter(Colleges.collegeName == str(collegeName)).\
+            update(dict(isAbolished = SETResources().const.FALSE))
+        dao.commit()
+    except:
+        error = "Error has been occurred while changing abolishment to FALSE"
+    
+    return error
+
+
+def change_abolishment_of_college_true(collegeIndex):
+    error = None
+    try:
+        dao.query(Colleges).\
+            filter(Colleges.collegeIndex == collegeIndex).\
+            update(dict(isAbolished = SETResources().const.TRUE))
+        dao.commit()
+    except:
+        error = "Error has been occurred while changing abolishment to TRUE"
+    
+    return error
+
+def get_departments_of_college(collegeIndex):
+    error = None
+    try:
+        departments = (dao.query(DepartmentsOfColleges,
+                                Departments).\
+                          join(Departments,
+                               Departments.departmentIndex == DepartmentsOfColleges.departmentIndex).\
+                          filter(DepartmentsOfColleges.collegeIndex == collegeIndex)).\
+                      all()
+    except:
+        error = "Error has been occurred while searching departments"
+        
+    return error, departments
+
+
+def change_abolishment_of_department_true(collegeIndex):
+    error = None
+    
+    error, departments = get_departments_of_college(collegeIndex)
+    if error:
+        return error
+    
+    for department in departments:
+        print "abo:", department.isAbolished 
+        if department.isAbolished == 'FALSE':
+            try:
+                dao.query(Departments).\
+                    filter(Departments.departmentIndex == department.departmentIndex).\
+                    update(dict(isAbolished = SETResources().const.TRUE))
+                dao.commit()
+            except:
+                error = "Error has been occurred while changing abolishment to TRUE"
+    
+    return error
+                
 projectPath = '/mnt/shared'
 problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
 problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/ProblemDescriptions' % (projectPath)
@@ -165,13 +237,17 @@ def server_manage_collegedepartment():
                 if 'college' in form:
                     try:
                         collegeIndex = re.findall('\d+|\D+', form)[1]
-                        dao.query(Colleges).\
-                            filter(Colleges.collegeIndex == collegeIndex).\
-                            update(dict(isAbolished = SETResources().const.TRUE))
-                        dao.commit()
+                        error = change_abolishment_of_college_true(collegeIndex)
+                        if error:
+                            return render_template('/server_manage_collegedepartment.html', 
+                                                   error=error, 
+                                                   SETResources = SETResources,
+                                                   SessionResources = SessionResources,
+                                                   LanguageResources = LanguageResources,
+                                                   allColleges = allColleges,
+                                                   allDepartments = allDepartments)
                     except:
-                        error = 'Delete all departments before this work'
-                        dao.rollback()
+                        error = change_abolishment_of_department_true(collegeIndex)
                         return render_template('/server_manage_collegedepartment.html', 
                                                error=error, 
                                                SETResources = SETResources,
@@ -217,6 +293,18 @@ def server_manage_collegedepartment():
             for newPart in newColleges:
                 if newPart[1]:
                     try:
+                        if is_exist_college(newPart[1]):
+                            error = change_abolishment_of_college_false(newPart[1])
+                            if error:
+                                return render_template('/server_manage_collegedepartment.html', 
+                                                       error=error, 
+                                                       SETResources = SETResources,
+                                                       SessionResources = SessionResources,
+                                                       LanguageResources = LanguageResources,
+                                                       allColleges = allColleges,
+                                                       allDepartments = allDepartments)
+                            continue
+                        
                         newCollege = Colleges(collegeCode = newPart[0],
                                               collegeName = newPart[1])
                         dao.add(newCollege)
