@@ -6,203 +6,203 @@ class LanguageResources(object):
     '''
     @@ Main Page
     '''
-    const.TopCoder = ['Top Coder of this week', '이 주의 탑 코더']
-    const.HowToUse = ['How to use', '사용방법']
-    const.EmptySpace = ['Empty Space', '빈공간']
+    const.TopCoder = ['이 주의 탑 코더', 'Top Coder of this week']
+    const.HowToUse = ['사용방법', 'How to use']
+    const.EmptySpace = ['빈공간', 'Empty Space']
     
     
     '''
     @@ Navigation bar
     '''
-    const.Problems = ['Problems', '문제']
-    const.Rank = ['Rank', '순위']
-    const.Board = ['Board', '게시판']
-    const.SignIn = ['Sign in', '로그인']
-    const.Team = ['Team', '팀']
-    const.SignUp = ['Sign up', '회원가입']
+    const.Problems = ['문제', 'Problems']
+    const.Rank = ['순위', 'Rank']
+    const.Board = ['게시판', 'Board']
+    const.SignIn = ['로그인', 'Sign in']
+    const.Team = ['팀', 'Team']
+    const.SignUp = ['회원가입', 'Sign up']
 
 
     '''
     ==@@ Problems tab
     '''
-    const.CurrentCourse = ['CURRENT Course', '수강중인 수업']
-    const.PastCourse = ['PAST Course', '수강했던 수업']
-    const.none = ['None', '없음']
+    const.CurrentCourse = ['수강중인 수업', 'CURRENT Course']
+    const.PastCourse = ['수강했던 수업', 'PAST Course']
+    const.none = ['없음', 'None']
     
     
     '''
     ==@@ Member ID tab
     '''
     # common
-    const.Account = ['Account', '개인 정보']
-    const.Notice = ['Notice', '공지 사항']
-    const.Manual = ['Manual', '사용 방법']
-    const.SignOut = ['Sign out', '로그 아웃']
+    const.Account = ['개인 정보', 'Account']
+    const.Notice = ['공지 사항', 'Notice']
+    const.Manual = ['사용 방법', 'Manual']
+    const.SignOut = ['로그 아웃', 'Sign out']
     
     # for administrator
-    const.User = ['User', '사용자']
-    const.Service = ['Service', '기능']
+    const.User = ['사용자', 'User']
+    const.Service = ['기능', 'Service']
     
     # for server administrator
-    const.Server = ['Server', '서버']
-    const.College = ['College', '대학']
-    const.Department = ['Department', '학부']
-    const.Course = ['Course', '수업']
+    const.Server = ['서버', 'Server']
+    const.College = ['대학', 'College']
+    const.Department = ['학부', 'Department']
+    const.Course = ['수업', 'Course']
     
     # for course administrator
     
     # for user
-    const.UserRecord = ['Record', '제출 정보']
+    const.UserRecord = ['제출 정보', 'Record']
     
     
     '''
     @@ Problems page
     '''
-    const.ProblemTitle = ['Title', '문제이름']
-    const.Score = ['Score', '점수']
-    const.Status = ['Status', '채점상태']
-    const.DueDate = ['Due Date', '제출기한']
-    const.Count = ['Count', '제출횟수']
-    const.ProblemRecord = ['Record', '제출 기록']
+    const.ProblemTitle = ['문제이름', 'Title']
+    const.Score = ['점수', 'Score']
+    const.Status = ['채점상태', 'Status']
+    const.DueDate = ['제출기한', 'Due Date']
+    const.Count = ['제출횟수', 'Count']
+    const.ProblemRecord = ['제출 기록', 'Record']
     
     
     '''
     ==@@ Each problem
     '''
-    const.UploadFiles = ['Upload Files', '파일로 제출']
-    const.WriteCode = ['Write Code', '코드 작성']
-    const.ProblemScript = ['Problem Script', '문제 보기']
-    const.Submission = ['Submission', '제출']
-    const.Language = ['Language', '사용 언어']
-    const.Theme = ['Theme', '에디터 테마']
-    const.Limitation = ['Limitation', '제한']
-    const.Time = ['Time', '시간']
-    const.Memory = ['Memory', '메모리']
-    const.Select = ['Select', '선택']
-    const.Runtime = ['Runtime', '실행시간']
-    const.FileSize = ['Size', '길이']
-    const.SubmissionDate = ['Date', '제출일']
+    const.UploadFiles = ['파일로 제출', 'Upload Files']
+    const.WriteCode = ['코드 작성', 'Write Code']
+    const.ProblemScript = ['문제 보기', 'Problem Script']
+    const.Submission = ['제출', 'Submission']
+    const.Language = ['사용 언어', 'Language']
+    const.Theme = ['에디터 테마', 'Theme']
+    const.Limitation = ['제한', 'Limitation']
+    const.Time = ['시간', 'Time']
+    const.Memory = ['메모리', 'Memory']
+    const.Select = ['선택', 'Select']
+    const.Runtime = ['실행시간', 'Runtime']
+    const.FileSize = ['길이', 'Size']
+    const.SubmissionDate = ['제출일', 'Date']
     
     
     '''
     ==@@ User's code
     '''
-    const.DownloadCode = ['Download sourcecode', '소스코드 다운로드']
+    const.DownloadCode = ['소스코드 다운로드', 'Download sourcecode']
     
     
     '''
     @@ Rank page
     '''
-    const.Ranking = ['Ranking', '순위']
-    const.MemberId = ['Member ID', 'ID']
-    const.Comment = ['Comment', '한마디']
-    const.Tries = ['Tries', '제출 횟수']
-    const.SolvedProblems = ['Solved Problems', '맞춘 문제 수']
-    const.Rate = ['Rate', '정답률']
-    const.Find = ['Find', '찾기']
+    const.Ranking = ['순위', 'Ranking']
+    const.MemberId = ['ID', 'Member ID']
+    const.Comment = ['한마디', 'Comment']
+    const.Tries = ['제출 횟수', 'Tries']
+    const.SolvedProblems = ['맞춘 문제 수', 'Solved Problems']
+    const.Rate = ['정답률', 'Rate']
+    const.Find = ['찾기', 'Find']
     
     
     '''
     @@ Board page
     '''
-    const.ArticleNum = ['Num', '번호']
-    const.CourseName = ['Course Name', '과목 번호']
-    const.ArticleTitle = ['Title', '제목']
-    const.ArticleMemberId = ['Member ID', '작성자']
-    const.ArticleDate = ['Date', '작성일']
-    const.View = ['View', '조회수']
-    const.Like = ['Like', '좋아요']
-    const.Write = ['Write', '글쓰기']
+    const.ArticleNum = ['번호', 'Num']
+    const.CourseName = ['과목 번호', 'Course Name']
+    const.ArticleTitle = ['제목', 'Title']
+    const.ArticleMemberId = ['작성자', 'Member ID']
+    const.ArticleDate = ['작성일', 'Date']
+    const.View = ['조회수', 'View']
+    const.Like = ['좋아요', 'Like']
+    const.Write = ['글쓰기', 'Write']
     
     
     ''' 
     ==@@ article
     '''
-    const.Edit = ['Edit', '수정']
+    const.Edit = ['수정', 'Edit']
     
     
     '''
     @@ ID Check
     '''
-    const.IdentificationCheck = ['Identification Check', '암호 확인']
-    const.Confirm = ['Confirm', '확인']
+    const.IdentificationCheck = ['암호 확인', 'Identification Check']
+    const.Confirm = ['확인', 'Confirm']
     
     
     '''
     @@ Account
     '''
-    const.PersonalInformation = ['Personal Information', '개인 정보']
-    const.ID = ['ID', '아이디']
-    const.Password = ['Password', '암호']
-    const.Name = ['Name', '이름']
-    const.ContactNumber = ['Contact Number', '연락처']
-    const.Email = ['E-mail', '이메일']
+    const.PersonalInformation = ['개인 정보', 'Personal Information']
+    const.ID = ['아이디', 'ID']
+    const.Password = ['암호', 'Password']
+    const.Name = ['이름', 'Name']
+    const.ContactNumber = ['연락처', 'Contact Number']
+    const.Email = ['이메일', 'E-mail']
     
     
     '''
     @@ College&Department Management
     '''
-    const.Management = ['Management', '관리']
-    const.Check = ['Check', '선택']
-    const.Code = ['Code', '코드']
+    const.Management = ['관리', 'Management']
+    const.Check = ['선택', 'Check']
+    const.Code = ['코드', 'Code']
     
     
     '''
     @@ Course management
     '''
-    const.Number = ['Number', '번호']
-    const.Administrator = ['Administrator', '관리자']
-    const.StartDate = ['Start Date', '시작일']
-    const.FinishDate = ['Finish Date', '종료일']
-    const.OpenDate = ['Open Date', '공개일']
-    const.CloseDate = ['Close Date', '공개종료일']
+    const.Number = ['번호', 'Number']
+    const.Administrator = ['관리자', 'Administrator']
+    const.StartDate = ['시작일', 'Start Date']
+    const.FinishDate = ['종료일', 'Finish Date']
+    const.OpenDate = ['공개일', 'Open Date']
+    const.CloseDate = ['공개종료일', 'Close Date']
     
     
     '''
     ==@@ Course addition
     '''
-    const.Semester = ['Semester', '학기']
-    const.Description = ['Description', '과목 소개']
-    const.Done = ['Done', '확인']
+    const.Semester = ['학기', 'Semester']
+    const.Description = ['과목 소개', 'Description']
+    const.Done = ['확인', 'Done']
     
     
     '''
     @@ Problem management
     '''
-    const.Problem = ['Problem', '문제']
-    const.ProblemId = ['Problem ID', '문제번호']
-    const.Addition = ['Addition', '추가']
-    const.ProblemUpload = ['Upload', '업로드']
-    const.Close = ['Close', '닫기']
-    const.Deletion = ['Deletion', '삭제']
+    const.Problem = ['문제', 'Problem']
+    const.ProblemId = ['문제번호', 'Problem ID']
+    const.Addition = ['추가', 'Addition']
+    const.ProblemUpload = ['업로드', 'Upload']
+    const.Close = ['닫기', 'Close']
+    const.Deletion = ['삭제', 'Deletion']
     
     
     '''
     @@ User management
     '''
-    const.UserManagement = ['User Management', '사용자 관리']
-    const.Authority = ['Authority', '권한']
-    const.LastAccess = ['Last Access', '최근 접속일']
+    const.UserManagement = ['사용자 관리', 'User Management']
+    const.Authority = ['권한', 'Authority']
+    const.LastAccess = ['최근 접속일', 'Last Access']
     
     
     '''
     ==@@ User addition
     '''
-    const.Indivisual = ['Indivisual', '개별 추가']
-    const.Group = ['Group', '그룹 추가']
-    const.AddLine = ['Add line', '줄 추가']
+    const.Indivisual = ['개별 추가', 'Indivisual']
+    const.Group = ['그룹 추가', 'Group']
+    const.AddLine = ['줄 추가', 'Add line']
     
     
     '''
     @@ Submission management
     '''
-    const.Detail = ['Detail', '자세히']
-    const.DetailMode = ['Detail mode', '자세히 보기']
-    const.Summary = ['Summary', '요약']
-    const.SummaryMode = ['Summary mode', '간략히 보기']
-    const.History = ['History', '기록']
+    const.Detail = ['자세히', 'Detail']
+    const.DetailMode = ['자세히 보기', 'Detail mode']
+    const.Summary = ['요약', 'Summary']
+    const.SummaryMode = ['간략히 보기', 'Summary mode']
+    const.History = ['기록', 'History']
 
     '''
     @@ Service management
     '''
-    const.Judging = ['Judging', '채점']
+    const.Judging = ['채점', 'Judging']
