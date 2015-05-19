@@ -82,6 +82,7 @@ class LanguageResources(object):
     const.Runtime = ['실행시간', 'Runtime']
     const.FileSize = ['길이', 'Size']
     const.SubmissionDate = ['제출일', 'Date']
+    const.NumberOfFiles = ['파일 개수 선택', 'Select The Number Of Files']
     
     
     '''

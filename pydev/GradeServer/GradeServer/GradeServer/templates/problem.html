@@ -116,7 +116,7 @@
 							{% endif -%}
 								<textarea name="usedLanguageName" style="display:none;">{{ languageInfoRecord.languageName }}</textarea>
 									<div class="fallback">
-										select number of files <select type="text" id="number" onchange="selectFiles(this)">
+										{{ LanguageResources.const.NumberOfFiles[session['language']] }} <select type="text" id="number" onchange="selectFiles(this)">
 											<option selected="selected" value="21"> 1 </option>
 											<option value="22"> 2 </option>
 											<option value="23"> 3 </option>
@@ -131,7 +131,7 @@
 										<div id="multipleFiles">
 											<input type="file" name="file[]"><br>
 										</div>
-										<input type="submit" value="submit files">
+										<input type="submit" value="{{ LanguageResources.const.Submission[session['language']] }}">
 									</div>
 							</form>
 						</div>
