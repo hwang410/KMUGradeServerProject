@@ -516,6 +516,14 @@ So If you use 'LanguageResources' in this page without session checking, it will
 			document.getElementById("languageInfo").value = "en";
 			document.getElementById("language").submit();
 		});
+		
+		/*
+		@@ Position of carousel-indicator
+		*/
+		var numOfItems = $("#carousel-indicator li").length;
+		var carouselWidth = 49 + numOfItems/2;
+		document.getElementById("carousel-indicator").style.width= carouselWidth+"%";
+
 		/*
 		@@ Check if current page is 'main.html'
 
@@ -532,10 +540,6 @@ So If you use 'LanguageResources' in this page without session checking, it will
 				document.getElementById("language_en").style.display="inline-block";
 				document.getElementById("language_kr").style.display="inline-block";
 			}
-
-			var numOfItems = $("#carousel-indicator li").length;
-			var carouselWidth = 49 + numOfItems/2;
-			document.getElementById("carousel-indicator").style.width= carouselWidth+"%";
 		}
 		</script>
 
