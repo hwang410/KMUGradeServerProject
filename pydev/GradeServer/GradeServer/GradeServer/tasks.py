@@ -3,8 +3,6 @@ from celeryServer import app
 
 import os
 import time
-import DBUpdate
-from DBManager import db_session, engine
 from subprocess import Popen, PIPE
 from billiard import current_process
 
@@ -58,15 +56,3 @@ def ServerOff():
         number = str(i+1)
         os.system('sudo docker stop grade_container' + number)
         os.system('sudo docker rm grade_container' + number)
-        
-def resultUpdate(messageLine, stdNum, problemNum, courseNum, submitCount):        
-    messageParaList = messageLine.split() 
-    
-    result = messageParaList[0]
-    score = messageParaList[1]
-    runTime = messageParaList[2]
-    usingMem = messageParaList[3]
-    
-    dataUpdate = DBUpdate.DBUpdate(stdNum, problemNum, courseNum, submitCount)
-    
-    dataUpdate.UpdateSubmissions(result, score, runTime, usingMem)
