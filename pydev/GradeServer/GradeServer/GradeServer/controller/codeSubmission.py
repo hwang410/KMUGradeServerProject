@@ -26,7 +26,7 @@ from GradeServer.resource.routeResources import RouteResources
 from GradeServer.resource.languageResources import LanguageResources
 
 from sqlalchemy import and_, func, update
-from GradeServer.celeryServer import Grade
+from GradeServer.tasks import Grade
 
 # Initialize the Flask application
 PATH = GradeServerConfig.CURRENT_FOLDER
