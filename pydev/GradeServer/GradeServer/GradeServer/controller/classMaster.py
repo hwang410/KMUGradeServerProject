@@ -79,16 +79,14 @@ def get_own_problems(memberId):
     return ownProblems
 
 def get_own_courses(memberId):
-    error = None
-
     try:
         ownCourses = dao.query(RegisteredCourses).\
                          filter(RegisteredCourses.courseAdministratorId == memberId).\
                          all()
     except:
-        error = 'Error has been occurred while searching own courses'
+        ownCourses = []
         
-    return error, ownCourses
+    return ownCourses
 
 from GradeServer.py3Des.pyDes import *
 def initialize_tripleDes_class():
@@ -288,20 +286,11 @@ def get_all_problems():
 @GradeServer.route('/classmaster/user_submit')
 @check_invalid_access
 @login_required
-def class_user_submit():        
+def class_user_submit():
     error = None
     
-    error, ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
-    
-    if error:
-        return render_template('/class_user_submit.html',
-                               error = error, 
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               LanguageResources = LanguageResources,
-                               ownCourses = [],
-                               submissions = [])
-        
+    ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
+            
     try:
         submissions = dao.query(Submissions.memberId,
                                 Submissions.courseId,
@@ -327,13 +316,7 @@ def class_user_submit():
                                 
     except:
         error = 'Error has been occurred while searching submission records.'
-        return render_template('/class_user_submit.html',
-                               error = error,
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               LanguageResources = LanguageResources,
-                               ownCourses = ownCourses,
-                               submissions = [])
+        latestSubmissions = []
     
     return render_template('/class_user_submit.html',
                            error = error, 

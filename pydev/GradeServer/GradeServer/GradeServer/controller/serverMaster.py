@@ -227,17 +227,28 @@ def get_languages_of_course():
     return languagesOfCourse
         
                                                         
-projectPath = '/mnt/shared'
-problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
-problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/ProblemDescriptions' % (projectPath)
-# if there's additional difficulty then change the value 'numberOfDifficulty'
-numberOfDifficulty = 5
-newUsers = []
-newColleges = []
-newDepartments = []
-
-currentTab = 'colleges'
-
+def get_num_of_problems_in_difficulty(difficultyOfProblem):
+    try:
+        numOfProblems = dao.query(Problems.problemId).\
+                            filter(Problems.problemId.like(difficultyOfProblem + '%')).\
+                            count()
+    except:
+        numOfProblems = -1
+    
+    return numOfProblems
+                        
+                          
+def get_uploaded_problems():
+    try:
+        uploadedProblems = dao.query(Problems).\
+                               filter(Problems.isDeleted == ENUMResources().const.FALSE).\
+                               all()
+    except:
+        uploadedProblems = []
+    
+    return uploadedProblems
+        
+                                         
 def add_new_problem(newProblemInfo):
     error = None
     nextIndex, problemId, problemName, solutionCheckType, limitedTime, limitedMemory, problemPath = newProblemInfo
@@ -250,13 +261,52 @@ def add_new_problem(newProblemInfo):
                               limitedTime = limitedTime,
                               limitedMemory = limitedMemory, 
                               problemPath = problemPath)
+        dao.add(newProblem)
+        dao.commit()
     except:
-        error = "Error has been occurred while setting new problem to add"
+        error = "Error has been occurred while adding new problem"
         
-    return newProblem
+    return error
 
 
-                     
+def get_num_of_problems():
+    try:
+        nextIndex = dao.query(Problems).\
+                        count()
+    except:
+        nextIndex = 0
+        
+    return nextIndex
+
+
+def delete_member(memberId):
+    error = None
+    
+    try:
+        deleteTarget = dao.query(Members).\
+                           filter(Members.memberId == memberId).\
+                           first()
+        dao.delete(deleteTarget)
+        dao.commit()
+    except:
+        error = 'Error has been occurred while deleting member'
+    
+    return error
+            
+            
+                                                              
+projectPath = '/mnt/shared'
+problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
+problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/ProblemDescriptions' % (projectPath)
+# if there's additional difficulty then change the value 'numberOfDifficulty'
+numberOfDifficulty = 5
+newUsers = []
+newColleges = []
+newDepartments = []
+
+currentTab = 'colleges'
+                    
+                                         
 @GradeServer.route('/master/manage_collegedepartment', methods = ['GET', 'POST'])
 @check_invalid_access
 @login_required
@@ -609,7 +659,7 @@ def server_add_class():
             if not os.path.exists(problemPath):
                 os.makedirs(problemPath)
             for language in languages:
-                languageIndex, languageVersion = language
+                languageIndex, _ = language # language index, language version
                 try:
                     newCourseLanguage = LanguagesOfCourses(courseId = newCourseNum, 
                                                            languageIndex = int(languageIndex))
@@ -659,29 +709,18 @@ def server_manage_problem():
                 if not list(files)[0].filename:
                     error = 'Uploading file error'
                     break
-                
-                try:
-                    nextIndex = dao.query(Problems).\
-                                    count()
-                except:
-                    nextIndex = 0
+
+                nextIndex = get_num_of_problems()
 
                 numberOfProblemsOfDifficulty = [0] * numberOfDifficulty
                 
                 for difficulty in range(numberOfDifficulty):
                     difficultyOfProblem = str(difficulty + 1)
-                    try:
-                        numberOfProblemsOfDifficulty[difficulty] = dao.query(Problems.problemId).\
-                                                                       filter(Problems.problemId.like(difficultyOfProblem + '%')).\
-                                                                       count()
-                    except:
+                    numberOfProblemsOfDifficulty[difficulty] = get_num_of_problems_in_difficulty(difficultyOfProblem)
+
+                    if numberOfProblemsOfDifficulty[difficulty] ==  -1:
                         error = 'Error has occurred while searching problems'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
+                        break
                         
                 # read each uploaded file(zip)
                 for fileData in files:
@@ -699,12 +738,7 @@ def server_manage_problem():
                             subprocess.call('rm -rf %s' % tmpPath, shell=True)
                         except OSError:
                             error = 'Cannot delete \'tmp\' folder'
-                            return render_template('/server_manage_problem.html', 
-                                                   error = error, 
-                                                   SETResources = SETResources,
-                                                   SessionResources = SessionResources,
-                                                   LanguageResources = LanguageResources,
-                                                   uploadedProblems = [])
+                            break
                     
                     # unzip file
                     with zipfile.ZipFile(fileData, 'r') as z:
@@ -733,13 +767,8 @@ def server_manage_problem():
                         subprocess.call('mv %s.txt %s.txt' % (byteString, problemName), shell=True)
                     except OSError:
                         error = 'Error has been occurred while renaming .txt file'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
-                        
+                        break
+                    
                     '''
                     @@ Rename PDF file name
                     
@@ -750,7 +779,7 @@ def server_manage_problem():
                         subprocess.call('mv %s.pdf %s.pdf' % (byteString, problemName), shell=True)
                     except OSError:
                         print "pdf doesn't exist"
-                        
+                    
                     '''
                     @@ Rename _SOLUTION or _CHECKER folder name
                     
@@ -771,22 +800,12 @@ def server_manage_problem():
                             subprocess.call('mv %s_%s %s_%s' % (byteString, solCheckType, problemName, solCheckType), shell=True)
                         except OSError:
                             error = 'Error has been occurred while renaming folders'
-                            return render_template('/server_manage_problem.html', 
-                                                   error = error, 
-                                                   SETResources = SETResources,
-                                                   SessionResources = SessionResources,
-                                                   LanguageResources = LanguageResources,
-                                                   uploadedProblems = [])
+                            break
                             
                     # If SOLUTION or CHEKER file doesn't exist then it's an error
                     else:
                         error = 'There is no \'SOLUTION\' or \'CHECKER\' directory'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
+                        break
                                      
                     problemInformationPath = '%s/%s.txt' % (tmpPath, problemName)
                     
@@ -794,12 +813,7 @@ def server_manage_problem():
                         problemInformation = open(problemInformationPath, 'r').read()
                     except:
                         error = 'Error has been occurred while reading problem meta file(.txt)'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
+                        break
                     
                     '''
                     @@ Decode problem meta information
@@ -839,30 +853,10 @@ def server_manage_problem():
                                              str(problemId) + '_' + problemName.replace(' ', ''))
                     
                     newProblemInfo = nextIndex, problemId, problemName, solutionCheckType, limitedTime, limitedMemory, problemPath
-                    
-                    error, newProblem = add_new_problem(newProblemInfo)
+                    error = add_new_problem(newProblemInfo)
                     
                     if error:
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
-                    
-                    dao.add(newProblem)
-                    
-                    try:
-                        dao.commit()
-                    except:
-                        dao.rollback()
-                        error = 'Creation Problem Error'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
+                        break
                     
                     # rename new problem folder
                     os.chdir('%s/%s_%s' % (tmpPath, 
@@ -882,36 +876,21 @@ def server_manage_problem():
                             subprocess.call('mv %s %s' % (rowFileName, str(fileName)), shell=True)
                         except OSError:
                             error = 'Error has been occurred while renaming files\' name'
-                            return render_template('/server_manage_problem.html', 
-                                                   error = error, 
-                                                   SETResources = SETResources,
-                                                   SessionResources = SessionResources,
-                                                   LanguageResources = LanguageResources,
-                                                   uploadedProblems = [])
+                            break
                         
                     # remove space on file/directory names
                     try:
                         subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
                     except OSError:
                         error = 'Error has occurred while removing space of folder name'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
+                        break
                     
                     # put problemId ahead
                     try:
                         subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
                     except OSError:
                         error = 'Error has occurred while renaming a folder'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
+                        break
                         
                     problemName = problemName.replace(' ', '')
                     
@@ -923,23 +902,13 @@ def server_manage_problem():
                         subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
                     except OSError:
                         error = 'Error has occurred while removing space of folder name'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
+                        break
                     
                     try:
                         subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
                     except OSError:
                         error = 'Error has occurred while renaming a folder'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
+                        break
                         
                     # create final goal path
                     if not os.path.exists(problemPath):
@@ -949,24 +918,26 @@ def server_manage_problem():
                     problemDescriptionPath = '%s/%s_%s' % (problemDescriptionsPath, problemId, problemName)
                     if not os.path.exists(problemDescriptionPath):
                         os.makedirs(problemDescriptionPath)
-
+                    
                     try:
                         # after all, move the problem into 'Problems' folder
                         subprocess.call('mv %s/* %s/' % (tmpPath, problemPath), shell=True)
                     except OSError :
                         error = 'Error has occurred while moving new problem'
-                        return render_template('/server_manage_problem.html', 
-                                               error = error, 
-                                               SETResources = SETResources,
-                                               SessionResources = SessionResources,
-                                               LanguageResources = LanguageResources,
-                                               uploadedProblems = [])
+                        break
                     
                     try:
                         subprocess.call('cp %s/%s_%s.pdf %s/' % (problemPath, problemId, problemName, problemDescriptionPath), shell=True)
                     except:
                         error = 'problem pdf doesn\'s exist'
                     
+                if error:
+                    return render_template('/server_manage_problem.html', 
+                                           error = error, 
+                                           SETResources = SETResources,
+                                           SessionResources = SessionResources,
+                                           LanguageResources = LanguageResources,
+                                           uploadedProblems = [])
             else:
                 try:
                     dao.query(Problems).\
@@ -982,17 +953,11 @@ def server_manage_problem():
                                            SessionResources = SessionResources,
                                            LanguageResources = LanguageResources,
                                            uploadedProblems = [])
-        print "done"
+            
         return redirect(url_for('.server_manage_problem'))
         
-    else:
-        try:
-            uploadedProblems = dao.query(Problems).\
-                                   filter(Problems.isDeleted == ENUMResources().const.FALSE).\
-                                   all()
-        except:
-            uploadedProblems = []
-            
+    uploadedProblems = get_uploaded_problems()
+                
     return render_template('/server_manage_problem.html', 
                            error = error, 
                            SETResources = SETResources,
@@ -1020,67 +985,40 @@ def server_manage_user():
                 all()
                 
     except:
+        '''
+        'users' = [] so, 'combileSameUsers' also will be [] and will not have any value
+        '''
         error = 'Error has occurred while getting member information'
-        return render_template('/server_manage_user.html', 
-                               error = error, 
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               LanguageResources = LanguageResources,
-                               users = [], 
-                               index = len(users))
-    
+        users = []
+        
     combineSameUsers = []
+    
     userIndex = 1
     loopIndex = 0
     # if member in multiple department,
     # will be [member] [college] [department] [college] [department] ...
     for user, college, department in users:
+        userInfo = [user.memberId, user.memberName, user.contactNumber,
+                    user.emailAddress, user.authority, user.signedInDate,
+                    user.lastAccessDate, college.collegeName, department.departmentName]
+        
         if loopIndex==0:
-            combineSameUsers.append([user.memberId,
-                                     user.memberName,
-                                     user.contactNumber,
-                                     user.emailAddress,
-                                     user.authority,
-                                     user.signedInDate,
-                                     user.lastAccessDate,
-                                     college.collegeName,
-                                     department.departmentName])
+            combineSameUsers.append(userInfo)
         else:
             if user.memberId==combineSameUsers[userIndex-1][0]:
                 combineSameUsers[userIndex-1].append(college.collegeName)
                 combineSameUsers[userIndex-1].append(department.departmentName)
             else:
-                combineSameUsers.append([user.memberId,
-                                         user.memberName,
-                                         user.contactNumber,
-                                         user.emailAddress,
-                                         user.authority,
-                                         user.signedInDate,
-                                         user.lastAccessDate,
-                                         college.collegeName,
-                                         department.departmentName])
+                combineSameUsers.append(userInfo)
                 userIndex += 1
+                
         loopIndex += 1
         
     if request.method == 'POST':
         for form in request.form:
-            try:
-                deleteTarget = dao.query(Members).\
-                                   filter(Members.memberId == form).\
-                                   first()
-                dao.delete(deleteTarget)
-                dao.commit()
-                
-            except:
-                dao.rollback()
-                error = 'Deletion error'
-                return render_template('/server_manage_user.html', 
-                                       error = error, 
-                                       SETResources = SETResources,
-                                       SessionResources = SessionResources,
-                                       LanguageResources = LanguageResources,
-                                       users = combineSameUsers, 
-                                       index = len(users))
+            error = delete_member(form)
+            if error:
+                break
                 
         return redirect(url_for('.server_manage_user'))
 
