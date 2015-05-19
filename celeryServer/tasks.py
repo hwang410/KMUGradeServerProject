@@ -70,26 +70,3 @@ def resultUpdate(messageLine, stdNum, problemNum, courseNum, submitCount):
     dataUpdate = DBUpdate.DBUpdate(stdNum, problemNum, courseNum, submitCount)
     
     dataUpdate.UpdateSubmissions(result, score, runTime, usingMem)
-     
-    if result == 'Solved':
-    # update DBManager 'solved'
-        dataUpdate.SubmittedRecordsOfProblems_Solved()
-     
-    elif result == 'TimeOver':
-    # update DBManager 'time out'
-        dataUpdate.SubmittedRecordsOfProblems_TimbeOver()
-     
-    elif result == 'RunTimeError':
-    # update DBManager 'runtime error'
-        dataUpdate.SubmittedRecordsOfProblems_RunTimeError()
-     
-    elif result == 'WrongAnswer':
-    # update DBManager 'wrong answer'
-        dataUpdate.SubmittedRecordsOfProblems_WrongAnswer()
-        
-    elif result == 'CompileError':
-        dataUpdate.SubmittedRecordsOfProblems_CompileError()
-        
-    else:
-        dataUpdate.UpdateServerError(stdNum, problemNum,
-                                   courseNum, submitCount)
