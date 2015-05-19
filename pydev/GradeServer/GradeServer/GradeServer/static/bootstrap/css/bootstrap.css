@@ -5716,8 +5716,12 @@ to {
 }
 
 .carousel-control.right {
-	/*right: 15px;*/
+	right: 5%;
 	left: auto;
+}
+
+.carousel-control.left {
+	left: 3%;
 }
 
 .carousel-control:hover, .carousel-control:focus {
