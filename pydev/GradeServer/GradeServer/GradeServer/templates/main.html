@@ -44,7 +44,7 @@ So If you use 'LanguageResources' in this page without session checking, it will
 				</button>
 				
 				<!-- Link to main with KMU Logo -->
-				<a class="link-main" href="{{ url_for('GradeServer.sign_in') }}" width="10px">
+				<a class="link-main" href="{{ url_for('GradeServer.sign_in') }}" style="width:250px">
 					<img src="../../static/bootstrap/img/kookmin_logo_dark.jpg" style="height:40px;width:40px">
 					KMU Grade Server
 				</a>
@@ -311,10 +311,10 @@ So If you use 'LanguageResources' in this page without session checking, it will
 					@@ Language select 
 					-->
 					{%- if session['memberId'] != NULL %}
-					<a class="pull-right languageButton" id="language_en">
+					<a class="pull-right languageButton" id="language_en" onclick="applyLanguage('en')">
 						<img style="background-color:transparent;background-image:url(../../static/bootstrap/img/flags.png);background-position: -416px -420px;height:24px;width:32px">
 					</a>
-					<a class="pull-right languageButton" id="language_kr">
+					<a class="pull-right languageButton" id="language_kr" onclick="applyLanguage('kr')">
 						<img style="background-image:url(../../static/bootstrap/img/flags.png);background-position: -160px -228px;height:24px;width:32px">
 					</a>
 					<form id="language" method="post">
@@ -508,14 +508,10 @@ So If you use 'LanguageResources' in this page without session checking, it will
 		<div class="fluid-footer" style="background-color: #ffffff"> Algorithmic Engineering Lab </div>
 
 		<script>
-		$("#language_kr").click(function(){
-			document.getElementById("languageInfo").value = "kr";
+		function applyLanguage(language){
+			document.getElementById("languageInfo").value = language;
 			document.getElementById("language").submit();
-		});
-		$("#language_en").click(function(){
-			document.getElementById("languageInfo").value = "en";
-			document.getElementById("language").submit();
-		});
+		}
 		
 		/*
 		@@ Position of carousel-indicator
