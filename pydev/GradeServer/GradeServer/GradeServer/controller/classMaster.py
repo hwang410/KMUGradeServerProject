@@ -127,7 +127,7 @@ def set_form_value_into_array(keys, forms, array):
     try:
         for form in forms:
             if form != 'addIndivisualUser':
-                index, key_name, value = split_to_index_keyname(form)
+                index, key_name, value = split_to_index_keyname_value(form)
                 
                 if key_name == 'userId':
                     array[index-1][keys['memberId']] = value
@@ -245,7 +245,7 @@ def set_array_from_file(files, keys, courseId):
     
     return error
                                         
-def split_to_index_keyname(form):
+def split_to_index_keyname_value(form):
     keyname,index = re.findall('\d+|\D+',form)
     return int(index), keyname, request.form[form]
 

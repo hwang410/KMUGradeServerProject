@@ -104,22 +104,41 @@ def get_departments_of_college(collegeIndex):
     return error, departments
 
 
-def change_abolishment_of_department_true(collegeIndex):
-    error, departments = get_departments_of_college(collegeIndex)
-    
+def change_abolishment_of_department_true(index):
+    error, departments = get_departments_of_college(index)
+
     if error:
         return error
+    '''
+    @@ TODO
+    remove duplicated code
+    '''
+    '''
+    When the parameter is departmentIndex,
+    get_departments_of_college will be empty
+    '''
+    if departments:
+        for _, departmentInfo in departments: 
+            if departmentInfo.isAbolished == 'FALSE':
+                try:
+                    dao.query(Departments).\
+                        filter(Departments.departmentIndex == departmentInfo.departmentIndex).\
+                        update(dict(isAbolished = SETResources().const.TRUE))
+                    dao.commit()
+                except:
+                    error = "Error has been occurred while changing abolishment to TRUE"
+                    break
     
-    for _, departmentInfo in departments: 
-        if departmentInfo.isAbolished == 'FALSE':
-            try:
-                dao.query(Departments).\
-                    filter(Departments.departmentIndex == departmentInfo.departmentIndex).\
-                    update(dict(isAbolished = SETResources().const.TRUE))
-                dao.commit()
-            except:
-                error = "Error has been occurred while changing abolishment to TRUE"
-    
+    else:
+        try:
+            dao.query(Departments).\
+                filter(Departments.departmentIndex == index).\
+                update(dict(isAbolished = SETResources().const.TRUE))
+            dao.commit()
+            print "success"
+        except:
+            error = "Error has been occurred while changing abolishment to TRUE"
+        
     return error
                 
                 
@@ -297,6 +316,7 @@ def delete_member(memberId):
 def get_colleges():
     try:
         allColleges = dao.query(Colleges).\
+                          filter(Colleges.isAbolished == SETResources().const.FALSE).\
                           all()
     except:
         allColleges = []
@@ -309,20 +329,78 @@ def get_departments_with_college_info():
         allDepartments = (dao.query(DepartmentsOfColleges,
                                     Colleges,
                                     Departments).\
+                              filter(and_(Colleges.isAbolished == SETResources().const.FALSE,
+                                          Departments.isAbolished == SETResources().const.FALSE)).\
                               join(Colleges,
                                    Colleges.collegeIndex == DepartmentsOfColleges.collegeIndex).\
                               join(Departments,
                                    Departments.departmentIndex == DepartmentsOfColleges.departmentIndex)).\
                          all()
+
     except:
         allDepartments = []
         
     return allDepartments
                                          
                                          
+def get_department_name(departmentIndex):
+    error = None
+    
+    try:
+        departmentName = dao.query(Departments).\
+                             filter(Departments.departmentIndex == departmentIndex).\
+                             first().\
+                             departmentName
+    except:
+        error = 'Error has been occurred while searching department name'
+        
+    return error, departmentName 
+                        
+                                                                 
+def get_college_name(collegeIndex):
+    error = None
+    
+    try:
+        collegeName = dao.query(Colleges).\
+                             filter(Colleges.collegeIndex == collegeIndex).\
+                             first().\
+                             collegeName
+    except:
+        error = 'Error has been occurred while searching college name'
+        
+    return error, collegeName 
+
                                          
-                                         
-                                                                          
+def split_to_index_keyname_value(form):
+    keyname,index = re.findall('\d+|\D+',form)
+    return int(index), keyname, request.form[form]
+
+
+def delete_problem(problemId):
+    error = None
+    
+    try:
+        dao.query(Problems).\
+            filter(Problems.problemId == problemId).\
+            update(dict(isDeleted = ENUMResources().const.TRUE))
+        dao.commit()
+    except:
+        error = 'Error has been occurred while deleting problem'
+    
+    return error
+                
+
+def change_abolishment_relates_college(collegeIndex):
+    error = change_abolishment_of_college_true(collegeIndex)
+    
+    if not error:    
+        error = change_abolishment_of_department_true(collegeIndex)
+    
+    return error
+
+
+                
+                                                                                          
 projectPath = '/mnt/shared'
 problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
 problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/ProblemDescriptions' % (projectPath)
@@ -342,47 +420,15 @@ def server_manage_collegedepartment():
     global newColleges, newDepartments
     global currentTab
     
+    error = None
+    
     # moved from other page, then show 'college' tab
     if request.referrer.rsplit('/', 1)[1] != "manage_collegedepartment":
         currentTab = 'colleges'
-        
-    error = None
     
-    try:
-        allColleges = dao.query(Colleges).\
-                          filter(Colleges.isAbolished == SETResources().const.FALSE).\
-                          all()
-    except:
-        error = 'Error has been occurred while searching colleges'
-        allColleges = []
-        
-    try:    
-        allDepartments = (dao.query(DepartmentsOfColleges,
-                                    Colleges,
-                                    Departments).\
-                              filter(and_(Colleges.isAbolished == SETResources().const.FALSE,
-                                          Departments.isAbolished == SETResources().const.FALSE)).\
-                              join(Colleges,
-                                   Colleges.collegeIndex == DepartmentsOfColleges.collegeIndex).\
-                              join(Departments,
-                                   Departments.departmentIndex == DepartmentsOfColleges.departmentIndex)).\
-                         all()
-    except:
-        error = 'Error has been occurred while searching departments'
-        allDepartments = []
-        
-    ''' 
-    Handling error for GET request
-    '''
-    if error:
-        return render_template('/server_manage_collegedepartment.html', 
-                               error=error, 
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               LanguageResources = LanguageResources,
-                               allColleges = allColleges,
-                               allDepartments = allDepartments)
-        
+    allColleges = get_colleges()
+    allDepartments = get_departments_with_college_info()
+                
     if request.method == 'POST':
         # initialization
         isNewCollege = False
@@ -397,47 +443,37 @@ def server_manage_collegedepartment():
             if 'addCollege' in request.form:
                 isNewCollege = True
                 if form != 'addCollege':
-                    value, index = re.findall('\d+|\D+', form)
-                    index = int(index)
-                    data = request.form[form]
-                    if value == 'collegeCode':
+                    index, keyname, data = split_to_index_keyname_value(form)
+                    
+                    if keyname == 'collegeCode':
                         newCollege[index-1][0] = data
-                    elif value == 'collegeName':
+                    elif keyname == 'collegeName':
                         newCollege[index-1][1] = data
                         
             elif 'addDepartment' in request.form:
                 isNewDepartment = True
                 if form != 'addDepartment':
-                    value, index = re.findall('\d+|\D+', form)
-                    index = int(index)
-                    data = request.form[form]
-                    if value == 'departmentCode':
+                    index, keyname, data = split_to_index_keyname_value(form)
+                    
+                    if keyname == 'departmentCode':
                         newDepartment[index-1][0] = data
-                    elif value == 'departmentName':
+                    elif keyname == 'departmentName':
                         newDepartment[index-1][1] = data
-                    elif value == 'collegeIndex':
+                    elif keyname == 'collegeIndex':
                         newDepartment[index-1][2] = data.split()[0]
                         
             elif 'deleteCollege' in request.form:
                 if 'college' in form:
                     currentTab = 'colleges'
-                    
                     collegeIndex = re.findall('\d+|\D+', form)[1]
                     
-                    error = change_abolishment_of_college_true(collegeIndex)
+                    error = change_abolishment_relates_college(collegeIndex)
                     if error:
                         break
-                        
-                    error = change_abolishment_of_department_true(collegeIndex)
-                    if error:
-                        break
-                        
-                    
-                    
+                                                                
             elif 'deleteDepartment' in request.form:
                 if 'department' in form:
                     currentTab = 'departments'
-                    
                     departmentIndex = re.findall('\d+|\D+', form)[1]
                     
                     error = change_abolishment_of_department_true(departmentIndex)
@@ -451,6 +487,8 @@ def server_manage_collegedepartment():
             isNewCollege = isNewDepartment = False
                     
         if isNewCollege:
+            currentTab = 'colleges'
+            
             for index in range(numberOfColleges):
                 newColleges.append(newCollege[index])
             for newPart in newColleges:
@@ -462,13 +500,14 @@ def server_manage_collegedepartment():
                     error = add_new_college(newPart[0], newPart[1])
                         
             newColleges = []
-            currentTab = 'colleges'
         
         '''
         If There is an error while adding new college, isNewDepartment can never be 'True'
         So it doesn't need to change flag value
         '''
         if isNewDepartment:
+            currentTab = 'departments'
+            
             for index in range(numberOfDepartments):
                 newDepartments.append(newDepartment[index])
                 
@@ -483,20 +522,11 @@ def server_manage_collegedepartment():
                     error = add_relation_in_college_department(newPart[2], index)
                         
             newDepartments = []
-            currentTab = 'departments'
             
         # if there's an error in the last loop, can't handle in the loop with current structure
         # So, needs additional code out of the loop 
-        if error:
-            return render_template('/server_manage_collegedepartment.html', 
-                                   error=error, 
-                                   SETResources = SETResources,
-                                   SessionResources = SessionResources,
-                                   LanguageResources = LanguageResources,
-                                   allColleges = allColleges,
-                                   allDepartments = allDepartments)
-            
-        return redirect(url_for('.server_manage_collegedepartment'))
+        if not error:
+            return redirect(url_for('.server_manage_collegedepartment'))
         
     return render_template('/server_manage_collegedepartment.html', 
                            error=error, 
@@ -960,27 +990,21 @@ def server_manage_problem():
                         error = 'problem pdf doesn\'s exist'
                     
                 if error:
-                    return render_template('/server_manage_problem.html', 
-                                           error = error, 
-                                           SETResources = SETResources,
-                                           SessionResources = SessionResources,
-                                           LanguageResources = LanguageResources,
-                                           uploadedProblems = [])
+                    break
+                
             else:
-                try:
-                    dao.query(Problems).\
-                        filter(Problems.problemId == int(form)).\
-                        update(dict(isDeleted = ENUMResources().const.TRUE))
-                    dao.commit()
-                except:
-                    dao.rollback()
-                    error = 'Problem deletion error'
-                    return render_template('/server_manage_problem.html', 
-                                           error = error, 
-                                           SETResources = SETResources,
-                                           SessionResources = SessionResources,
-                                           LanguageResources = LanguageResources,
-                                           uploadedProblems = [])
+                error = delete_problem(int(form))
+                
+                if error:
+                    break
+        
+        if error:
+            return render_template('/server_manage_problem.html', 
+                                   error = error, 
+                                   SETResources = SETResources,
+                                   SessionResources = SessionResources,
+                                   LanguageResources = LanguageResources,
+                                   uploadedProblems = [])    
             
         return redirect(url_for('.server_manage_problem'))
         
@@ -1083,6 +1107,7 @@ def server_add_user():
             # ( number of all form data - 'addIndivisualUser' form ) / forms for each person(id, name, college, department, authority)
             numberOfUsers = (len(request.form) - 1) / 5
             newUser = [['' for _ in range(7)] for _ in range(numberOfUsers + 1)]
+            
             for form in request.form:
                 if form != 'addIndivisualUser':
                     value, index = re.findall('\d+|\D+', form)
@@ -1097,42 +1122,32 @@ def server_add_user():
                     elif value == 'authority':
                         newUser[index - 1][keys['authority']] = data
                     elif value == 'college':
-                        newUser[index - 1][keys['collegeIndex']] = data.split()[0]
-                        try:
-                            newUser[index - 1][keys['collegeName']] = dao.query(Colleges).\
-                                                                              filter(Colleges.collegeIndex == newUser[index - 1][keys['collegeIndex']]).\
-                                                                              first().\
-                                                                              collegeName
-                        except:
-                            error = 'Wrong college index has inserted'
-                            return render_template('/server_add_user.html', 
-                                                   error = error,  
-                                                   SETResources = SETResources,
-                                                   SessionResources = SessionResources,
-                                                   LanguageResources = LanguageResources,
-                                                   allColleges = allColleges,
-                                                   allDepartments = allDepartments,
-                                                   authorities = authorities,
-                                                   newUsers = newUsers)               
-                    elif value == 'department':
-                        newUser[index - 1][keys['departmentIndex']] = data.split()[0]
-                        try:
-                            newUser[index - 1][keys['departmentName']] = dao.query(Departments).\
-                                                        filter(Departments.departmentIndex == newUser[index - 1][keys['departmentIndex']]).\
-                                                        first().\
-                                                        departmentName
-                        except:
-                            error = 'Wrong department index has inserted'
-                            return render_template('/server_add_user.html', 
-                                                   error = error,  
-                                                   SETResources = SETResources,
-                                                   SessionResources = SessionResources,
-                                                   LanguageResources = LanguageResources,
-                                                   allColleges = allColleges,
-                                                   allDepartments = allDepartments,
-                                                   authorities = authorities,
-                                                   newUsers = newUsers)
+                        collegeIndex = data.split()[0]
+                        newUser[index - 1][keys['collegeIndex']] = collegeIndex
+                        error, newUser[index - 1][keys['collegeName']] = get_college_name(collegeIndex)
                         
+                        if error:
+                            break
+                    
+                    elif value == 'department':
+                        departmentIndex = data.split()[0]
+                        newUser[index - 1][keys['departmentIndex']] = departmentIndex
+                        error, newUser[index - 1][keys['departmentName']] = get_department_name(departmentIndex)
+                                                        
+                        if error:
+                            break
+
+            if error:
+                return render_template('/server_add_user.html', 
+                                       error = error,  
+                                       SETResources = SETResources,
+                                       SessionResources = SessionResources,
+                                       LanguageResources = LanguageResources,
+                                       allColleges = allColleges,
+                                       allDepartments = allDepartments,
+                                       authorities = authorities,
+                                       newUsers = newUsers)   
+                         
             for index in range(numberOfUsers+1):
                 valid = True
                 # check for empty row
@@ -1169,67 +1184,37 @@ def server_add_user():
                                     
                                 elif key == 'college':
                                     newUser[keys['collegeIndex']] = value
-                                    try:
-                                        newUser[keys['collegeName']] = dao.query(Colleges).\
-                                                         filter(Colleges.collegeIndex == value).\
-                                                         first().\
-                                                         collegeName
-                                    except:
-                                        error = 'Wrong college index has inserted'
-                                        return render_template('/server_add_user.html', 
-                                                               error = error,  
-                                                               SETResources = SETResources,
-                                                               SessionResources = SessionResources,
-                                                               LanguageResources = LanguageResources,
-                                                               allColleges = allColleges,
-                                                               allDepartments = allDepartments,
-                                                               authorities = authorities,
-                                                               newUsers = newUsers)
+                                    error, newUser[keys['collegeName']] = get_college_name(value)
+                                    
+                                    if error:
+                                        break
                                         
                                 elif key == 'department':
                                     newUser[keys['departmentIndex']] = value
-                                    try:
-                                        newUser[keys['departmentName']] = dao.query(Departments).\
-                                                         filter(Departments.departmentIndex == value).\
-                                                         first().\
-                                                         departmentName
-                                                         
-                                    except:
-                                        error = 'Wrong department index has inserted'
-                                        return render_template('/server_add_user.html', 
-                                                               error = error,  
-                                                               SETResources = SETResources,
-                                                               SessionResources = SessionResources,
-                                                               LanguageResources = LanguageResources,
-                                                               allColleges = allColleges,
-                                                               allDepartments = allDepartments,
-                                                               authorities = authorities,
-                                                               newUsers = newUsers)
+                                    error, newUser[keys['departmentName']] = get_department_name(value)
+                                    
+                                    if error:
+                                        break
                                         
                                 else:
                                     error = 'Try again after check the manual'
-                                    return render_template('/server_add_user.html', 
-                                                           error = error,  
-                                                           SETResources = SETResources,
-                                                           SessionResources = SessionResources,
-                                                           LanguageResources = LanguageResources,
-                                                           allColleges = allColleges,
-                                                           allDepartments = allDepartments,
-                                                           authorities = authorities,
-                                                           newUsers = newUsers)
+                                    break
                                     
                             else:
                                 error = 'Try again after check the manual'
-                                return render_template('/server_add_user.html', 
-                                                       error = error,  
-                                                       SETResources = SETResources,
-                                                       SessionResources = SessionResources,
-                                                       LanguageResources = LanguageResources,
-                                                       allColleges = allColleges,
-                                                       allDepartments = allDepartments,
-                                                       authorities = authorities,
-                                                       newUsers = newUsers)
+                                break
                         
+                        if error:
+                            return render_template('/server_add_user.html', 
+                                                   error = error,  
+                                                   SETResources = SETResources,
+                                                   SessionResources = SessionResources,
+                                                   LanguageResources = LanguageResources,
+                                                   allColleges = allColleges,
+                                                   allDepartments = allDepartments,
+                                                   authorities = authorities,
+                                                   newUsers = newUsers)
+                            
                         for user in newUsers:
                             if user[keys['memberId']] == newUser[keys['memberId']] and\
                                user[keys['collegeIndex']] == newUser[keys['collegeIndex']] and\
