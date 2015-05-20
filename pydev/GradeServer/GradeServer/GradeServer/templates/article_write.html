@@ -9,11 +9,11 @@
 	<form method="post">
 		<div class = 'row-fluid'>
 			<h4>
-				<div class = 'span1' style ='text-align:center'>
+				<div class='span2' style ='text-align:center'>
 					Course
 				</div>
-				<div class = 'span11'>
-					<select class="span3" type="text" id="language" name="courseId">
+				<div class = 'span10'>
+					<select class="span4" type="text" id="language" name="courseId">
 					{% if 'USER' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
 						{%- for myCourse in myCourses %}
 							<option class ="{{ myCourse.courseId }}"
@@ -40,28 +40,28 @@
 		</div>
 		<div class = 'row-fluid'>
 			<h4>
-				<div class = 'span1' style ='text-align:center'>
+				<div class = 'span2' style ='text-align:center'>
 					Title 
 				</div>
-				<div class = 'span11'>
-					<input class="input-xxlarge" name="title" type="text" autocomplete="off" placeholder="less than 50 letters"
+				<div class = 'span10'>
+					<input class="input-xxlarge" name="title" type="text" autocomplete="off" autofocus = "autofocus"  placeholder="less than 50 letters"
 					value ="{% if title %}{{ title }}{% elif articlesOnBoard %}{{ articlesOnBoard.title }}{% endif %}">
 				</div>
 			</h4>
 		</div>
 		<div class = 'row-fluid'>
 			<h4>
-				<div class = 'span1' style ='text-align:center'></div>
-				<div class = 'span11'>
-					<textarea class="input-xxlarge" name="content" placeholder="write here" autofocus = "autofocus" onfocus ="autoSize(this)" onkeyup="autoSize(this)" autocomplete="off" rows =6>{% if content %}{{ content }}{% elif articlesOnBoard %}{{ articlesOnBoard.content }}{% endif %}</textarea>
+				<div class = 'span2' style ='text-align:center'></div>
+				<div class = 'span10'>
+					<textarea class="input-xxlarge" name="content" placeholder="write here" onfocus ="autoSize(this)" onkeyup="autoSize(this)" autocomplete="off" rows =6>{% if content %}{{ content }}{% elif articlesOnBoard %}{{ articlesOnBoard.content }}{% endif %}</textarea>
 				</div>
 			</h4>
 		</div>
 		<br>
 		<div class = 'row-fluid'>
 			<h4>
-				<div class = 'span1' style ='text-align:center'></div>
-				<div class = 'span11'>
+				<div class = 'span2' style ='text-align:center'></div>
+				<div class = 'span10'>
 					<input type="submit" value="Done">
 				</div>
 			</h4>

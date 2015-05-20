@@ -395,17 +395,20 @@ So If you use 'LanguageResources' in this page without session checking, it will
 							<div class="carousel-span" style="background:#f0f0f0;height:100%;text-align:center;padding:3px;border:2px solid white">
 								<h3>
 									{% if noticeRecord.courseId %}
-									{{ noticeRecord.courseId }} {{ noticeRecord.courseName }}
+										{{ noticeRecord.courseId }}
+										<br>
+										{{ noticeRecord.courseName }}
 									{% else %}
-									{%- if session['language'] %}
-										{{ LanguageResources.const.Server[session['language']] }}
-										{{ LanguageResources.const.Notice[session['language']] }}
-									{%- else %}{{ LanguageResources.const.Server[0] }}
-										{{ LanguageResources.const.Notice[0] }}<!-- default -->
-									{% endif -%}
+										{%- if session['language'] %}
+											{{ LanguageResources.const.Server[session['language']] }}
+											{{ LanguageResources.const.Notice[session['language']] }}
+										{%- else %}
+											{{ LanguageResources.const.Server[0] }}
+											{{ LanguageResources.const.Notice[0] }}<!-- default -->
+										{% endif -%}
+										<br><br>
 									{% endif -%}
 								</h3>
-
 								<h3 style="display:inline">
 									<!-- 
 									@@ Make title shortcut
@@ -512,7 +515,7 @@ So If you use 'LanguageResources' in this page without session checking, it will
 			document.getElementById("languageInfo").value = language;
 			document.getElementById("language").submit();
 		}
-		
+
 		/*
 		@@ Position of carousel-indicator
 		*/

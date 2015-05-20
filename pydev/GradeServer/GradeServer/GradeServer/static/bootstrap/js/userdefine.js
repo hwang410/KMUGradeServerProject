@@ -278,7 +278,7 @@ function selectAllCheckboxes(range){
 }
 
 $("#myCarousel").carousel({
-	interval: 1000000
+	interval: 5000
 });
 
 $('.carousel .item').each(function(){
