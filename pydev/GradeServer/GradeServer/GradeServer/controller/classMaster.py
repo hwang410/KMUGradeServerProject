@@ -66,16 +66,20 @@ def get_case_count(problemCasesPath, multipleFiles):
     return caseCount
 
 def get_own_problems(memberId):
-    ownProblems = (dao.query(RegisteredProblems,
-                             RegisteredCourses,
-                             Problems).\
-                       join(RegisteredCourses,
-                            RegisteredCourses.courseId == RegisteredProblems.courseId).\
-                       join(Problems,
-                            Problems.problemId == RegisteredProblems.problemId).\
-                       filter(and_(RegisteredCourses.courseAdministratorId == memberId,
-                                   Problems.isDeleted == ENUMResources().const.FALSE))).\
-                  all()
+    try:
+        ownProblems = (dao.query(RegisteredProblems,
+                                 RegisteredCourses,
+                                 Problems).\
+                           join(RegisteredCourses,
+                                RegisteredCourses.courseId == RegisteredProblems.courseId).\
+                           join(Problems,
+                                Problems.problemId == RegisteredProblems.problemId).\
+                           filter(and_(RegisteredCourses.courseAdministratorId == memberId,
+                                       Problems.isDeleted == ENUMResources().const.FALSE))).\
+                      all()
+    except:
+        ownProblems = []
+    
     return ownProblems
 
 def get_own_courses(memberId):
@@ -280,6 +284,7 @@ def get_all_problems():
                           all()
     except:
         error = "Error has been occurred while searching all problems"
+        allProblems = []
         
     return error, allProblems
         
@@ -348,32 +353,8 @@ def class_manage_problem():
                                ownCourses = [],
                                ownProblems = [])
     
-    error, ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
-    
-    if error:
-        return render_template('/class_manage_problem.html',
-                               error = error, 
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               LanguageResources = LanguageResources,
-                               modalError = modalError,
-                               allProblems = allProblems,
-                               ownCourses = [],
-                               ownProblems = [])
-
-    try:
-        ownProblems = get_own_problems(session[SessionResources().const.MEMBER_ID])
-    except:
-        error = 'Error has been occurred while searching own problems'
-        return render_template('/class_manage_problem.html',
-                               error = error, 
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               LanguageResources = LanguageResources,
-                               modalError = modalError,
-                               allProblems = allProblems,
-                               ownCourses = ownCourses,
-                               ownProblems = [])
+    ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
+    ownProblems = get_own_problems(session[SessionResources().const.MEMBER_ID])
         
     if request.method == 'POST':
         isNewProblem = True
@@ -562,6 +543,7 @@ def class_manage_problem():
             return redirect(url_for('.class_manage_problem'))
         
     ownProblems = get_own_problems(session[SessionResources().const.MEMBER_ID])
+    
     return render_template('/class_manage_problem.html',
                            error = error, 
                            SETResources = SETResources,
