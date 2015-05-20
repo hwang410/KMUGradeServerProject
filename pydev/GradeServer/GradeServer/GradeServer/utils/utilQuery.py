@@ -43,7 +43,6 @@ def select_match_members_of_course(memberCourseProblemParameter = MemberCoursePr
  '''
 def select_match_member(memberCourseProblemParameter):
     # memberId Filterling
-    print "ADSFSDF",memberCourseProblemParameter.memberId
     return dao.query(Members).\
                filter(Members.memberId == memberCourseProblemParameter.memberId)
                
