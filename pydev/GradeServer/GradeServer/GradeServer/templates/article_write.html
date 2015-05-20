@@ -7,30 +7,33 @@
 <div class="container">
 	<h3>New article</h3>
 	<form method="post">
-		<div class = 'row-fluid'>
+		<div class='row-fluid'>
 			<h4>
-				<div class='span2' style ='text-align:center'>
+				<div class='span2' style='text-align:center'>
 					Course
 				</div>
-				<div class = 'span10'>
+				<div class='span10'>
 					<select class="span4" type="text" id="language" name="courseId">
 					{% if 'USER' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
 						{%- for myCourse in myCourses %}
-							<option class ="{{ myCourse.courseId }}"
-							{% if loop.index0 == 0 %}
-							selected ="selected">
-							{% else %}>
-							{% endif %}
-							{% if myCourse.courseId and myCourse.courseName %}{{ myCourse.courseId }} {{ myCourse.courseName }}{% endif %}</option>
+							<option class="{{ myCourse.courseId }}"
+									  selected="{% if loop.index0==0 %}selected{% endif %}">
+								{% if myCourse.courseId and myCourse.courseName %}
+									{{ myCourse.courseId }} {{ myCourse.courseName }}
+								{% endif %}
+							</option>
 						<!--  if modify then default Course -->
 						{% endfor -%}
 					{% else %}
-						<option class ="Blank" selected ="selected">
+						<option class="Blank" selected="selected">
 							All Noticle
 						</option>
 						{%- for myCourse in myCourses %}
-							<option class ="{{ myCourse.courseId }}">
-							{% if myCourse.courseId and myCourse.courseName %}{{ myCourse.courseId }} {{ myCourse.courseName }}{% endif %}</option>
+							<option class="{{ myCourse.courseId }}">
+							{% if myCourse.courseId and myCourse.courseName %}
+								{{ myCourse.courseId }} {{ myCourse.courseName }}
+							{% endif %}
+							</option>
 						<!--  if modify then default Course -->
 						{% endfor -%}
 					{% endif %}
@@ -38,30 +41,40 @@
 				</div>
 			</h4>
 		</div>
-		<div class = 'row-fluid'>
+		<div class='row-fluid'>
 			<h4>
-				<div class = 'span2' style ='text-align:center'>
+				<div class='span2' style='text-align:center'>
 					Title 
 				</div>
-				<div class = 'span10'>
-					<input class="input-xxlarge" name="title" type="text" autocomplete="off" autofocus = "autofocus"  placeholder="less than 50 letters"
-					value ="{% if title %}{{ title }}{% elif articlesOnBoard %}{{ articlesOnBoard.title }}{% endif %}">
+				<div class='span10'>
+					<input class="input-xxlarge" name="title" type="text"
+							autocomplete="off" autofocus="autofocus"
+							placeholder="less than 50 letters"
+							value="{% if title %}{{ title }}{% elif articlesOnBoard %}{{ articlesOnBoard.title }}{% endif %}">
 				</div>
 			</h4>
 		</div>
-		<div class = 'row-fluid'>
+		<div class='row-fluid'>
 			<h4>
-				<div class = 'span2' style ='text-align:center'></div>
-				<div class = 'span10'>
-					<textarea class="input-xxlarge" name="content" placeholder="write here" onfocus ="autoSize(this)" onkeyup="autoSize(this)" autocomplete="off" rows =6>{% if content %}{{ content }}{% elif articlesOnBoard %}{{ articlesOnBoard.content }}{% endif %}</textarea>
+				<div class='span2' style='text-align:center'></div>
+				<div class='span10'>
+					<textarea class="input-xxlarge" name="content" placeholder="write here"
+							    onfocus="autoSize(this)" onkeyup="autoSize(this)"
+							    autocomplete="off" rows="6">
+					    	{% if content %}
+					    		{{ content }}
+					    	{% elif articlesOnBoard %}
+					    		{{ articlesOnBoard.content }}
+				    		{% endif %}
+			    		</textarea>
 				</div>
 			</h4>
 		</div>
 		<br>
-		<div class = 'row-fluid'>
+		<div class='row-fluid'>
 			<h4>
-				<div class = 'span2' style ='text-align:center'></div>
-				<div class = 'span10'>
+				<div class='span2' style='text-align:center'></div>
+				<div class='span10'>
 					<input type="submit" value="Done">
 				</div>
 			</h4>
@@ -72,8 +85,8 @@
 <style> textarea {width:300px;overflow:visible} </style>
 <script>
 	function autoSize(obj) {
-	  obj.style.height = "1px";
-	  obj.style.height = (20+obj.scrollHeight)+"px";
+	  obj.style.height="1px";
+	  obj.style.height=(20+obj.scrollHeight)+"px";
 	}
 </script>
 {% endblock -%}
