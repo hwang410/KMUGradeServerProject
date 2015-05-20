@@ -434,7 +434,7 @@ $(function() {
 					</button>
 				</div>
 				<table class="table table-bordered" id="indivisual"
-							 style="margin-top:10px">
+					     style="margin-top:10px">
 					<thead>
 						<tr>
 							<td>
@@ -486,7 +486,8 @@ $(function() {
 				</table>
 			</div>
 			<div class="modal-footer">
-				<button class="btn" name="addIndivisualUser" onclick="activateDisabledOption();">
+				<button class="btn" name="addIndivisualUser"
+						  onclick="activateDisabledOption();">
 					{{ LanguageResources.const.Done[session['language']] }}
 				</button>
 				<button class="btn" id="resetIndivisualUserForm"
@@ -571,7 +572,8 @@ $(function() {
 						{{ LanguageResources.const.Department[session['language']] }}
 					<td>
 						{{ LanguageResources.const.Check[session['language']] }}
-						<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('pendingUserTable');">
+						<input class="checkAll" type="checkbox" style="margin:0px"
+								onclick="selectAllCheckboxes('pendingUserTable');">
 			<tbody>
 <form method="post">
 				<script> index=0; </script>
@@ -590,11 +592,10 @@ $(function() {
 						</label>
 				{% endfor -%}
 		</table>
-		<a href="{{ url_for('GradeServer.server_add_user') }}">
-			<button class="btn" name="addUser" type="submit">
-				{{ LanguageResources.const.Done[session['language']] }}
-			</button>
-		</a>
+		<button class="btn" name="addUser" type="submit"
+				  onclick="location.href='{{ url_for('GradeServer.server_add_user') }}'">
+			{{ LanguageResources.const.Done[session['language']] }}
+		</button>
 	</div>
 		<!-- End holding user list -->
 
