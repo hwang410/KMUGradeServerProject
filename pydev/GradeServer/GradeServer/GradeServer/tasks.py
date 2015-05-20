@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from celeryServer import app
+from GradeServer.celeryServer import app
 
 import os
 import time
