@@ -268,6 +268,8 @@ function visibleButton(parent){
 // it doesn't search in all page range.
 function selectAllCheckboxes(range){
 	var checkboxes = document.getElementById(range).getElementsByTagName("input");
+	// @@ TODO
+	// ID doesn't support !!
 	var checkAllBox = document.getElementById(range).getElementsByClassName('checkAll')[0];
 	// when 'Check All' is unchecked, other checkboxes are being unchecked
 	for(var i=0;i<checkboxes.length;i++){
