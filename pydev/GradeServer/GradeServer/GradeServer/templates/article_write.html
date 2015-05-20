@@ -5,12 +5,14 @@
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
-	<h3>New article</h3>
+	<h3>
+		{{ LanguageResources.const.NewArticle[session['language']] }}
+	</h3>
 	<form method="post">
 		<div class='row-fluid'>
 			<h4>
 				<div class='span2' style='text-align:center'>
-					Course
+					{{ LanguageResources.const.Course[session['language']] }}
 				</div>
 				<div class='span10'>
 					<select class="span4" type="text" id="language" name="courseId">
@@ -44,7 +46,7 @@
 		<div class='row-fluid'>
 			<h4>
 				<div class='span2' style='text-align:center'>
-					Title 
+					{{ LanguageResources.const.ArticleTitle[session['language']] }} 
 				</div>
 				<div class='span10'>
 					<input class="input-xxlarge" name="title" type="text"
@@ -58,15 +60,12 @@
 			<h4>
 				<div class='span2' style='text-align:center'></div>
 				<div class='span10'>
+					<!--
+					Shouldn't put new line in textarea tag
+					-->
 					<textarea class="input-xxlarge" name="content" placeholder="write here"
 							    onfocus="autoSize(this)" onkeyup="autoSize(this)"
-							    autocomplete="off" rows="6">
-					    	{% if content %}
-					    		{{ content }}
-					    	{% elif articlesOnBoard %}
-					    		{{ articlesOnBoard.content }}
-				    		{% endif %}
-			    		</textarea>
+							    autocomplete="off" rows="6">{% if content %}{{ content }}{% elif articlesOnBoard %}{{ articlesOnBoard.content }}{% endif %}</textarea>
 				</div>
 			</h4>
 		</div>
@@ -75,7 +74,7 @@
 			<h4>
 				<div class='span2' style='text-align:center'></div>
 				<div class='span10'>
-					<input type="submit" value="Done">
+					<input type="submit" value="{{ LanguageResources.const.Done[session['language']] }}">
 				</div>
 			</h4>
 		</div>
