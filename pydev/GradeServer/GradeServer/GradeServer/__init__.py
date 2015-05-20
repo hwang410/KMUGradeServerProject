@@ -30,7 +30,7 @@ def create_app(config_filepath ="resource/config.cfg"):
     
     # 데이터베이스 처리 
     from GradeServer.database import DBManager
-    DBManager.init(app.config['DB_URL'], eval(app.config['DB_LOG_FLAG']))    
+    DBManager.init(app.config['DB_URL'])    
     DBManager.init_db()
     
         # 뷰 함수 모듈은 어플리케이션 객체 생성하고 블루프린트 등록전에 

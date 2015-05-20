@@ -21,9 +21,9 @@ class DBManager:
     __session = None
 
     @staticmethod
-    def init(db_url, db_log_flag=True, recycle_time =3600):
+    def init(db_url, db_log_flag = False, recycle_time = 3600):
         # 세션 생성 초기화
-        DBManager.__engine =create_engine(db_url, pool_recycle =recycle_time, echo =db_log_flag)
+        DBManager.__engine =create_engine(db_url, pool_recycle = recycle_time, echo = db_log_flag)
         DBManager.__session =scoped_session(sessionmaker(autocommit=False, 
                                         autoflush=False, 
                                         bind=DBManager.__engine))
