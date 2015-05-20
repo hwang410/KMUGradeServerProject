@@ -294,7 +294,35 @@ def delete_member(memberId):
     return error
             
             
-                                                              
+def get_colleges():
+    try:
+        allColleges = dao.query(Colleges).\
+                          all()
+    except:
+        allColleges = []
+        
+    return allColleges
+        
+        
+def get_departments_with_college_info():
+    try:
+        allDepartments = (dao.query(DepartmentsOfColleges,
+                                    Colleges,
+                                    Departments).\
+                              join(Colleges,
+                                   Colleges.collegeIndex == DepartmentsOfColleges.collegeIndex).\
+                              join(Departments,
+                                   Departments.departmentIndex == DepartmentsOfColleges.departmentIndex)).\
+                         all()
+    except:
+        allDepartments = []
+        
+    return allDepartments
+                                         
+                                         
+                                         
+                                         
+                                                                          
 projectPath = '/mnt/shared'
 problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
 problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/ProblemDescriptions' % (projectPath)
@@ -983,16 +1011,15 @@ def server_manage_user():
                           Departments.departmentIndex == DepartmentsDetailsOfMembers.departmentIndex).\
                      order_by(Members.memberId)).\
                 all()
-                
+
     except:
         '''
-        'users' = [] so, 'combileSameUsers' also will be [] and will not have any value
+        It can prevent to handle next for-loop with setting 'users' empty
         '''
         error = 'Error has occurred while getting member information'
         users = []
-        
-    combineSameUsers = []
     
+    combineSameUsers = []
     userIndex = 1
     loopIndex = 0
     # if member in multiple department,
@@ -1001,7 +1028,6 @@ def server_manage_user():
         userInfo = [user.memberId, user.memberName, user.contactNumber,
                     user.emailAddress, user.authority, user.signedInDate,
                     user.lastAccessDate, college.collegeName, department.departmentName]
-        
         if loopIndex==0:
             combineSameUsers.append(userInfo)
         else:
@@ -1011,16 +1037,17 @@ def server_manage_user():
             else:
                 combineSameUsers.append(userInfo)
                 userIndex += 1
-                
         loopIndex += 1
         
     if request.method == 'POST':
         for form in request.form:
             error = delete_member(form)
+            
             if error:
                 break
-                
-        return redirect(url_for('.server_manage_user'))
+            
+        if not error:
+            return redirect(url_for('.server_manage_user'))
 
     return render_template('/server_manage_user.html', 
                            error = error,
@@ -1028,8 +1055,7 @@ def server_manage_user():
                            SessionResources = SessionResources,
                            LanguageResources = LanguageResources,
                            users = combineSameUsers, 
-                           index = len(users))
-
+                           index = len(combineSameUsers))
 
 
 @GradeServer.route('/master/addUser', methods = ['GET', 'POST'])
@@ -1040,40 +1066,9 @@ def server_add_user():
     error = None
     targetUserIdToDelete = []
     authorities = ['Course Admin', 'User']
-    try:
-        allColleges = dao.query(Colleges).\
-                          all()
-    except:
-        error = 'Error has been occurred while searching all colleges'
-        return render_template('/server_add_user.html', 
-                               error = error,  
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               LanguageResources = LanguageResources,
-                               allColleges = [],
-                               allDepartments = [],
-                               authorities = authorities,
-                               newUsers = newUsers)
-    try:    
-        allDepartments = (dao.query(DepartmentsOfColleges,
-                                    Colleges,
-                                    Departments).\
-                              join(Colleges,
-                                   Colleges.collegeIndex == DepartmentsOfColleges.collegeIndex).\
-                              join(Departments,
-                                   Departments.departmentIndex == DepartmentsOfColleges.departmentIndex)).\
-                         all()
-    except:
-        error = 'Error has been occurred while searching departments'
-        return render_template('/class_add_user.html', 
-                               error = error,  
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               LanguageResources = LanguageResources,
-                               allColleges = allColleges,
-                               allDepartments = [],
-                               authorities = authorities,
-                               newUsers = newUsers)
+    
+    allColleges = get_colleges()
+    allDepartments = get_departments_with_college_info()
         
     if request.method == 'POST':
         keys = {'memberId':0,
