@@ -25,10 +25,13 @@ def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
     containerCreadeCommand = "%s%i%s" % ('sudo docker exec grade_container',
                                          worker_num,
                                          ' python /gradeprogram/rungrade.py ')
-    dirName = "%i %s%s%s%i/" % (worker_num, stdNum, problemNum, courseNum, submitCount)
+    dirName = "%i/%s%s%s%i/" % (worker_num, stdNum, problemNum, courseNum, submitCount)
 
     print 'program start'
     message = Popen(containerCreadeCommand + argsList, shell=True, stdout=PIPE)
+    
+    while message.pool() == None:
+        time.sleep(0.01)
     
     messageLines = message.stdout.readlines()
     
