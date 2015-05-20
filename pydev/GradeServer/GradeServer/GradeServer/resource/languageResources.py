@@ -207,3 +207,12 @@ class LanguageResources(object):
     @@ Service management
     '''
     const.Judging = ['채점', 'Judging']
+
+
+    '''
+    @@ Board
+    '''
+    const.NewArticle = ['새 글', 'New Article']
+    const.Post = ['게시글', 'Post']
+    const.DisLike = ['취소', 'DisLike']
+    const.ArticleComment = ['댓글', 'Comment']
