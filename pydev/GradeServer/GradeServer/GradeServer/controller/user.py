@@ -186,10 +186,9 @@ def edit_personal(error = None):
             #None Type Exception
             memberInformation = []
         
-        
+
         #Get Post
         if request.method == 'POST':
-            
             password = request.form['password']
             passwordConfirm = request.form['passwordConfirm'] 
             #Get Updating Data
@@ -210,7 +209,7 @@ def edit_personal(error = None):
                 
                 password = generate_password_hash(tripleDes.encrypt(str(password)))
                 passwordConfirm = None
-                
+
                 #Update DB
                 update_member_informations(select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = session[SessionResources().const.MEMBER_ID])),
                                            password,
