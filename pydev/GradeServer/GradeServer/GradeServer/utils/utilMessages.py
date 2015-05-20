@@ -5,6 +5,7 @@ from flask import render_template
 from GradeServer.resource.setResources import SETResources
 from GradeServer.resource.htmlResources import HTMLResources
 from GradeServer.resource.sessionResources import SessionResources
+from GradeServer.resource.languageResources import LanguageResources
 
 """
 나쁜 말 & 좋은 말 메세지 모음
@@ -58,6 +59,7 @@ def unknown_error(error = get_message()):
     return render_template(HTMLResources().const.MAIN_HTML,
                            SessionResources = SessionResources,
                            SETResources = SETResources,
+                           LanguageResources = LanguageResources,
                            notices = select_notices (),
                            topCoderId = select_top_coder (),
                            error = error)
