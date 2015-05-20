@@ -73,7 +73,9 @@
 				<div class="span8">
 					<input type="text" class="input-large" name="contactNumber"
 							placeholder="Contact number"
-							{%- if memberInformation.contactNumber %}
+							{%- if contactNumber %}
+							value="{{ contactNumber }}"
+							{% elif memberInformation.contactNumber %}
 							value="{{ memberInformation.contactNumber }}"
 							{% endif -%}>
 				</div>
@@ -87,7 +89,9 @@
 				<div class="span8">
 					<input type="text" class="input-large" name="emailAddress"
 							placeholder="E-mail"
-							{%- if memberInformation.emailAddress %}
+							{% if emailAddress %}
+							value="{{ emailAddress }}"
+							{%- elif memberInformation.emailAddress %}
 							value="{{ memberInformation.emailAddress }}"
 							{% endif -%}>
 				</div>
@@ -101,7 +105,9 @@
 				<div class="span8">
 					<input type="text" class="input-xxlarge" name="comment"
 							placeholder="Short comment"
-							{%- if memberInformation.comment %}
+							{% if comment %}
+							value="{{ comment }}"
+							{%- elif memberInformation.comment %}
 							value="{{ memberInformation.comment }}"
 							{% endif -%}>
 				</div>
