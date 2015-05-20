@@ -44,9 +44,9 @@
 		{% endfor %}
 		
 			<div style="text-align:right">
-				<a href="{{ url_for('GradeServer.write', activeTabCourseId = activeTabCourseId, articleIndex =0) }}">
-					<button type="button" class="write">Write <i class="icon-pencil"></i></button>
-				</a>
+				<button type="button" class="write" onclick="location.href='{{ url_for('GradeServer.write', activeTabCourseId = activeTabCourseId, articleIndex =0) }}'">
+					Write <i class="icon-pencil"></i>
+				</button>
 			</div>
 		</ul>
 		
