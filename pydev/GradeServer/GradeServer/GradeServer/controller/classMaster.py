@@ -728,8 +728,8 @@ def class_add_user():
             'departmentName':6,
             'courseId':7}
     
-    error, ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
-    
+    ownCourses = get_own_courses(session[SessionResources().const.MEMBER_ID])
+
     if error:
         return render_template('/class_add_user.html',
                                error = error, 
@@ -840,7 +840,7 @@ def class_add_user():
             courseId = request.form['courseId'].split()[0]
             
             error = set_array_from_file(files, keys, courseId)
-
+            
             if error:
                 return render_template('/class_add_user.html',
                                        error = error, 
@@ -1050,7 +1050,6 @@ def user_submit_summary():
                                        Submissions.submissionCount == submissions.c.maxSubmissionCount).\
                                 all()
     except:
-        print 'Submissions table is empty'
         submissions = []
     
     return render_template('/class_user_submit_summary.html',
@@ -1064,13 +1063,9 @@ def user_submit_summary():
                            submissions=latestSubmissions)
 
 @GradeServer.route('/classmaster/manage_service')
+@check_invalid_access
 @login_required
 def class_manage_service():
-    # moved from URL, error will occur
-    if request.referrer.rsplit('/', 1)[1] != "manage_service":
-        error = "invalid access"
-        print error
-        
     # To do
     error = None
     return render_template('/class_manage_service.html',
