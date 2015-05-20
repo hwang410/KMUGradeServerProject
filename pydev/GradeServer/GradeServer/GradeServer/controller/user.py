@@ -171,14 +171,12 @@ def id_check(select, error = None):
 로그인한 유저가 자신의 암호, 연락처 등을 바꿀수 있고
 자신의 장보를 확인 할 수 있는 페이지
 """
-# ContactNumber, E-mail, comment 저장할 전역 변수
-gContactNumber, gEmailAddress, gComment = None, None, None
 @GradeServer.route('/edit_personal', methods = ['GET', 'POST'])
 @check_invalid_access
 @login_required
 def edit_personal(error = None):
+    contactNumber, emailAddress, comment = None, None, None
     try:
-        global gContactNumber, gEmailAddress, gComment
         #Get User Information
         try:
             memberInformation = join_member_informations(select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = session[SessionResources().const.MEMBER_ID])).subquery()).first()
@@ -186,18 +184,14 @@ def edit_personal(error = None):
             #None Type Exception
             memberInformation = []
         
-
         #Get Post
         if request.method == 'POST':
             password = request.form['password']
             passwordConfirm = request.form['passwordConfirm'] 
             #Get Updating Data
-            gContactNumber = request.form['contactNumber'] if gContactNumber != request.form['contactNumber'] else gContactNumber
-            memberInformation.contactNumber = gContactNumber
-            gEmailAddress = request.form['emailAddress'] if gEmailAddress != request.form['emailAddress'] else gEmailAddress
-            memberInformation.emailAddress = gEmailAddress
-            gComment = request.form['comment'] if gComment != request.form['comment'] else gComment
-            memberInformation.comment = gComment
+            contactNumber = request.form['contactNumber']
+            emailAddress = request.form['emailAddress'] 
+            comment = request.form['comment'] 
             #Password Same
             if(password and passwordConfirm) and password == passwordConfirm:
                 #Generate Password
@@ -213,14 +207,11 @@ def edit_personal(error = None):
                 #Update DB
                 update_member_informations(select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = session[SessionResources().const.MEMBER_ID])),
                                            password,
-                                           gContactNumber,
-                                           gEmailAddress,
-                                           gComment)
+                                           contactNumber,
+                                           emailAddress,
+                                           comment)
                 # Commit Exception
                 try:
-                    # global Value Init
-                    gContactNumber, gEmailAddress, gComment = None, None, None
-                    
                     dao.commit()
                     flash(get_message('updateSucceeded'))
                     
@@ -240,11 +231,9 @@ def edit_personal(error = None):
                                SessionResources = SessionResources,
                                LanguageResources = LanguageResources,
                                memberInformation = memberInformation,
-                               gContactNumber = gContactNumber,
-                               gEmailAddress = gEmailAddress,
-                               gComment = gComment,
+                               contactNumber = contactNumber,
+                               emailAddress = emailAddress,
+                               comment = comment,
                                error = error)
     except Exception:
-        gContactNumber, gEmailAddress, gComment = None, None, None
-        
         return unknown_error()
