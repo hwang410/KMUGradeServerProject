@@ -54,20 +54,24 @@ Rank Sorting Condition
 '''
 def ranks_sorted(ranks, sortCondition = OtherResources().const.RATE):
     #Get Comment
-    # rate 정렬
+    # rate, Solved Problem, submissionCount 정렬
     if sortCondition == OtherResources().const.RATE:
         rankMemberRecords = dao.query(ranks,
                                       Members.comment).\
                                 join(Members,
                                      Members.memberId == ranks.c.memberId).\
-                                order_by(ranks.c.solvedRate.desc())
-    # Solved Problem Sorted
+                                order_by(ranks.c.solvedRate.desc(),
+                                         ranks.c.sumOfSolvedProblemCount.desc(),
+                                         ranks.c.solutionCheckCount.asc())
+    # Solved Problem, rate, submissionCount  Sorted
     elif sortCondition == OtherResources().const.SOLVED_PROBLEM:
         rankMemberRecords = dao.query(ranks,
                                       Members.comment).\
                                 join(Members,
                                      Members.memberId == ranks.c.memberId).\
-                                order_by(ranks.c.sumOfSolvedProblemCount.desc())
+                                order_by(ranks.c.sumOfSolvedProblemCount.desc(),
+                                         ranks.c.solvedRate.desc(),
+                                         ranks.c.solutionCheckCount.asc())
                                 
     return rankMemberRecords
 
