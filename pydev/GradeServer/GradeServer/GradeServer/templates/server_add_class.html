@@ -17,7 +17,8 @@ h4{
 $(function() {
 	var administrators = [
 		{%- for courseAdministrator in allCourseAdministrators %}
-			{ value: "{{ courseAdministrator.memberId }} {{ courseAdministrator.memberName }}",
+			{ value: "{{ courseAdministrator.memberId }} "+
+					 "{{ courseAdministrator.memberName }}",
 			  data: "{{ courseAdministrator.memberId}}"},
 		{% endfor -%}
 		{ value: "", data: "" }
@@ -66,8 +67,8 @@ $(function() {
 				</div>
 				<div class="span9">
 					<div id="searchfield" style="display:inline">
-						<input class="input-large" id="search-administrator" name="courseAdministrator"
-								type="text" form="addCourse"
+						<input class="input-large" id="search-administrator"
+								name="courseAdministrator" type="text" form="addCourse"
 								value="{%- if courseAdministrator %}{{ courseAdministrator }}{% endif -%}">
 					</div>
 				</div>

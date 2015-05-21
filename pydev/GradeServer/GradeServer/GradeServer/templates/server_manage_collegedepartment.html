@@ -2,7 +2,10 @@
 {%- block body %}
 <div class="container">
 	<h3>
-		{{ LanguageResources.const.College[session['language']] }}&{{ LanguageResources.const.Department[session['language']] }} {{ LanguageResources.const.Management[session['language']] }}
+		{{ LanguageResources.const.College[session['language']] }}
+		&
+		{{ LanguageResources.const.Department[session['language']] }}
+		{{ LanguageResources.const.Management[session['language']] }}
 	</h3>
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
@@ -11,8 +14,7 @@
 					{{ LanguageResources.const.College[session['language']] }}
 				</a>
 			<li id="departmentTab">
-				<a id="department" data-toggle="tab"
-					href="#departments">
+				<a id="department" data-toggle="tab" href="#departments">
 					{{ LanguageResources.const.Department[session['language']] }}
 				</a></li>
 			<div style="text-align:right">
@@ -26,13 +28,16 @@
 		<!-- ///// Add case ///// -->
 		<form method="post">
 		<div class="modal hide fade" id="collegeModal" 
-			  tabindex="-1" role="dialog" aria-labelledby="addCollegeModalLabel"
-			  aria-hidden="true">
+			  aria-hidden="true" aria-labelledby="addCollegeModalLabel"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal" type="button"
-						  aria-hidden="true">x</button>
+						  aria-hidden="true">
+				  	x
+			  	</button>
 				<h3 id="addCollegeModalLabel">
-					{{ LanguageResources.const.College[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+					{{ LanguageResources.const.College[session['language']] }}
+					{{ LanguageResources.const.Addition[session['language']] }}
 				</h3>
 			</div>
 			<div class="modal-body">
@@ -42,13 +47,16 @@
 						{{ LanguageResources.const.AddLine[session['language']] }}
 					</button>
 				</div>
-				<table class="table table-bordered" id='Colleges' style="margin-top:10px">
+				<table class="table table-bordered" id="Colleges"
+						style="margin-top:10px">
 					<thead>
 						<tr>
 							<td>
-								{{ LanguageResources.const.College[session['language']] }} {{ LanguageResources.const.Code[session['language']] }}
+								{{ LanguageResources.const.College[session['language']] }}
+								{{ LanguageResources.const.Code[session['language']] }}
 							<td>
-								{{ LanguageResources.const.College[session['language']] }} {{ LanguageResources.const.Name[session['language']] }}
+								{{ LanguageResources.const.College[session['language']] }}
+								{{ LanguageResources.const.Name[session['language']] }}
 					<tbody id="addCollegeForm">
 						<tr>
 							<td>
@@ -75,13 +83,16 @@
 		<!-- ///// Add case ///// -->
 		<form method="post">
 		<div class="modal hide fade" id="departmentModal"
-			  tabindex="-1" role="dialog" aria-labelledby="addDepartmentModalLabel"
-			  aria-hidden="true">
+			  aria-hidden="true" aria-labelledby="addDepartmentModalLabel"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
-						  type="button" aria-hidden="true">x</button>
+						  type="button" aria-hidden="true">
+				  	x
+			  	</button>
 				<h3 id="addDepartmentModalLabel">
-				{{ LanguageResources.const.Department[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+				{{ LanguageResources.const.Department[session['language']] }}
+				{{ LanguageResources.const.Addition[session['language']] }}
 				</h3>
 			</div>
 			<div class="modal-body">
@@ -91,19 +102,23 @@
 						{{ LanguageResources.const.AddLine[session['language']] }}
 					</button>
 				</div>
-				<table class="table table-bordered" id='Departments' style="margin-top:10px">
+				<table class="table table-bordered" id="Departments"
+						style="margin-top:10px">
 					<thead>
 						<tr>
 							<td>
 								{{ LanguageResources.const.College[session['language']] }}
 							<td class="hidden-phone input-medium">
-								{{ LanguageResources.const.Department[session['language']] }} {{ LanguageResources.const.Code[session['language']] }}
+								{{ LanguageResources.const.Department[session['language']] }}
+								{{ LanguageResources.const.Code[session['language']] }}
 							<td>
-								{{ LanguageResources.const.Department[session['language']] }} {{ LanguageResources.const.Name[session['language']] }}
+								{{ LanguageResources.const.Department[session['language']] }}
+								{{ LanguageResources.const.Name[session['language']] }}
 					<tbody id="addDepartmentForm">
 						<tr>
 							<td>
-								<select id="collegeIndex1" name="collegeIndex1" style="width:100%">
+								<select id="collegeIndex1" name="collegeIndex1"
+										 style="width:100%">
 									{%- for college in allColleges %}
 									<option>
 										{{ college.collegeIndex }} {{ college.collegeName }}
@@ -115,7 +130,8 @@
 										type="text" placeholder="Optional" style="width:93%">
 							<td>
 								<input class="input-medium" name="departmentName1"
-										type="text" placeholder="Department Name" style="width:93%">
+										type="text" placeholder="Department Name"
+										style="width:93%">
 				</table>
 			</div>
 			<div class="modal-footer">
@@ -144,7 +160,8 @@
 								{{ LanguageResources.const.Name[session['language']] }}
 							<td>
 								{{ LanguageResources.const.Check[session['language']] }}
-								<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('colleges');">
+								<input class="checkAll" type="checkbox" style="margin:0px"
+										onclick="selectAllCheckboxes('colleges');">
 					<tbody>
 						{%- for college in allColleges %}
 						<tr>
@@ -161,21 +178,26 @@
 			<!-- ///// College Modal ///// -->
 			<!-- ///// Delete case ///// -->
 			<div class="modal hide fade" id="deleteCollegeModal"
-				  role="dialog" aria-labelledby="deleteCollegeModalLabel"
-				  aria-hidden="true" tabindex="-1">
+				  aria-hidden="true"  aria-labelledby="deleteCollegeModalLabel"
+				  role="dialog" tabindex="-1">
 				<div class="modal-header">
 					<button class="close" type="button"
-							  data-dismiss="modal" aria-hidden="true">x</button>
+							  data-dismiss="modal" aria-hidden="true">
+					  	x
+				  	</button>
 					<h3 id="deleteCollegeModalLabel">
 						{{ LanguageResources.const.College[session['language']] }}
 						{{ LanguageResources.const.Deletion[session['language']] }}
 				</div>
 				<div class="modal-body">
-					<p>All departments in the college will be abolished<br>Do you really want to delete it?</p>
+					<p>
+						All departments in the college will be abolished<br>
+						Do you really want to delete it?
+					</p>
 				</div>
 				<div class="modal-footer">
 					<button class="btn" name="deleteCollege" type="submit">
-						Save changes
+						{{ LanguageResources.const.Confirm[session['language']] }}
 					</button>
 					<button class="btn" data-dismiss="modal" aria-hidden="true">
 						{{ LanguageResources.const.Close[session['language']] }}
@@ -184,11 +206,13 @@
 			</div>
 			<!-- no items choiced -->
 			<div class="modal hide fade" id="deleteNoCollegeItem"
-				  role="dialog" aria-labelledby="deleteModalLabel"
-				  aria-hidden="true" tabindex="-1">
+				  aria-hidden="true" aria-labelledby="deleteModalLabel"
+				  role="dialog" tabindex="-1">
 				<div class="modal-header">
 					<button class="close" type="button" data-dismiss="modal"
-							  aria-hidden="true">x</button>
+							  aria-hidden="true">
+					  	x
+				  	</button>
 					<h3 id="deleteModalLabel">
 						{{ LanguageResources.const.College[session['language']] }}
 						{{ LanguageResources.const.Deletion[session['language']] }}
@@ -220,7 +244,8 @@
 								{{ LanguageResources.const.Name[session['language']] }}
 							<td>
 								{{ LanguageResources.const.Check[session['language']] }}
-								<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('departments');">
+								<input class="checkAll" type="checkbox" style="margin:0px"
+										onclick="selectAllCheckboxes('departments');">
 					<tbody>
 						{%- for relation, college, department in allDepartments %}
 						<tr>
@@ -243,7 +268,9 @@
 			 aria-hidden="true" tabindex="-1">
 		<div class="modal-header">
 			<button class="close" type="button"
-					  data-dismiss="modal" aria-hidden="true">x</button>
+					  data-dismiss="modal" aria-hidden="true">
+			  	x
+		  	</button>
 			<h3 id="deleteDepartmentModalLabel">
 				{{ LanguageResources.const.Department[session['language']] }}
 				{{ LanguageResources.const.Code[session['language']] }}
@@ -267,8 +294,10 @@
 		  role="dialog" aria-labelledby="deleteModalLabel"
 		  aria-hidden="true" tabindex="-1">
 		<div class="modal-header">
-			<button class="close" type="button" data-dismiss="modal"
-					  aria-hidden="true">x</button>
+			<button class="close" data-dismiss="modal" type="button"
+					  aria-hidden="true">
+	  			x
+  			</button>
 			<h3 id="deleteModalLabel">
 				{{ LanguageResources.const.Department[session['language']] }}
 				{{ LanguageResources.const.Deletion[session['language']] }}

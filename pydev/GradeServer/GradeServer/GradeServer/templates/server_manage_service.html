@@ -12,20 +12,44 @@
 					<td>
 						{{ LanguageResources.const.Server[session['language']] }}
 					<td>
-						<label class="radio inline"><input id="serveron" name="server" type="radio" value="serveron" checked>On</label>
-						<label class="radio inline"><input id="serveroff" name="server" type="radio" value="serveroff">Off</label>
+						<label class="radio inline">
+							<input id="serveron" name="server" type="radio"
+									value="serveron" checked>
+							On
+						</label>
+						<label class="radio inline">
+							<input id="serveroff" name="server" type="radio"
+									value="serveroff">
+							Off
+						</label>
 				<tr>
 					<td>
 						{{ LanguageResources.const.Judging[session['language']] }}
 					<td>
-						<label class="radio inline"><input id="judgeon" name="judge" type="radio" value="judgeon" checked>On</label>
-						<label class="radio inline"><input id="judgeoff" name="judge" type="radio" value="judgeoff">Off</label>
+						<label class="radio inline">
+							<input id="judgeon" name="judge" type="radio"
+									value="judgeon" checked>
+							On
+						</label>
+						<label class="radio inline">
+							<input id="judgeoff" name="judge" type="radio"
+									value="judgeoff">
+							Off
+						</label>
 				<tr>
 					<td>
 						{{ LanguageResources.const.Board[session['language']] }}
 					<td>
-						<label class="radio inline"><input id="boardon" name="board" type="radio" value="boardon" checked>On</label>
-						<label class="radio inline"><input id="boardoff" name="board" type="radio" value="boardoff">Off</label>
+						<label class="radio inline">
+							<input id="boardon" name="board" type="radio"
+									value="boardon" checked>
+							On
+						</label>
+						<label class="radio inline">
+							<input id="boardoff" name="board" type="radio"
+									value="boardoff">
+							Off
+						</label>
 			</table>
 			<button class="btn" type="submit">
 				{{ LanguageResources.const.Done[session['language']] }}

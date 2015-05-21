@@ -10,21 +10,27 @@
 <div class="container">
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
-			<li class="active"><a id="link-all" data-toggle="tab" href="#all">all</a>
+			<li class="active">
+				<a id="link-all" data-toggle="tab" href="#all">
+					all
+				</a>
 			{% for course in ownCourses %}
 			<li>
 				<a data-toggle="tab" href="#{{ course.courseId }}" onclick="visibleButton(this)">
 					{{ course.courseId }}{{ course.courseName }}
 				</a>
-			{% endfor %}</li> <!-- without li closing tag, div tag is recognized as a part of the second tag -->
+			{% endfor %}
+			</li> <!-- without li closing tag, div tag is recognized as a part of the second tag -->
 			<div style="text-align:right">
 				<div class="visible-desktop">
-					<a class="btn" data-toggle="modal" href="#addProblemModal" rol="button">
+					<a class="btn" data-toggle="modal" href="#addProblemModal"
+						rol="button">
 						{{ LanguageResources.const.Addition[session['language']] }}
 					</a>
 				</div>
 				<div class="visible-phone visible-tablet">
-					<button class="btn" onclick="alert('not available in this window size');">
+					<button class="btn"
+							  onclick="alert('not available in this window size');">
 						{{ LanguageResources.const.Addition[session['language']] }}
 					</button>
 				</div>
@@ -34,20 +40,24 @@
 		<!-- ///// Add case ///// -->
 		<form id="addProblemModalForm" method="post">
 		<div class="modal hide fade" id="addProblemModal" 
-			  tabindex="-1" role="dialog" aria-labelledby="addProblemModalLabel"
-			  aria-hidden="true">
+			  aria-labelledby="addProblemModalLabel" aria-hidden="true"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
-				<div id="modalError" class="error" style="display:none;width:97%"></div>
+				<div class="error" id="modalError" style="display:none;width:97%">
+				</div>
 				<button class="close" data-dismiss="modal"
-						  type="button" aria-hidden="true">x</button>
+						  type="button" aria-hidden="true">
+				  	x
+			  	</button>
 				<h3 id="addProblemModalLabel">
-					{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+					{{ LanguageResources.const.Problem[session['language']] }}
+					{{ LanguageResources.const.Addition[session['language']] }}
 				</h3>
 			</div>
 			<div class="modal-body">
 				<p>If you don't choose open/close date, then the dates will be same with start/end date<br></p>
 				<div style="text-align:right">
-					<button class="btn" type="button" id="addline_problem">
+					<button class="btn" id="addline_problem" type="button">
 						{{ LanguageResources.const.AddLine[session['language']] }}
 					</button>
 				</div>
@@ -56,9 +66,11 @@
 					<thead>
 						<tr>
 							<td>
-								{{ LanguageResources.const.Course[session['language']] }} {{ LanguageResources.const.Number[session['language']] }}
+								{{ LanguageResources.const.Course[session['language']] }}
+								{{ LanguageResources.const.Number[session['language']] }}
 							<td>
-								{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Name[session['language']] }}
+								{{ LanguageResources.const.Problem[session['language']] }}
+								{{ LanguageResources.const.Name[session['language']] }}
 							<td>
 								<abbr title="All Input cases in One File">AIOF</abbr>
 							<td>
@@ -92,20 +104,20 @@
 								</label>
 							<td>
 								<input class="datepicker input-usmall" id="startDate1"
-										name="startDate1" data-date-format="yyyy-mm-dd" type="udate"
-										autocomplete="off" placeholder="click">
+										name="startDate1" data-date-format="yyyy-mm-dd"
+										type="udate" autocomplete="off" placeholder="click">
 							<td>
 								<input class="datepicker input-usmall" id="endDate1"
-										name="endDate1" data-date-format="yyyy-mm-dd" type="udate"
-										autocomplete="off" placeholder="click">
+										name="endDate1" data-date-format="yyyy-mm-dd"
+										type="udate" autocomplete="off" placeholder="click">
 							<td>
 								<input class="datepicker input-usmall" id="openDate1"
-										name="openDate1" data-date-format="yyyy-mm-dd" type="udate"
-										autocomplete="off" placeholder="click">
+										name="openDate1" data-date-format="yyyy-mm-dd"
+										type="udate" autocomplete="off" placeholder="click">
 							<td>
 								<input class="datepicker input-usmall" id="closeDate1"
-										name="closeDate1" data-date-format="yyyy-mm-dd" type="udate"
-										autocomplete="off" placeholder="click">
+										name="closeDate1" data-date-format="yyyy-mm-dd"
+										type="udate" autocomplete="off" placeholder="click">
 				</table>
 			</div>
 			<div class="modal-footer">
@@ -128,11 +140,14 @@
 					<thead>
 						<tr>
 							<td>
-								{{ LanguageResources.const.Course[session['language']] }} {{ LanguageResources.const.Number[session['language']] }}
+								{{ LanguageResources.const.Course[session['language']] }}
+								{{ LanguageResources.const.Number[session['language']] }}
 							<td>
-								{{ LanguageResources.const.Course[session['language']] }} {{ LanguageResources.const.Name[session['language']] }}
+								{{ LanguageResources.const.Course[session['language']] }}
+								{{ LanguageResources.const.Name[session['language']] }}
 							<td>
-								{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+								{{ LanguageResources.const.Problem[session['language']] }}
+								{{ LanguageResources.const.Addition[session['language']] }}
 							<td><abbr title="All Input cases in One File">AIOF</abbr>
 							<td>
 								{{ LanguageResources.const.StartDate[session['language']] }}
@@ -144,7 +159,9 @@
 								{{ LanguageResources.const.CloseDate[session['language']] }}
 							<td>
 								{{ LanguageResources.const.Check[session['language']] }}
-								<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('allProblems');">
+								<input class="checkAll" type="checkbox"
+										onclick="selectAllCheckboxes('allProblems');"
+										style="margin:0px">
 					<tbody>
 						{% for registeredProblem, registeredCourse, problem in ownProblems %}
 						<tr>
@@ -156,21 +173,25 @@
 								</a>
 							<td id="isAllInputCaseInOneFile_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}"
 								ondblclick="modifySelector(this.id)">
-									{{ registeredProblem.isAllInputCaseInOneFile }}
+								{{ registeredProblem.isAllInputCaseInOneFile }}
 							<!-- @To do -->
 							<!-- When the script code was function call, it was not working. and don't know why. -->
-							<td id="startDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}"
+							<td class="shortdate"
+								 id="startDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
-								<script>var newDate = "{{ registeredProblem.startDateOfSubmission }}"; document.write(newDate.split(' ')[0]);</script>
-							<td id="endDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}"
+								{{ registeredProblem.startDateOfSubmission }}
+							<td class="shortdate"
+								 id="endDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
-								<script>var newDate = "{{ registeredProblem.endDateOfSubmission }}"; document.write(newDate.split(' ')[0]);</script>
-							<td id="openDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}"
+								{{ registeredProblem.endDateOfSubmission }}
+							<td class="shortdate"
+								 id="openDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}"
 								ondblclick="modifySelector(this.id)">
-								<script>var newDate = "{{ registeredProblem.openDate }}"; document.write(newDate.split(' ')[0]);</script>
-							<td id="closeDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}"
+								{{ registeredProblem.openDate }}
+							<td class="shortdate"
+								 id="closeDate_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}"
 								ondblclick="modifySelector(this.id)">
-								<script>var newDate = "{{ registeredProblem.closeDate }}"; document.write(newDate.split(' ')[0]);</script>
+								{{ registeredProblem.closeDate }}
 							<td>
 								<label class="checkbox-center">
 									<input type="checkbox"
@@ -190,11 +211,14 @@
 					<thead>
 						<tr>
 							<td>
-								{{ LanguageResources.const.Course[session['language']] }} {{ LanguageResources.const.Number[session['language']] }}
+								{{ LanguageResources.const.Course[session['language']] }}
+								{{ LanguageResources.const.Number[session['language']] }}
 							<td>
-								{{ LanguageResources.const.Course[session['language']] }} {{ LanguageResources.const.Name[session['language']] }}
+								{{ LanguageResources.const.Course[session['language']] }}
+								{{ LanguageResources.const.Name[session['language']] }}
 							<td>
-								{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+								{{ LanguageResources.const.Problem[session['language']] }}
+								{{ LanguageResources.const.Addition[session['language']] }}
 							<td><abbr title="All Input cases in One File">AIOF</abbr>
 							<td>
 								{{ LanguageResources.const.StartDate[session['language']] }}
@@ -220,18 +244,22 @@
 							<td id="isAllInputCaseInOneFileTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}"
 								ondblclick="modifySelector(this.id)">
 								{{ registeredProblem.isAllInputCaseInOneFile }}
-							<td id="startDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}"
+							<td class="shortdate"
+								id="startDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
-								<script>var newDate = "{{ registeredProblem.startDateOfSubmission }}"; document.write(newDate.split(' ')[0]);</script>
-							<td id="endDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}"
+								{{ registeredProblem.startDateOfSubmission }}
+							<td class="shortdate"
+								id="endDateOfSubmissionTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.endDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
-								<script>var newDate = "{{ registeredProblem.endDateOfSubmission }}"; document.write(newDate.split(' ')[0]);</script>
-							<td id="openDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}"
+								{{ registeredProblem.endDateOfSubmission }}
+							<td class="shortdate"
+								id="openDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.openDate }}"
 								ondblclick="modifySelector(this.id)">
-								<script>var newDate = "{{ registeredProblem.openDate }}"; document.write(newDate.split(' ')[0]);</script>
-							<td id="closeDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}"
+								{{ registeredProblem.openDate }}
+							<td class="shortdate"
+								id="closeDateTab_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.closeDate }}"
 								ondblclick="modifySelector(this.id)">
-								<script>var newDate = "{{ registeredProblem.closeDate }}"; document.write(newDate.split(' ')[0]);</script>
+								{{ registeredProblem.closeDate }}
 							<td>
 								<label class="checkbox-center">
 									<input class="box-check" 
@@ -263,13 +291,16 @@
 
 	<!-- ///// Delete case ///// -->
 	<div class="modal hide fade" id="deleteModal"
-		  role="dialog" aria-labelledby="deleteProblemModalLabel"
-		  aria-hidden="true" tabindex="-1">
+		  aria-hidden="true" aria-labelledby="deleteProblemModalLabel"
+		  role="dialog"  tabindex="-1">
 		<div class="modal-header">
 			<button class="close" type="button"
-					  data-dismiss="modal" aria-hidden="true">x</button>
+					  data-dismiss="modal" aria-hidden="true">
+			  	x
+		  	</button>
 			<h3 id="deleteProblemModalLabel">
-				{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Deletion[session['language']] }}
+				{{ LanguageResources.const.Problem[session['language']] }}
+				{{ LanguageResources.const.Deletion[session['language']] }}
 			</h3>
 		</div>
 		<div class="modal-body">
@@ -292,9 +323,12 @@
 		  aria-hidden="true" tabindex="-1">
 		<div class="modal-header">
 			<button class="close" type="button"
-					  data-dismiss="modal" aria-hidden="true">x</button>
+					  data-dismiss="modal" aria-hidden="true">
+			  	x
+		  	</button>
 			<h3 id="deleteModalLabel">
-				{{ LanguageResources.const.Problem[session['language']] }} {{ LanguageResources.const.Deletion[session['language']] }}
+				{{ LanguageResources.const.Problem[session['language']] }}
+				{{ LanguageResources.const.Deletion[session['language']] }}
 			</h3>
 		</div>
 		<div class="modal-body">
