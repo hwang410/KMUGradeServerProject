@@ -297,3 +297,10 @@ $('.carousel .item').each(function(){
 		$(this).siblings(':first').children(':first-child').clone().appendTo($(this));
 	}
 });
+
+$(".shortdate").each(function(){
+	for(var i=0;i<2;i++){
+		var originalDate = $(this)[0].innerHTML;
+		$(this).text(originalDate.split(' ')[0]);
+	}
+});

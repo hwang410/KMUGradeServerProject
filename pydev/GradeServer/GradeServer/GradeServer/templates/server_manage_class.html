@@ -21,11 +21,13 @@
 		<!-- hidden modal pop -->
 		<!-- if any item choosed -->
 		<div class="modal hide fade" id="deleteModal"
-			  aria-labelledby="deleteModalLabel" aria-hidden="true"
+			  aria-hidden="true" aria-labelledby="deleteModalLabel"
 			  role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
-						  type="button" aria-hidden="true">x</button>
+						  type="button" aria-hidden="true">
+				  	x
+			  	</button>
 				<h3 id="deleteModalLabel">
 					{{ LanguageResources.const.Course[session['language']] }}
 					{{ LanguageResources.const.Deletion[session['language']] }}
@@ -47,11 +49,13 @@
 		</div>
 		<!-- no items choosed -->
 		<div class="modal hide fade" id="deleteNoItem"
-			  aria-labelledby="deleteModalLabel" aria-hidden="true"
+			  aria-hidden="true" aria-labelledby="deleteModalLabel"
 			  role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"
-						  type="button" aria-hidden="true">x</button>
+						  type="button" aria-hidden="true">
+				  	x
+			  	</button>
 				<h3 id="deleteModalLabel">
 					{{ LanguageResources.const.Course[session['language']] }}
 					{{ LanguageResources.const.Addition[session['language']] }}
@@ -68,7 +72,8 @@
 		</div>
 		<!-- end hidden modal pop -->
 
-		<table class="table table-bordered" id="registeredCourses" style="margin-top:10px">
+		<table class="table table-bordered" id="registeredCourses"
+				style="margin-top:10px">
 			<thead>
 				<tr>
 					<td>
@@ -87,7 +92,8 @@
 					<td class="visible-phone" style='width:87%'>Date
 					<td>
 						{{ LanguageResources.const.Check[session['language']] }}
-						<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('registeredCourses');">
+						<input class="checkAll" type="checkbox" style="margin:0px"
+								onclick="selectAllCheckboxes('registeredCourses');">
 			<form method="post">
 			<tbody>
 				{%- for course, member in courses %}
@@ -105,14 +111,12 @@
 								{% endif -%}
 							{% endfor -%}
 					<td class="hidden-phone">
-						<script>var newDate = "{{ course.startDateOfCourse }}"; document.write(newDate.split(' ')[0]);</script>
+						<div class="shortdate">{{ course.startDateOfCourse }}</div>
 					<td class="hidden-phone">
-						<script>var newDate = "{{ course.endDateOfCourse }}"; document.write(newDate.split(' ')[0]);</script>
+						<div class="shortdate">{{ course.endDateOfCourse }}</div>
 					<td class="visible-phone" style="width:83%;">
-						<script>
-							var newDate = "{{ course.startDateOfCourse }}"; document.write(newDate.split(' ')[0].substring(2,10)+"<br>");
-							newDate = "{{ course.endDateOfCourse }}"; document.write(newDate.split(' ')[0].substring(2,10));
-						</script>
+						<div class="shortdate">{{ course.startDateOfCourse }}</div>
+						<div class="shortdate">{{ course.endDateOfCourse }}</div>
 					<td>
 						<label class="checkbox-center">
 							<input class="box-check" name="{{ course.courseId }}"

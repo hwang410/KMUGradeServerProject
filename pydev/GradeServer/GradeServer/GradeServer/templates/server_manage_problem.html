@@ -23,12 +23,14 @@
 
 		<!-- hidden modal pop -->
 		<!-- ///// Add case ///// -->
-		<div class="modal hide fade" id="addModal" aria-labelledby="addModalLabel"
-			  aria-hidden="true" role="dialog" tabindex="-1">
+		<div class="modal hide fade" id="addModal" aria-hidden="true"
+			  aria-labelledby="addModalLabel" role="dialog" tabindex="-1">
 			<form method="post" enctype="multipart/form-data">
 				<div class="modal-header">
 					<button class="close" data-dismiss="modal" type="button"
-							  aria-hidden="true">x</button>
+							  aria-hidden="true">
+					  	x
+				  	</button>
 					<h3 id="addModalLabel">
 						{{ LanguageResources.const.Problem[session['language']] }}
 						{{ LanguageResources.const.Addition[session['language']] }}
@@ -52,9 +54,13 @@
 		<!-- ///// Delete case /////
 				if any item choosed -->
 		<div class="modal hide fade" id="deleteModal"
-			  aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+			  aria-hidden="true" aria-labelledby="deleteModalLabel"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal" type="button"
+						  aria-hidden="true">
+				  	x
+			  	</button>
 				<h3 id="deleteModalLabel">
 					{{ LanguageResources.const.Problem[session['language']] }}
 					{{ LanguageResources.const.Deletion[session['language']] }}
@@ -79,7 +85,10 @@
 			  aria-labelledby="deleteModalLabel" aria-hidden="true"
 			  role="dialog" tabindex="-1">
 			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal" type="button"
+						  aria-hidden="true">
+				  	x
+			  	</button>
 				<h3 id="deleteModalLabel">
 					{{ LanguageResources.const.Problem[session['language']] }}
 					{{ LanguageResources.const.Deletion[session['language']] }}
@@ -96,7 +105,8 @@
 		</div>
 		<!-- ///// end hidden modal pop ///// -->
 
-		<table class="table table-bordered" id="registeredProblems" style="margin-top:10px">
+		<table class="table table-bordered" id="registeredProblems"
+				style="margin-top:10px">
 			<thead>
 				<tr>
 					<td>
@@ -107,7 +117,8 @@
 						Solution/Checker
 					<td>
 						{{ LanguageResources.const.Check[session['language']] }}
-						<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('registeredProblems');">
+						<input class="checkAll" type="checkbox" style="margin:0px"
+								onclick="selectAllCheckboxes('registeredProblems');">
 			<tbody>
 				{%- for uploadedProblem in uploadedProblems %}
 				<tr>
@@ -117,8 +128,8 @@
 					<td>
 						<label class="checkbox-center">
 							<input class="box-check" name="{{ uploadedProblem.problemId }}"
-									type="checkbox" form="deleteProblem"
-									value="{{ uploadedProblem.problemId }}">
+									type="checkbox" value="{{ uploadedProblem.problemId }}"
+									form="deleteProblem">
 						</label>
 				{% endfor -%}
 			</form> <!-- for IE, we need to cover all 'form tags' into the '<form>' tag between -->

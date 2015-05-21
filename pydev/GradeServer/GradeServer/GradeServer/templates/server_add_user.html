@@ -64,7 +64,8 @@ $(function() {
 									uploadObj += " selected";
 								}
 								uploadObj += 
-									">{{ departmentInfo.departmentIndex }} {{ departmentInfo.departmentName }}" +
+									">{{ departmentInfo.departmentIndex }} "+
+									"{{ departmentInfo.departmentName }}" +
 									"</option>";
 							}
 						{% endfor -%}	
@@ -120,7 +121,8 @@ $(function() {
 			    		case 2:
 			    			uploadObj += "<option> select college </option>";
 			    			{%- for college in allColleges %}
-						uploadObj += "<option>{{ college.collegeIndex }} {{ college.collegeName }} </option>";
+						uploadObj += "<option>{{ college.collegeIndex }}"+
+												  "{{ college.collegeName }} </option>";
 						{% endfor -%}
 			    			break;
 			    		case 3:
@@ -151,13 +153,14 @@ $(function() {
 		</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
-			<a class="btn" href="#addUserModal" data-toggle="modal" role="button">
+			<a class="btn" data-toggle="modal" href="#addUserModal" role="button">
 				{{ LanguageResources.const.Indivisual[session['language']] }}
 			</a>
-			<a class="btn" href="#addGroupModal" data-toggle="modal" role="button">
+			<a class="btn" data-toggle="modal" href="#addGroupModal" role="button">
 				{{ LanguageResources.const.Group[session['language']] }}
 			</a>
-			<a class="btn" data-toggle="modal" role="button" onclick="showingDeleteModal()">
+			<a class="btn" data-toggle="modal" role="button"
+				onclick="showingDeleteModal()">
 				{{ LanguageResources.const.Deletion[session['language']] }}
 			</a>
 		</div>
@@ -166,11 +169,12 @@ $(function() {
 		<!-- ///// Add individual ///// -->
 		<form id="addIndivisualUser" method="post">
 		<div class="modal hide fade" id="addUserModal"
-			  aria-labelledby="addUserModalLabel" aria-hidden="true"
-			  role="dialog" tabindex="-1" style="width:800px;margin-left:-400px">
+			  aria-hidden="true" aria-labelledby="addUserModalLabel"
+			  tabindex="-1" role="dialog" style="width:800px;margin-left:-400px">
 			<div class="modal-header">
-				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">
-				x
+				<button class="close" data-dismiss="modal" type="button"
+						  aria-hidden="true">
+					x
 				</button>
 				<h3 id="addUserModalLabel">
 					{{ LanguageResources.const.User[session['language']] }}
@@ -201,11 +205,11 @@ $(function() {
 					<tbody id="indivisualUserForm">
 						<tr class="formLine">
 							<td>
-								<input class="input-small formLine1" id="userId1" name="userId1"
-										type="text" placeholder="ID" value="">
+								<input class="input-small formLine1" id="userId1"
+										name="userId1" type="text" placeholder="ID" value="">
 							<td>
-								<input class="input-mini formLine1" id="username1" name="username1"
-										type="text" placeholder="Name" value="">
+								<input class="input-mini formLine1" id="username1"
+										name="username1" type="text" placeholder="Name" value="">
 							<td>
 								<select class="input-medium" id="college1" name="college1">
 									<option> select college </option>
@@ -239,10 +243,14 @@ $(function() {
 		</form>
 		<!-- ///// add group ///// -->
 		<div class="modal hide fade" id="addGroupModal" 
-			  aria-labelledby="addGroupModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+			  aria-hidden="true" aria-labelledby="addGroupModalLabel"
+			  role="dialog" tabindex="-1">
 			<form method="post" enctype="multipart/form-data">
 				<div class="modal-header">
-					<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+					<button class="close" data-dismiss="modal" type="button"
+							  aria-hidden="true">
+						x
+					</button>
 					<h3 id="addGroupModalLabel">
 						{{ LanguageResources.const.User[session['language']] }}
 						{{ LanguageResources.const.Addition[session['language']] }}
@@ -267,9 +275,13 @@ $(function() {
 		<!-- ///// Delete case /////
 				if any item choosed -->
 		<div class="modal hide fade" id="deleteModal" 
-			  aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+			  aria-hidden="true" aria-labelledby="deleteModalLabel"
+			  tabindex="-1" role="dialog">
 			<div class="modal-header">
-				<button class="close" data-dismiss="modal" type="button" aria-hidden="true">x</button>
+				<button class="close" data-dismiss="modal" type="button" 
+						  aria-hidden="true">
+				  	x
+			  	</button>
 				<h3 id="deleteModalLabel">
 					{{ LanguageResources.const.User[session['language']] }}
 					{{ LanguageResources.const.Deletion[session['language']] }}
@@ -291,9 +303,13 @@ $(function() {
 		</div>
 		<!-- no items choosed -->
 		<div class="modal hide fade" id="deleteNoItem" 
-			  aria-labelledby="deleteModalLabel" aria-hidden="true" role="dialog" tabindex="-1">
+			  aria-hidden="true" aria-labelledby="deleteModalLabel"
+			  tabindex="-1" role="dialog">
 			<div class="modal-header">
-				<button class="close" type="button" data-dismiss="modal" aria-hidden="true">x</button>
+				<button class="close" type="button" data-dismiss="modal"
+						  aria-hidden="true">
+					x
+				</button>
 				<h3 id="deleteModalLabel">
 					{{ LanguageResources.const.User[session['language']] }}
 					{{ LanguageResources.const.Deletion[session['language']] }}
@@ -310,7 +326,8 @@ $(function() {
 		</div>
 		<!-- ///// end hidden modal pop ///// -->
 		<form method="post">
-			<table class="table table-bordered" id="pendingUsers" style="margin-top:10px">
+			<table class="table table-bordered" id="pendingUsers"
+					style="margin-top:10px">
 				<thead>
 					<tr>
 						<td>Index
@@ -326,7 +343,8 @@ $(function() {
 							{{ LanguageResources.const.Department[session['language']] }}
 						<td>
 							{{ LanguageResources.const.Check[session['language']] }}
-							<input class="checkAll" type="checkbox" style="margin:0px" onclick="selectAllCheckboxes('pendingUsers');">
+							<input class="checkAll" type="checkbox" style="margin:0px"
+									onclick="selectAllCheckboxes('pendingUsers');">
 				<tbody>
 					<script> index = 0; </script>
 					{%- for newUser in newUsers %}

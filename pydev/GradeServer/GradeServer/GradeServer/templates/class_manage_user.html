@@ -3,7 +3,8 @@
 <div class="container">
 	<div>
 		<h3>
-			{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.Addition[session['language']] }}
+			{{ LanguageResources.const.User[session['language']] }}
+			{{ LanguageResources.const.Addition[session['language']] }}
 		</h3>
 		<!-- if any button is checked, then showing modal pop -->
 		<div style="text-align:right">
@@ -20,11 +21,13 @@
 		<!-- hidden modal pop -->
 		<!-- if any item choiced -->
 		<div class="modal hide fade" id="deleteModal"
-			  aria-labelledby="deleteModalLabel" aria-hidden="true"
+			  aria-hidden="true" aria-labelledby="deleteModalLabel"
 			  role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" type="button"
-						  data-dismiss="modal" aria-hidden="true">x</button>
+						  data-dismiss="modal" aria-hidden="true">
+				  	x
+			  	</button>
 				<h3 id="deleteModalLabel">
 					{{ LanguageResources.const.User[session['language']] }}
 					{{ LanguageResources.const.Deletion[session['language']] }}
@@ -45,13 +48,17 @@
 			</div>
 		</div>
 		<!-- no items choiced -->
-		<div class="modal hide fade" id="deleteNoItem" role="dialog"
-			  aria-labelledby="deleteModalLabel" aria-hidden="true" tabindex="-1">
+		<div class="modal hide fade" id="deleteNoItem"
+			  aria-hidden="true" aria-labelledby="deleteModalLabel"
+			  role="dialog" tabindex="-1">
 			<div class="modal-header">
 				<button class="close" type="button"
-						  data-dismiss="modal" aria-hidden="true">x</button>
+						  data-dismiss="modal" aria-hidden="true">
+				  	x
+			  	</button>
 				<h3 id="deleteModalLabel">
-					{{ LanguageResources.const.User[session['language']] }} {{ LanguageResources.const.Deletion[session['language']] }}
+					{{ LanguageResources.const.User[session['language']] }}
+					{{ LanguageResources.const.Deletion[session['language']] }}
 				</h3>
 			</div>
 			<div class="modal-body">
@@ -65,7 +72,8 @@
 		</div>
 		<!-- end hidden modal pop -->
 
-		<table class="table table-bordered" id="registeredUsers" style="margin-top:10px">
+		<table class="table table-bordered" id="registeredUsers"
+				style="margin-top:10px">
 			<thead>
 				<tr>
 					<td>Index
@@ -76,7 +84,9 @@
 					<td>
 						{{ LanguageResources.const.Name[session['language']] }}
 					<td>
-						{{ LanguageResources.const.College[session['language']] }}&{{ LanguageResources.const.Department[session['language']] }}
+						{{ LanguageResources.const.College[session['language']] }}
+						&
+						{{ LanguageResources.const.Department[session['language']] }}
 					<td>
 						{{ LanguageResources.const.Check[session['language']] }}
 						<input class="checkAll" type="checkbox" style="margin:0px"
@@ -101,7 +111,8 @@
 						{% endfor -%}
 					<td>
 						<label class="checkbox-center">
-							<input class="box-check" name="delete_{{ eachUser[0] }}_{{ eachUser[1] }}"
+							<input class="box-check"
+									name="delete_{{ eachUser[0] }}_{{ eachUser[1] }}"
 									type="checkbox" form="deleteUser">
 						</label>
 				{% endfor -%}

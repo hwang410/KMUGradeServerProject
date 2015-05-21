@@ -6,7 +6,9 @@
 {%- block body %}
 <div class="container">
 	<h3 style="display:inline-block">
-		{{ LanguageResources.const.User[session['language']] }}{{ LanguageResources.const.Submission[session['language']] }} 	{{ LanguageResources.const.Management[session['language']] }}
+		{{ LanguageResources.const.User[session['language']] }}
+		{{ LanguageResources.const.Submission[session['language']] }}
+		{{ LanguageResources.const.Management[session['language']] }}
 	</h3>
 	<h4 style="display:inline-block"> - 
 		{{ LanguageResources.const.DetailMode[session['language']] }}
@@ -14,7 +16,8 @@
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
 			<li class="active">
-				<a id="link-all" data-toggle="tab" href="#all" onclick="visibleButton(this)">
+				<a id="link-all" data-toggle="tab" href="#all"
+					onclick="visibleButton(this)">
 					all
 				</a>
 			{%- for ownCourse in ownCourses %}
