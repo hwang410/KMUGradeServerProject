@@ -43,7 +43,7 @@ def close_db_session(exception = None):
 def rank(activeTabCourseId, sortCondition, pageNum, error =None):
     
     try:
-        searchLine = None
+        findMemberId = None
         try:
             # Auto Complete MemberIds
             memberRecords = select_all_users().all()
@@ -83,7 +83,6 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
                         # Finding move to page
                         pageNum = i
                         # searchLine Check
-                        searchLine = i
                     
                         break
                 except Exception:
@@ -116,7 +115,7 @@ def rank(activeTabCourseId, sortCondition, pageNum, error =None):
                                rankMemberRecords = rankMemberRecords,
                                myCourses = myCourses,
                                pages = pages,
-                               searchLine = searchLine,
+                               findMemberId = findMemberId,
                                error = error) # 페이지 정보
     except Exception:
         return unknown_error()     
