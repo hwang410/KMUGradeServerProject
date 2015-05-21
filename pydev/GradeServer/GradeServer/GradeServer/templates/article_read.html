@@ -56,11 +56,14 @@
 				{{ LanguageResources.const.Like[session['language']] }} <i class="icon-thumbs-up"></i>
 			{% endif %}
 			</button>
+			
+			{% if articlesOnBoard.writerId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
+			
 			{# Modify Article #}
 			<a class="btn modify" href='{{ url_for("GradeServer.write", activeTabCourseId=activeTabCourseId, articleIndex=articlesOnBoard.articleIndex) }}'>
 				{{ LanguageResources.const.Edit[session['language']] }} <i class="icon-edit"></i>
 			</a>
-			{% if articlesOnBoard.writerId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
+			
 			<button href="#deleteArticle" class="delete btn" data-toggle="modal"><i class="icon-trash"></i></button>
 			<div id="deleteArticle" class="modal hide fade">
 				<div class="modal-header">

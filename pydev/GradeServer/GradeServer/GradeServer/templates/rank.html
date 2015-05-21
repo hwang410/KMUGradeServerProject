@@ -81,7 +81,7 @@ $(function() {
 									</a>
 						<tbody>
 							{%- for rankMemberRecord in rankMemberRecords %}
-							<tr {% if searchLine == loop.index %}class = 'label-searchLine'{% endif %}>
+							<tr {% if findMemberId == rankMemberRecord.memberId %}class = 'label-searchLine'{% endif %}>
 								<td>{{ loop.index + (pages['pageNum'] - 1) * pages['LIST'] }}
 								<td>
 									<a href="{{ url_for('GradeServer.submission_record', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">

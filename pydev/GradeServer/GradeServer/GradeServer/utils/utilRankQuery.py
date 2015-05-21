@@ -60,7 +60,7 @@ def ranks_sorted(ranks, sortCondition = OtherResources().const.RATE):
                                       Members.comment).\
                                 join(Members,
                                      Members.memberId == ranks.c.memberId).\
-                                order_by(ranks.c.solvedRate.asc())
+                                order_by(ranks.c.solvedRate.desc())
     # Solved Problem Sorted
     elif sortCondition == OtherResources().const.SOLVED_PROBLEM:
         rankMemberRecords = dao.query(ranks,
