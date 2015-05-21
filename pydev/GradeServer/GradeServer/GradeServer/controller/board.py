@@ -61,7 +61,7 @@ def close_db_session(exception = None):
 게시판을 과목별 혹은 전체 통합으로
 보여주는 페이지
 '''
-@GradeServer.route('/board/<activeTabCourseId>/page<pageNum>', methods = ['GET', 'POST'])
+@GradeServer.route('/board/<activeTabCourseId>/page<int:pageNum>', methods = ['GET', 'POST'])
 @check_invalid_access
 @login_required
 def board(activeTabCourseId, pageNum):    
@@ -109,7 +109,7 @@ def board(activeTabCourseId, pageNum):
                                                     c.articleIndex).first().\
                                                                     count
             articleRecords = get_page_record(articlesOnBoardSub,
-                                             pageNum = int(pageNum)).all()
+                                             pageNum = pageNum).all()
         except Exception:
             count = 0
             articleRecords = []
@@ -128,7 +128,7 @@ def board(activeTabCourseId, pageNum):
                                articleRecords = articleRecords,
                                articleNoticeRecords =  articleNoticeRecords,
                                myCourses = myCourses,
-                               pages = get_page_pointed(int(pageNum),
+                               pages = get_page_pointed(pageNum,
                                                         count),
                                Filters = Filters,
                                activeTabCourseId = activeTabCourseId) # classType, condition은 검색 할 때 필요한 변수    
@@ -141,7 +141,7 @@ def board(activeTabCourseId, pageNum):
 게시판 공지만 과목별 혹은 전체 통합으로
 보여주는 페이지
 '''
-@GradeServer.route('/notice/<activeTabCourseId>/page<pageNum>', methods = ['GET', 'POST'])
+@GradeServer.route('/notice/<activeTabCourseId>/page<int:pageNum>', methods = ['GET', 'POST'])
 @check_invalid_access
 @login_required
 def article_notice(activeTabCourseId, pageNum):    
@@ -185,7 +185,7 @@ def article_notice(activeTabCourseId, pageNum):
                                                       count
             # Get Notices in Page                                                                           
             articleNoticeRecords = get_page_record(articleNoticeRecords,
-                                                   pageNum = int(pageNum)).all()
+                                                   pageNum = pageNum).all()
         except Exception:
             count = 0
             articleNoticeRecords = []
@@ -203,7 +203,7 @@ def article_notice(activeTabCourseId, pageNum):
                                LanguageResources = LanguageResources,
                                articleNoticeRecords =  articleNoticeRecords,
                                myCourses = myCourses,
-                               pages = get_page_pointed(int(pageNum),
+                               pages = get_page_pointed(pageNum,
                                                         count),
                                Filters = Filters,
                                activeTabCourseId = activeTabCourseId) # classType, condition은 검색 할 때 필요한 변수    
@@ -218,7 +218,7 @@ def article_notice(activeTabCourseId, pageNum):
 게시글을 눌렀을 때 
 글 내용을 보여주는 페이지
 '''
-@GradeServer.route('/board/<activeTabCourseId>/<articleIndex>', methods = ['GET', 'POST'])
+@GradeServer.route('/board/<activeTabCourseId>/<int:articleIndex>', methods = ['GET', 'POST'])
 @check_invalid_access
 @login_required
 def read(activeTabCourseId, articleIndex, error = None):
@@ -477,7 +477,7 @@ def read(activeTabCourseId, articleIndex, error = None):
 '''
 게시판에 글을 쓰는 페이지
 '''
-@GradeServer.route('/board/write-<activeTabCourseId>/<articleIndex>', methods=['GET', 'POST'])
+@GradeServer.route('/board/write-<activeTabCourseId>/<int:articleIndex>', methods=['GET', 'POST'])
 @check_invalid_access
 @login_required
 def write(activeTabCourseId, articleIndex, error =None):
@@ -487,7 +487,7 @@ def write(activeTabCourseId, articleIndex, error =None):
         myCourses = select_current_courses(select_accept_courses().subquery()).subquery()
         
         # Modify Case
-        if int(articleIndex) > 0: 
+        if articleIndex > 0: 
             try:
                 articlesOnBoard = join_courses_names(select_article(articleParameter = ArticleParameter(articleIndex = articleIndex),
                                                                     isDeleted = ENUMResources().const.FALSE).subquery(),
@@ -526,7 +526,7 @@ def write(activeTabCourseId, articleIndex, error =None):
                     currentDate = datetime.now()
                     currentIP = socket.gethostbyname(socket.gethostname())
                                         # 새로 작성
-                    if int(articleIndex) == 0:
+                    if articleIndex == 0:
                         # Set isNotice
                         if SETResources().const.USER in session['authority']: 
                             isNotice = ENUMResources().const.FALSE
