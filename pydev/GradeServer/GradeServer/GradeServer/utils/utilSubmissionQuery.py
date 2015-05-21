@@ -145,22 +145,34 @@ Submissions Sorting Condition
 '''
 def submissions_sorted(submissions, sortCondition = OtherResources().const.SUBMISSION_DATE):
     
-        # 제출날짜순 정렬
+        # 제출날짜, 실행 시간, 사용 메모리, 코드 길이 순 정렬
     if sortCondition == OtherResources().const.SUBMISSION_DATE:
         submissionRecords = dao.query(submissions).\
-                                order_by(submissions.c.codeSubmissionDate.desc())
-        # 실행 시간 순 정렬
+                                order_by(submissions.c.codeSubmissionDate.desc(),
+                                         submissions.c.runTime.asc(),
+                                         submissions.c.usedMemory.asc(),
+                                         submissions.c.sumOfSubmittedFileSize.asc())
+        # 실행 시간, 사용 메모리, 코드 길이, 제출날짜 순 정렬
     elif sortCondition == OtherResources().const.RUN_TIME:
         submissionRecords = dao.query(submissions).\
-                                order_by(submissions.c.runTime.asc())
-        # 사용 메모리 별 정렬
+                                order_by(submissions.c.runTime.asc(),
+                                         submissions.c.usedMemory.asc(),
+                                         submissions.c.sumOfSubmittedFileSize.asc(),
+                                         submissions.c.codeSubmissionDate.desc())
+        # 사용 메모리, 실행 시간, 코드 길이, 제출날짜 별 정렬
     elif sortCondition == OtherResources().const.USED_MEMORY:
         submissionRecords = dao.query(submissions).\
-                                order_by(submissions.c.usedMemory.asc())
-        # 코드 길이별 정렬         
+                                order_by(submissions.c.usedMemory.asc(),
+                                         submissions.c.runTime.asc(),
+                                         submissions.c.sumOfSubmittedFileSize.asc(),
+                                         submissions.c.codeSubmissionDate.desc())
+        # 코드 길이, 사용 메모리, 실행 시간, 제출날짜 별 정렬         
     elif sortCondition == OtherResources().const.CODE_LENGTH:
         submissionRecords = dao.query(submissions).\
-                                order_by(submissions.c.sumOfSubmittedFileSize.asc())  
+                                order_by(submissions.c.sumOfSubmittedFileSize.asc(),
+                                         submissions.c.runTime.asc(),
+                                         submissions.c.usedMemory.asc(),
+                                         submissions.c.codeSubmissionDate.desc())  
                                  
     return submissionRecords
 

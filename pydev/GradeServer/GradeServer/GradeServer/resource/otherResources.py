@@ -9,8 +9,8 @@ class OtherResources(object):
     const.TRIPLE_DES_KEY = '1234567812345678'
     # Integer
     const.NOTICE_LIST = 5
-    const.BLOCK = 3
-    const.LIST = 3
+    const.BLOCK = 5
+    const.LIST = 10
 
     const.ACCEPT = 'accept'
     const.REJECT = 'reject'
