@@ -43,6 +43,19 @@ import os
 import subprocess
 import glob
 
+projectPath = '/mnt/shared'
+problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
+problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/ProblemDescriptions' % (projectPath)
+tmpPath = '%s/tmp' % (projectPath)
+
+# if there's additional difficulty then change the value 'numberOfDifficulty'
+numberOfDifficulty = 5
+newUsers = []
+newColleges = []
+newDepartments = []
+
+currentTab = 'colleges'
+
 from GradeServer.py3Des.pyDes import *
 def initialize_tripleDes_class():
     tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
@@ -135,7 +148,6 @@ def change_abolishment_of_department_true(index):
                 filter(Departments.departmentIndex == index).\
                 update(dict(isAbolished = SETResources().const.TRUE))
             dao.commit()
-            print "success"
         except:
             error = "Error has been occurred while changing abolishment to TRUE"
         
@@ -399,20 +411,109 @@ def change_abolishment_relates_college(collegeIndex):
     return error
 
 
-                
-                                                                                          
-projectPath = '/mnt/shared'
-problemsPath = '%s/Problems' % (projectPath) # /mnt/shared/Problems
-problemDescriptionsPath = '%s/pydev/GradeServer/GradeServer/GradeServer/static/ProblemDescriptions' % (projectPath)
-# if there's additional difficulty then change the value 'numberOfDifficulty'
-numberOfDifficulty = 5
-newUsers = []
-newColleges = []
-newDepartments = []
+def handle_file_came_from_window(rowProblemName, decodedProblemName):
+    '''
+    @@ Make imitation of Original problem name
+    
+    Original problem name shows with question mark
+    To find and change the name to decoded name, make fake temporary name
+    '''
+    
+    byteString = '?'*len(rowProblemName)
 
-currentTab = 'colleges'
-                    
-                                         
+    error = change_directory_to(tmpPath)
+
+    if not error:
+        try:
+            # rename text file if it's made from window
+            subprocess.call('mv %s.txt %s.txt' % (byteString, decodedProblemName), shell=True)
+        except OSError:
+            error = 'Error has been occurred while renaming .txt file'
+            return error
+    
+        '''
+        @@ Rename PDF file name
+        
+        PDF file is optional so, doesn't block when error occurs.
+        '''
+        try:
+            # rename pdf file
+            subprocess.call('mv %s.pdf %s.pdf' % (byteString, decodedProblemName), shell=True)
+        except OSError:
+            print "pdf doesn't exist"
+                        
+        '''
+        @@ Rename _SOLUTION or _CHECKER folder name
+        
+        Figure out its solution check type from folder name
+        '''
+        filesInCurrentDir = glob.glob(os.getcwd()+'/*')
+        solCheckType = None
+        for name in filesInCurrentDir:
+            if '_SOLUTION' in name:
+                solCheckType = 'SOLUTION'
+                break
+            if '_CHECKER' in name:
+                solCheckType = 'CHECKER'
+                break
+            
+        if solCheckType:
+            try:
+                subprocess.call('mv %s_%s %s_%s' % (byteString, solCheckType, decodedProblemName, solCheckType), shell=True)
+            except OSError:
+                error = 'Error has been occurred while renaming folders'
+                
+        # If SOLUTION or CHEKER file doesn't exist then it's an error
+        else:
+            error = 'There is no \'SOLUTION\' or \'CHECKER\' directory'
+        
+    return error
+
+def remove_space_from_names_in(path):
+    error = change_directory_to(path)
+    
+    if not error:
+        try:
+            subprocess.call('for f in *;do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
+        except OSError:
+            error = "Error has been occurred while removing space on file names"
+    
+    return error
+
+
+def attach_string_ahead_of(path, string):
+    error = change_directory_to(path)
+    
+    try:
+        subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (string), shell=True)
+    except OSError:
+        error = "Error has been occurred while attaching string"
+    
+    return error
+
+
+def get_current_path():
+    error = None
+    
+    try:
+        currentPath = os.getcwd()
+    except OSError:
+        error = "Error has been occurred while getting current path"
+
+    return currentPath, error                                        
+
+def change_directory_to(path):
+    error = None
+    
+    try:
+        os.chdir(path)
+    except OSError:
+        error = "Error has been occurred while changing directory"
+        
+    return error
+
+
+
 @GradeServer.route('/master/manage_collegedepartment', methods = ['GET', 'POST'])
 @check_invalid_access
 @login_required
@@ -468,8 +569,7 @@ def server_manage_collegedepartment():
                     collegeIndex = re.findall('\d+|\D+', form)[1]
                     
                     error = change_abolishment_relates_college(collegeIndex)
-                    if error:
-                        break
+                    if error: break
                                                                 
             elif 'deleteDepartment' in request.form:
                 if 'department' in form:
@@ -477,8 +577,7 @@ def server_manage_collegedepartment():
                     departmentIndex = re.findall('\d+|\D+', form)[1]
                     
                     error = change_abolishment_of_department_true(departmentIndex)
-                    if error:
-                        break
+                    if error: break
                     
         '''
         If there's an error, set flags to False so it will be reached 'return' command at the last in this function
@@ -515,8 +614,7 @@ def server_manage_collegedepartment():
             for newPart in newDepartments:
                 if newPart[1]:
                     error = add_new_departments(newPart[0], newPart[1])
-                    if error:
-                        break
+                    if error: break
                     
                     index = dao.query(func.max(Departments.departmentIndex)).scalar()
                     error = add_relation_in_college_department(newPart[2], index)
@@ -550,8 +648,7 @@ def server_manage_class():
         for form in request.form:
             error = delete_registered_course(form)
             
-            if error:
-                break
+            if error: break
             
         return redirect(url_for('.server_manage_class'))
     
@@ -801,75 +898,41 @@ def server_manage_problem():
                     # unzip file
                     with zipfile.ZipFile(fileData, 'r') as z:
                         z.extractall(tmpPath)
-                    
+                        
                     '''
                     @@ Decode problem name
                     
                     If the problem zip's made on window environment, problem name's broken
                     So it needs to be decoded by cp949
                     ''' 
-                    rowProblemName = re.split('_|\.', os.listdir(tmpPath)[0])[0]
-                    problemName = str(rowProblemName.decode('cp949'))
-                    
-                    '''
-                    @@ Make imitation of Original problem name
-                    
-                    Original problem name shows with question mark
-                    To find and change the name to decoded name, make fake temporary name
-                    '''
-                    byteString = '?'*len(rowProblemName)
-                    
-                    os.chdir('%s' % tmpPath)
                     try:
-                        # rename text file
-                        subprocess.call('mv %s.txt %s.txt' % (byteString, problemName), shell=True)
+                        rowProblemName = re.split('_|\.', os.listdir(tmpPath)[0])[0].replace(' ', '\ ')
                     except OSError:
-                        error = 'Error has been occurred while renaming .txt file'
+                        error = "Error has been occurred while listing file names"
                         break
                     
-                    '''
-                    @@ Rename PDF file name
+                    problemName = str(rowProblemName.decode('cp949'))
+                
+                    isFromWindow = True if rowProblemName != problemName else False
                     
-                    PDF file is optional so, doesn't block when error occurs.
-                    '''
+                    if isFromWindow:
+                        if handle_file_came_from_window(rowProblemName, problemName): break
+                                     
+                    problemInformationPath = ('%s/%s.txt' % (tmpPath, problemName)).replace('\ ', ' ')
+                    print "problem:", problemInformationPath
                     try:
-                        # rename pdf file
-                        subprocess.call('mv %s.pdf %s.pdf' % (byteString, problemName), shell=True)
-                    except OSError:
-                        print "pdf doesn't exist"
-                    
-                    '''
-                    @@ Rename _SOLUTION or _CHECKER folder name
-                    
-                    Figure out its solution check type from folder name
-                    '''
-                    filesInCurrentDir = glob.glob(os.getcwd()+'/*')
-                    solCheckType = None
-                    for name in filesInCurrentDir:
-                        if '_SOLUTION' in name:
-                            solCheckType = 'SOLUTION'
-                            break
-                        if '_CHECKER' in name:
-                            solCheckType = 'CHECKER'
-                            break
-                    
-                    if solCheckType:
+                        # 'open' command can handle space character without '\' mark,
+                        # Replace '\ ' to just space ' '
+                        problemInfoFile = open(problemInformationPath, 'r')
+                        problemInformation = problemInfoFile.read()
+                        
                         try:
-                            subprocess.call('mv %s_%s %s_%s' % (byteString, solCheckType, problemName, solCheckType), shell=True)
-                        except OSError:
-                            error = 'Error has been occurred while renaming folders'
+                            problemInfoFile.close()
+                        except IOError:
+                            error = "Error has been occurred while closing problem meta file"
                             break
                             
-                    # If SOLUTION or CHEKER file doesn't exist then it's an error
-                    else:
-                        error = 'There is no \'SOLUTION\' or \'CHECKER\' directory'
-                        break
-                                     
-                    problemInformationPath = '%s/%s.txt' % (tmpPath, problemName)
-                    
-                    try:
-                        problemInformation = open(problemInformationPath, 'r').read()
-                    except:
+                    except IOError:
                         error = 'Error has been occurred while reading problem meta file(.txt)'
                         break
                     
@@ -878,22 +941,20 @@ def server_manage_problem():
                     
                     Problem meta information(.txt) file needs to be decoded as well as problem folder name
                     '''
-                    problemInformation = problemInformation.decode('cp949')
+                    if isFromWindow:
+                        problemInformation = problemInformation.decode('cp949')
                     
                     nextIndex += 1
                     # slice and make key, value pairs from csv form
                     problemInformation = problemInformation.replace(' ', '').split(',')
 
-                    difficulty = 0
-                    solutionCheckType = 0
-                    limitedTime = 0
-                    limitedMemory = 0
-
                     # re-slice and make information from 'key=value'
                     for eachInformation in problemInformation:
                         key, value = eachInformation.split('=')
                         if key == 'Name':
-                            problemName = value
+                            # 'value' doesn't have a space character because of 'replace(' ', '')' command above
+                            # Don't use 'value' for problem name
+                            problemName = problemName.replace('\ ', ' ')
                         elif key == 'Difficulty':
                             difficulty = int(value)
                         elif key == 'SolutionCheckType':
@@ -902,6 +963,7 @@ def server_manage_problem():
                             limitedTime = int(value)
                         elif key == 'LimitedMemory':
                             limitedMemory = int(value)
+                    
                             
                     numberOfProblemsOfDifficulty[difficulty - 1] += 1
 
@@ -911,19 +973,18 @@ def server_manage_problem():
                                              str(problemId) + '_' + problemName.replace(' ', ''))
                     
                     newProblemInfo = nextIndex, problemId, problemName, solutionCheckType, limitedTime, limitedMemory, problemPath
-                    error = add_new_problem(newProblemInfo)
+                    if add_new_problem(newProblemInfo): break
                     
-                    if error:
+                    newProblemPath = '%s/%s_%s' % (tmpPath, problemName, solutionCheckType)
+                    
+                    if change_directory_to(newProblemPath): break
+                                        
+                    try:
+                        # current path : ../tmp/problemName_solutionCheckType
+                        inOutCases = [filename for filename in os.listdir(os.getcwd())]
+                    except OSError:
+                        error = "Error has been occurred while listing file names"
                         break
-                    
-                    # rename new problem folder
-                    os.chdir('%s/%s_%s' % (tmpPath, 
-                                           problemName, 
-                                           solutionCheckType))
-                    
-                    # current path : ../tmp/problemName_solutionCheckType
-                    
-                    inOutCases = [filename for filename in os.listdir(os.getcwd())]
 
                     for filename in inOutCases:
                         rowFileName = filename
@@ -935,43 +996,36 @@ def server_manage_problem():
                         except OSError:
                             error = 'Error has been occurred while renaming files\' name'
                             break
-                        
-                    # remove space on file/directory names
-                    try:
-                        subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
-                    except OSError:
-                        error = 'Error has occurred while removing space of folder name'
-                        break
+
+                    '''
+                    @@ Changing directory/file name
                     
-                    # put problemId ahead
-                    try:
-                        subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
-                    except OSError:
-                        error = 'Error has occurred while renaming a folder'
-                        break
-                        
-                    problemName = problemName.replace(' ', '')
+                    work flow
+                    1. Remove space on its name
+                    2. Attach problem ID ahead of the name
                     
-                    os.chdir('%s' % (tmpPath))
-                    # current path : ../tmp
-                   
-                    # remove space on file/directory names
-                    try:
-                        subprocess.call('for f in *; do mv "$f" `echo $f|sed "s/ //g"`;done', shell=True)
-                    except OSError:
-                        error = 'Error has occurred while removing space of folder name'
-                        break
+                    work place
+                    1. Problems
+                    2. Problems/problemID_problemName
+                    '''
+                    currentPath, error = get_current_path()
+                    if error: break
                     
-                    try:
-                        subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' % (problemId), shell=True)
-                    except OSError:
-                        error = 'Error has occurred while renaming a folder'
-                        break
-                        
+                    # inside of SOLUTION or CHECKER folder
+                    if remove_space_from_names_in(currentPath): break
+                    if attach_string_ahead_of(currentPath, problemId): break
+                    
+                    # move to outside of the folder
+                    if change_directory_to(tmpPath): break
+                    
+                    # inside of Problem folder
+                    if remove_space_from_names_in(currentPath): break
+                    if attach_string_ahead_of(currentPath, problemId): break
+
                     # create final goal path
                     if not os.path.exists(problemPath):
                         os.makedirs(problemPath)
-                    
+                        
                     problemName = problemName.replace(' ', '')
                     problemDescriptionPath = '%s/%s_%s' % (problemDescriptionsPath, problemId, problemName)
                     if not os.path.exists(problemDescriptionPath):
@@ -981,7 +1035,7 @@ def server_manage_problem():
                         # after all, move the problem into 'Problems' folder
                         subprocess.call('mv %s/* %s/' % (tmpPath, problemPath), shell=True)
                     except OSError :
-                        error = 'Error has occurred while moving new problem'
+                        error = 'Error has been occurred while moving new problem'
                         break
                     
                     try:
@@ -989,15 +1043,11 @@ def server_manage_problem():
                     except:
                         error = 'problem pdf doesn\'s exist'
                     
-                if error:
-                    break
+                if error: break
                 
             else:
-                error = delete_problem(int(form))
-                
-                if error:
-                    break
-        
+                if delete_problem(int(form)): break
+                        
         if error:
             return render_template('/server_manage_problem.html', 
                                    error = error, 
@@ -1067,8 +1117,7 @@ def server_manage_user():
         for form in request.form:
             error = delete_member(form)
             
-            if error:
-                break
+            if error: break
             
         if not error:
             return redirect(url_for('.server_manage_user'))
@@ -1126,16 +1175,14 @@ def server_add_user():
                         newUser[index - 1][keys['collegeIndex']] = collegeIndex
                         error, newUser[index - 1][keys['collegeName']] = get_college_name(collegeIndex)
                         
-                        if error:
-                            break
+                        if error: break
                     
                     elif value == 'department':
                         departmentIndex = data.split()[0]
                         newUser[index - 1][keys['departmentIndex']] = departmentIndex
                         error, newUser[index - 1][keys['departmentName']] = get_department_name(departmentIndex)
                                                         
-                        if error:
-                            break
+                        if error: break
 
             if error:
                 return render_template('/server_add_user.html', 
@@ -1186,15 +1233,13 @@ def server_add_user():
                                     newUser[keys['collegeIndex']] = value
                                     error, newUser[keys['collegeName']] = get_college_name(value)
                                     
-                                    if error:
-                                        break
+                                    if error: break
                                         
                                 elif key == 'department':
                                     newUser[keys['departmentIndex']] = value
                                     error, newUser[keys['departmentName']] = get_department_name(value)
                                     
-                                    if error:
-                                        break
+                                    if error: break
                                         
                                 else:
                                     error = 'Try again after check the manual'
