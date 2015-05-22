@@ -11,30 +11,30 @@ class InterfaceGrade(object):
         
         
     def Compile(self):
-        logging.debug(self.parameter.stdNum + ' compile start')
+        logging.debug(self.parameter.saveDirectoryName + ' compile start')
         _compile = CompileTools.CompileTools(self.parameter.filePath, self.parameter.usingLang,
                                              self.parameter.version, self.parameter.runFileName)
         success = _compile.CodeCompile()
         
-        logging.debug(self.parameter.stdNum + ' compile end')
-        return success, self.parameter.stdNum, self.parameter.problemNum,\
-               self.parameter.courseNum, self.parameter.submitCount
+        logging.debug(self.parameter.saveDirectoryName + ' compile end')
+        
+        return success
         
     def Evaluation(self):
         score = 0
-        logging.debug(self.parameter.stdNum + ' execution start')
+        logging.debug(self.parameter.saveDirectoryName + ' execution start')
         
         execution = ExecutionTools.ExecutionTools(self.parameter)
             
         success, runTime, usingMem = execution.Execution()
-        logging.debug(self.parameter.stdNum + ' execution end')
+        logging.debug(self.parameter.saveDirectoryName + ' execution end')
         
         if success == 'Grading':
-            logging.debug(self.parameter.stdNum + ' grade start')
+            logging.debug(self.parameter.saveDirectoryName + ' grade start')
             evaluation = GradingTools.GradingTools(self.parameter)
              
             success, score = evaluation.Grade()
-            logging.debug(self.parameter.stdNum + ' grade end')
+            logging.debug(self.parameter.saveDirectoryName + ' grade end')
             
         print success, score, runTime, usingMem
         sys.exit()
