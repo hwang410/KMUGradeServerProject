@@ -28,18 +28,17 @@ def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
                                    ' python /gradeprogram/rungrade.py ')
 
     
-    os.mkdir(ROOT_CONTAINER_DIRECTORY + sharingDirName)
+    os.mkdir(sharingDirName)
     print 'program start'
     message = Popen(containerCommand + argsList, shell=True, stdout=PIPE)
     
-    while message.pool() == None:
+    while message.poll() == None:
         time.sleep(0.01)
     
     messageLines = message.stdout.readlines()
+    os.system('rm -rf ' + sharingDirName)
     
     resultUpdate(messageLines[-1], stdNum, problemNum, courseNum, submitCount)
-    
-    os.system('rm -rf ' + sharingDirName)
     
 @app.task(name = 'task.ServerOn')
 def ServerOn():
