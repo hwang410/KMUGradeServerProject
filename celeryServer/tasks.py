@@ -9,26 +9,28 @@ from subprocess import Popen, PIPE
 from billiard import current_process
 
 MAX_CONTAINER_COUNT = 4
+ROOT_CONTAINER_DIRECTORY = '/container'
 
 @app.task(name = 'task.Grade')
 def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
           limitTime, limitMemory, usingLang, version, courseNum, submitCount, problemName):
     worker_num = current_process().index % MAX_CONTAINER_COUNT + 1
     
-    argsList = "%s %s %s %s %s %i %i %i %s %s %s %i %s" % (filePath, problemPath,
-                                                           stdNum, problemNum,
-                                                           gradeMethod, caseCount,
-                                                           limitTime, limitMemory,
-                                                           usingLang, version,
-                                                           courseNum, submitCount,
-                                                           problemName)
-    containerCreadeCommand = "%s%i%s" % ('sudo docker exec grade_container',
-                                         worker_num,
-                                         ' python /gradeprogram/rungrade.py ')
-    dirName = "%i/%s%s%s%i/" % (worker_num, stdNum, problemNum, courseNum, submitCount)
+    saveDirectoryName = "%s%s%s%i" % (stdNum, problemNum, courseNum, submitCount)
+    sharingDirName = "%s%i/%s" % (ROOT_CONTAINER_DIRECTORY, worker_num,
+                            saveDirectoryName)
+    argsList = "%s %s %s %s %i %i %i %s %s %s" % (filePath, problemPath,
+                                                  saveDirectoryName, gradeMethod,
+                                                  caseCount, limitTime,
+                                                  limitMemory, usingLang,
+                                                  version, problemName)
+    containerCommand = "%s%i%s" % ('sudo docker exec grade_container', worker_num,
+                                   ' python /gradeprogram/rungrade.py ')
 
+    
+    os.mkdir(ROOT_CONTAINER_DIRECTORY + sharingDirName)
     print 'program start'
-    message = Popen(containerCreadeCommand + argsList, shell=True, stdout=PIPE)
+    message = Popen(containerCommand + argsList, shell=True, stdout=PIPE)
     
     while message.pool() == None:
         time.sleep(0.01)
@@ -37,7 +39,7 @@ def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
     
     resultUpdate(messageLines[-1], stdNum, problemNum, courseNum, submitCount)
     
-    os.system('rm -rf container' + dirName)
+    os.system('rm -rf ' + sharingDirName)
     
 @app.task(name = 'task.ServerOn')
 def ServerOn():
