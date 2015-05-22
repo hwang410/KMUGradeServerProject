@@ -7,17 +7,14 @@ class ParameterSetting(object):
     def __init__(self, args):
         self.filePath = args[1]
         self.problemPath = args[2]
-        self.stdNum = args[3]
-        self.problemNum = int(args[4])
-        self.gradeMethod = args[5]
-        self.caseCount = int(args[6])
-        self.limitTime = int(args[7])
-        self.limitMemory = int(args[8])
-        self.usingLang = args[9]
-        self.version = args[10]
-        self.courseNum = int(args[11])
-        self.submitCount = int(args[12])
-        self.problemName = args[13]
+        self.saveDirectoryName = args[3]
+        self.gradeMethod = args[4]
+        self.caseCount = int(args[5])
+        self.limitTime = int(args[6])
+        self.limitMemory = int(args[7])
+        self.usingLang = args[8]
+        self.version = args[9]
+        self.problemName = args[10]
         
         self.answerPath = "%s%s%s%s%s%s" % (self.problemPath, '/', self.problemName, '_', self.gradeMethod, '/')
         
@@ -25,11 +22,9 @@ class ParameterSetting(object):
         self.filePath = "%s%s" % (self.filePath, '/')
         self.runFileName = self.MakeRunFileName()
         
-        dirName = "%s%i%i%i" % (self.stdNum, self.problemNum, self.courseNum, self.submitCount)
-        os.mkdir(dirName)
-        os.chdir(dirName)
+        os.chdir(self.saveDirectoryName)
         
-        logging.debug(self.stdNum + ' parameter setting')
+        logging.debug(self.saveDirectoryName + ' parameter setting')
         
     def MakeRunFileName(self):
         if self.usingLang == 'C' or self.usingLang == 'C++':
