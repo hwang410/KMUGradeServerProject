@@ -235,7 +235,8 @@ def set_array_from_file(files, keys, courseId):
                     for user in newUsers:
                         if user[keys['memberId']] == newUser[keys['memberId']] and\
                            user[keys['collegeIndex']] == newUser[keys['collegeIndex']] and\
-                           user[keys['departmentIndex']] == newUser[keys['departmentIndex']]:
+                           user[keys['departmentIndex']] == newUser[keys['departmentIndex']] and\
+                           user[keys['courseId']] == newUser[keys['courseId']]:
                             error = 'There is a duplicated user ID. Check the file and added user list'
                             return error
                         
