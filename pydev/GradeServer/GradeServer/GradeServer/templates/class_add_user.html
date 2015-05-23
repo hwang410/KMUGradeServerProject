@@ -40,12 +40,11 @@ $(function() {
 
 			// search option index from college index
 			for(var i=0;i<options.length;i++){
-				if(options[i].value.split(' ')[0] == collegeIndex){
+				if(options[i].value.match(/(\d+)/g) == collegeIndex){
 					collegeIndex = i;
 					break;
 				}
 			}
-
 			authority = authority.indexOf("COURSE_ADMINISTRATOR")!=-1 ? 0 : 1;
 
 			document.getElementById(this.id).value=userId;
@@ -242,7 +241,7 @@ $(function() {
 
 				// search option index from college index
 				for(var i=0;i<options.length;i++){
-					if(options[i].value.split(' ')[0] == collegeIndex){
+					if(options[i].value.match(/(\d+)/g) == collegeIndex){
 						collegeIndex = i;
 						break;
 					}
@@ -371,7 +370,7 @@ $(function() {
 
 				// search option index from college index
 				for(var i=0;i<options.length;i++){
-					if(options[i].value.split(' ')[0] == collegeIndex){
+					if(options[i].value.match(/(\d+)/g) == collegeIndex){
 						collegeIndex = i;
 						break;
 					}
