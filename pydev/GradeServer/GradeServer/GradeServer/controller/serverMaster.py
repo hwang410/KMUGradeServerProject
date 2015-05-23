@@ -42,7 +42,6 @@ import zipfile
 import os
 import subprocess
 import glob
-from __builtin__ import None
 
 projectPath='/mnt/shared'
 problemsPath='%s/Problems' % (projectPath) # /mnt/shared/Problems
@@ -649,16 +648,16 @@ def server_manage_collegedepartment():
                     currentTab='colleges'
                     collegeIndex=re.findall('\d+|\D+', form)[1]
                     
-                    error=change_abolishment_relates_college(collegeIndex)
-                    if error: break
+                    if change_abolishment_relates_college(collegeIndex):
+                        break
                                                                 
             elif 'deleteDepartment' in request.form:
                 if 'department' in form:
                     currentTab='departments'
                     departmentIndex=re.findall('\d+|\D+', form)[1]
                     
-                    error=change_abolishment_of_department_true(departmentIndex)
-                    if error: break
+                    if change_abolishment_of_department_true(departmentIndex):
+                        break
                     
         '''
         If there's an error, set flags to False so it will be reached 'return' command at the last in this function
