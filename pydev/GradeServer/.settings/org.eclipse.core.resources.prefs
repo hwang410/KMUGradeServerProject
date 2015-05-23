@@ -49,6 +49,7 @@ encoding//GradeServer/GradeServer/model/teams.py=utf-8
 encoding//GradeServer/GradeServer/py3Des/__init__.py=utf-8
 encoding//GradeServer/GradeServer/resource/__init__.py=utf-8
 encoding//GradeServer/GradeServer/resource/languageResources.py=utf-8
+encoding//GradeServer/GradeServer/resource/messageResources.py=utf-8
 encoding//GradeServer/GradeServer/utils/__init__.py=utf-8
 encoding//GradeServer/GradeServer/utils/articleParameter.py=utf-8
 encoding//GradeServer/GradeServer/utils/checkInvalidAccess.py=utf-8

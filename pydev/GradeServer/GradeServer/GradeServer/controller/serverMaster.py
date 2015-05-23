@@ -36,6 +36,7 @@ from GradeServer.resource.enumResources import ENUMResources
 from GradeServer.resource.sessionResources import SessionResources
 from GradeServer.resource.otherResources import OtherResources
 from GradeServer.resource.languageResources import LanguageResources
+from GradeServer.resource.messageResources import MessageResources
 
 import re
 import zipfile
@@ -188,7 +189,7 @@ def add_relation_in_college_department(collegeIndex, departmentIndex):
         dao.commit()
     except:
         error='Error has been occurred while making new relation of department'
-
+        
     return error
                         
                                             
