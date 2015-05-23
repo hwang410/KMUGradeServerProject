@@ -102,20 +102,29 @@ def initialize_tripleDes_class():
     return tripleDes
 
 def get_college_name(collegeIndex):
-    college_name = dao.query(Colleges).\
-                       filter(Colleges.collegeIndex == collegeIndex).\
-                       first().\
-                       collegeName
-                       
-    return college_name
+    error = None
+    
+    try:
+        college_name = dao.query(Colleges).\
+                           filter(Colleges.collegeIndex == collegeIndex).\
+                           first().\
+                           collegeName
+    except:
+        error = 'Error has been occurred while searching college name'
+                   
+    return error, college_name
 
 def get_department_name(departmentIndex):
-    department_name = dao.query(Departments).\
-                          filter(Departments.departmentIndex == departmentIndex).\
-                          first().\
-                          departmentName
-                          
-    return department_name
+    error = None
+    try:
+        department_name = dao.query(Departments).\
+                              filter(Departments.departmentIndex == departmentIndex).\
+                              first().\
+                              departmentName
+    except:
+        error = 'Error has been occurred while searching department name'
+                      
+    return error, department_name
 '''
 @ Get form value and set into array
 
@@ -185,23 +194,12 @@ def set_array_from_csv_form(keys, csv_form, array):
                     array[keys['memberName']] = value
                 elif key == 'college':
                     array[keys['collegeIndex']] = value
-                    try:
-                        array[keys['collegeName']] = dao.query(Colleges).\
-                                                         filter(Colleges.collegeIndex == value).\
-                                                         first().\
-                                                         collegeName
-                    except:
-                        pass
+                    error, array[keys['collegeName']] = get_college_name(value)
+                    if error: pass
                 elif key == 'department':
                     array[keys['departmentIndex']] = value
-                    try:
-                        array[keys['departmentName']] = dao.query(Departments).\
-                                                            filter(Departments.departmentIndex == value).\
-                                                            first().\
-                                                            departmentName
-                                         
-                    except:
-                        pass
+                    error, array[keys['departmentName']] = get_department_name(value)
+                    if error: pass
                 else:
                     error = 'Try again after check the manual'
                     break
@@ -287,7 +285,50 @@ def get_all_problems():
         allProblems = []
         
     return error, allProblems
+
+def delete_registered_problem(courseId, problemId):
+    error = None
+    
+    try:
+        targetProblem = dao.query(RegisteredProblems).\
+                            filter(and_(RegisteredProblems.courseId == courseId,
+                                        RegisteredProblems.problemId == problemId)).\
+                            first()
         
+        dao.delete(targetProblem)
+        dao.commit()
+    except:
+        error = 'Error has been occurred while searching the problem to delete'
+        
+    return error
+                
+ 
+def update_registered_problem_info(courseId, problemId, key_dict):
+    error = None
+    
+    try:
+        dao.query(RegisteredProblems).\
+            filter(and_(RegisteredProblems.courseId == courseId,
+                        RegisteredProblems.problemId == problemId)).\
+            update(key_dict)
+        dao.commit()
+    except:
+        error = 'Error has been occurred while searching the problem to edit'
+        
+    return error
+                        
+def get_colleges():
+    try:
+        allColleges=dao.query(Colleges).\
+                        filter(Colleges.isAbolished==\
+                               SETResources().const.FALSE).\
+                        all()
+    except:
+        allColleges=[]
+        
+    return allColleges
+
+                                               
 @GradeServer.route('/classmaster/user_submit')
 @check_invalid_access
 @login_required
@@ -338,7 +379,6 @@ def class_manage_problem():
     global projectPath
     global newProblems
     
-    error = None
     modalError = None
 
     error, allProblems = get_all_problems()
@@ -375,27 +415,9 @@ def class_manage_problem():
             if DELETE in form:
                 isNewProblem = False
                 courseId,problemId = form.split('_')[1:]
-                try:
-                    targetProblem = dao.query(RegisteredProblems).\
-                                        filter(and_(RegisteredProblems.courseId == courseId,
-                                                    RegisteredProblems.problemId == problemId)).\
-                                        first()
-                    
-                    dao.delete(targetProblem)
-                    dao.commit()
-                except:
-                    dao.rollback()
-                    error = 'Error has been occurred while searching the problem to delete'
-                    return render_template('/class_manage_problem.html',
-                                           error = error, 
-                                           SETResources = SETResources,
-                                           SessionResources = SessionResources,
-                                           LanguageResources = LanguageResources,
-                                           modalError = modalError,
-                                           allProblems = allProblems,
-                                           ownCourses = ownCourses,
-                                           ownProblems = ownProblems)
-                    
+                if delete_registered_problem(courseId, problemId):
+                    break
+                                    
             elif EDIT in form:
                 isNewProblem = False
                 editTarget,courseId,problemId,targetData = form[5:].split('_')
@@ -410,25 +432,9 @@ def class_manage_problem():
                     if registeredCourse.courseId == courseId and\
                        registeredProblem.problemId == int(problemId):
                         kwargs = { editTarget : targetData }
-                        try:
-                            dao.query(RegisteredProblems).\
-                                filter(and_(RegisteredProblems.courseId == courseId,
-                                            RegisteredProblems.problemId == problemId)).\
-                                update(dict(**kwargs))
-                            dao.commit()
-                        except:
-                            dao.rollback()
-                            error = 'Error has been occurred while searching the problem to edit'
-                            return render_template('/class_manage_problem.html',
-                                                   error = error, 
-                                                   SETResources = SETResources,
-                                                   SessionResources = SessionResources,
-                                                   LanguageResources = LanguageResources,
-                                                   modalError = modalError,
-                                                   allProblems = allProblems,
-                                                   ownCourses = ownCourses,
-                                                   ownProblems = ownProblems)
-                        
+                        if update_registered_problem_info(courseId, problemId, dict(**kwargs)):
+                            break
+                                                
             # addition problem
             else:
                 value,index = re.findall('\d+|\D+',form)
@@ -436,6 +442,17 @@ def class_manage_problem():
                 data = request.form[form]
                 newProblem[index-1][keys[value]] = data
         
+        if error:
+            return render_template('/class_manage_problem.html',
+                                   error = error, 
+                                   SETResources = SETResources,
+                                   SessionResources = SessionResources,
+                                   LanguageResources = LanguageResources,
+                                   modalError = modalError,
+                                   allProblems = allProblems,
+                                   ownCourses = ownCourses,
+                                   ownProblems = ownProblems)
+            
         # when 'add' button is pushed,insert new problem into RegisteredProblems table
         if isNewProblem:
             for index in range(numberOfNewProblems+1):
@@ -729,14 +746,15 @@ def class_add_user():
         allUsers = (dao.query(Members,
                               Colleges,
                               Departments).\
-                        filter(or_(Members.authority == SETResources().const.USER,
-                                   Members.authority == SETResources().const.COURSE_ADMINISTRATOR)).\
                         join(DepartmentsDetailsOfMembers,
                              Members.memberId == DepartmentsDetailsOfMembers.memberId).\
                         join(Colleges,
                              DepartmentsDetailsOfMembers.collegeIndex == Colleges.collegeIndex).\
                         join(Departments,
-                             DepartmentsDetailsOfMembers.departmentIndex == Departments.departmentIndex)).\
+                             DepartmentsDetailsOfMembers.departmentIndex == Departments.departmentIndex).\
+                        filter(or_(Members.authority == SETResources().const.USER,
+                                   Members.authority == SETResources().const.COURSE_ADMINISTRATOR)).\
+                        group_by(Members.memberId)).\
                    all()
     except:
         error = 'Error has been occurred while searching all users'
@@ -752,23 +770,9 @@ def class_add_user():
                                authorities = authorities,
                                newUsers = newUsers)
     
+    allColleges = get_colleges()
     
-    try:
-        allColleges = dao.query(Colleges).\
-                          all()
-    except:
-        error = 'Error has been occurred while searching all colleges'
-        return render_template('/class_add_user.html',
-                               error = error, 
-                               SETResources = SETResources,
-                               SessionResources = SessionResources,
-                               LanguageResources = LanguageResources,
-                               ownCourses = ownCourses,
-                               allUsers = allUsers,
-                               allColleges = [],
-                               allDepartments = [],
-                               authorities = authorities,
-                               newUsers = newUsers)
+    
     try:
         allDepartments = (dao.query(DepartmentsOfColleges,
                                     Colleges,
@@ -776,7 +780,9 @@ def class_add_user():
                               join(Colleges,
                                    Colleges.collegeIndex == DepartmentsOfColleges.collegeIndex).\
                               join(Departments,
-                                   Departments.departmentIndex == DepartmentsOfColleges.departmentIndex)).\
+                                   Departments.departmentIndex == DepartmentsOfColleges.departmentIndex).\
+                              filter(Colleges.isAbolished == SETResources().const.FALSE).\
+                              filter(Departments.isAbolished == SETResources().const.FALSE)).\
                          all()
     except:
         error = 'Error has been occurred while searching all departments'

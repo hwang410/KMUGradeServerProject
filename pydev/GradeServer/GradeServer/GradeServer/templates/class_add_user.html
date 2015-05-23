@@ -10,6 +10,7 @@ var keys=['courseId', 'userId', 'username',
 var placeholders=['Course Id', 'ID', 'Name', 
 					  'College', 'Department', 'Authority'];
 var formsize=['', 'small', 'mini', 'medium', 'medium', 'medium'];
+
 $(function() {
 	// To do.
 	// now it shows all members having 'user' authority.
@@ -17,9 +18,7 @@ $(function() {
 	var allUsers=[
 		{%- for user, college, department in allUsers %}
 		{ value: "{{ user.memberId }} {{ user.memberName }}", 
-		data: "{{ user.memberId }} {{ user.memberName }} "+
-			   "{{ college.collegeIndex }} {{ department.departmentIndex }} "+
-			   "{{ department.departmentName }} {{ user.authority }}" },
+		data: "{{ user.memberId }} {{ user.memberName }} {{ college.collegeIndex }} {{ department.departmentIndex }} {{ department.departmentName }} {{ user.authority }}" },
 		{% endfor -%}
 		{ value: "", data: "" }
 	];
@@ -27,26 +26,31 @@ $(function() {
 	$("#userId1").autocomplete({
 		lookup: allUsers,
 		onSelect: function(suggestion){
-			var data=suggestion.data;
-			var userId=data.split(" ")[0];
-			var userName=data.split(" ")[1];
-			var collegeIndex=data.split(" ")[2];
-			var departmentIndex=data.split(" ")[3];
-			var departmentName=data.split(" ")[4];
-			var authority=data.split(" ")[5];
+			var data=suggestion.data.split(" ");
+			var userId=data[0];
+			var userName=data[1];
+			var collegeIndex=data[2];
+			var departmentIndex=data[3];
+			var departmentName=data[4];
+			var authority=data[5];
 			
-			if(authority.indexOf("COURSE_ADMINISTRATOR")!=-1){
-				authority=0;
-			}
-			else{
-				authority=1;
+			var userIdx=this.id.match(/(\d+)/g);
+
+			var options=document.getElementById("college"+userIdx);
+
+			// search option index from college index
+			for(var i=0;i<options.length;i++){
+				if(options[i].value.split(' ')[0] == collegeIndex){
+					collegeIndex = i;
+					break;
+				}
 			}
 
-			var userIdx=this.id.match(/(\d+)/g);
-			
+			authority = authority.indexOf("COURSE_ADMINISTRATOR")!=-1 ? 0 : 1;
+
 			document.getElementById(this.id).value=userId;
 			document.getElementById("username"+userIdx).value=userName;
-		
+
 			// set predefined data
 			document.getElementById("college"+userIdx).innerHTML =
 				"<option selected>"+
@@ -54,7 +58,7 @@ $(function() {
 				"</option>";
 			document.getElementById("department"+userIdx).innerHTML =
 				"<option selected>"+
-					departmentIndex+' '+ departmentName+
+					departmentIndex+' '+departmentName+
 				"</option>";
 			document.getElementById("authority"+userIdx).innerHTML =
 				"<option selected>"+
@@ -224,23 +228,28 @@ $(function() {
 		$("#userId"+numOfRow).autocomplete({
 			lookup: allUsers,
 			onSelect: function(suggestion){
-				var data=suggestion.data;
-				var userId=data.split(" ")[0];
-				var userName=data.split(" ")[1];
-				var collegeIndex=data.split(" ")[2];
-				var departmentIndex=data.split(" ")[3];
-				var departmentName=data.split(" ")[4];
-				var authority=data.split(" ")[5];
+				var data=suggestion.data.split(" ");
+				var userId=data[0];
+				var userName=data[1];
+				var collegeIndex=data[2];
+				var departmentIndex=data[3];
+				var departmentName=data[4];
+				var authority=data[5];
 				
-				if(authority.indexOf("COURSE_ADMINISTRATOR")!=-1){
-					authority=0;
-				}
-				else{
-					authority=1;
+				var userIdx=this.id.match(/(\d+)/g);
+
+				var options=document.getElementById("college"+userIdx);
+
+				// search option index from college index
+				for(var i=0;i<options.length;i++){
+					if(options[i].value.split(' ')[0] == collegeIndex){
+						collegeIndex = i;
+						break;
+					}
 				}
 
-				var userIdx=this.id.match(/(\d+)/g);
-				
+				authority = authority.indexOf("COURSE_ADMINISTRATOR")!=-1 ? 0 : 1;
+
 				document.getElementById(this.id).value=userId;
 				document.getElementById("username"+userIdx).value=userName;
 
@@ -348,22 +357,27 @@ $(function() {
 		$("#userId1").autocomplete({
 			lookup: allUsers,
 			onSelect: function(suggestion){
-				var data=suggestion.data;
-				var userId=data.split(" ")[0];
-				var userName=data.split(" ")[1];
-				var collegeIndex=data.split(" ")[2];
-				var departmentIndex=data.split(" ")[3];
-				var departmentName=data.split(" ")[4];
-				var authority=data.split(" ")[5];
+				var data=suggestion.data.split(" ");
+				var userId=data[0];
+				var userName=data[1];
+				var collegeIndex=data[2];
+				var departmentIndex=data[3];
+				var departmentName=data[4];
+				var authority=data[5];
 				
-				if(authority.indexOf("COURSE_ADMINISTRATOR")!=-1){
-					authority=0;
-				}
-				else{
-					authority=1;
+				var userIdx=this.id.match(/(\d+)/g);
+
+				var options=document.getElementById("college"+userIdx);
+
+				// search option index from college index
+				for(var i=0;i<options.length;i++){
+					if(options[i].value.split(' ')[0] == collegeIndex){
+						collegeIndex = i;
+						break;
+					}
 				}
 
-				var userIdx=this.id.match(/(\d+)/g);
+				authority = authority.indexOf("COURSE_ADMINISTRATOR")!=-1 ? 0 : 1;
 				
 				document.getElementById(this.id).value=userId;
 				document.getElementById("username"+userIdx).value=userName;
@@ -435,6 +449,7 @@ $(function() {
 			<div class="modal-body">
 				<p>
 					You can edit form data until you click 'Done'
+					It will show you only one of college and department for plural major/minor student.
 				</p>
 				<div style="text-align:right">
 					<button class="btn" id="addline" type="button">
@@ -784,7 +799,6 @@ function RowOnClickController(IdxOfRow){
 	}
 	{% endfor -%}
 }
-
 
 </script>
 {% endblock -%}
