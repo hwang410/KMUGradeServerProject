@@ -25,8 +25,8 @@
 				<div class="span3">
 					{{ LanguageResources.const.Password[session['language']] }}
 				</div>
-				<div class="span2">
-					<input class="input-large" id="pw"
+				<div class="span8">
+					<input class="input-large" id="password"
 							name="password" type="password"
 							placeholder="Input password" 
 							autofocus>
@@ -43,6 +43,7 @@
 							name="passwordConfirm" type="password"
 							placeholder="Confirm password">
 				</div>
+				<div id="errorMessage"></div>
 			</div>
 		</h4>
 		<hr class="hidden-tablet hidden-desktop">
@@ -132,7 +133,7 @@ $(document).ready(function(){
 	$('form').h5Validate();
 });
 
-pw = document.getElementById("pw");
+pw = document.getElementById("password");
 pw_confirm = document.getElementById("pw_confirm");
 error = document.getElementById("errorAlert");
 color="#fef1ec";
@@ -142,23 +143,9 @@ $("#confirm").click(function(){
 	if(pw.value && pw_confirm.value){
 		document.getElementById("InfoForm").submit();
 	}
-	else{
-		if(pw.value==""){
-			pw.className += " ui-state-error";
-		}
-		else{
-			pw.className = "input-large ui-state-valid" ;
-		}
-		if(pw_confirm.value==""){
-			pw_confirm.className += " ui-state-error";
-		}
-		else{
-			pw.className = "input-large ui-state-valid";
-		}
-	}
 });
 
-$("#pw").change(function(){
+$("#password").change(function(){
 	error.style.display="none";
 	if(pw.value==""){
 		pw.style.background=color;
@@ -176,5 +163,11 @@ $("#pw_confirm").change(function(){
 		pw_confirm.style.background="";
 	}
 });
+
+// Make Passwords Match
+$('#password').blur(function(){
+    $('#pw_confirm').attr('pattern', $('#password').val());
+});
+
 </script>
 {% endblock -%}
