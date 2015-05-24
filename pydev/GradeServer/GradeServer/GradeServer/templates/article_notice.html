@@ -46,7 +46,9 @@
 			<div style="text-align:right">
 			{% if 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
 				<a href="{{ url_for('GradeServer.write', activeTabCourseId = activeTabCourseId, articleIndex =0) }}">
-					<button type="button" class="write">Write <i class="icon-pencil"></i></button>
+					<button type="button" class="write">
+						{{ LanguageResources.const.Write[session['language']] }} <i class="icon-pencil"></i>
+					</button>
 				</a>
 			{% endif %}
 			</div>
@@ -62,24 +64,35 @@
 					<table class="table">
 						<thead>
 							<tr>
-								<td>Num
-								<td>Course Name
-								<td>Title
-								<td>Member ID
-								<td>Date
-								<td>View
-								<td>Like
+								<td>
+									{{ LanguageResources.const.ArticleNum[session['language']] }}
+								<td>
+									{{ LanguageResources.const.Course[session['language']] }}
+									{{ LanguageResources.const.Name[session['language']] }}
+								<td>
+									{{ LanguageResources.const.ArticleTitle[session['language']] }}
+								<td>
+									{{ LanguageResources.const.ArticleMemberId[session['language']] }}
+								<td>
+									{{ LanguageResources.const.ArticleDate[session['language']] }}
+								<td>
+									{{ LanguageResources.const.View[session['language']] }}
+								<td>
+									{{ LanguageResources.const.Like[session['language']] }}
 							</tr>
 						<tbody>
 						<!-- Course Notice -->
 						{% for articleNoticeRecord in articleNoticeRecords %}
 						<tr>
-							<td>Notice
+							<td>
+								{{ LanguageResources.const.Notice[session['language']] }}
 							<td>
 								{% if articleNoticeRecord.courseName %}
-								{{ articleNoticeRecord.courseId }} {{ articleNoticeRecord.courseName }}
+									{{ articleNoticeRecord.courseId }}
+									{{ articleNoticeRecord.courseName }}
 								{% else %}
-								Server Notice
+									{{ LanguageResources.const.Server[session['language']] }}
+									{{ LanguageResources.const.Notice[session['language']] }}
 								{% endif %}
 							
 							<td>
@@ -98,9 +111,9 @@
 								{% endif -%}
 							
 							<td>{% if articleNoticeRecord.writerId %}{{ articleNoticeRecord.writerId }}{% endif %}
-							<td>
+							<td class="shortdate-time">
 								{% if articleNoticeRecord.writtenDate %}
-									<script> var newDate = "{{ articleNoticeRecord.writtenDate }}"; document.write(newDate.substring(2,16)); </script>
+									{{ articleNoticeRecord.writtenDate }}
 								{% endif %}
 							<td>{% if articleNoticeRecord.viewCount %}{{ articleNoticeRecord.viewCount }}{% else %}0{% endif %}
 							<td>{% if articleNoticeRecord.sumOfLikeCount %}{{ articleNoticeRecord.sumOfLikeCount }}{% else %}0{% endif %}
@@ -113,7 +126,11 @@
 					<div class="pagination pagination-centered">
 						<ul>
 							{%- if pages['pageNum'] > pages['BLOCK'] %}
-							<li><a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum = pages['pageNum'] -1) }}"><</a></li>
+							<li>
+								<a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum = pages['pageNum'] -1) }}">
+									<
+								</a>
+							</li>
 							{% endif -%}
 							
 							{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
@@ -129,7 +146,11 @@
 							{% endfor -%}
 							
 							{%- if pages['endPage'] < pages['allPage'] %}
-							<li><a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum =pages['pageNum'] +1) }}">></a></li>
+							<li>
+								<a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum =pages['pageNum'] +1) }}">
+									>
+								</a>
+							</li>
 							{% endif -%}
 						</ul>
 					</div>
@@ -141,13 +162,21 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<td>Num
-							<td>Course Name
-							<td>Title
-							<td>Member ID
-							<td>Date
-							<td>View
-							<td>Like
+							<td>
+								{{ LanguageResources.const.ArticleNum[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Course[session['language']] }}
+								{{ LanguageResources.const.Name[session['language']] }}
+							<td>
+								{{ LanguageResources.const.ArticleTitle[session['language']] }}
+							<td>
+								{{ LanguageResources.const.ArticleMemberId[session['language']] }}
+							<td>
+								{{ LanguageResources.const.ArticleDate[session['language']] }}
+							<td>
+								{{ LanguageResources.const.View[session['language']] }}
+							<td>
+								{{ LanguageResources.const.Like[session['language']] }}
 						</tr>
 					</thead>
 					
@@ -155,12 +184,15 @@
 					<!-- Course Notice -->
 					{% for articleNoticeRecord in articleNoticeRecords %}
 					<tr>
-						<td>Notice
+						<td>
+							{{ LanguageResources.const.Notice[session['language']] }}
 						<td>
 							{% if articleNoticeRecord.courseName %}
-							{{ articleNoticeRecord.courseId }} {{ articleNoticeRecord.courseName }}
+								{{ articleNoticeRecord.courseId }}
+								{{ articleNoticeRecord.courseName }}
 							{% else %}
-							Server Notice
+								{{ LanguageResources.const.Server[session['language']] }}
+								{{ LanguageResources.const.Notice[session['language']] }}
 							{% endif %}
 						
 						<td>
@@ -178,13 +210,26 @@
 								[{{ articleNoticeRecord.replyCount }}]
 							{% endif -%}
 						
-						<td>{% if articleNoticeRecord.writerId %}{{ articleNoticeRecord.writerId }}{% endif %}
 						<td>
-							{% if articleNoticeRecord.writtenDate %}
-								<script> var newDate = "{{ articleNoticeRecord.writtenDate }}"; document.write(newDate.substring(2,16)); </script>
+							{% if articleNoticeRecord.writerId %}
+								{{ articleNoticeRecord.writerId }}
 							{% endif %}
-						<td>{% if articleNoticeRecord.viewCount %}{{ articleNoticeRecord.viewCount }}{% else %}0{% endif %}
-						<td>{% if articleNoticeRecord.sumOfLikeCount %}{{ articleNoticeRecord.sumOfLikeCount }}{% else %}0{% endif %}
+						<td class="shortdate-time">
+							{% if articleNoticeRecord.writtenDate %}
+								{{ articleNoticeRecord.writtenDate }}
+							{% endif %}
+						<td>
+							{% if articleNoticeRecord.viewCount %}
+								{{ articleNoticeRecord.viewCount }}
+							{% else %}
+								0
+							{% endif %}
+						<td>
+							{% if articleNoticeRecord.sumOfLikeCount %}
+								{{ articleNoticeRecord.sumOfLikeCount }}
+							{% else %}
+								0
+							{% endif %}
 					</tr>
 					{% endfor %}
 					</tbody>
@@ -194,7 +239,11 @@
 				<div class="pagination pagination-centered">
 					<ul>
 						{%- if pages['pageNum'] > pages['BLOCK'] %}
-						<li><a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum = pages['pageNum'] -1) }}"><</a></li>
+						<li>
+							<a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum = pages['pageNum'] -1) }}">
+								<
+							</a>
+						</li>
 						{% endif -%}
 						
 						{%- for i in range (pages['startPage'], pages['endPage'] +1) %}
@@ -210,7 +259,11 @@
 						{% endfor -%}
 						
 						{%- if pages['endPage'] < pages['allPage'] %}
-						<li><a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum =pages['pageNum'] +1) }}">></a></li>
+						<li>
+							<a href="{{ url_for ('GradeServer.article_notice', activeTabCourseId = activeTabCourseId, pageNum =pages['pageNum'] +1) }}">
+								>
+							</a>
+						</li>
 						{% endif -%}
 					</ul>
 				</div>

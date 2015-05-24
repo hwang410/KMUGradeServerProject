@@ -300,8 +300,10 @@ $('.carousel .item').each(function(){
 
 $(".shortdate").each(function(){
 	for(var i=0;i<2;i++){
-		var originalDate = $(this)[0].innerHTML;
-		$(this).text(originalDate.split(' ')[0]);
+		$(this).text($(this)[0].innerHTML.split(' ')[0]);
 	}
 });
 
+$(".shortdate-time").each(function(){
+	$(this).text($(this)[0].innerHTML.trim().substring(2,16));
+});
