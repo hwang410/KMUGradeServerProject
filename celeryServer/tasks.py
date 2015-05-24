@@ -66,28 +66,4 @@ def resultUpdate(messageLine, stdNum, problemNum, courseNum, submitCount):
     dataUpdate = DBUpdate.DBUpdate(stdNum, problemNum, courseNum, submitCount)
     messageParaList = messageLine.split() 
     
-    if len(messageParaList) != 4:
-        dataUpdate.UpdateServerError()
-    
-    result = messageParaList[0]
-    score = messageParaList[1]
-    runTime = messageParaList[2]
-    usingMem = messageParaList[3]
-    
-    if result == 'WrongAnswer':
-        dataUpdate.SubmittedRecordsOfProblems_WrongAnswer(result, score, runTime, usingMem)
-    
-    elif result == 'TimeOver':
-        dataUpdate.SubmittedRecordsOfProblems_TimbeOver(result, score, runTime, usingMem)
-    
-    elif result == 'Solved':
-        dataUpdate.SubmittedRecordsOfProblems_Solved(result, score, runTime, usingMem)
-        
-    elif result == 'RunTimeError':
-        dataUpdate.SubmittedRecordsOfProblems_RunTimeError(result, score, runTime, usingMem)
-        
-    elif result == 'CompileError':
-        dataUpdate.SubmittedRecordsOfProblems_CompileError(result, score, runTime, usingMem)
-        
-    else:
-        dataUpdate.UpdateServerError()
+    dataUpdate.ResutlUpdate(messageParaList)
