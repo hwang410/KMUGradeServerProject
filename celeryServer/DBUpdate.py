@@ -13,7 +13,7 @@ class DBUpdate(object):
         self.courseNum = courseNum
         self.submitCount = submitCount
         
-    def UpdateSubmissions(self, result, score, runTime, usingMem):
+    def SubmittedRecordsOfProblems_CompileError(self, result, score, runTime, usingMem):
         try:
             db_session.query(Submissions).\
                 filter_by(memberId = self.stdNum,
@@ -25,70 +25,83 @@ class DBUpdate(object):
                             runTime = runTime,
                             usedMemory = usingMem,
                             solutionCheckCount = Submissions.solutionCheckCount+1))
-             
-            if result == 'Solved':
-                self.SubmittedRecordsOfProblems_Solved()
-             
-            elif result == 'TimeOver':
-                self.SubmittedRecordsOfProblems_TimbeOver()
-             
-            elif result == 'RunTimeError':
-                self.SubmittedRecordsOfProblems_RunTimeError()
-             
-            elif result == 'WrongAnswer':
-                self.SubmittedRecordsOfProblems_WrongAnswer()
                 
-            elif result == 'CompileError':
-                self.SubmittedRecordsOfProblems_CompileError()
-                
-            else:
-                self.UpdateServerError()
-            
-        except Exception as e:
-            db_session.rollback()
-            self.UpdateServerError()
-        
-    def SubmittedRecordsOfProblems_CompileError(self):
-        try:
             db_session.query(SubmittedRecordsOfProblems).\
                 filter_by(problemId = self.problemNum,
                           courseId = self.courseNum).\
                           update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                       sumOfCompileErrorCount = SubmittedRecordsOfProblems.sumOfCompileErrorCount + 1))
-        
+
+
             db_session.commit()
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError()
+            raise e
             
-    def SubmittedRecordsOfProblems_Solved(self):
+    def SubmittedRecordsOfProblems_Solved(self, result, score, runTime, usingMem):
         try:
+            db_session.query(Submissions).\
+                filter_by(memberId = self.stdNum,
+                          problemId = self.problemNum,
+                          courseId = self.courseNum,
+                          submissionCount = self.submitCount).\
+                update(dict(status = STATUS.index(result),
+                            score = score,
+                            runTime = runTime,
+                            usedMemory = usingMem,
+                            solutionCheckCount = Submissions.solutionCheckCount+1))
+                
             db_session.query(SubmittedRecordsOfProblems).\
                     filter_by(problemId = self.problemNum,
                               courseId = self.courseNum).\
                     update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                 sumOfSolvedCount = SubmittedRecordsOfProblems.sumOfSolvedCount + 1))
-        
+
             db_session.commit()
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError()
+            raise e
             
-    def SubmittedRecordsOfProblems_WrongAnswer(self):
+    def SubmittedRecordsOfProblems_WrongAnswer(self, result, score, runTime, usingMem):
         try:
+            db_session.query(Submissions).\
+                filter_by(memberId = self.stdNum,
+                          problemId = self.problemNum,
+                          courseId = self.courseNum,
+                          submissionCount = self.submitCount).\
+                update(dict(status = STATUS.index(result),
+                            score = score,
+                            runTime = runTime,
+                            usedMemory = usingMem,
+                            solutionCheckCount = Submissions.solutionCheckCount+1))
+                
             db_session.query(SubmittedRecordsOfProblems).\
                     filter_by(problemId = self.problemNum,
                               courseId = self.courseNum).\
                     update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                 sumOfWrongCount = SubmittedRecordsOfProblems.sumOfWrongCount + 1))
-        
+
             db_session.commit()
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError()
+            raise e
             
-    def SubmittedRecordsOfProblems_TimbeOver(self):
+    def SubmittedRecordsOfProblems_TimbeOver(self, result, score, runTime, usingMem):
         try:
+            db_session.query(Submissions).\
+                filter_by(memberId = self.stdNum,
+                          problemId = self.problemNum,
+                          courseId = self.courseNum,
+                          submissionCount = self.submitCount).\
+                update(dict(status = STATUS.index(result),
+                            score = score,
+                            runTime = runTime,
+                            usedMemory = usingMem,
+                            solutionCheckCount = Submissions.solutionCheckCount+1))
+                
             db_session.query(SubmittedRecordsOfProblems).\
                     filter_by(problemId = self.problemNum,
                               courseId = self.courseNum).\
@@ -99,9 +112,21 @@ class DBUpdate(object):
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError()
+            raise e
             
-    def SubmittedRecordsOfProblems_RunTimeError(self):
+    def SubmittedRecordsOfProblems_RunTimeError(self, result, score, runTime, usingMem):
         try:
+            db_session.query(Submissions).\
+                filter_by(memberId = self.stdNum,
+                          problemId = self.problemNum,
+                          courseId = self.courseNum,
+                          submissionCount = self.submitCount).\
+                update(dict(status = STATUS.index(result),
+                            score = score,
+                            runTime = runTime,
+                            usedMemory = usingMem,
+                            solutionCheckCount = Submissions.solutionCheckCount+1))
+                
             db_session.query(SubmittedRecordsOfProblems).\
                     filter_by(problemId = self.problemNum,
                               courseId = self.courseNum).\
@@ -112,9 +137,9 @@ class DBUpdate(object):
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError()
-
-    @staticmethod        
-    def UpdateServerError():
+            raise e
+   
+    def UpdateServerError(self):
         try :
             db_session.query(Submissions).\
                 filter_by(memberId = self.stdNum,
