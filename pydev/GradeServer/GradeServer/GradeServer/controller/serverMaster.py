@@ -15,7 +15,7 @@
 """
 
 from flask import request, render_template, url_for, redirect, session
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, exc
 from datetime import datetime
 from werkzeug.security import generate_password_hash
 
@@ -187,12 +187,14 @@ def delete_relation_in_college_department(collegeIndex, departmentIndex):
 def add_relation_in_college_department(collegeIndex, departmentIndex):
     error=None
     
+    relationToCollege=DepartmentsOfColleges(collegeIndex=collegeIndex,
+                                            departmentIndex=departmentIndex)
+    dao.add(relationToCollege)
+    
     try:
-        relationToCollege=DepartmentsOfColleges(collegeIndex=collegeIndex,
-                                                departmentIndex=departmentIndex)
-        dao.add(relationToCollege)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
+        dao.rollback()
         error='Error has been occurred while making new relation of department'
         
     return error
@@ -201,12 +203,13 @@ def add_relation_in_college_department(collegeIndex, departmentIndex):
 def add_new_college(collegeCode, collegeName):
     error=None
     
+    newCollege=Colleges(collegeCode=collegeCode,
+                        collegeName=collegeName)
+    dao.add(newCollege)
     try:
-        newCollege=Colleges(collegeCode=collegeCode,
-                            collegeName=collegeName)
-        dao.add(newCollege)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
+        dao.rollback()
         error="Error has been occurred while making new college"
         
     return error
@@ -215,12 +218,14 @@ def add_new_college(collegeCode, collegeName):
 def add_new_departments(departmentCode, departmentName):
     error=None
     
+    newDepartment=Departments(departmentCode=departmentCode,
+                              departmentName=departmentName)
+    dao.add(newDepartment)
+    
     try:
-        newDepartment=Departments(departmentCode=departmentCode,
-                                  departmentName=departmentName)
-        dao.add(newDepartment)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
+        dao.rollback()
         error="Error has been occurred while making new department"
     
     return error
@@ -300,17 +305,19 @@ def add_new_problem(newProblemInfo):
     nextIndex, problemId, problemName, solutionCheckType,\
     limitedTime, limitedMemory, problemPath=newProblemInfo
     
+    newProblem=Problems(problemIndex=nextIndex, 
+                        problemId=problemId, 
+                        problemName=problemName, 
+                        solutionCheckType=solutionCheckType, 
+                        limitedTime=limitedTime,
+                        limitedMemory=limitedMemory, 
+                        problemPath=problemPath)
+    dao.add(newProblem)
+    
     try:
-        newProblem=Problems(problemIndex=nextIndex, 
-                            problemId=problemId, 
-                            problemName=problemName, 
-                            solutionCheckType=solutionCheckType, 
-                            limitedTime=limitedTime,
-                            limitedMemory=limitedMemory, 
-                            problemPath=problemPath)
-        dao.add(newProblem)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
+        dao.rollback()
         error="Error has been occurred while adding new problem"
         
     return error
@@ -549,14 +556,16 @@ def rename_file(fromA, toB):
 def add_new_departments_details_of_members(memberId, collegeIndex, departmentIndex):
     error=None
 
+    departmentInformation=\
+        DepartmentsDetailsOfMembers(memberId=memberId, 
+                                    collegeIndex=collegeIndex, 
+                                    departmentIndex=departmentIndex)
+    dao.add(departmentInformation)
+    
     try:
-        departmentInformation=\
-            DepartmentsDetailsOfMembers(memberId=memberId, 
-                                        collegeIndex=collegeIndex, 
-                                        departmentIndex=departmentIndex)
-        dao.add(departmentInformation)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
+        dao.rollback()
         error="Error has been occurred while adding new departments details of members"
     
     return error
@@ -565,12 +574,14 @@ def add_new_departments_details_of_members(memberId, collegeIndex, departmentInd
 def add_new_language_of_course(courseNum, languageIndex):
     error=None
     
+    newCourseLanguage=LanguagesOfCourses(courseId=courseNum, 
+                                           languageIndex=languageIndex)
+    dao.add(newCourseLanguage)
+    
     try:
-        newCourseLanguage=LanguagesOfCourses(courseId=courseNum, 
-                                               languageIndex=languageIndex)
-        dao.add(newCourseLanguage)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
+        dao.rollback()
         error="Error has been occurred while adding new language of course"
     
     return error
@@ -581,17 +592,19 @@ def register_new_course(courseId, courseName, courseDescription,
                                     courseAdministratorId):
     error=None
     
+    newCourse=\
+        RegisteredCourses(courseId=courseId, 
+                          courseName=courseName, 
+                          courseDescription=courseDescription,
+                          startDateOfCourse=startDateOfCourse, 
+                          endDateOfCourse=endDateOfCourse, 
+                          courseAdministratorId=courseAdministratorId)
+    dao.add(newCourse)
+
     try:
-        newCourse=\
-            RegisteredCourses(courseId=courseId, 
-                              courseName=courseName, 
-                              courseDescription=courseDescription,
-                              startDateOfCourse=startDateOfCourse, 
-                              endDateOfCourse=endDateOfCourse, 
-                              courseAdministratorId=courseAdministratorId)
-        dao.add(newCourse)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
+        dao.rollback()
         error="Error has been occurred while registering new course"
     
     return error
@@ -1391,36 +1404,37 @@ def server_add_user():
                         
         elif 'addUser' in request.form:
             for newUser in newUsers:
+                if newUser[keys['authority']]=='Course Admin':
+                    newUser[keys['authority']]=\
+                        SETResources().const.COURSE_ADMINISTRATOR
+                elif newUser[keys['authority']]=='User':
+                    newUser[keys['authority']]=SETResources().const.USER
+                else: # wrong access
+                    error='Wrong access'
+                    return render_template('/server_add_user.html',
+                                           error=error,
+                                           SETResources=SETResources,
+                                           SessionResources=SessionResources,
+                                           LanguageResources=LanguageResources,
+                                           allColleges=allColleges,
+                                           allDepartments=allDepartments,
+                                           authorities=authorities,
+                                           newUsers=newUsers)
+
+                tripleDes=initialize_tripleDes_class()
+                password=str(newUser[keys['memberId']])
+                password=generate_password_hash(tripleDes.encrypt(password))
+
+                freshman=Members(memberId=newUser[keys['memberId']], 
+                                 password=password,
+                                 memberName=newUser[keys['memberName']],
+                                 authority=newUser[keys['authority']],
+                                 signedInDate=datetime.now())
+                dao.add(freshman)
+                
                 try:
-                    if newUser[keys['authority']]=='Course Admin':
-                        newUser[keys['authority']]=\
-                            SETResources().const.COURSE_ADMINISTRATOR
-                    elif newUser[keys['authority']]=='User':
-                        newUser[keys['authority']]=SETResources().const.USER
-                    else: # wrong access
-                        error='Wrong access'
-                        return render_template('/server_add_user.html',
-                                               error=error,
-                                               SETResources=SETResources,
-                                               SessionResources=SessionResources,
-                                               LanguageResources=LanguageResources,
-                                               allColleges=allColleges,
-                                               allDepartments=allDepartments,
-                                               authorities=authorities,
-                                               newUsers=newUsers)
-
-                    tripleDes=initialize_tripleDes_class()
-                    password=str(newUser[keys['memberId']])
-                    password=generate_password_hash(tripleDes.encrypt(password))
-
-                    freshman=Members(memberId=newUser[keys['memberId']], 
-                                     password=password,
-                                     memberName=newUser[keys['memberName']],
-                                     authority=newUser[keys['authority']],
-                                     signedInDate=datetime.now())
-                    dao.add(freshman)
                     dao.commit()
-                except:
+                except exc.SQLAlchemyError:
                     dao.rollback()
                 
                 if add_new_departments_details_of_members(newUser[keys['memberId']],
