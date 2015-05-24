@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from amqp.basic_message import Message
-from __main__ import ERROR
 
 class MessageResources(object):
     from GradeServer.resource import const

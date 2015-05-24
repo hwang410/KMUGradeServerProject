@@ -33,7 +33,7 @@ from GradeServer.model.problems import Problems
 from GradeServer.model.registeredProblems import RegisteredProblems
 from GradeServer.model.departmentsDetailsOfMembers import DepartmentsDetailsOfMembers
 from GradeServer.model.submissions import Submissions
-from sqlalchemy import and_,or_,func
+from sqlalchemy import and_,or_,func, exc
 from datetime import datetime
 
 from GradeServer.resource.setResources import SETResources
@@ -294,15 +294,16 @@ def get_all_problems():
 def delete_registered_problem(courseId, problemId):
     error = None
     
-    try:
-        targetProblem = dao.query(RegisteredProblems).\
-                            filter(and_(RegisteredProblems.courseId == courseId,
-                                        RegisteredProblems.problemId == problemId)).\
-                            first()
+    targetProblem = dao.query(RegisteredProblems).\
+                        filter(and_(RegisteredProblems.courseId == courseId,
+                                    RegisteredProblems.problemId == problemId)).\
+                        first()
+    
+    dao.delete(targetProblem)
         
-        dao.delete(targetProblem)
+    try:
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
         error = 'Error has been occurred while searching the problem to delete'
         
     return error
@@ -311,13 +312,13 @@ def delete_registered_problem(courseId, problemId):
 def update_registered_problem_info(courseId, problemId, key_dict):
     error = None
     
+    dao.query(RegisteredProblems).\
+        filter(and_(RegisteredProblems.courseId == courseId,
+                    RegisteredProblems.problemId == problemId)).\
+        update(key_dict)
     try:
-        dao.query(RegisteredProblems).\
-            filter(and_(RegisteredProblems.courseId == courseId,
-                        RegisteredProblems.problemId == problemId)).\
-            update(key_dict)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
         error = 'Error has been occurred while searching the problem to edit'
         
     return error
@@ -498,11 +499,11 @@ def class_manage_problem():
                                                ownProblems = ownProblems)
                     
                     pathOfTestCase = '%s/%s_%s/%s_%s_%s' % (problemsPath,
-                                                         problem[keys['problemId']],
-                                                         problem[keys['problemName']],
-                                                         problem[keys['problemId']],
-                                                         problem[keys['problemName']],
-                                                         solutionCheckType)
+                                                            problem[keys['problemId']],
+                                                            problem[keys['problemName']],
+                                                            problem[keys['problemId']],
+                                                            problem[keys['problemName']],
+                                                            solutionCheckType)
 
                     numberOfTestCase = get_case_count(pathOfTestCase, problem[keys['isAllInputCaseInOneFile']])
                                     
@@ -516,20 +517,21 @@ def class_manage_problem():
                 if not isValid:
                     continue
 
+                newProblem = RegisteredProblems(problemId = problem[keys['problemId']],
+                                                courseId = problem[keys['courseId']],
+                                                isAllInputCaseInOneFile = problem[keys['isAllInputCaseInOneFile']],
+                                                limittedFileSize = limitedFileSize,
+                                                numberOfTestCase = numberOfTestCase,
+                                                startDateOfSubmission = problem[keys['startDate']],
+                                                endDateOfSubmission = problem[keys['endDate']],
+                                                openDate = problem[keys['openDate']],
+                                                closeDate = problem[keys['closeDate']])
+                
+                dao.add(newProblem)
+                
                 try:
-                    newProblem = RegisteredProblems(problemId = problem[keys['problemId']],
-                                                    courseId = problem[keys['courseId']],
-                                                    isAllInputCaseInOneFile = problem[keys['isAllInputCaseInOneFile']],
-                                                    limittedFileSize = limitedFileSize,
-                                                    numberOfTestCase = numberOfTestCase,
-                                                    startDateOfSubmission = problem[keys['startDate']],
-                                                    endDateOfSubmission = problem[keys['endDate']],
-                                                    openDate = problem[keys['openDate']],
-                                                    closeDate = problem[keys['closeDate']])
-                    
-                    dao.add(newProblem)
                     dao.commit()
-                except:
+                except exc.SQLAlchemyError:
                     dao.rollback()
                     error = 'Error has been occurred while making a new problem'
                     return render_template('/class_manage_problem.html',
@@ -542,12 +544,14 @@ def class_manage_problem():
                                            ownCourses = ownCourses,
                                            ownProblems = ownProblems)
 
+                
+                newProblemRecord = SubmittedRecordsOfProblems(problemId = problem[keys['problemId']],
+                                                              courseId = problem[keys['courseId']])
+                dao.add(newProblemRecord)
+                
                 try:
-                    newProblemRecord = SubmittedRecordsOfProblems(problemId = problem[keys['problemId']],
-                                                                  courseId = problem[keys['courseId']])
-                    dao.add(newProblemRecord)
                     dao.commit()
-                except:
+                except exc.SQLAlchemyError:
                     dao.rollback()
                     error = 'Error has been occurred while creating new record'
                     return render_template('/class_manage_problem.html',
@@ -851,22 +855,24 @@ def class_add_user():
             for newUser in newUsers:
                 isExist = dao.query(Members).filter(Members.memberId == newUser[0]).first() 
                 if not isExist:
-                    try:
-                        if newUser[keys['authority']] == 'Course Admin':
-                            newUser[keys['authority']] = SETResources().const.COURSE_ADMINISTRATOR
-                                
-                        tripleDes = initialize_tripleDes_class()
-                        password = generate_password_hash(tripleDes.encrypt(str(newUser[keys['memberId']])))
+                
+                    if newUser[keys['authority']] == 'Course Admin':
+                        newUser[keys['authority']] = SETResources().const.COURSE_ADMINISTRATOR
+                            
+                    tripleDes = initialize_tripleDes_class()
+                    password = generate_password_hash(tripleDes.encrypt(str(newUser[keys['memberId']])))
+                
+                    # at first insert to 'Members'. Duplicated tuple will be ignored.
+                    freshman = Members(memberId = newUser[keys['memberId']],
+                                       password = password,
+                                       memberName = newUser[keys['memberName']],
+                                       authority = newUser[keys['authority']],
+                                       signedInDate = datetime.now())
+                    dao.add(freshman)
                     
-                        # at first insert to 'Members'. Duplicated tuple will be ignored.
-                        freshman = Members(memberId = newUser[keys['memberId']],
-                                           password = password,
-                                           memberName = newUser[keys['memberName']],
-                                           authority = newUser[keys['authority']],
-                                           signedInDate = datetime.now())
-                        dao.add(freshman)
+                    try:
                         dao.commit()
-                    except:
+                    except exc.SQLAlchemyError:
                         dao.rollback()
                         error = 'Error has been occurred while adding new users'
                         return render_template('/class_add_user.html',
@@ -887,13 +893,14 @@ def class_add_user():
                               first()
                 # new member
                 if not isExist:
+                    # then insert to 'Registrations'.
+                    freshman = Registrations(memberId = newUser[keys['memberId']],
+                                             courseId = newUser[keys['courseId']].split()[0])
+                    dao.add(freshman)
+                    
                     try:
-                        # then insert to 'Registrations'.
-                        freshman = Registrations(memberId = newUser[keys['memberId']],
-                                                 courseId = newUser[keys['courseId']].split()[0])
-                        dao.add(freshman)
                         dao.commit()
-                    except:
+                    except exc.SQLAlchemyError:
                         dao.rollback()
                         error = 'Error has been occurred while registering new users'
                         return render_template('/class_add_user.html',
@@ -908,24 +915,26 @@ def class_add_user():
                                                authorities = authorities,
                                                newUsers = newUsers)
                     
+                    
+                    departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[keys['memberId']],
+                                                                        collegeIndex = newUser[keys['collegeIndex']],
+                                                                        departmentIndex = newUser[keys['departmentIndex']])
+                    dao.add(departmentInformation)
+                    
                     try:
-                        departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[keys['memberId']],
-                                                                            collegeIndex = newUser[keys['collegeIndex']],
-                                                                            departmentIndex = newUser[keys['departmentIndex']])
-                        dao.add(departmentInformation)
                         dao.commit()
-                    except:
+                    except exc.SQLAlchemyError:
                         dao.rollback()
                 # old member
                 else:
-                    # suppose the user's department is different with his registered information
+                    # suppose the user's department is different with his registered information    
+                    departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[keys['memberId']],
+                                                                        collegeIndex = newUser[keys['collegeIndex']],
+                                                                        departmentIndex = newUser[keys['departmentIndex']])
+                    dao.add(departmentInformation)
                     try:
-                        departmentInformation = DepartmentsDetailsOfMembers(memberId = newUser[keys['memberId']],
-                                                                            collegeIndex = newUser[keys['collegeIndex']],
-                                                                            departmentIndex = newUser[keys['departmentIndex']])
-                        dao.add(departmentInformation)
                         dao.commit()
-                    except:
+                    except exc.SQLAlchemyError:
                         dao.rollback()
                         
                 courseName = dao.query(RegisteredCourses).\
