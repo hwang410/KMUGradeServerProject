@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-    GradeSever.controller.login
-    ~~~~~~~~~~~~~~~~~~~~~~~~~
+    GradeSever.controller.serverMaster
 
-    로그인 확인 데코레이터와 로그인 처리 모듈.
-
-    :copyright: (c) 2015 by KookminUniv
+    Functions for server administrator
+    
+    1. manage college & department
+    2. manage course
+    3. manage problem
+    4. manage user
+    5. manage service
+    
+    :copyright: (c) 2015 by Algorithmic Engineering Lab at KOOKMIN University
 
 """
 

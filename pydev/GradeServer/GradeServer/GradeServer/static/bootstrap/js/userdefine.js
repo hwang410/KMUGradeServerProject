@@ -304,3 +304,4 @@ $(".shortdate").each(function(){
 		$(this).text(originalDate.split(' ')[0]);
 	}
 });
+

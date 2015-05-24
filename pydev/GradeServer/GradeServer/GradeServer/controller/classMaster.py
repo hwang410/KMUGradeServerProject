@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-    GradeSever.controller.login
-    ~~~~~~~~~~~~~~~~~~~~~~~~~
+    GradeSever.controller.classMaster
+    
+    Funcions for course administrator
+    
+    1. manage submissions of users
+    2. manage problem
+    3. manage user
+    4. manage service
 
-    로그인 확인 데코레이터와 로그인 처리 모듈.
-
-    :copyright: (c) 2015 by KookminUniv
+    :copyright: (c) 2015 by Algorithmic Engineering Lab at KOOKMIN University
 
 """
 

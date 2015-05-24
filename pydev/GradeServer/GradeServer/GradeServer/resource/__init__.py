@@ -14,6 +14,7 @@ __all__ = ['const',
            'htmlResources',
            'routeResources',
            'languageResources',
+           'messageResources',
            'setResources',
            'otherResources',
            'sessionResources']

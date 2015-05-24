@@ -19,15 +19,17 @@
 		</div>
 	</h4>
 	<hr class="hidden-tablet hidden-desktop">
-	<form method="post">
+	<form id="InfoForm" method="post">
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
 					{{ LanguageResources.const.Password[session['language']] }}
 				</div>
 				<div class="span2">
-					<input type="password" name="password" class="input-large"
-							placeholder="Input password" autofocus>
+					<input class="input-large" id="pw"
+							name="password" type="password"
+							placeholder="Input password" 
+							autofocus>
 				</div>
 			</div>
 		</h4>
@@ -37,7 +39,8 @@
 					{{ LanguageResources.const.Password[session['language']] }}({{ LanguageResources.const.Confirm[session['language']] }})
 				</div>
 				<div class="span8">
-					<input type="password" name="passwordConfirm" class="input-large"
+					<input class="input-large" id="pw_confirm"
+							name="passwordConfirm" type="password"
 							placeholder="Confirm password">
 				</div>
 			</div>
@@ -71,8 +74,8 @@
 					{{ LanguageResources.const.ContactNumber[session['language']] }}
 				</div>
 				<div class="span8">
-					<input type="text" class="input-large" name="contactNumber"
-							placeholder="Contact number"
+					<input class="h5-phone input-large" name="contactNumber"
+							type="text" placeholder="000-0000-0000"
 							{%- if contactNumber %}
 							value="{{ contactNumber }}"
 							{% elif memberInformation.contactNumber %}
@@ -87,8 +90,8 @@
 					{{ LanguageResources.const.Email[session['language']] }}
 				</div>
 				<div class="span8">
-					<input type="text" class="input-large" name="emailAddress"
-							placeholder="E-mail"
+					<input class="h5-email input-large" name="emailAddress"
+							type="text" placeholder="kmu@kookmin.ac.kr"
 							{% if emailAddress %}
 							value="{{ emailAddress }}"
 							{%- elif memberInformation.emailAddress %}
@@ -114,9 +117,9 @@
 			</div>
 		</h4>
 		<br>
-		<button type="submit" class="btn">
+		<a class="btn" id="confirm">
 			{{ LanguageResources.const.Confirm[session['language']] }}
-		</button>
+		</a>
 	</form>
 </div>
 <style>
@@ -124,4 +127,54 @@ h4{
 	margin-left:20px;
 }
 </style>
+<script>
+$(document).ready(function(){
+	$('form').h5Validate();
+});
+
+pw = document.getElementById("pw");
+pw_confirm = document.getElementById("pw_confirm");
+error = document.getElementById("errorAlert");
+color="#fef1ec";
+
+$("#confirm").click(function(){
+	
+	if(pw.value && pw_confirm.value){
+		document.getElementById("InfoForm").submit();
+	}
+	else{
+		if(pw.value==""){
+			pw.className += " ui-state-error";
+		}
+		else{
+			pw.className = "input-large ui-state-valid" ;
+		}
+		if(pw_confirm.value==""){
+			pw_confirm.className += " ui-state-error";
+		}
+		else{
+			pw.className = "input-large ui-state-valid";
+		}
+	}
+});
+
+$("#pw").change(function(){
+	error.style.display="none";
+	if(pw.value==""){
+		pw.style.background=color;
+	}
+	else{
+		pw.style.background="";
+	}
+});
+$("#pw_confirm").change(function(){
+	error.style.display="none";
+	if(pw_confirm.value==""){
+		pw_confirm.style.background=color;
+	}
+	else{
+		pw_confirm.style.background="";
+	}
+});
+</script>
 {% endblock -%}
