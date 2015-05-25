@@ -1,6 +1,7 @@
 import os
 import sys
 from shutil import copyfile
+from gradingResource.enumResources import ENUMResources
 
 class FileTools(object):
     @staticmethod
@@ -9,7 +10,7 @@ class FileTools(object):
             readFile = open(fileName, 'r')
         except Exception as e:
             print e
-            print 'ServerError', 0, 0, 0
+            print ENUMResources.const.SERVER_ERROR, 0, 0, 0
             sys.exit()
         
         lines = readFile.readlines()
@@ -23,7 +24,7 @@ class FileTools(object):
             readFile = open(fileName, 'r') # answer output open
         except Exception as e:
             print e
-            print 'ServerError', 0, 0, 0
+            print ENUMResources.const.SERVER_ERROR, 0, 0, 0
             sys.exit()
         
         allFile = readFile.read()
@@ -43,5 +44,5 @@ class FileTools(object):
             copyfile(oldName, newName)
         except Exception as e:
             print e
-            print 'ServerError', 0, 0, 0
+            print ENUMResources.const.SERVER_ERROR, 0, 0, 0
             sys.exit()
