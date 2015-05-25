@@ -126,6 +126,7 @@ class DBUpdate(object):
                             score = 0,
                             runTime = 0,
                             usedMemory = 0))
+            db_session.commit()
             print '...server error...'
         except Exception as e:
             raise e
