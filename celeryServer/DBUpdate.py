@@ -22,8 +22,6 @@ class DBUpdate(object):
                 score = messageParaList[1]
                 runTime = messageParaList[2]
                 usingMem = messageParaList[3]
-                
-                self.UpdateTableSubmissions(result, score, runTime, usingMem)
             
                 if result == ENUMResources.const.WRONG_ANSWER:
                     self.UpdateTable_SubmittedRecordsOfProblems_WrongAnswer()
@@ -43,6 +41,8 @@ class DBUpdate(object):
                 else:
                     self.UpdateServerError()
                     return
+                
+                self.UpdateTableSubmissions(result, score, runTime, usingMem)
                 
                 db_session.commit()
         except Exception as e:
