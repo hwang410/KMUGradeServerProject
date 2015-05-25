@@ -4,6 +4,8 @@ import glob
 import string
 from subprocess import call
 from FileTools import FileTools
+from gradingResource.listResources import ListResources
+from gradingResource.enumResources import ENUMResources
 
 class CompileTools(object):
     def __init__(self, filePath, usingLang, version, runFileName):
@@ -12,14 +14,14 @@ class CompileTools(object):
         self.version = version
         self.runFileName = runFileName
         
-    def CodeCompile(self):
-        if self.usingLang == 'PYTHON':
+    def CompileCode(self):
+        if self.usingLang == ListResources.const.Lang_PYTHON:
             copyCommand = "%s%s%s" % ('cp ', self.filePath, '*.py ./')
             call(copyCommand, shell = True)
             
             if len(glob.glob('*.py')) == 0:
                 print 'compile python file copy'
-                print 'ServerError', 0, 0, 0
+                print ENUMResources.const.SERVER_ERROR, 0, 0, 0
                 sys.exit()
             
             return True
@@ -33,7 +35,7 @@ class CompileTools(object):
         # check compile error
         if os.path.getsize('error.err') > 0:
             self.MakeErrorList()
-            print 'CompileError', 0, 0, 0
+            print ENUMResources.const.COMPILE_ERROR, 0, 0, 0
             sys.exit()
         
         # if not make execution file
@@ -41,7 +43,7 @@ class CompileTools(object):
             return True
         
         else:
-            print 'ServerError', 0, 0, 0
+            print ENUMResources.const.SERVER_ERROR, 0, 0, 0
             sys.exit()
         
         
@@ -53,7 +55,7 @@ class CompileTools(object):
             wf = open('errorlist.txt', 'w')
         except Exception as e:
             print 'make compile error list file open error'
-            print 'ServerError', 0, 0, 0
+            print ENUMResources.const.COMPILE_ERROR, 0, 0, 0
             sys.exit()
         
         lines = FileTools.ReadFileLines('error.err')
@@ -77,11 +79,11 @@ class CompileTools(object):
         
     def MakeCommand(self):
         # make compile command 
-        if self.usingLang == 'C':
+        if self.usingLang == ListResources.const.Lang_C:
             return "%s%s%s" % ('gcc ', self.filePath, '*.c -o main -lm -w 2>error.err')
             
-        elif self.usingLang == 'C++':
+        elif self.usingLang == ListResources.const.Lang_CPP:
             return "%s%s%s" % ('g++ ', self.filePath, '*.cpp -o main -lm -w 2>error.err')
         
-        elif self.usingLang == 'JAVA':
+        elif self.usingLang == ListResources.const.Lang_JAVA:
             return "%s%s%s" % ('javac -nowarn -d ./', self.filePath, '*.java 2>error.err')

@@ -14,7 +14,7 @@ class InterfaceGrade(object):
         logging.debug(self.parameter.saveDirectoryName + ' compile start')
         _compile = CompileTools.CompileTools(self.parameter.filePath, self.parameter.usingLang,
                                              self.parameter.version, self.parameter.runFileName)
-        success = _compile.CodeCompile()
+        success = _compile.CompileCode()
         
         logging.debug(self.parameter.saveDirectoryName + ' compile end')
         

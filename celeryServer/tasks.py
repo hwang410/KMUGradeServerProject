@@ -37,10 +37,10 @@ def Grade(filePath, problemPath, stdNum, problemNum, gradeMethod, caseCount,
     messageLines = message.stdout.readlines()
     os.system('sudo rm -rf ' + sharingDirName)
     
-    resultUpdate(messageLines[-1], stdNum, problemNum, courseNum, submitCount)
+    UpdateResult(messageLines[-1], stdNum, problemNum, courseNum, submitCount)
     
 @app.task(name = 'task.ServerOn')
-def ServerOn():
+def OnServer():
     for i in range(MAX_CONTAINER_COUNT):
         containerNum = i + 1
         containerCreadeCommand = "%s%i%s%i%s" %('sudo docker create --privileged -i -t --name --cpuset="',
@@ -54,7 +54,7 @@ def ServerOn():
         os.system(runProgramInContainer)
     
 @app.task(name = 'task.ServerOff')
-def ServerOff():
+def OffServer():
     time.sleep(5)
     
     for i in range(MAX_CONTAINER_COUNT):
@@ -62,8 +62,8 @@ def ServerOff():
         os.system('sudo docker stop grade_container' + number)
         os.system('sudo docker rm grade_container' + number)
         
-def resultUpdate(messageLine, stdNum, problemNum, courseNum, submitCount):        
+def UpdateResult(messageLine, stdNum, problemNum, courseNum, submitCount):        
     dataUpdate = DBUpdate.DBUpdate(stdNum, problemNum, courseNum, submitCount)
     messageParaList = messageLine.split() 
     
-    dataUpdate.ResutlUpdate(messageParaList)
+    dataUpdate.UpdateResutl(messageParaList)

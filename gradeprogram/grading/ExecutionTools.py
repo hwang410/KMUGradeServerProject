@@ -6,6 +6,8 @@ import ptrace
 import resource
 from shutil import copyfile
 from FileTools import FileTools
+from gradingResource.enumResources import ENUMResources
+from gradingResource.listResources import ListResources
 
 RUN_COMMAND_LIST = []
 
@@ -28,7 +30,7 @@ class ExecutionTools(object):
                 copyfile(copyCommand, 'input.txt')
         except Exception as e:
             print e
-            print 'ServerError', 0, 0, 0
+            print ENUMResources.const.SERVER_ERROR, 0, 0, 0
             sys.exit()
         
         # make execution command
@@ -47,12 +49,12 @@ class ExecutionTools(object):
         coreList = glob.glob('core.[0-9]*')
         
         if len(coreList) > 0 and os.path.getsize(coreList[0]) > 0:
-            result = 'RunTimeError'
+            result = ENUMResources.const.RUNTIME_ERROR
         
         elif userTime > self.limitTime:
-            result = 'TimeOver' 
+            result = ENUMResources.const.TIME_OVER 
         
-        if result != 'ok':
+        if not result:
             self.ResultError(result, userTime, usingMem)
         
         return 'Grading', userTime, usingMem
@@ -60,22 +62,22 @@ class ExecutionTools(object):
     def MakeCommand(self):
         # make execution command
         append = RUN_COMMAND_LIST.append
-        if self.usingLang == 'PYTHON':
-            if self.version == '2.7':
+        if self.usingLang == ListResources.const.Lang_PYTHON:
+            if self.version == ListResources.const.PYTHON_VERSION_TWO:
                 append('/usr/bin/python')
                 append('/usr/bin/python')
                 append(self.runFileName + '.py')
                 
-            elif self.version == '3.4':
+            elif self.version == ListResources.const.PYTHON_VERSION_THREE:
                 append('/usr/local/bin/python3')
                 append('/usr/local/bin/python3')
                 append(self.runFileName + '.py')
                 
-        elif self.usingLang == 'C' or self.usingLang == 'C++':
+        elif self.usingLang == ListResources.const.Lang_C or self.usingLang == ListResources.const.Lang_CPP:
             append('./main')
             append('./main')
             
-        elif self.usingLang == 'JAVA':
+        elif self.usingLang == ListResources.const.Lang_JAVA:
             append('/usr/bin/java')
             append('/usr/bin/java')
             append(self.runFileName)
@@ -93,13 +95,13 @@ class ExecutionTools(object):
         
         ptrace.traceme()
         
-        if self.usingLang == 'PYTHON' or self.usingLang == 'JAVA':
+        if self.usingLang == ListResources.const.Lang_PYTHON or self.usingLang == ListResources.const.Lang_JAVA:
             reditectionSTDERROR = os.open('core.1', os.O_RDWR|os.O_CREAT)
             os.dup2(reditectionSTDERROR,2)
             
             os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1], RUN_COMMAND_LIST[2])
             
-        elif self.usingLang == 'C' or self.usingLang =='C++':
+        else:
             os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1])
             
     def WatchRunProgram(self, pid):
@@ -109,16 +111,16 @@ class ExecutionTools(object):
             wpid, status, res = os.wait4(pid,0)
     
             if os.WIFEXITED(status):
-                return 'ok', res[0], usingMem
+                return True, res[0], usingMem
             
             exitCode = os.WEXITSTATUS(status)
             if exitCode != 5 and exitCode != 0 and exitCode != 17:
                 ptrace.kill(pid)
-                return 'RunTimeError', 0, 0 
+                return ENUMResources.const.RUNTIME_ERROR, 0, 0 
                 
             elif os.WIFSIGNALED(status):
                 ptrace.kill(pid)
-                return 'TimeOver', res[0], usingMem
+                return ENUMResources.const.TIME_OVER, res[0], usingMem
             
             else:
                 usingMem = self.GetUsingMemory(pid, usingMem)

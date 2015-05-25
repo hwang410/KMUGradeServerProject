@@ -1,6 +1,7 @@
 import os
-import logging
 import sys
+import logging
+from gradingResource.enumResources import ENUMResources
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
@@ -9,7 +10,7 @@ if __name__ == '__main__':
     args = sys.argv
     
     if len(args) != 11:
-        print 'ServerError', 0, 0, 0
+        print ENUMResources.const.SERVER_ERROR, 0, 0, 0
         sys.exit()
     
     from grading import InterfaceGrade
@@ -20,12 +21,9 @@ if __name__ == '__main__':
     grade = InterfaceGrade.InterfaceGrade(args)
     result = grade.Compile()
     
-    if result == 'CompileError':
+    if result == ENUMResources.const.COMPILE_ERROR:
         # update DBManager 'compile error'
         print result, 0, 0, 0
         sys.exit()
     
     result, score, runTime, usingMem = grade.Evaluation()
-    
-    # update DBManager 'solved'
-    print result, score, runTime, usingMem
