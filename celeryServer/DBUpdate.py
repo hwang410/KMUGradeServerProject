@@ -15,6 +15,7 @@ class DBUpdate(object):
         try:
             if len(messageParaList) != 4:
                 self.UpdateServerError()
+                return
                 
             else:
                 result = messageParaList[0]
@@ -25,24 +26,25 @@ class DBUpdate(object):
                 self.UpdateTableSubmissions(result, score, runTime, usingMem)
             
                 if result == ENUMResources.const.WRONG_ANSWER:
-                    self.UpdateTable_SubmittedRecordsOfProblems_WrongAnswer(result, score, runTime, usingMem)
+                    self.UpdateTable_SubmittedRecordsOfProblems_WrongAnswer()
                 
-                elif result == ENUMResources.const.TIME_OVER'TimeOver':
-                    self.UpdateTable_SubmittedRecordsOfProblems_TimbeOver(result, score, runTime, usingMem)
+                elif result == ENUMResources.const.TIME_OVER:
+                    self.UpdateTable_SubmittedRecordsOfProblems_TimbeOver()
                 
                 elif result == ENUMResources.const.SOLVED:
-                    self.UpdateTable_SubmittedRecordsOfProblems_Solved(result, score, runTime, usingMem)
+                    self.UpdateTable_SubmittedRecordsOfProblems_Solved()
                     
                 elif result == ENUMResources.const.RUNTIME_ERROR:
-                    self.UpdateTable_SubmittedRecordsOfProblems_RunTimeError(result, score, runTime, usingMem)
+                    self.UpdateTable_SubmittedRecordsOfProblems_RunTimeError()
                     
                 elif result == ENUMResources.const.COMPILE_ERROR:
-                    self.UpdateTable_SubmittedRecordsOfProblems_CompileError(result, score, runTime, usingMem)
+                    self.UpdateTable_SubmittedRecordsOfProblems_CompileError()
                     
                 else:
                     self.UpdateServerError()
+                    return
                 
-            db_session.commit()
+                db_session.commit()
         except Exception as e:
             db_session.rollback()
             self.UpdateServerError()
