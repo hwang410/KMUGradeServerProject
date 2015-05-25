@@ -47,7 +47,8 @@ class DBUpdate(object):
             db_session.commit()
         except Exception as e:
             db_session.rollback()
-            raise e
+            self.UpdateServerError()
+            
         
     def SubmittedRecordsOfProblems_CompileError(self, result, score, runTime, usingMem):
         try:
@@ -68,7 +69,7 @@ class DBUpdate(object):
                           update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                       sumOfCompileErrorCount = SubmittedRecordsOfProblems.sumOfCompileErrorCount + 1))
         except Exception as e:
-            self.result = 'ServerError'
+            raise e
             
     def SubmittedRecordsOfProblems_Solved(self, result, score, runTime, usingMem):
         try:
@@ -89,7 +90,6 @@ class DBUpdate(object):
                     update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                 sumOfSolvedCount = SubmittedRecordsOfProblems.sumOfSolvedCount + 1))
         except Exception as e:
-            self.result = 'ServerError'
             raise e
             
     def SubmittedRecordsOfProblems_WrongAnswer(self, result, score, runTime, usingMem):
@@ -111,7 +111,6 @@ class DBUpdate(object):
                     update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                 sumOfWrongCount = SubmittedRecordsOfProblems.sumOfWrongCount + 1))
         except Exception as e:
-            self.result = 'ServerError'
             raise e
             
     def SubmittedRecordsOfProblems_TimbeOver(self, result, score, runTime, usingMem):
@@ -133,7 +132,6 @@ class DBUpdate(object):
                     update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                 sumOfTimeOverCount = SubmittedRecordsOfProblems.sumOfTimeOverCount + 1))
         except Exception as e:
-            self.result = 'ServerError'
             raise e
             
     def SubmittedRecordsOfProblems_RunTimeError(self, result, score, runTime, usingMem):
@@ -155,7 +153,6 @@ class DBUpdate(object):
                     update(dict(sumOfSubmissionCount = SubmittedRecordsOfProblems.sumOfSubmissionCount + 1,
                                 sumOfRuntimeErrorCount = SubmittedRecordsOfProblems.sumOfRuntimeErrorCount + 1))
         except Exception as e:
-            self.result = 'ServerError'
             raise e
    
     def UpdateServerError(self):
@@ -171,5 +168,4 @@ class DBUpdate(object):
                             usedMemory = 0))
             print '...server error...'
         except Exception as e:
-            self.result = 'ServerError'
             raise e
