@@ -17,7 +17,7 @@ from DB import Base
 
 
 engine = create_engine("mysql+mysqlconnector://root:dkfrhflwma@192.168.0.8/GradeServer_DB",
-                      convert_unicode = True, pool_recycle = 3600, pool_size=10) #echo =db_log_flag)
+                      convert_unicode = True, pool_recycle = 3600)
 
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db_session = Session()
