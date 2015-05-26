@@ -19,6 +19,7 @@ def get_message(key ='unknown'):
                   'updateSucceeded': 'Update Succeeded!!!!',
                   'updateFailed': '정보 갱신에 실패하였습니다.',
                   
+                  'pattenFailed': '암호에 아이디나 현재 암호를 입력 할 수 없습니다.',
                   'notExists': '해당 아이디가 없습니다.',
                   'alreadyExists': '이미 있는 아이디 입니다.',
                   'wrongPassword': '암호가 일치하지 않습니다.',
