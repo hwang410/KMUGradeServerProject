@@ -423,7 +423,7 @@ So If you use 'LanguageResources' in this page without session checking, it will
 									</script>
 
 								</h3>
-								[{{ noticeRecord.replyCount }}]
+								{% if noticeRecord.replyCount %}[{{ noticeRecord.replyCount }}]{% endif %}
 
 								<p style="word-break: break-all">
 									<!-- 
