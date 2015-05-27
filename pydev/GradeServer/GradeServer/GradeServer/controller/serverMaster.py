@@ -550,7 +550,7 @@ def change_directory_to(path):
         os.chdir(path)
     except OSError:
         error="Error has been occurred while changing directory"
-        
+    
     return error
 
 
@@ -1122,7 +1122,7 @@ def server_manage_problem():
                     '''
                     currentPath, error=get_current_path()
                     if error: break
-                    
+
                     # inside of SOLUTION or CHECKER folder
                     if remove_space_from_names_in(currentPath): break
                     if attach_string_ahead_of(currentPath, problemId): break
@@ -1130,10 +1130,13 @@ def server_manage_problem():
                     # move to outside of the folder
                     if change_directory_to(tmpPath): break
                     
+                    currentPath, error=get_current_path()
+                    if error: break
+                    
                     # inside of Problem folder
                     if remove_space_from_names_in(currentPath): break
                     if attach_string_ahead_of(currentPath, problemId): break
-
+                    
                     # create final goal path
                     if not os.path.exists(problemPath):
                         os.makedirs(problemPath)
