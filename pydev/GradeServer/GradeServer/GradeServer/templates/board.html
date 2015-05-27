@@ -44,10 +44,10 @@
 		{% endfor %}
 		
 			<div style="text-align:right">
-				<button class="write" type="button"
-						  onclick="location.href='{{ url_for('GradeServer.write', activeTabCourseId = activeTabCourseId, articleIndex =0) }}'">
+				<a class="write btn" type="button"
+						  href='{{ url_for('GradeServer.write', activeTabCourseId = activeTabCourseId, articleIndex =0) }}'">
 					{{ LanguageResources.const.Write[session['language']] }} <i class="icon-pencil"></i>
-				</button>
+				</a>
 			</div>
 		</ul>
 		
