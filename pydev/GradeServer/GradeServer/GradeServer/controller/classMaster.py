@@ -158,7 +158,7 @@ def set_form_value_into_array(keys, forms, array):
                     # actually data.split()[1] is collegeName but it can be wrong, 
                     # so, here for checking the index is valid.
                     try:
-                        array[index-1][keys['collegeName']] =\
+                        error, array[index-1][keys['collegeName']] =\
                             get_college_name(array[index-1][keys['collegeIndex']])
                     except:
                         # Let this do 'pass' because after all this work,
@@ -168,7 +168,7 @@ def set_form_value_into_array(keys, forms, array):
                     array[index-1][keys['departmentIndex']] = value.split()[0]
                     
                     try:
-                        array[index-1][keys['departmentName']] =\
+                        error, array[index-1][keys['departmentName']] =\
                             get_department_name(array[index-1][keys['departmentIndex']])
                     except:
                         pass
@@ -814,7 +814,7 @@ def class_add_user():
             newUser = [['' for _ in range(len(keys.keys()))] for __ in range(numberOfUsers + 1)]
             
             error, newUser = set_form_value_into_array(keys, request.form, newUser)
-            
+                
             if error:
                 return render_template('/class_add_user.html',
                                        error = error, 
