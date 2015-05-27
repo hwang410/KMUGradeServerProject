@@ -118,26 +118,20 @@
 		<!-- Content, WrittenDate -->
 		<div class='row-fluid'>
 			<div class="span10">
-			
-				<a href='{{ url_for ("GradeServer.submission_record", memberId=repliesOnBoardRecord.boardReplierId, sortCondition="submissionDate", pageNum=1) }}'>
-					{% if repliesOnBoardRecord.boardReplierId %}
-						{{ repliesOnBoardRecord.boardReplierId }}
+				
+				<div style="display:inline">
+					<a href='{{ url_for ("GradeServer.submission_record", memberId=repliesOnBoardRecord.boardReplierId, sortCondition="submissionDate", pageNum=1) }}'>
+						{% if repliesOnBoardRecord.boardReplierId %}
+							{{ repliesOnBoardRecord.boardReplierId }}
+						{% endif %}
+					</a>
+					:
+					{% if repliesOnBoardRecord.boardRepliedDate %}
+						{{ repliesOnBoardRecord.boardRepliedDate }}
 					{% endif %}
-				</a>
-				:
-				{% if repliesOnBoardRecord.boardRepliedDate %}
-					{{ repliesOnBoardRecord.boardRepliedDate }}
-				{% endif %}
-			
-				{% if repliesOnBoardRecord.boardReplierId == session['memberId'] or 'SERVER_ADMINISTRATOR' in session['authority'] or 'COURSE_ADMINISTRATOR' in session['authority'] %}
-				<!-- modify Reply Button -->
-				<button class="btn btn-link"
-					onclick="modifyArticleReply({{ repliesOnBoardRecord.boardReplyIndex }})" role="button" >
-					<i id="modifArticleReplyIcon{{ repliesOnBoardRecord.boardReplyIndex }}" class="icon-pencil"></i>
-				</button>
-				{% endif %}
+				</div>
 					
-				<form method="post">
+				<form method="post" style="display:inline">
 					<!-- like button -->
 					<button class="like btn btn-link" href="#"
 							  name="articleReplyLike{{ repliesOnBoardRecord.boardReplyIndex }}"
@@ -183,8 +177,15 @@
 							</button>
 						</div>
 					</div>
-					{% endif %}
 				</form>
+				<div style="display:inline">
+					<!-- modify Reply Button -->
+					<button class="btn btn-link"
+						onclick="modifyArticleReply({{ repliesOnBoardRecord.boardReplyIndex }})" role="button" >
+						<i id="modifArticleReplyIcon{{ repliesOnBoardRecord.boardReplyIndex }}" class="icon-pencil"></i>
+					</button>
+				</div>
+					{% endif %}
 				
 				<form method="POST">
 					<!-- Reply Content Views -->
@@ -199,7 +200,7 @@
 						onclick="autoSize(this)" rows="3">{% if repliesOnBoardRecord.boardReplyContent %}{{ repliesOnBoardRecord.boardReplyContent }}{% endif %}</textarea>
 				</div>
 				
-				<div class="span2" style="margin-top:69px">
+				<div class="span2" style="margin-top:35px">
 					<button class="submit" id="modifyArticleReplyConfirm{{ repliesOnBoardRecord.boardReplyIndex }}" 
 						style="width:100%;height:50px; display:none">
 						{{ LanguageResources.const.Confirm[session['language']] }}
