@@ -140,7 +140,7 @@ color="#fef1ec";
 
 $("#confirm").click(function(){
 	
-	if(pw.value && pw_confirm.value){
+	if((pw.value && pw_confirm.value) || (pw.value == '' && pw_confirm.value == '')){
 		document.getElementById("InfoForm").submit();
 	}
 });
