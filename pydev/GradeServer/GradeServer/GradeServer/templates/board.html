@@ -305,12 +305,12 @@
 								<script> var newDate = "{{ articleRecord.writtenDate }}"; document.write(newDate.substring(2,16)); </script>
 							{% endif %}
 						<td>
-							{% if articleRecord.viewCount %}
+							{% if articleRecord.viewCount %}{{ articleRecord.viewCount }}
 							{% else %}
 								0
 							{% endif %}
 						<td>
-							{% if articleRecord.sumOfLikeCount %}
+							{% if articleRecord.sumOfLikeCount %}{{ articleRecord.sumOfLikeCount }}
 							{% else %}
 								0
 							{% endif %}
