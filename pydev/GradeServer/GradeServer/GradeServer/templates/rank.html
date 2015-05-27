@@ -88,8 +88,15 @@ $(function() {
 										{% if rankMemberRecord.memberId %}{{ rankMemberRecord.memberId }}{% endif %}
 									</a>
 								<td>
-									{%- if rankMemberRecord.comment %}
-										{% if rankMemberRecord.comment %}{{ rankMemberRecord.comment }}{% endif %}
+									{%- if rankMemberRecord.comment %}{{ rankMemberRecord.comment }}
+									<script> 
+										// if title is longer than 10 charater, change it to short
+										var comment = "{{ rankMemberRecord.comment }}"; 
+										if(comment.length >= 10){
+											comment = comment.substring(0,10)+"...";
+										}
+										document.write(newTitle);
+									</script>
 									{% endif -%}
 								<td>{% if rankMemberRecord.solutionCheckCount %}{{ rankMemberRecord.solutionCheckCount }}{% endif %}
 								<td>{% if rankMemberRecord.sumOfSolvedProblemCount %}{{ rankMemberRecord.sumOfSolvedProblemCount }}{% endif %}
@@ -137,11 +144,11 @@ $(function() {
 							<td>
 								{{ LanguageResources.const.Comment[session['language']] }}
 							<td>
+								{{ LanguageResources.const.Tries[session['language']] }}
+							<td>
 								<a href="{{ url_for('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition ='solvedProblem', pageNum = pages['pageNum']) }}">
 									{{ LanguageResources.const.SolvedProblems[session['language']] }}
 								</a>
-							<td>
-								{{ LanguageResources.const.Tries[session['language']] }}
 							<td>
 								<a href="{{ url_for('GradeServer.rank', activeTabCourseId = activeTabCourseId, sortCondition ='rate', pageNum = pages['pageNum']) }}">
 									{{ LanguageResources.const.Rate[session['language']] }}
@@ -154,7 +161,18 @@ $(function() {
 								<a href="{{ url_for('GradeServer.submission_record', memberId = rankMemberRecord.memberId, sortCondition ='submissionDate', pageNum =1) }}">
 									{% if rankMemberRecord.memberId %}{{ rankMemberRecord.memberId }}{% endif %}
 								</a>
-							<td>{% if rankMemberRecord.comment %}{{ rankMemberRecord.comment }}{% endif %}
+							<td>
+								{% if rankMemberRecord.comment %}
+								{{ rankMemberRecord.comment }}
+								<script> 
+									// if title is longer than 10 charater, change it to short
+									var comment = "{{ rankMemberRecord.comment }}"; 
+									if(comment.length >= 10){
+										comment = comment.substring(0,10)+"...";
+									}
+									document.write(newTitle);
+								</script>
+								{% endif %}
 							<td>{% if rankMemberRecord.sumOfSolvedProblemCount %}{{ rankMemberRecord.sumOfSolvedProblemCount }}{% endif %}
 							<td>{% if rankMemberRecord.solutionCheckCount %}{{ rankMemberRecord.solutionCheckCount }}{% endif %}
 							<td>{% if rankMemberRecord.solvedRate %}{{ rankMemberRecord.solvedRate }}%{% endif %}
