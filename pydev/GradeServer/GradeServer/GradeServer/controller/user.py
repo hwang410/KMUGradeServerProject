@@ -226,8 +226,22 @@ def edit_personal(error = None):
                         error = get_message('upateFailed')
                 
             #Password Different
-            elif not password or not passwordConfirm:
-                error = 'Confirm Password' + get_message('fillData')
+            elif not password and not passwordConfirm:
+                #Update DB
+                update_member_informations(members = select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = session[SessionResources().const.MEMBER_ID])),
+                                           password = None,
+                                           contactNumber = contactNumber,
+                                           emailAddress = emailAddress,
+                                           comment = comment)
+                # Commit Exception
+                try:
+                    dao.commit()
+                    flash(get_message('updateSucceeded'))
+                    
+                    return redirect(url_for(RouteResources().const.SIGN_IN))
+                except Exception:
+                    dao.rollback()
+                    error = get_message('upateFailed')
             else:
                 error = get_message('wrongPassword')
         

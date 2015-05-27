@@ -14,6 +14,9 @@ def update_member_informations(members, password, contactNumber, emailAddress, c
     members.update(dict(password = password,
                         contactNumber = contactNumber,
                         emailAddress = emailAddress,
+                        comment = comment) if not password 
+                   else dict(contactNumber = contactNumber,
+                        emailAddress = emailAddress,
                         comment = comment))
     
                     
