@@ -85,12 +85,14 @@ def is_exist_college(collegeName):
 
 def change_abolishment_of_college_false(collegeName):
     error=None
+
+    dao.query(Colleges).\
+        filter(Colleges.collegeName==str(collegeName)).\
+        update(dict(isAbolished=SETResources().const.FALSE))
+        
     try:
-        dao.query(Colleges).\
-            filter(Colleges.collegeName==str(collegeName)).\
-            update(dict(isAbolished=SETResources().const.FALSE))
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
         error="Error has been occurred while changing abolishment to FALSE"
     
     return error
@@ -98,12 +100,14 @@ def change_abolishment_of_college_false(collegeName):
 
 def change_abolishment_of_college_true(collegeIndex):
     error=None
+
+    dao.query(Colleges).\
+        filter(Colleges.collegeIndex==collegeIndex).\
+        update(dict(isAbolished=SETResources().const.TRUE))
+    
     try:
-        dao.query(Colleges).\
-            filter(Colleges.collegeIndex==collegeIndex).\
-            update(dict(isAbolished=SETResources().const.TRUE))
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
         error="Error has been occurred while changing abolishment to TRUE"
     
     return error
@@ -141,23 +145,25 @@ def change_abolishment_of_department_true(index):
     if departments:
         for _, departmentInfo in departments: 
             if departmentInfo.isAbolished=='FALSE':
+                dao.query(Departments).\
+                    filter(Departments.departmentIndex==\
+                           departmentInfo.departmentIndex).\
+                    update(dict(isAbolished=SETResources().const.TRUE))
+                
                 try:
-                    dao.query(Departments).\
-                        filter(Departments.departmentIndex==\
-                               departmentInfo.departmentIndex).\
-                        update(dict(isAbolished=SETResources().const.TRUE))
                     dao.commit()
-                except:
+                except exc.SQLAlchemyError:
                     error="Error has been occurred while changing abolishment to TRUE"
                     break
     
     else:
+        dao.query(Departments).\
+            filter(Departments.departmentIndex==index).\
+            update(dict(isAbolished=SETResources().const.TRUE))
+            
         try:
-            dao.query(Departments).\
-                filter(Departments.departmentIndex==index).\
-                update(dict(isAbolished=SETResources().const.TRUE))
             dao.commit()
-        except:
+        except exc.SQLAlchemyError:
             error="Error has been occurred while changing abolishment to TRUE"
         
     return error
@@ -165,20 +171,22 @@ def change_abolishment_of_department_true(index):
                 
 def delete_relation_in_college_department(collegeIndex, departmentIndex):
     error=None
+    if collegeIndex:
+        target=dao.query(DepartmentsOfColleges).\
+                   filter(DepartmentsOfColleges.collegeIndex==\
+                          collegeIndex).\
+                   first()
+    else:
+        target=dao.query(DepartmentsOfColleges).\
+                   filter(DepartmentsOfColleges.departmentIndex==\
+                          departmentIndex).\
+                   first()
+                   
+    dao.delete(target)
+    
     try:
-        if collegeIndex:
-            target=dao.query(DepartmentsOfColleges).\
-                       filter(DepartmentsOfColleges.collegeIndex==\
-                              collegeIndex).\
-                       first()
-        else:
-            target=dao.query(DepartmentsOfColleges).\
-                       filter(DepartmentsOfColleges.departmentIndex==\
-                              departmentIndex).\
-                       first()
-        dao.delete(target)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
         error="Error has been occurred while deleting relation of college and department"
     
     return error
@@ -206,6 +214,7 @@ def add_new_college(collegeCode, collegeName):
     newCollege=Colleges(collegeCode=collegeCode,
                         collegeName=collegeName)
     dao.add(newCollege)
+    
     try:
         dao.commit()
     except exc.SQLAlchemyError:
@@ -234,13 +243,14 @@ def add_new_departments(departmentCode, departmentName):
 def delete_registered_course(courseId):
     error=None
     
+    deleteTarget=dao.query(RegisteredCourses).\
+                     filter(RegisteredCourses.courseId==courseId).\
+                     first()
+    dao.delete(deleteTarget)
+    
     try:
-        deleteTarget=dao.query(RegisteredCourses).\
-                         filter(RegisteredCourses.courseId==courseId).\
-                         first()
-        dao.delete(deleteTarget)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
         error="Error has been occurred while deleting registered course"
     
     return error
@@ -336,13 +346,14 @@ def get_num_of_problems():
 def delete_member(memberId):
     error=None
     
+    deleteTarget=dao.query(Members).\
+                     filter(Members.memberId==memberId).\
+                     first()
+    dao.delete(deleteTarget)
+    
     try:
-        deleteTarget=dao.query(Members).\
-                         filter(Members.memberId==memberId).\
-                         first()
-        dao.delete(deleteTarget)
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
         error='Error has been occurred while deleting member'
     
     return error
@@ -420,12 +431,13 @@ def split_to_index_keyname_value(form):
 def delete_problem(problemId):
     error=None
     
+    dao.query(Problems).\
+        filter(Problems.problemId==problemId).\
+        update(dict(isDeleted=ENUMResources().const.TRUE))
+        
     try:
-        dao.query(Problems).\
-            filter(Problems.problemId==problemId).\
-            update(dict(isDeleted=ENUMResources().const.TRUE))
         dao.commit()
-    except:
+    except exc.SQLAlchemyError:
         error='Error has been occurred while deleting problem'
     
     return error
@@ -716,7 +728,7 @@ def server_manage_collegedepartment():
                     if error: break
                     
                     index=dao.query(func.max(Departments.departmentIndex)).\
-                                scalar()
+                              scalar()
                     error=add_relation_in_college_department(newPart[2], index)
                         
             newDepartments=[]
@@ -740,10 +752,10 @@ def server_manage_collegedepartment():
 @login_required
 def server_manage_class():       
     error=None
-     
+    
     courses=get_registered_courses()
     languagesOfCourse=get_languages_of_course()
-    
+
     if request.method=='POST':
         for form in request.form:
             error=delete_registered_course(form)
@@ -769,13 +781,14 @@ def server_manage_class():
 def server_add_class():
     global projectPath
     error=None
+    
     courseAdministrator=''
-    semester=1
     courseDescription=''
     startDateOfCourse=''
     endDateOfCourse=''
     courseIndex=''
     courseName=''
+    semester=1
     languages=[]
     
     try:
@@ -792,9 +805,9 @@ def server_add_class():
     
     try:               
         allCourseAdministrators=dao.query(Members).\
-                                      filter(Members.authority==\
-                                             SETResources().const.COURSE_ADMINISTRATOR).\
-                                      all()
+                                    filter(Members.authority==\
+                                           SETResources().const.COURSE_ADMINISTRATOR).\
+                                    all()
     except:
         error='Error has been occurred while searching course administrators'
                         
@@ -829,32 +842,19 @@ def server_add_class():
             endDate=datetime.strptime(endDateOfCourse, "%Y-%m-%d").date()
             if startDate > endDate:
                 error="Start date should be earlier than end date"
-                return render_template('/server_add_class.html', 
-                                       error=error, 
-                                       SETResources=SETResources,
-                                       SessionResources=SessionResources,
-                                       LanguageResources=LanguageResources,
-                                       courseAdministrator=courseAdministrator,
-                                       semester=semester,
-                                       courseDescription=courseDescription,
-                                       startDateOfCourse="",
-                                       endDateOfCourse="",
-                                       courseIndex=courseIndex,
-                                       courseName=courseName,
-                                       choosedLanguages=languages,
-                                       courses=allCourses, 
-                                       languages=allLanguages,
-                                       allCourseAdministrators=allCourseAdministrators)
             
-            try:
-                dao.query(Members).\
-                    filter(and_(Members.authority==SETResources().const.COURSE_ADMINISTRATOR,
-                                Members.memberId==courseAdministrator.split()[0])).\
-                    first().memberId
-            except:
-                error=\
-                    "%s is not registered as a course administrator" %\
-                    (courseAdministrator.split()[0])
+            if not error:
+                try:
+                    dao.query(Members).\
+                        filter(and_(Members.authority==SETResources().const.COURSE_ADMINISTRATOR,
+                                    Members.memberId==courseAdministrator.split()[0])).\
+                        first().memberId
+                except:
+                    error=\
+                        "%s is not registered as a course administrator" %\
+                        (courseAdministrator.split()[0])
+            
+            if error:
                 return render_template('/server_add_class.html', 
                                        error=error, 
                                        SETResources=SETResources,
@@ -873,7 +873,7 @@ def server_add_class():
                                        allCourseAdministrators=allCourseAdministrators)
 
             existCoursesNum=dao.query(RegisteredCourses.courseId).\
-                                  all()
+                                all()
             newCourseNum='%s%s%03d' %\
                          (startDateOfCourse[:4], semester, int(courseIndex)) # yyyys
             isNewCourse=True
