@@ -81,7 +81,7 @@ def sign_in():
             else:
                 try:
                     """ DB Password check """
-                    memberId = request.form['memberId']
+                    memberId = request.form['memberId'].split()[0]
                     password = request.form['password']
                     
                     check = select_match_member(memberCourseProblemParameter = MemberCourseProblemParameter(memberId = memberId)).first()
