@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+from grading import InterfaceGrade
 from gradingResource.enumResources import ENUMResources
 
 if __name__ == '__main__':
@@ -12,8 +13,6 @@ if __name__ == '__main__':
     if len(args) != 11:
         print ENUMResources.const.SERVER_ERROR, 0, 0, 0
         sys.exit()
-    
-    from grading import InterfaceGrade
     
     logging.debug(args[3] + ' grading start')
     os.chdir('tempdir')

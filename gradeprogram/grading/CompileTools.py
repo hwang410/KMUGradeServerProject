@@ -4,6 +4,7 @@ import glob
 import string
 from subprocess import call
 from FileTools import FileTools
+from GradingCommand import GradingCommand
 from gradingResource.listResources import ListResources
 from gradingResource.enumResources import ENUMResources
 
@@ -27,7 +28,7 @@ class CompileTools(object):
             return True
             
         # make compile command
-        command = self.MakeCommand()
+        command = GradingCommand.MakeCompileCommand(self.usingLang, self.filePath)
         
         # code compile
         call(command, shell = True)
@@ -76,14 +77,3 @@ class CompileTools(object):
         wf.writelines(_list)
                 
         wf.close()
-        
-    def MakeCommand(self):
-        # make compile command 
-        if self.usingLang == ListResources.const.Lang_C:
-            return "%s%s%s" % ('gcc ', self.filePath, '*.c -o main -lm -w 2>error.err')
-            
-        elif self.usingLang == ListResources.const.Lang_CPP:
-            return "%s%s%s" % ('g++ ', self.filePath, '*.cpp -o main -lm -w 2>error.err')
-        
-        elif self.usingLang == ListResources.const.Lang_JAVA:
-            return "%s%s%s" % ('javac -nowarn -d .', self.filePath, '*.java 2>error.err')

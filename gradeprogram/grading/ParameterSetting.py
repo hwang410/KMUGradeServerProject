@@ -2,6 +2,7 @@ import os
 import glob
 import string
 import logging
+from gradingResource.listResources import ListResources
 
 class ParameterSetting(object):
     def __init__(self, args):
@@ -16,7 +17,9 @@ class ParameterSetting(object):
         self.version = args[9]
         self.problemName = args[10]
         
-        self.answerPath = "%s%s%s%s%s%s" % (self.problemPath, '/', self.problemName, '_', self.gradeMethod, '/')
+        self.answerPath = "%s%s%s%s%s%s" % (self.problemPath, '/',
+                                            self.problemName, '_',
+                                            self.gradeMethod, '/')
         
         # make execution file name
         self.filePath = "%s%s" % (self.filePath, '/')
@@ -27,10 +30,10 @@ class ParameterSetting(object):
         logging.debug(self.saveDirectoryName + ' parameter setting')
         
     def MakeRunFileName(self):
-        if self.usingLang == 'C' or self.usingLang == 'C++':
+        if self.usingLang == ListResources.const.Lang_C or self.usingLang == ListResources.const.Lang_CPP:
             return 'main'
         
-        if self.usingLang == 'JAVA':
+        if self.usingLang == ListResources.const.Lang_JAVA:
             fileExtention = '*.java'
             
         else:

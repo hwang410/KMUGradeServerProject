@@ -1,8 +1,8 @@
 import string
 from FileTools import FileTools
 from subprocess import call
+from GradingCommand import GradingCommand
 from gradingResource.enumResources import ENUMResources
-from gradingResource.listResources import ListResources
 
 class GradingTools(object):
     def __init__(self, parameter):
@@ -30,20 +30,6 @@ class GradingTools(object):
                 result, score = self.GradeCheckerSingle()
             
         return result, score
-    
-    def MakeMulticaseCommand(self):
-        # make execution command
-        if self.usingLang == ListResources.const.Lang_PYTHON:
-            if self.version == ListResources.const.PYTHON_VERSION_TWO:
-                return "%s%s%s" % ('python ', self.runFileName, '.py 1>output.txt 2>core.1')
-            elif self.version == ListResources.const.PYTHON_VERSION_THREE:
-                return "%s%s%s" % ('python3 ', self.runFileName, '.py 1>output.txt 2>core.1')
-        
-        elif self.usingLang == ListResources.const.Lang_C or self.usingLang == ListResources.const.Lang_CPP:
-            return './main 1>output.txt'
-        
-        elif self.usingLang == ListResources.const.Lang_JAVA:
-            return "%s%s%s" % ('java ', self.runFileName, ' 1>output.txt 2>core.1')
         
     def GradeSolutionSingle(self):
         # user output file each line compare with answer file each line.
@@ -97,7 +83,7 @@ class GradingTools(object):
         _list = []
         append = _list.append
         
-        command = self.MakeMulticaseCommand()
+        command = GradingCommand.MakeMulticaseCommand(self.usingLag, self.version)
         
         for i in range(1, self.caseCount+1):
             copyCommand = "%s%s%s%i%s" % (self.answerPath, self.problemName,
@@ -130,7 +116,7 @@ class GradingTools(object):
         _list = []
         append = _list.append
         
-        command = self.MakeMulticaseCommand()
+        command = GradingCommand.MakeMulticaseCommand(self.usingLag, self.version)
         
         copyCommand = "%s%s%s" % (self.answerPath, self.problemName, '.out')
         
