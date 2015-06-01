@@ -6,6 +6,7 @@ import ptrace
 import resource
 from shutil import copyfile
 from FileTools import FileTools
+from GradingCommand import GradingCommand
 from gradingResource.enumResources import ENUMResources
 from gradingResource.listResources import ListResources
 
@@ -34,12 +35,12 @@ class ExecutionTools(object):
             sys.exit()
         
         # make execution command
-        self.MakeCommand()
+        runCommandList = GradingCommand.MakeExecuteCommand(self.usingLang, self.runFileName, self.version)
                 
         pid = os.fork()
          
         if pid == 0:
-            self.RunProgram()
+            self.RunProgram(runCommandList)
         
         else:
             result, time, usingMem = self.WatchRunProgram(pid)
@@ -58,31 +59,8 @@ class ExecutionTools(object):
             self.ResultError(result, userTime, usingMem)
         
         return 'Grading', userTime, usingMem
-        
-    def MakeCommand(self):
-        # make execution command
-        append = RUN_COMMAND_LIST.append
-        if self.usingLang == ListResources.const.Lang_PYTHON:
-            if self.version == ListResources.const.PYTHON_VERSION_TWO:
-                append('/usr/bin/python')
-                append('/usr/bin/python')
-                append(self.runFileName + '.py')
-                
-            elif self.version == ListResources.const.PYTHON_VERSION_THREE:
-                append('/usr/local/bin/python3')
-                append('/usr/local/bin/python3')
-                append(self.runFileName + '.py')
-                
-        elif self.usingLang == ListResources.const.Lang_C or self.usingLang == ListResources.const.Lang_CPP:
-            append('./main')
-            append('./main')
-            
-        elif self.usingLang == ListResources.const.Lang_JAVA:
-            append('/usr/bin/java')
-            append('/usr/bin/java')
-            append(self.runFileName)
     
-    def RunProgram(self):
+    def RunProgram(self, runCommandList):
         os.nice(19)
         
         reditectionSTDOUT = os.open('output.txt', os.O_RDWR|os.O_CREAT)
@@ -99,10 +77,10 @@ class ExecutionTools(object):
             reditectionSTDERROR = os.open('core.1', os.O_RDWR|os.O_CREAT)
             os.dup2(reditectionSTDERROR,2)
             
-            os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1], RUN_COMMAND_LIST[2])
+            os.execl(runCommandList[0], runCommandList[1], runCommandList[2])
             
         else:
-            os.execl(RUN_COMMAND_LIST[0], RUN_COMMAND_LIST[1])
+            os.execl(runCommandList[0], runCommandList[1])
             
     def WatchRunProgram(self, pid):
         usingMem = 0
