@@ -1,6 +1,9 @@
-<!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
+<!-- 
+	@@ server_manage_class.html
+
+	The page when server administrator manages registered courses.
+	author: seulgi choi
+-->
 		
 {%- extends "main.html" -%}
 {%- block body %}
@@ -18,8 +21,13 @@
 			</a>
 		</div>
 
-		<!-- hidden modal pop -->
-		<!-- if any item choosed -->
+		<!--
+			@@ Hidden modal pop
+
+			1. Course deletion
+			2. No item choosed
+		-->
+		<!-- Course deletion -->
 		<div class="modal hide fade" id="deleteModal"
 			  aria-hidden="true" aria-labelledby="deleteModalLabel"
 			  role="dialog" tabindex="-1">
@@ -47,7 +55,8 @@
 				
 			</div>
 		</div>
-		<!-- no items choosed -->
+
+		<!-- No items choosed when deletion button's clicked -->
 		<div class="modal hide fade" id="deleteNoItem"
 			  aria-hidden="true" aria-labelledby="deleteModalLabel"
 			  role="dialog" tabindex="-1">
@@ -70,7 +79,6 @@
 				</button>
 			</div>
 		</div>
-		<!-- end hidden modal pop -->
 
 		<table class="table table-bordered" id="registeredCourses"
 				style="margin-top:10px">
@@ -110,6 +118,14 @@
 									<br>
 								{% endif -%}
 							{% endfor -%}
+					<!-- 
+						@@ responsible design
+
+						shows different contents up to its window size
+						check the manual of twitter bootstrap on the web for details
+						
+						http://getbootstrap.com/2.3.2/scaffolding.html#responsive
+					-->
 					<td class="hidden-phone">
 						<div class="shortdate">{{ course.startDateOfCourse }}</div>
 					<td class="hidden-phone">
