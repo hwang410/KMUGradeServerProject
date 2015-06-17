@@ -261,7 +261,12 @@ $(function() {
 		</div>
 		</form>
 
-		<!-- Group of user addition -->
+		<!-- 
+			Group of user addition
+			
+			It allows multiple files to upload.
+			Before you push 'Done', make sure the files' contents are suit to the manual.
+		-->
 		<div class="modal hide fade" id="addGroupModal" 
 			  aria-hidden="true" aria-labelledby="addGroupModalLabel"
 			  role="dialog" tabindex="-1">
@@ -395,7 +400,7 @@ $(function() {
 			<!--
 				@@ Confirm Button
 
-				a - button hierachy makes it redirect to next page
+				a > button hierachy makes it redirect to next page
 				but it doesn't work in IE8 and below version
 
 				tried to change redirect function into button tag as onclick="location.href"
@@ -424,7 +429,7 @@ $("#college1").change(function(){
 
 	when you select one item from select form, it triggers to run it
 	if your choice is just 'select college' then nothing happen
-	else it changes its options in department select form
+	else it hides 'select college' option and changes its options in department select form
 */
 function RowOnClickController(IdxOfRow){
 	var selectedText = $("#college"+IdxOfRow+" option:selected").text().replace(/\t/g, "").replace(/\n/g, "");
