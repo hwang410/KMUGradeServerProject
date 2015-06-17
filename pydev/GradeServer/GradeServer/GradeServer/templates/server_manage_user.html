@@ -1,6 +1,9 @@
-<!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
+<!-- 
+	@@ server_manage_user.html
+
+	The page when server administrator manages users.
+	author: seulgi choi
+-->
 		
 {%- extends "main.html" -%}
 {%- block body %}
@@ -20,8 +23,13 @@
 			</a>
 		</div>
 
-		<!-- hidden modal pop -->
-		<!-- if any item choosed -->
+		<!--
+			@@ Hidden modal pop
+
+			1. User deletion
+			2. No items choosed
+		-->
+		<!-- User deletion -->
 		<div class="modal hide fade" id="deleteModal"
 			  aria-labelledby="deleteModalLabel" aria-hidden="true"
 			  role="dialog" tabindex="-1">
@@ -46,7 +54,8 @@
 					</button>
 			</div>
 		</div>
-		<!-- no items choosed -->
+		
+		<!-- No items choosed when deletion button's clicked -->
 		<div class="modal hide fade" id="deleteNoItem"
 			  aria-labelledby="deleteModalLabel" aria-hidden="true"
 			  role="dialog" tabindex="-1">
@@ -67,7 +76,6 @@
 				</button>
 			</div>
 		</div>
-		<!-- end hidden modal pop -->
 
 		<table class="table table-bordered" id="registeredUsers" style="margin-top:10px">
 			<thead>
@@ -110,9 +118,10 @@
 					<td>{{ user[1] }} <!-- member name -->
 					<!-- <td>{{ user[2] }} --><!-- member contact number -->
 					<td>{{ user[3] }} <!-- member email address -->
-					<!-- Up to you. -->
-					<!-- Now we set USER as Student, SERVER_ADMINISTRATOR as SA, COURSE_ADMINISTRATOR  as CA -->
-					<!-- Because using meta values, not enough width -->
+					<!-- 
+						Now we set USER as Student, SERVER_ADMINISTRATOR as SA, COURSE_ADMINISTRATOR  as CA
+						Because meta values from DB are too long to show
+					-->
 					<td><!-- member authority -->
 						{%- for authority in user[4] %}
 							{%- if authority==SETResources.const.USER %}
