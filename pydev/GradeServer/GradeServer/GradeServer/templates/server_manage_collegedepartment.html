@@ -1,3 +1,10 @@
+<!-- 
+	@@ server_manage_collegedepartment.html
+
+	The page when server administrator manages college and department.
+	author: seulgi choi
+-->
+
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
@@ -8,6 +15,7 @@
 		{{ LanguageResources.const.Management[session['language']] }}
 	</h3>
 	<div class="tabbable">
+		<!-- Buttons to manage college and department or addition of them -->
 		<ul class="nav nav-tabs">
 			<li id="collegeTab">
 				<a id="college" data-toggle="tab" href="#colleges">
@@ -24,9 +32,18 @@
 				 </a>
 			</div>	
 		</ul>
-		<!-- ///// College Modal ///// -->
-		<!-- ///// Add case ///// -->
+		<!--
+			@@ Hidden modal pop
+
+			1. College addition
+			2. Department addition
+			3. College deletion
+			4. No college choosed
+			5. Department deletion
+			6. No department choosed
+		-->
 		<form method="post">
+		<!-- College addition -->
 		<div class="modal hide fade" id="collegeModal" 
 			  aria-hidden="true" aria-labelledby="addCollegeModalLabel"
 			  role="dialog" tabindex="-1">
@@ -78,9 +95,8 @@
 			</div>
 		</div>
 		</form>
-		<!-- ///// end college modal ///// -->
-		<!-- ///// Department Modal ///// -->
-		<!-- ///// Add case ///// -->
+		
+		<!-- Department addition -->
 		<form method="post">
 		<div class="modal hide fade" id="departmentModal"
 			  aria-hidden="true" aria-labelledby="addDepartmentModalLabel"
@@ -146,7 +162,6 @@
 		</div>
 		</form>
 
-<!-- ///// end department modal ///// -->
 		<div class="tab-content">
 			<div class="tab-pane" id="colleges">
 			<form method="post">
@@ -175,8 +190,8 @@
 						{% endfor -%}
 				</table>
 			</div>
-			<!-- ///// College Modal ///// -->
-			<!-- ///// Delete case ///// -->
+			
+			<!-- College deletion -->
 			<div class="modal hide fade" id="deleteCollegeModal"
 				  aria-hidden="true"  aria-labelledby="deleteCollegeModalLabel"
 				  role="dialog" tabindex="-1">
@@ -204,7 +219,8 @@
 					</button>
 				</div>
 			</div>
-			<!-- no items choiced -->
+			
+			<!-- No items choosed when deletion button's clicked -->
 			<div class="modal hide fade" id="deleteNoCollegeItem"
 				  aria-hidden="true" aria-labelledby="deleteModalLabel"
 				  role="dialog" tabindex="-1">
@@ -228,8 +244,7 @@
 				</div>
 			</form>	
 			</div>
-			<!-- ***** end College Modal ***** -->
-
+			
 			<div class="tab-pane" id="departments">
 			<form method="post">
 				<table class="table">
@@ -262,7 +277,8 @@
 			</div>
 		</div>
 	</div>
-	<!-- ///// Delete case ///// -->
+	
+	<!-- Department deletion -->
 	<div class="modal hide fade" id="deleteDepartmentModal"
 			 role="dialog" aria-labelledby="deleteDepartmentModalLabel"
 			 aria-hidden="true" tabindex="-1">
@@ -289,7 +305,8 @@
 		</div>
 		</form>
 	</div>
-	<!-- no items choiced -->
+	
+	<!-- No items choosed when deletion button's clicked -->
 	<div class="modal hide fade" id="deleteNoDepartmentItem"
 		  role="dialog" aria-labelledby="deleteModalLabel"
 		  aria-hidden="true" tabindex="-1">
@@ -312,8 +329,8 @@
 			</button>
 		</div>
 	</div>
-	<!-- ***** end Department Modal ***** -->
 
+	<!-- button to delete college or department -->
 	<div id="deleteButton" style="text-align:right">
 		<a class="btn" data-toggle="modal" role="button"
 			onclick="showingDeleteModal('college')">
@@ -322,10 +339,21 @@
 	</div>
 </div>
 <script>
-// change the button up to current tab
+/*
+	@@ Dynamic button function up to the page
+
+	if the page currently showing up is about 'college' 
+	then it changed the link of deletion button to 'college'
+	else it's 'department'
+
+	so it can work properly
+*/
 var currentTab="{{ currentTab }}";
+
+// 1. change navigation of the active tab
 document.getElementById(currentTab).className="tab-pane active";
 
+// 2. change modal link of addition button
 if(currentTab.indexOf("college") != -1){
 	currentTab=buttonAttrUpToTab("college")+"Tab";
 }
@@ -339,6 +367,7 @@ function buttonAttrUpToTab(tab){
 	return tab;
 }
 
+// 3. change active tab
 document.getElementById(currentTab).className="active";
 
 $('a[data-toggle="tab"]').on('shown', function(e){
@@ -347,6 +376,7 @@ $('a[data-toggle="tab"]').on('shown', function(e){
 	attrUpToTab(id);
 });
 
+// 4. change modal link of deletion button
 function attrUpToTab(tab){
 	changeOnClickEvent(tab);
 }
@@ -363,12 +393,14 @@ function changeOnClickEvent(tab){
 	document.getElementById('deleteButton').innerHTML=newinnerhtml;
 }
 
-// College
-// Add line button event
+/*
+	@@ addline button function for college
+*/
 $("#addline_college").bind("click", function(){
 	var targetTable=document.getElementById("Colleges");
 	var numOfRow=targetTable.rows.length;
 
+	/* reset form values */
 	reset_values=function(){
 		$("#collegeCode1").val();
 		$("#collegeName1").val();
@@ -393,7 +425,9 @@ $("#addline_college").bind("click", function(){
 	reset_values();
 });
 
-// Close button event
+/*
+	@@ close button function
+*/
 $("#resetAddCollegeForm").bind("click", function(){
 	var keys=['collegeCode', 'collegeName'];
 	var placeholders=['Optional', 'College Name'];
@@ -409,12 +443,14 @@ $("#resetAddCollegeForm").bind("click", function(){
 	document.getElementById("addCollegeForm").innerHTML=newInnerHTML;
 });
 
-// Department
-// Add line button event
+/*
+	@@ addline button function for department
+*/
 $("#addline_department").bind("click", function(){
 	var targetTable=document.getElementById("Departments");
 	var numOfRow=targetTable.rows.length;
 
+	/* reset form values */
 	reset_values=function(){
 		$("#departmentCode1").val();
 		$("#departmentName1").val();
@@ -456,7 +492,9 @@ $("#addline_department").bind("click", function(){
 	reset_values();
 });
 
-// Close button event
+/*
+	@@ close button function
+*/
 $("#resetAddDepartmentForm").bind("click", function(){
 	var keys=['departmentCode', 'departmentName'];
 	var placeholders=['Optional', 'Department Name'];
