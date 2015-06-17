@@ -1,7 +1,10 @@
-<!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
-		
+<!-- 
+	@@ class_add_user.html
+
+	The page when course administrator registers new user into server.
+	author: seulgi choi
+-->
+
 {%- extends "main.html" -%}
 {%- block body %}
 <script>
@@ -12,9 +15,6 @@ var placeholders=['Course Id', 'ID', 'Name',
 var formsize=['', 'small', 'mini', 'medium', 'medium', 'medium'];
 
 $(function() {
-	// To do.
-	// now it shows all members having 'user' authority.
-	// but if the member is exist, then it needs to change college/department/authority space automatically.
 	var allUsers=[
 		{%- for user, college, department in allUsers %}
 		{ value: "{{ user.memberId }} {{ user.memberName }}", 
@@ -22,7 +22,16 @@ $(function() {
 		{% endfor -%}
 		{ value: "", data: "" }
 	];
-	// autocompletion for initial state of the form
+	/*
+		@@ auto-complete function for the first line
+
+		when you type exist member id in the form,
+		it shows the memeber's college, department and authority
+
+		!! TODO
+		if the members have multiple college, department or authority
+		how do we need to handle for them?
+	*/
 	$("#userId1").autocomplete({
 		lookup: allUsers,
 		onSelect: function(suggestion){
@@ -45,6 +54,7 @@ $(function() {
 					break;
 				}
 			}
+
 			authority = authority.indexOf("COURSE_ADMINISTRATOR")!=-1 ? 0 : 1;
 
 			document.getElementById(this.id).value=userId;
@@ -64,17 +74,23 @@ $(function() {
 					document.getElementById("authority"+userIdx).options[authority].value+
 				"</option>";
 
-			// for the exist data, set disabled option
+			/*
+				@@ Disabling forms
+			*/
 			document.getElementById("college"+userIdx).setAttribute("disabled", "disabled");
 			document.getElementById("department"+userIdx).setAttribute("disabled", "disabled");
 			document.getElementById("authority"+userIdx).setAttribute("disabled", "disabled");
 		}
 	});
-
+	
+	/*
+		@@ addline button function
+	*/
 	$("#addline").bind('click',function(){
 		var targetTable=document.getElementById('indivisual');
 		var numOfRow=targetTable.rows.length;
 
+		/* reset form values */
 		reset_val=function(){
 			$("#courseId1").val("");
 			$("#userId1").val("");
@@ -179,7 +195,7 @@ $(function() {
 
 						// When course administrator pick user who already registered in server,
 						// Actually only one option is in 'select' tag.
-						// In this case, it needs to search matching authority from 'authorities'
+						// In this case, it needs to search matched authority from 'authorities'
 						// 
 						// If the user is new user then get its index from 'options' function.
 						if(numOfOptions == 1){
@@ -219,11 +235,21 @@ $(function() {
 			}
 		});
 
+		/*
+			@@ auto-change options in department form
+
+			departments options are changed up to selected college
+		*/
 		$("#college"+numOfRow).change(function(){
 			RowOnClickController(numOfRow);
 		});
 
-		// autocompletion for the form already exist
+		/*
+			@@ auto-completion for each line
+
+			when you types exist member id in the form,
+			it shows the memeber's college, department and authority
+		*/
 		$("#userId"+numOfRow).autocomplete({
 			lookup: allUsers,
 			onSelect: function(suggestion){
@@ -282,7 +308,13 @@ $(function() {
 			}
 		});
 
-		// initialization
+		/*
+			@@ Initialization
+
+			1. reset forms' value attribute
+			2. reset disabled state to enable
+			3. reset college, department and authority form options
+		*/
 		reset_val();
 		document.getElementById("college1").removeAttribute("disabled");
 		document.getElementById("department1").removeAttribute("disabled");
@@ -302,6 +334,9 @@ $(function() {
 		document.getElementById("authority1").innerHTML = initialOptions;
 	});
 
+	/*
+		@@ close button function
+	*/
 	$("#resetIndivisualUserForm").bind('click',function(){
 		document.getElementById("indivisualUserForm").innerHTML=
 			'<td>'+
@@ -349,6 +384,11 @@ $(function() {
 			}
 		});
 
+		/*
+			@@ auto-change options in department form
+
+			departments options are changed up to selected college
+		*/
 		$("#college1").change(function(){
 			RowOnClickController(1);
 		});
@@ -395,6 +435,9 @@ $(function() {
 						document.getElementById("authority"+userIdx).options[authority].value+
 					"</option>";
 
+				/*
+					@@ Disabling forms
+				*/
 				document.getElementById("college"+userIdx).setAttribute("disabled", "disabled");
 				document.getElementById("department"+userIdx).setAttribute("disabled", "disabled");
 				document.getElementById("authority"+userIdx).setAttribute("disabled", "disabled");
@@ -409,10 +452,7 @@ $(function() {
 			{{ LanguageResources.const.User[session['language']] }}
 			{{ LanguageResources.const.Addition[session['language']] }}
 		</h3>
-		<!--
-		@@ Navigation for modal
-		It matches each button to each modal.
-		-->
+		<!-- Buttons to add and delete user -->
 		<div style="text-align:right">
 			<a class="btn" data-toggle="modal" href="#addUserModal" role="button">
 				{{ LanguageResources.const.Indivisual[session['language']] }}
@@ -425,11 +465,16 @@ $(function() {
 				{{ LanguageResources.const.Deletion[session['language']] }}
 			</a>
 		</div>
-		<!-- End navigation -->
 
 		<!--
-		@@ Add user individually from modal
-		 -->
+			@@ Hidden modal pop
+
+			1. Individual user addition
+			2. Group of user addition
+			3. User deletion
+			4. No item choosed
+		-->
+		<!-- Individual user addition -->
 		<form id="addIndivisualUser" method="post">
 		<div class="modal hide fade" id="addUserModal"
 			  aria-hidden="false" aria-labelledby="addUserModalLabel" 
@@ -520,19 +565,16 @@ $(function() {
 			</div>
 		</div>
 		</form>
-		<!-- End add user individually modal -->
 
-		<!-- 
-		@@ Add user group modal 
+		<!--
+			Group of user addition
+			
+			It allows multiple files to upload.
+			Before you push 'Done', make sure you select correct course and the files' contents are suit to the manual.
 		-->
 		<div class="modal hide fade" id="addGroupModal"
 			  aria-hidden="true" aria-labelledby="addGroupModalLabel"
 			  role="dialog" tabindex="-1">
-			<!--
-			@@ Add user from files
-			It allows multiple files to upload.
-			Before you push 'Done', make sure you select correct course and the files' contents are suit to the manual.
-			-->
 			<form method="post" enctype="multipart/form-data">
 				<div class="modal-header">
 					<button class="close" data-dismiss="modal"
@@ -576,13 +618,15 @@ $(function() {
 					</button>
 				</div>
 			</form>
-			<!-- @@ End user from files -->
 		</div>
-		<!-- @@ End user group modal -->
 
-		<!--
-		@@ Holding user list
-		When you check users and click 'Delete', it sends checked values to server.
+		<!-- 
+			@@ Showing pending users
+
+			When you add new user from the modal pop,
+			the users will be showing up in this section
+
+			but you should click 'Done' button at the last to add them into the server.
 		-->
 		<table class="table table-bordered" id="pendingUserTable"
 				style="margin-top:10px">
@@ -629,6 +673,17 @@ $(function() {
 						</label>
 				{% endfor -%}
 		</table>
+		<!--
+			@@ Confirm Button
+
+			a > button hierachy makes it redirect to next page
+			but it doesn't work in IE8 and below version
+
+			tried to change redirect function into button tag as onclick="location.href"
+			however it conflicts with our security function
+
+			it's still our issue to solve
+		-->
 		<button class="btn" name="addUser" type="submit"
 				  onclick="location.href='{{ url_for('GradeServer.server_add_user') }}'">
 			{{ LanguageResources.const.Done[session['language']] }}
@@ -636,10 +691,7 @@ $(function() {
 	</div>
 		<!-- End holding user list -->
 
-		<!-- 
-		@@ Delete holding users modal
-		It works when you click 'Delete' then shows pop-up.
-		-->
+		<!-- User deletion -->
 		<div class="modal hide fade" id="deleteModal"
 			  aria-hidden="true" aria-labelledby="deleteModalLabel"
 			  role="dialog" tabindex="-1">
@@ -666,6 +718,7 @@ $(function() {
 </form>
 			</div>
 		</div>
+		<!-- No item choosed when deletion buttons' clicked -->
 		<div class="modal hide fade" id="deleteNoItem"
 			  aria-hidden="true" aria-labelledby="deleteModalLabel"
 			  role="dialog" tabindex="-1">
@@ -688,9 +741,15 @@ $(function() {
 				</button>
 			</div>
 		</div>
-		<!-- @@ End delete user modal -->
 </div>
 <script>
+/*
+	@@ attaching event when user id is changed
+
+	!! TODO
+	it should be triggered when user name is chanaged
+	add onchange event for user name as well
+*/
 $("#userId1").change(function(){
 	var isExistUser=false;
 	{%- for user, college, department in allUsers %}
@@ -703,8 +762,17 @@ $("#userId1").change(function(){
 	}
 });
 
+/*
+	@@ reset form values 
+
+	when you type exist user id then it fills another forms automatically
+	and to make sure it's exist user, also it changes the forms disable
+
+	but if you change the id or name of the user existing in server,
+	it should be reset from disabled state because the user may have another information
+*/
 function resetDisabledOption(idxOfRow){
-	// reset diabled option
+	// remove diabled attribute
 	document.getElementById("college"+idxOfRow).removeAttribute("disabled");
 	document.getElementById("department"+idxOfRow).removeAttribute("disabled");
 	document.getElementById("authority"+idxOfRow).removeAttribute("disabled");
@@ -727,6 +795,13 @@ function resetDisabledOption(idxOfRow){
 		'</select>';
 }
 
+/*
+	@@ Enabling options before submit
+
+	it's kind of trick. disabled forms can't be sent to server.
+	So, when the submit button's clicked it changes the all disabled states to enabled
+	and execute 'submit'
+*/
 function activateDisabledOption(){
 	var selectForms=document.getElementsByTagName("select");
 	for(var i=0;i<selectForms.length;i++){
@@ -753,11 +828,13 @@ function activateDisabledOption(){
 	If you find a way to reuse with jinja2 values as parameters of it.
 	Pleasure you to modify it.
 
-	2015.5.9. Seulgi Choi
+	2015.5.9. 
+	author: seulgi choi
 */
 $("#college1").change(function(){
 	RowOnClickController(1);
 });
+
 function RowOnClickController(IdxOfRow){
 	var selectedText=$("#college"+IdxOfRow+" option:selected").text();
 
@@ -788,9 +865,17 @@ function RowOnClickController(IdxOfRow){
 		}
 		document.getElementById("college"+IdxOfRow).innerHTML=newOptions;
 	}
+
+	/*
+		@@ change department options up to selected college
+
+		if department is contained in college, it will be added.
+	*/
 	{%- for college in allColleges %}
 	if(index == "{{ college.collegeIndex }}"){
 		document.getElementById("department"+IdxOfRow).innerHTML="";
+		// variable 'relation' means the information of college-department relation
+		// college/department-Info just have its index and name
 		{%- for relation, collegeInfo, departmentInfo in allDepartments %}
 			{%- if relation.collegeIndex == college.collegeIndex %}
 			document.getElementById("department"+IdxOfRow).innerHTML+=
@@ -802,6 +887,5 @@ function RowOnClickController(IdxOfRow){
 	}
 	{% endfor -%}
 }
-
 </script>
 {% endblock -%}
