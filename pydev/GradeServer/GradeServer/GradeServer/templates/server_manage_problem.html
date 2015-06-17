@@ -1,6 +1,9 @@
-<!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
+<!-- 
+	@@ server_manage_problem.html
+
+	The page when server administrator manages problems.
+	author: seulgi choi
+-->
 		
 {%- extends "main.html" -%}
 {%- block body %}
@@ -10,7 +13,7 @@
 			{{ LanguageResources.const.Problem[session['language']] }}
 			{{ LanguageResources.const.Management[session['language']] }}
 		</h3>
-		<!-- if any button is checked, then showing modal pop -->
+		<!-- Buttons to add and delete problem -->
 		<div style="text-align:right">
 			<a class="btn" data-toggle="modal" role="button" href="#addModal">
 				{{ LanguageResources.const.Addition[session['language']] }}
@@ -21,8 +24,14 @@
 			</a>
 		</div>
 
-		<!-- hidden modal pop -->
-		<!-- ///// Add case ///// -->
+		<!--
+			@@ Hidden modal pop
+
+			1. Problem addition
+			2. Problem deletion
+			3. No itmes choosed
+		-->
+		<!-- Problem addition -->
 		<div class="modal hide fade" id="addModal" aria-hidden="true"
 			  aria-labelledby="addModalLabel" role="dialog" tabindex="-1">
 			<form method="post" enctype="multipart/form-data">
@@ -36,6 +45,10 @@
 						{{ LanguageResources.const.Addition[session['language']] }}
 					</h3>
 				</div>
+				<!--
+					It allows multiple files to upload.
+					Before you push 'Upload', make sure the files' contents are suit to the manual.
+				-->
 				<div class="modal-body">
 					<p>Manual : "Manual"</p>
 					Problem(*.zip):	<input type="file" name="files" multiple>
@@ -51,8 +64,7 @@
 			</form>
 		</div>
 
-		<!-- ///// Delete case /////
-				if any item choosed -->
+		<!-- Problem deletion -->
 		<div class="modal hide fade" id="deleteModal"
 			  aria-hidden="true" aria-labelledby="deleteModalLabel"
 			  role="dialog" tabindex="-1">
@@ -80,7 +92,8 @@
 				<!-- In IE, it doesn't send its form values to server if 'form tags' are out of '<form></form>'  -->
 			</div>
 		</div>
-		<!-- no items choosed -->
+
+		<!-- No items choosed when deletion button's clicked -->
 		<div class="modal hide fade" id="deleteNoItem" 
 			  aria-labelledby="deleteModalLabel" aria-hidden="true"
 			  role="dialog" tabindex="-1">
@@ -103,8 +116,10 @@
 				</button>
 			</div>
 		</div>
-		<!-- ///// end hidden modal pop ///// -->
 
+		<!-- 
+			@@ Showing registered problems
+		-->
 		<table class="table table-bordered" id="registeredProblems"
 				style="margin-top:10px">
 			<thead>
