@@ -1,6 +1,9 @@
-<!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
+<!-- 
+	@@ server_add_class.html
+
+	The page when server administrator registers new course into server.
+	author: seulgi choi
+-->
 
 {%- extends "main.html" -%}
 {%- block body %}
@@ -13,7 +16,12 @@ h4{
 }
 </style>
 <script>
-// auto complete data for course administrator form
+/*
+	@@ auto-complete function
+
+	when you type exist member id in the form,
+	it shows the memeber's id and name
+*/
 $(function() {
 	var administrators = [
 		{%- for courseAdministrator in allCourseAdministrators %}
@@ -60,6 +68,7 @@ $(function() {
 				</div>
 			</h4>
 		</div>
+		<!-- administrator -->
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
@@ -74,6 +83,7 @@ $(function() {
 				</div>
 			</h4>
 		</div>
+		<!-- semester -->
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
@@ -81,9 +91,10 @@ $(function() {
 				</div>
 				<div class="span9">
 					<script>
-					// @To do
+					// !!TODO
 					// It should be more options for other organizations
-					var keys = ["1st", "Summer", "2nd", "Winter"]; // now for college
+					// 'keys' will be changed up DB
+					var keys = ["1st", "Summer", "2nd", "Winter"]; // now for nomal university
 
 					for(var i=1;i<=keys.length;i++){
 						document.write('<label class="radio inline"><input id="'+keys[i-1]+
@@ -98,6 +109,7 @@ $(function() {
 				</div>
 			</h4>
 		</div>
+		<!-- language -->
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
@@ -129,6 +141,7 @@ $(function() {
 				</div>
 			</h4>
 		</div>
+		<!-- course description -->
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
@@ -151,6 +164,7 @@ $(function() {
 		    	}
 		});
 		</script>
+		<!-- start date -->
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
@@ -164,6 +178,7 @@ $(function() {
 				</div>
 			</h4>
 		</div>
+		<!-- finish date -->
 		<div class="row-fluid">
 			<h4>
 				<div class="span3">
