@@ -1,6 +1,9 @@
-<!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
+<!-- 
+	@@ server_add_user.html
+
+	The page when server administrator registers new user into server.
+	author: seulgi choi
+-->
 		
 {%- extends "main.html" -%}
 {%- block body %}
@@ -11,10 +14,14 @@ var formsize = ['small', 'mini', 'medium', 'medium', 'medium'];
 var uploadObj = "";
 
 $(function() {
+	/*
+		@@ addline button function
+	*/
 	$("#addline").bind('click',function(){
 		var targetTable = document.getElementById('indivisual');
 		var numOfRow = targetTable.rows.length;
 
+		/* reset form values */
 		reset_val = function(){
 			$("#userId1").val("");
 			$("#username1").val("");
@@ -100,6 +107,9 @@ $(function() {
 		document.getElementById("department1").innerHTML = "";
 	});
 
+	/*
+		@@ close button function
+	*/
 	$("#resetIndivisualUserForm").bind('click', function(){
 		uploadObj = "<form method='post'><tr class='formLine'>";
 
@@ -145,13 +155,15 @@ $(function() {
 	});
 });
 </script>
+
 <div class="container">
 	<div>
 		<h3>
 			{{ LanguageResources.const.User[session['language']] }}
 			{{ LanguageResources.const.Addition[session['language']] }}
 		</h3>
-		<!-- if any button is checked, then showing modal pop -->
+
+		<!-- Buttons to add and delete user -->
 		<div style="text-align:right">
 			<a class="btn" data-toggle="modal" href="#addUserModal" role="button">
 				{{ LanguageResources.const.Indivisual[session['language']] }}
@@ -165,8 +177,15 @@ $(function() {
 			</a>
 		</div>
 
-		<!-- hidden modal pop -->
-		<!-- ///// Add individual ///// -->
+		<!--
+			@@ Hidden modal pop
+
+			1. Individual user addition
+			2. Group of user addition
+			3. User deletion
+			4. No item choosed
+		-->
+		<!-- Individual user addition -->
 		<form id="addIndivisualUser" method="post">
 		<div class="modal hide fade" id="addUserModal"
 			  aria-hidden="true" aria-labelledby="addUserModalLabel"
@@ -241,7 +260,8 @@ $(function() {
 			</div>
 		</div>
 		</form>
-		<!-- ///// add group ///// -->
+
+		<!-- Group of user addition -->
 		<div class="modal hide fade" id="addGroupModal" 
 			  aria-hidden="true" aria-labelledby="addGroupModalLabel"
 			  role="dialog" tabindex="-1">
@@ -272,8 +292,7 @@ $(function() {
 			</form>
 		</div>
 
-		<!-- ///// Delete case /////
-				if any item choosed -->
+		<!-- User deletion -->
 		<div class="modal hide fade" id="deleteModal" 
 			  aria-hidden="true" aria-labelledby="deleteModalLabel"
 			  tabindex="-1" role="dialog">
@@ -301,7 +320,8 @@ $(function() {
 				</form>
 			</div>
 		</div>
-		<!-- no items choosed -->
+
+		<!-- No item choosed when deletion button's clicked -->
 		<div class="modal hide fade" id="deleteNoItem" 
 			  aria-hidden="true" aria-labelledby="deleteModalLabel"
 			  tabindex="-1" role="dialog">
@@ -324,7 +344,15 @@ $(function() {
 				</button>
 			</div>
 		</div>
-		<!-- ///// end hidden modal pop ///// -->
+
+		<!-- 
+			@@ Showing pending users
+
+			When you add new user from the modal pop,
+			the users will be showing up in this section
+
+			but you should click 'Done' button at the last to add them into the server.
+		-->
 		<form method="post">
 			<table class="table table-bordered" id="pendingUsers"
 					style="margin-top:10px">
@@ -364,6 +392,17 @@ $(function() {
 							</label>
 					{% endfor -%}
 			</table>
+			<!--
+				@@ Confirm Button
+
+				a - button hierachy makes it redirect to next page
+				but it doesn't work in IE8 and below version
+
+				tried to change redirect function into button tag as onclick="location.href"
+				however it conflicts with our security function
+
+				it's still our issue to solve
+			-->
 			<a href="{{ url_for('GradeServer.server_add_user') }}">
 				<button class="btn" name="addUser" type="submit">
 					{{ LanguageResources.const.Done[session['language']] }}
@@ -373,10 +412,20 @@ $(function() {
 	</div>
 </div>
 <script>
-// For the first line of Add Indivisual User
+/*
+	@@ attaching event for the first line of Add Indivisual User
+*/
 $("#college1").change(function(){
 	RowOnClickController(1);
 });
+
+/*
+	@@ Controller for onclick on college select form of table
+
+	when you select one item from select form, it triggers to run it
+	if your choice is just 'select college' then nothing happen
+	else it changes its options in department select form
+*/
 function RowOnClickController(IdxOfRow){
 	var selectedText = $("#college"+IdxOfRow+" option:selected").text().replace(/\t/g, "").replace(/\n/g, "");
 
@@ -404,10 +453,24 @@ function RowOnClickController(IdxOfRow){
 		}
 		document.getElementById("college"+IdxOfRow).innerHTML = newOptions;
 	}
+
+	/*
+		this variable's set from row text through innerHTML(actually used .text())
+		so it contains tab and new-line character
+		need to remove invalid character for correct data
+	*/
 	index = index.replace(/\t/g, '').replace(/\n/g, '');
+
+	/*
+		@@ change department options up to selected college
+
+		if department is contained in college, it will be added.
+	*/
 	{%- for college in allColleges %}
 	if(index=="{{ college.collegeIndex }}"){
 		document.getElementById("department"+IdxOfRow).innerHTML = "";
+		// variable 'relation' means the information of college-department relation
+		// college/department-Info just have its index and name
 		{%- for relation, collegeInfo, departmentInfo in allDepartments %}
 			{%- if relation.collegeIndex == college.collegeIndex %}
 			document.getElementById("department"+IdxOfRow).innerHTML += 
