@@ -1,12 +1,12 @@
-<!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
-		
+<!-- 
+	@@ class_manage_problem.html
+
+	The page when course administrator manages registered problems.
+	author: seulgi choi
+-->
+
 {%- extends "main.html" -%}
 {%- block body %}
-<script>
-
-</script>
 <div class="container">
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
@@ -36,9 +36,16 @@
 				</div>
 			</div>	
 		</ul>
-		<!-- hidden modal pop -->
-		<!-- ///// Add case ///// -->
+		
 		<form id="addProblemModalForm" method="post">
+		<!--
+			@@ Hidden modal pop
+
+			1. Problem addition
+			2. Problem deletion
+			3. No item choosed
+		-->
+		<!-- Problem addition -->
 		<div class="modal hide fade" id="addProblemModal" 
 			  aria-labelledby="addProblemModalLabel" aria-hidden="true"
 			  role="dialog" tabindex="-1">
@@ -55,7 +62,7 @@
 				</h3>
 			</div>
 			<div class="modal-body">
-				<p>If you don't choose open/close date, then the dates will be same with start/end date<br></p>
+				<p>If you don't choose open/close date, then the dates will be the same with start/end date<br></p>
 				<div style="text-align:right">
 					<button class="btn" id="addline_problem" type="button">
 						{{ LanguageResources.const.AddLine[session['language']] }}
@@ -124,7 +131,6 @@
 				<a class="btn" onclick="checkFormValidation()">
 					{{ LanguageResources.const.Done[session['language']] }}
 				</a>
-				<!--<button class="btn" name="add" onclick="checkFormValidation()">Done</button>-->
 				<button class="btn" id="resetAddProblemForm"
 						  data-dismiss="modal" aria-hidden="true">
 					{{ LanguageResources.const.Close[session['language']] }}
@@ -174,8 +180,6 @@
 							<td id="isAllInputCaseInOneFile_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.isAllInputCaseInOneFile }}"
 								ondblclick="modifySelector(this.id)">
 								{{ registeredProblem.isAllInputCaseInOneFile }}
-							<!-- @To do -->
-							<!-- When the script code was function call, it was not working. and don't know why. -->
 							<td class="shortdate"
 								 id="startDateOfSubmission_{{ registeredProblem.courseId }}_{{ registeredProblem.problemId }}_{{ registeredProblem.startDateOfSubmission }}"
 								ondblclick="modifySelector(this.id)">
@@ -274,12 +278,21 @@
 			</div>
 			{% endfor %}
 		</div>
-		<input type="submit" id="hidden_editButton" style="display:None"> <!-- virtual submit tag -->
-		<input type="submit" id="hidden_deleteButton" style="display:None"> <!-- virtual submit tag -->
+		<!--
+			@@ Hidden submit tags
+
+			in IE, it doesn't support HTML5 well so, submit tag out of 'form' tag is not working.
+			it's kind of trick that putting submit tag in form tag with hidden attribute
+			and make another button to trigger the hidden submit tag out of the form tag
+		-->
+		<input type="submit" id="hidden_editButton" style="display:None">
+		<input type="submit" id="hidden_deleteButton" style="display:None">
 	</form>
-	<div style="text-align:right">		
+	<div style="text-align:right">	
+		<!-- 'for' attribute is that to be an anchor to real form tag -->
 		<label for="hidden_editButton" style="display:inline">
-			<button class="btn" id="editButton" style="display:None"> <!-- real submit tag -->
+			<!-- submit tag trigger button -->
+			<button class="btn" id="editButton" style="display:None">
 				{{ LanguageResources.const.Confirm[session['language']] }}
 			</button> 
 		</label>
@@ -289,7 +302,7 @@
 		</a>
 	</div>
 
-	<!-- ///// Delete case ///// -->
+	<!-- Problem deletion -->
 	<div class="modal hide fade" id="deleteModal"
 		  aria-hidden="true" aria-labelledby="deleteProblemModalLabel"
 		  role="dialog"  tabindex="-1">
@@ -317,7 +330,8 @@
 			</button>
 		</div>
 	</div>
-	<!-- no items choosed -->
+
+	<!-- No items choosed when deletion button's clicked -->
 	<div class="modal hide fade" id="deleteNoItem"
 		  role="dialog" aria-labelledby="deleteModalLabel"
 		  aria-hidden="true" tabindex="-1">
@@ -340,8 +354,14 @@
 			</button>
 		</div>
 	</div>
-	<!-- ///// end hidden modal pop ///// -->
 
+	<!--
+		@@ Pagination
+
+		!!TODO
+		it's just shape without any function
+		doesn't move to next page
+	-->
 	<div class="pagination pagination-centered">
 		<ul>
 			<li><a href="#">Prev</a>
@@ -354,6 +374,13 @@
 		</ul>
 	</div>
 
+	<!-- 
+		@@ Search
+
+		!!TODO
+		it's just shape without any function
+		doesn't show you the result of query
+	-->
 	<div class="container" id="test" style="text-align:center">
 		<div class="input-prepend input-append" style="margin-bottom:0px">
 			<div class="btn-group">
@@ -378,23 +405,24 @@
 </div>
 <script>
 /*
-@@ Confirm(edition) button click event
+	@@ Confirm(edition) button click event
 
-When 'Confirm' button's clicked, submit data
+	When 'Confirm' button's clicked, submit data
 */
 $("#editButton").click(function(){
 	document.getElementById("problemForm").submit();
 });
 
 /*
-@@ Confirm(Delete) button click event
+	@@ Confirm(Delete) button click event
 
-When 'Confirm' button's clicked, submit data
+	When 'Confirm' button's clicked, submit data
 */
 $("#deleteButton").click(function(){
 	document.getElementById("problemForm").submit();
 });
 
+// date picker
 $(function(){
 	if (!Modernizr.inputtypes['udate']) {
 		$('input[type=udate]').datepicker({
@@ -403,22 +431,44 @@ $(function(){
 	}
 });
 
-// target == isAllInputCaseInOneFile_ or startDateOfSubmission_ or endDateOfSubmission_ or openDate_ or closeDate_ or delete_
+/*
+	@@ Modification problem information event
+	
+	When you double click on the values(multiple files, dates) of the table,
+	it changes mode for modification. shows input forms for dates
+
+	target == isAllInputCaseInOneFile_ or 
+				startDateOfSubmission_ or 
+				endDateOfSubmission_ or 
+				openDate_ or 
+				closeDate_ or 
+				delete_
+			+ other information
+
+	1. double clicking
+	2. modification confirmation button display
+	3. target to modify is changed
+*/
 function modifySelector(target){ 
 	document.getElementById("editButton").style.display="";
+
 	var targetValue=document.getElementById(target).innerHTML;
-	// when user double clicked the form, innerHTML contains the word 'input'
+	// when user double clicks the form, innerHTML contains the word 'input'
 	// In this case, targetValue shouldn't be '<input ... >' but only date.
 	// using regular expression, find date value.
-	if(targetValue.indexOf("input") > -1){
+
+	// get real value from row html text
+	if(targetValue.indexOf("input") != -1){
 		var tokens=targetValue.split(' ');
 		for(var i=0;i<tokens.length;i++){
-			if(tokens[i].indexOf("value") > -1){
+			if(tokens[i].indexOf("value") != -1){
 				targetValue=tokens[i].split("=\"")[1];
 				break;
 			}
 		}
 	}
+
+	// if the target is multiple files
 	if(target.split("_")[0] == "isAllInputCaseInOneFile" || 
 	   target.split("_")[0] == "isAllInputCaseInOneFileTab"){
 		if(targetValue.indexOf("TRUE")!=-1){
@@ -435,7 +485,8 @@ function modifySelector(target){
 				     "name='edit_"+target+
 				     "'value='"+targetValue+"'>";
 	}
-	// about dates
+	
+	// if the target is date
 	else{
 		var date = targetValue.replace(/\t/g, '').split('<\/script>')[1];
 		document.getElementById(target).innerHTML=
@@ -451,6 +502,16 @@ function modifySelector(target){
 	}
 }
 
+/*
+	@@ Datepicker
+
+	global function $(function(){}); is not working if the target is generated dynamically
+	like in here 'document.getElementById(target).innerHTML(... type='udate' ...)' 
+	that doesn't show date picker. 
+
+	so, it need another way to use it
+	that is making a function 
+*/
 function showDatepicker() {
 	if (!Modernizr.inputtypes['udate']) {
 		$('input[type=udate]').datepicker({
@@ -459,10 +520,14 @@ function showDatepicker() {
 	}
 }
 
+/*
+	@@ addline button function
+*/
 $("#addline_problem").bind('click', function(){
 	var targetTable=document.getElementById('problems');
 	var numOfRow=targetTable.rows.length;
 
+	/* reset form values */
 	reset_val=function(){
 		$("#courseId1").val("");
 		$("#problemId1").val("");
@@ -485,6 +550,7 @@ $("#addline_problem").bind('click', function(){
 
 	for(var i=0; i < targetTable.rows[0].cells.length; i++){  
 		uploadObj="<tr>";
+		// course id, problem id
 		if(i < 2){
 			uploadObj+="<td>"+
 							"<select id='"+keys[i]+numOfRow+
@@ -515,6 +581,7 @@ $("#addline_problem").bind('click', function(){
 			}
 			uploadObj+="</select>";
 		}
+		// multiple files
 		else if(i == 2){
 			var val_mf=document.getElementById('isAllInputCaseInOneFile1');
 			uploadObj+="<td>";
@@ -536,6 +603,7 @@ $("#addline_problem").bind('click', function(){
 							   "</label>";
 			}
 		}
+		// dates
 		else{
 			uploadObj+="<td>"+
 							"<input class='"+formsize[i]+
@@ -549,14 +617,19 @@ $("#addline_problem").bind('click', function(){
 		}
 		newRow.insertCell(i).innerHTML=uploadObj;
 	}
+	// datepicker
 	if (!Modernizr.inputtypes['udate']) {
 		$('input[type=udate]').datepicker({
 			dateFormat: 'yy-mm-dd'
 		});
 	}
+	// initialize form values
 	reset_val();
 });
 
+/*
+	@@ close button function
+*/
 $("#resetAddProblemForm").bind('click', function(){
 	document.getElementById("addProblemForm").innerHTML=
 		'<tr>'+
@@ -602,6 +675,7 @@ $("#resetAddProblemForm").bind('click', function(){
 	
 	document.getElementById("modalError").style.display="none";
 
+	// datepicker
 	if (!Modernizr.inputtypes['udate']) {
 		$('input[type=udate]').datepicker({
 			dateFormat: 'yy-mm-dd'
@@ -615,9 +689,12 @@ function checkFormValidation(){
 	var numOfRow = targetTable.rows.length;
 	var isValid = true;
 
+	// start/open date should be earlier than end/close date
 	for(var row=1;row<numOfRow;row++){
-		if(document.getElementById("startDate"+row).value > document.getElementById("endDate"+row).value ||
-		   document.getElementById("openDate"+row).value > document.getElementById("closeDate"+row).value){
+		if(document.getElementById("startDate"+row).value >
+		   document.getElementById("endDate"+row).value ||
+		   document.getElementById("openDate"+row).value >
+		   document.getElementById("closeDate"+row).value){
 			isValid = false;
 			break;
 		}
@@ -630,7 +707,8 @@ function checkFormValidation(){
 	else{
 		// when the dates are invalid, shows error message.
 		document.getElementById("modalError").style.display = "inline-block";
-		document.getElementById("modalError").innerHTML = "make sure that Start/Open dates should be earlier than End/Close Date";
+		document.getElementById("modalError").innerHTML 
+			= "make sure that Start/Open dates should be earlier than End/Close Date";
 	}
 }
 </script>
