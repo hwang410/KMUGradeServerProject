@@ -1,13 +1,17 @@
-<!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
-		
+<!-- 
+	@@ edit_personal.html
+
+	The page when users change their information
+	author: seulgi choi
+-->
+
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
 	<h3>
 		{{ LanguageResources.const.PersonalInformation[session['language']] }}
 	</h3>
+	<!-- ID -->
 	<h4>
 		<div class="row-fluid">
 			<div class="span3">
@@ -20,6 +24,7 @@
 	</h4>
 	<hr class="hidden-tablet hidden-desktop">
 	<form id="InfoForm" method="post">
+		<!-- Password -->
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
@@ -33,6 +38,7 @@
 				</div>
 			</div>
 		</h4>
+		<!-- Password check -->
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
@@ -47,6 +53,7 @@
 			</div>
 		</h4>
 		<hr class="hidden-tablet hidden-desktop">
+		<!-- College and Department -->
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
@@ -58,6 +65,7 @@
 			</div>
 		</h4>
 		<hr class="hidden-tablet hidden-desktop">
+		<!-- Name -->
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
@@ -69,6 +77,7 @@
 			</div>
 		</h4>
 		<hr class="hidden-tablet hidden-desktop">
+		<!-- Contact number -->
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
@@ -85,6 +94,7 @@
 				</div>
 			</div>
 		</h4>
+		<!-- Email address -->
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
@@ -101,6 +111,7 @@
 				</div>
 			</div>
 		</h4>
+		<!-- Comment -->
 		<h4>
 			<div class="row-fluid">
 				<div class="span3">
@@ -129,6 +140,11 @@ h4{
 }
 </style>
 <script>
+/*
+	@@ Validator
+
+	Using h5Validate, it checks validation of password, contact number, email address
+*/
 $(document).ready(function(){
 	$('form').h5Validate();
 });
