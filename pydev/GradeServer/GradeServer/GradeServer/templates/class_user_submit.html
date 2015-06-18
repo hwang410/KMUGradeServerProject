@@ -1,6 +1,9 @@
-<!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
+<!-- 
+	@@ class_manage_submit.html
+
+	The page when course administrator manages submissions of users
+	author: seulgi choi
+-->
 
 {%- extends "main.html" -%}
 {%- block body %}
@@ -123,6 +126,13 @@
 		</div>
 	</div>
 
+	<!--
+		@@ Pagination
+
+		!!TODO
+		it's just shape without any function
+		doesn't move to next page
+	-->
 	<div class="pagination pagination-centered">
 		<ul>
 			<li><a href="#">Prev</a>
@@ -135,6 +145,13 @@
 		</ul>
 	</div>
 
+	<!-- 
+		@@ Search
+
+		!!TODO
+		it's just shape without any function
+		doesn't show you the result of query
+	-->
 	<div class="container" id="test" style="text-align:center">
 		<div class="btn-group">
 			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
