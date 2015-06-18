@@ -1,25 +1,35 @@
-<!-- //////////////////////////////////////////
-		fill every "here" sign using jinja2 template
-		/////////////////////////////////////////// -->
+<!-- 
+	@@ id_check.html
+
+	The page when user accesses their information or administrator accesses managing menu
+	author: seulgi choi
+-->
 		
 {%- extends "main.html" -%}
 {%- block body %}
 <div class="container">
-	<div width="100%" align="center" style="position:absolute;left: 50%;margin-left:-125px;width:250px">
+	<div width="100%" align="center"
+		  style="position:absolute;left: 50%;margin-left:-125px;width:250px">
 		<h3>
-			{%- if session['language'] %}	{{ LanguageResources.const.IdentificationCheck[session['language']] }}
-			{%- else %}{{ LanguageResources.const.IdentificationCheck[0] }}<!-- default -->
+			{%- if session['language'] %}
+				{{ LanguageResources.const.IdentificationCheck[session['language']] }}
+			{%- else %}
+				{{ LanguageResources.const.IdentificationCheck[0] }}<!-- default -->
 			{% endif -%}
 		</h3>
 		<div class="row-fluid">
 			<h4>
 				<div class="span6">
-					{%- if session['language'] %}	{{ LanguageResources.const.ID[session['language']] }}
-					{%- else %}{{ LanguageResources.const.ID[0] }}<!-- default -->
+					{%- if session['language'] %}	
+						{{ LanguageResources.const.ID[session['language']] }}
+					{%- else %}
+						{{ LanguageResources.const.ID[0] }}<!-- default -->
 					{% endif -%}
 				</div>
 				<div class="span6">
-					{% if session['memberId'] %}{{ session['memberId'] }}{% endif %}
+					{% if session['memberId'] %}
+						{{ session['memberId'] }}
+					{% endif %}
 				</div>
 			</h4>
 		</div>
@@ -30,14 +40,18 @@
 						{{ LanguageResources.const.Password[session['language']] }}
 					</div>
 					<div class="span6">
-						<input class="input-small" id="password" name="password" type="password" autofocus ="autofocus" style="text-align:center">
+						<input class="input-small" id="password" name="password"
+								type="password" autofocus ="autofocus"
+								style="text-align:center">
 					</div>
 				</h4>
 			</div>
 			<br>
 			<button class="btn" type="submit">
-				{%- if session['language'] %}	{{ LanguageResources.const.Confirm[session['language']] }}
-				{%- else %}{{ LanguageResources.const.Confirm[0] }}<!-- default -->
+				{%- if session['language'] %}
+					{{ LanguageResources.const.Confirm[session['language']] }}
+				{%- else %}
+					{{ LanguageResources.const.Confirm[0] }}<!-- default -->
 				{% endif -%}
 			</button>
 		</form>
