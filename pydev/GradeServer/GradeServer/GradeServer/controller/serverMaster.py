@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
+'''
     GradeSever.controller.serverMaster
 
     Functions for server administrator
@@ -10,9 +10,9 @@
     4. manage user
     5. manage service
     
+    :author: seulgi choi
     :copyright: (c) 2015 by Algorithmic Engineering Lab at KOOKMIN University
-
-"""
+'''
 
 from flask import request, render_template, url_for, redirect, session
 from sqlalchemy import func, and_, exc
@@ -66,10 +66,11 @@ from GradeServer.py3Des.pyDes import *
 def initialize_tripleDes_class():
     tripleDes=triple_des(OtherResources().const.TRIPLE_DES_KEY,
                            mode=ECB,
-                           IV="\0\0\0\0\0\0\0\0",
+                           IV='\0\0\0\0\0\0\0\0',
                            pad=None,
                            padmode=PAD_PKCS5)
     return tripleDes
+
 
 def is_exist_college(collegeName):
     try:
@@ -93,7 +94,7 @@ def change_abolishment_of_college_false(collegeName):
     try:
         dao.commit()
     except exc.SQLAlchemyError:
-        error="Error has been occurred while changing abolishment to FALSE"
+        error='Error has been occurred while changing abolishment to FALSE'
     
     return error
 
@@ -108,9 +109,10 @@ def change_abolishment_of_college_true(collegeIndex):
     try:
         dao.commit()
     except exc.SQLAlchemyError:
-        error="Error has been occurred while changing abolishment to TRUE"
+        error='Error has been occurred while changing abolishment to TRUE'
     
     return error
+
 
 def get_departments_of_college(collegeIndex):
     error=None
@@ -124,7 +126,7 @@ def get_departments_of_college(collegeIndex):
                                 collegeIndex)).\
                     all()
     except:
-        error="Error has been occurred while searching departments"
+        error='Error has been occurred while searching departments'
         
     return error, departments
 
@@ -135,7 +137,7 @@ def change_abolishment_of_department_true(index):
     if error:
         return error
     '''
-    @@ TODO
+    !!TODO
     remove duplicated code
     '''
     '''
@@ -153,7 +155,7 @@ def change_abolishment_of_department_true(index):
                 try:
                     dao.commit()
                 except exc.SQLAlchemyError:
-                    error="Error has been occurred while changing abolishment to TRUE"
+                    error='Error has been occurred while changing abolishment to TRUE'
                     break
     
     else:
@@ -164,7 +166,7 @@ def change_abolishment_of_department_true(index):
         try:
             dao.commit()
         except exc.SQLAlchemyError:
-            error="Error has been occurred while changing abolishment to TRUE"
+            error='Error has been occurred while changing abolishment to TRUE'
         
     return error
                 
@@ -187,7 +189,7 @@ def delete_relation_in_college_department(collegeIndex, departmentIndex):
     try:
         dao.commit()
     except exc.SQLAlchemyError:
-        error="Error has been occurred while deleting relation of college and department"
+        error='Error has been occurred while deleting relation of college and department'
     
     return error
 
@@ -219,7 +221,7 @@ def add_new_college(collegeCode, collegeName):
         dao.commit()
     except exc.SQLAlchemyError:
         dao.rollback()
-        error="Error has been occurred while making new college"
+        error='Error has been occurred while making new college'
         
     return error
                         
@@ -235,7 +237,7 @@ def add_new_departments(departmentCode, departmentName):
         dao.commit()
     except exc.SQLAlchemyError:
         dao.rollback()
-        error="Error has been occurred while making new department"
+        error='Error has been occurred while making new department'
     
     return error
                         
@@ -251,7 +253,7 @@ def delete_registered_course(courseId):
     try:
         dao.commit()
     except exc.SQLAlchemyError:
-        error="Error has been occurred while deleting registered course"
+        error='Error has been occurred while deleting registered course'
     
     return error
                 
@@ -328,7 +330,7 @@ def add_new_problem(newProblemInfo):
         dao.commit()
     except exc.SQLAlchemyError:
         dao.rollback()
-        error="Error has been occurred while adding new problem"
+        error='Error has been occurred while adding new problem'
         
     return error
 
@@ -344,6 +346,12 @@ def get_num_of_problems():
 
 
 def delete_member(memberId):
+    '''
+    !!TODO
+    
+    deletion from DB is not a good way
+    keep the tuple and make the member's information invalidate
+    '''
     error=None
     
     deleteTarget=dao.query(Members).\
@@ -507,6 +515,7 @@ def handle_file_came_from_window(rowProblemName, decodedProblemName):
         
     return error
 
+
 def remove_space_from_names_in(path):
     error=change_directory_to(path)
     
@@ -515,7 +524,7 @@ def remove_space_from_names_in(path):
             subprocess.call('for f in *;do mv "$f" `echo $f|sed "s/ //g"`;done',\
                             shell=True)
         except OSError:
-            error="Error has been occurred while removing space on file names"
+            error='Error has been occurred while removing space on file names'
     
     return error
 
@@ -527,7 +536,7 @@ def attach_string_ahead_of(path, string):
         subprocess.call('for f in *; do mv $f `echo $f|sed "s/\.*/%s_/"`;done' %\
                         (string), shell=True)
     except OSError:
-        error="Error has been occurred while attaching string"
+        error='Error has been occurred while attaching string'
     
     return error
 
@@ -538,7 +547,7 @@ def get_current_path():
     try:
         currentPath=os.getcwd()
     except OSError:
-        error="Error has been occurred while getting current path"
+        error='Error has been occurred while getting current path'
 
     return currentPath, error                                        
 
@@ -549,7 +558,7 @@ def change_directory_to(path):
     try:
         os.chdir(path)
     except OSError:
-        error="Error has been occurred while changing directory"
+        error='Error has been occurred while changing directory'
     
     return error
 
@@ -578,7 +587,7 @@ def add_new_departments_details_of_members(memberId, collegeIndex, departmentInd
         dao.commit()
     except exc.SQLAlchemyError:
         dao.rollback()
-        error="Error has been occurred while adding new departments details of members"
+        error='Error has been occurred while adding new departments details of members'
     
     return error
                 
@@ -594,7 +603,7 @@ def add_new_language_of_course(courseNum, languageIndex):
         dao.commit()
     except exc.SQLAlchemyError:
         dao.rollback()
-        error="Error has been occurred while adding new language of course"
+        error='Error has been occurred while adding new language of course'
     
     return error
                 
@@ -617,7 +626,7 @@ def register_new_course(courseId, courseName, courseDescription,
         dao.commit()
     except exc.SQLAlchemyError:
         dao.rollback()
-        error="Error has been occurred while registering new course"
+        error='Error has been occurred while registering new course'
     
     return error
             
@@ -632,7 +641,7 @@ def server_manage_collegedepartment():
     error=None
     
     # moved from other page, then show 'college' tab
-    if request.referrer.rsplit('/', 1)[1] != "manage_collegedepartment":
+    if request.referrer.rsplit('/', 1)[1] != 'manage_collegedepartment':
         currentTab='colleges'
     
     allColleges=get_colleges()
@@ -656,39 +665,30 @@ def server_manage_collegedepartment():
                 isNewCollege=True
                 if form != 'addCollege':
                     index, keyname, data=split_to_index_keyname_value(form)
-                    
                     if keyname=='collegeCode':
                         newCollege[index-1][0]=data
                     elif keyname=='collegeName':
                         newCollege[index-1][1]=data
-                        
             elif 'addDepartment' in request.form:
                 isNewDepartment=True
                 if form != 'addDepartment':
                     index, keyname, data=split_to_index_keyname_value(form)
-                    
                     if keyname=='departmentCode':
                         newDepartment[index-1][0]=data
                     elif keyname=='departmentName':
                         newDepartment[index-1][1]=data
                     elif keyname=='collegeIndex':
                         newDepartment[index-1][2]=data.split()[0]
-                        
             elif 'deleteCollege' in request.form:
                 if 'college' in form:
                     currentTab='colleges'
                     collegeIndex=re.findall('\d+|\D+', form)[1]
-                    
-                    if change_abolishment_relates_college(collegeIndex):
-                        break
-                                                                
+                    if change_abolishment_relates_college(collegeIndex): break
             elif 'deleteDepartment' in request.form:
                 if 'department' in form:
                     currentTab='departments'
                     departmentIndex=re.findall('\d+|\D+', form)[1]
-                    
-                    if change_abolishment_of_department_true(departmentIndex):
-                        break
+                    if change_abolishment_of_department_true(departmentIndex): break
                     
         '''
         If there's an error, set flags to False so it will be reached 'return' command at the last in this function
@@ -747,6 +747,7 @@ def server_manage_collegedepartment():
                            allColleges=allColleges,
                            allDepartments=allDepartments)
         
+        
 @GradeServer.route('/master/manage_class', methods=['GET', 'POST'])
 @check_invalid_access
 @login_required
@@ -759,7 +760,6 @@ def server_manage_class():
     if request.method=='POST':
         for form in request.form:
             error=delete_registered_course(form)
-            
             if error: break
             
         return redirect(url_for('.server_manage_class'))
@@ -774,6 +774,7 @@ def server_manage_class():
                            LanguageResources=LanguageResources,
                            courses=courses, 
                            languagesOfCourse=languagesOfCourse)
+    
     
 @GradeServer.route('/master/add_class', methods=['GET', 'POST'])
 @check_invalid_access
@@ -838,10 +839,10 @@ def server_add_class():
         elif not endDateOfCourse:
             error='You have to choose a end date'
         else:
-            startDate=datetime.strptime(startDateOfCourse, "%Y-%m-%d").date()
-            endDate=datetime.strptime(endDateOfCourse, "%Y-%m-%d").date()
+            startDate=datetime.strptime(startDateOfCourse, '%Y-%m-%d').date()
+            endDate=datetime.strptime(endDateOfCourse, '%Y-%m-%d').date()
             if startDate > endDate:
-                error="Start date should be earlier than end date"
+                error='Start date should be earlier than end date'
             
             if not error:
                 try:
@@ -851,10 +852,10 @@ def server_add_class():
                         first().memberId
                 except:
                     error=\
-                        "%s is not registered as a course administrator" %\
+                        '%s is not registered as a course administrator' %\
                         (courseAdministrator.split()[0])
             
-            if error:
+            else:
                 return render_template('/server_add_class.html', 
                                        error=error, 
                                        SETResources=SETResources,
@@ -906,11 +907,10 @@ def server_add_class():
                                        LanguageResources=LanguageResources,
                                        courses=allCourses, 
                                        languages=allLanguages)
-                
             
             # create course folder in 'CurrentCourses' folder
             courseName=courseName.replace(' ', '')
-            problemPath="%s/CurrentCourses/%s_%s" %\
+            problemPath='%s/CurrentCourses/%s_%s' %\
                         (projectPath, newCourseNum, courseName)
             
             if not os.path.exists(problemPath):
@@ -946,6 +946,7 @@ def server_add_class():
                            languages=allLanguages,
                            allCourseAdministrators=allCourseAdministrators)
     
+    
 @GradeServer.route('/master/manage_problem', methods=['GET', 'POST'])
 @check_invalid_access
 @login_required
@@ -957,7 +958,7 @@ def server_manage_problem():
     if request.method=='POST':
         for form in request.form:
             if form=='upload':
-                files=request.files.getlist("files")
+                files=request.files.getlist('files')
                 if not list(files)[0].filename:
                     error='Uploading file error'
                     break
@@ -996,24 +997,26 @@ def server_manage_problem():
                     # unzip file
                     with zipfile.ZipFile(fileData, 'r') as z:
                         z.extractall(tmpPath)
-                        
-                    '''
-                    @@ Decode problem name
                     
-                    If the problem zip's made on window environment, problem name's broken
-                    So it needs to be decoded by cp949
-                    ''' 
                     try:
                         rowProblemName=\
                             re.split('_|\.',\
                                      os.listdir(tmpPath)[0])[0].\
                                replace(' ', '\ ')
                     except OSError:
-                        error="Error has been occurred while listing file names"
+                        error='Error has been occurred while listing file names'
                         break
                     
+                    '''
+                    @@ Decode problem name
+                    
+                    If the problem zip's made on window environment, problem name's broken
+                    So it needs to be decoded by cp949
+                    ''' 
                     problemName=str(rowProblemName.decode('cp949'))
-                
+                    
+                    # if decoded name is the same with before decoding, 
+                    # it means the file is not created on window environment
                     isFromWindow=\
                         True if rowProblemName != problemName else False
                     
@@ -1021,7 +1024,7 @@ def server_manage_problem():
                         if handle_file_came_from_window(rowProblemName,
                                                         problemName):
                             break
-                                     
+                    
                     problemInformationPath=\
                         ('%s/%s.txt' %\
                         (tmpPath, problemName)).replace('\ ', ' ')
@@ -1035,7 +1038,7 @@ def server_manage_problem():
                         try:
                             problemInfoFile.close()
                         except IOError:
-                            error="Error has been occurred while closing problem meta file"
+                            error='Error has been occurred while closing problem meta file'
                             break
                             
                     except IOError:
@@ -1067,7 +1070,7 @@ def server_manage_problem():
                         elif key=='SolutionCheckType':
                             solutionCheckType=\
                                 ENUMResources().const.SOLUTION\
-                                    if value=="Solution"\
+                                    if value=='Solution'\
                                     else ENUMResources().const.CHECKER
                         elif key=='LimitedTime':
                             limitedTime=int(value)
@@ -1099,7 +1102,7 @@ def server_manage_problem():
                         inOutCases=\
                             [filename for filename in os.listdir(os.getcwd())]
                     except OSError:
-                        error="Error has been occurred while listing file names"
+                        error='Error has been occurred while listing file names'
                         break
 
                     for filename in inOutCases:
@@ -1114,11 +1117,13 @@ def server_manage_problem():
                     
                     work flow
                     1. Remove space on its name
+                        from> Hello World 
+                        to> HelloWorld
+                        
                     2. Attach problem ID ahead of the name
-                    
-                    work place
-                    1. Problems
-                    2. Problems/problemID_problemName
+                        from> HelloWorld
+                        to> 12345_HelloWorld
+                        * 12345 is created problem id
                     '''
                     currentPath, error=get_current_path()
                     if error: break
@@ -1181,6 +1186,7 @@ def server_manage_problem():
                            LanguageResources=LanguageResources,
                            uploadedProblems=uploadedProblems)
 
+
 @GradeServer.route('/master/manage_users', methods=['GET', 'POST'])
 @check_invalid_access
 @login_required
@@ -1234,7 +1240,6 @@ def server_manage_user():
     if request.method=='POST':
         for form in request.form:
             error=delete_member(form)
-            
             if error: break
             
         if not error:
@@ -1280,7 +1285,7 @@ def server_add_user():
                     value, index=re.findall('\d+|\D+', form)
                     index=int(index)
                     data=request.form[form]
-                    if not data or data=="select college":
+                    if not data or data=='select college':
                         continue
                     if value=='userId':
                         newUser[index - 1][keys['memberId']]=data
@@ -1293,16 +1298,13 @@ def server_add_user():
                         newUser[index - 1][keys['collegeIndex']]=collegeIndex
                         error, newUser[index - 1][keys['collegeName']]=\
                             get_college_name(collegeIndex)
-                        
                         if error: break
-                    
                     elif value=='department':
                         departmentIndex=data.split()[0]
                         newUser[index - 1][keys['departmentIndex']]=\
                             departmentIndex
                         error, newUser[index - 1][keys['departmentName']]=\
                             get_department_name(departmentIndex)
-                                                        
                         if error: break
 
             if error:
@@ -1320,7 +1322,7 @@ def server_add_user():
                 valid=True
                 # check for empty row
                 for col in range(7):
-                    if newUser[index][col]=="":
+                    if newUser[index][col]=='':
                         valid=False
                         break
                 if valid:
@@ -1356,14 +1358,12 @@ def server_add_user():
                                     newUser[keys['collegeIndex']]=value
                                     error, newUser[keys['collegeName']]=\
                                         get_college_name(value)
-                                    
                                     if error: break
                                         
                                 elif key=='department':
                                     newUser[keys['departmentIndex']]=value
                                     error, newUser[keys['departmentName']]=\
                                         get_department_name(value)
-                                    
                                     if error: break
                                         
                                 else:
@@ -1482,11 +1482,14 @@ def server_add_user():
                            authorities=authorities,
                            newUsers=newUsers)
 
+
 @GradeServer.route('/master/manage_service')
 @check_invalid_access
 @login_required
-def server_manage_service():        
+def server_manage_service():   
+    #TODO     
     error=None
+    
     return render_template('/server_manage_service.html',
                            error=error,
                            SETResources=SETResources,

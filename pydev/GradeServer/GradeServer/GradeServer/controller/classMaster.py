@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
+'''
     GradeSever.controller.classMaster
     
     Funcions for course administrator
@@ -9,9 +9,9 @@
     3. manage user
     4. manage service
 
+    :author: seulgi choi
     :copyright: (c) 2015 by Algorithmic Engineering Lab at KOOKMIN University
-
-"""
+'''
 
 from flask import request, render_template, url_for, redirect, session
 from werkzeug.security import generate_password_hash
@@ -69,6 +69,7 @@ def get_case_count(problemCasesPath, multipleFiles):
             
     return caseCount
 
+
 def get_own_problems(memberId):
     try:
         ownProblems = (dao.query(RegisteredProblems,
@@ -86,6 +87,7 @@ def get_own_problems(memberId):
     
     return ownProblems
 
+
 def get_own_courses(memberId):
     try:
         ownCourses = dao.query(RegisteredCourses).\
@@ -96,14 +98,16 @@ def get_own_courses(memberId):
         
     return ownCourses
 
+
 from GradeServer.py3Des.pyDes import *
 def initialize_tripleDes_class():
     tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
                            mode = ECB,
-                           IV = "\0\0\0\0\0\0\0\0",
+                           IV = '\0\0\0\0\0\0\0\0',
                            pad = None,
                            padmode = PAD_PKCS5)
     return tripleDes
+
 
 def get_college_name(collegeIndex):
     error = None
@@ -118,6 +122,7 @@ def get_college_name(collegeIndex):
                    
     return error, college_name
 
+
 def get_department_name(departmentIndex):
     error = None
     try:
@@ -129,6 +134,8 @@ def get_department_name(departmentIndex):
         error = 'Error has been occurred while searching department name'
                       
     return error, department_name
+
+
 '''
 @ Get form value and set into array
 
@@ -181,6 +188,7 @@ def set_form_value_into_array(keys, forms, array):
 
     return error, array
 
+
 def set_array_from_csv_form(keys, csv_form, array):
     error = None
     try:        
@@ -215,6 +223,7 @@ def set_array_from_csv_form(keys, csv_form, array):
         error = 'Error has been occurred while inserting into temporary array from csv form'
     
     return error, array
+           
                 
 def set_array_from_file(files, keys, courseId):
     error = None
@@ -251,10 +260,12 @@ def set_array_from_file(files, keys, courseId):
         error = 'Error has been occurred while inserting values from user file'
     
     return error
+        
                                         
 def split_to_index_keyname_value(form):
     keyname,index = re.findall('\d+|\D+',form)
     return int(index), keyname, request.form[form]
+
 
 def check_validation(user):
     isValid = True
@@ -264,6 +275,7 @@ def check_validation(user):
             break
     
     return isValid
+        
             
 def get_own_members(memberId):
     error = None
@@ -278,6 +290,7 @@ def get_own_members(memberId):
         
     return error, ownMembers
 
+
 def get_all_problems():
     error = None
     
@@ -286,10 +299,11 @@ def get_all_problems():
                           filter(Problems.isDeleted == ENUMResources().const.FALSE).\
                           all()
     except:
-        error = "Error has been occurred while searching all problems"
+        error = 'Error has been occurred while searching all problems'
         allProblems = []
         
     return error, allProblems
+
 
 def delete_registered_problem(courseId, problemId):
     error = None
@@ -322,6 +336,7 @@ def update_registered_problem_info(courseId, problemId, key_dict):
         error = 'Error has been occurred while searching the problem to edit'
         
     return error
+          
                         
 def get_colleges():
     try:
@@ -347,7 +362,7 @@ def class_user_submit():
         submissions = dao.query(Submissions.memberId,
                                 Submissions.courseId,
                                 Submissions.problemId,
-                                func.max(Submissions.submissionCount).label("maxSubmissionCount")).\
+                                func.max(Submissions.submissionCount).label('maxSubmissionCount')).\
                       group_by(Submissions.memberId,
                                Submissions.courseId,
                                Submissions.problemId).\
@@ -378,6 +393,7 @@ def class_user_submit():
                            ownCourses = ownCourses,
                            submissions = latestSubmissions)
 
+
 @GradeServer.route('/classmaster/cm_manage_problem',methods=['GET','POST'])
 @check_invalid_access
 @login_required
@@ -405,15 +421,15 @@ def class_manage_problem():
     if request.method == 'POST':
         isNewProblem = True
         numberOfNewProblems = (len(request.form)-1)/7
-        keys = {"courseId":0,
-                "courseName":1,
-                "problemId":2,
-                "problemName":3,
-                "isAllInputCaseInOneFile":4,
-                "startDate":5,
-                "endDate":6,
-                "openDate":7,
-                "closeDate":8}
+        keys = {'courseId':0,
+                'courseName':1,
+                'problemId':2,
+                'problemName':3,
+                'isAllInputCaseInOneFile':4,
+                'startDate':5,
+                'endDate':6,
+                'openDate':7,
+                'closeDate':8}
         
         # courseId,courseName,problemId,problemName,isAllInputCaseInOneFile,startDate,endDate,openDate,closeDate
         newProblem = [['' for _ in range(len(keys.keys()))] for __ in range(numberOfNewProblems+1)]
@@ -487,7 +503,7 @@ def class_manage_problem():
                                                 filter(Problems.problemId == problem[keys['problemId']]).\
                                                 first().solutionCheckType
                     except:
-                        error = "error has been occurred while getting solution check type"
+                        error = 'error has been occurred while getting solution check type'
                         return render_template('/class_manage_problem.html',
                                                error = error, 
                                                SETResources = SETResources,
@@ -579,6 +595,7 @@ def class_manage_problem():
                            allProblems = allProblems,
                            ownCourses = ownCourses,
                            ownProblems = ownProblems)
+
 
 @GradeServer.route('/classmaster/cm_manage_user',methods=['GET','POST'])
 @check_invalid_access
@@ -718,6 +735,7 @@ def class_manage_user():
                            allUsers=allUsersToData,
                            colleges=colleges,
                            departments=departments)
+    
     
 @GradeServer.route('/classmaster/add_user',methods=['GET','POST'])
 @check_invalid_access
@@ -985,6 +1003,7 @@ def class_add_user():
                            authorities = authorities,
                            newUsers = newUsers)
 
+
 @GradeServer.route('/classmaster/user_submit/summary')
 @check_invalid_access
 @login_required
@@ -1039,7 +1058,7 @@ def user_submit_summary():
         submissions = dao.query(Submissions.memberId,
                                 Submissions.courseId,
                                 Submissions.problemId,
-                                func.max(Submissions.submissionCount).label("maxSubmissionCount")).\
+                                func.max(Submissions.submissionCount).label('maxSubmissionCount')).\
                       group_by(Submissions.memberId,
                                Submissions.courseId,
                                Submissions.problemId).\
@@ -1064,12 +1083,14 @@ def user_submit_summary():
                            ownMembers=ownMembers,
                            submissions=latestSubmissions)
 
+
 @GradeServer.route('/classmaster/manage_service')
 @check_invalid_access
 @login_required
 def class_manage_service():
-    # To do
+    #TODO
     error = None
+    
     return render_template('/class_manage_service.html',
                            error = error,
                            SETResources = SETResources,
