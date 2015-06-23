@@ -194,8 +194,10 @@ def set_array_from_csv_form(keys, csv_form, array):
     try:        
         # 1. remove space and newline
         # 2. slice and make information from 'key=value'
-        userInformation = csv_form.replace(' ', '').replace('\n', '').replace('\r', '').replace('\xef\xbb\xbf', '').split(',')
-
+        userInformation=\
+            csv_form.replace(' ', '').replace('\n', '').replace('\r', '').\
+            replace('\xef\xbb\xbf', '').split(',')
+            
         for each_pair in userInformation:
             if '=' in each_pair:
                 key, value = each_pair.split('=')
