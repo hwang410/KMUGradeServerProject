@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-    GradeSever.controller.login
+    GradeSever.controller.signUp
     ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    로그인 확인 데코레이터와 로그인 처리 모듈.
+    Page for signing up
 
+    :author: seulgi choi
     :copyright: (c) 2015 by KookminUniv
 
 """
@@ -100,7 +101,7 @@ from GradeServer.py3Des.pyDes import *
 def initialize_tripleDes_class():
     tripleDes = triple_des(OtherResources().const.TRIPLE_DES_KEY,
                            mode = ECB,
-                           IV = "\0\0\0\0\0\0\0\0",
+                           IV = '\0\0\0\0\0\0\0\0',
                            pad = None,
                            padmode = PAD_PKCS5)
     return tripleDes
@@ -123,7 +124,7 @@ def sign_up():
         
     except:
         error = 'Error has been occurred while searching colleges. Please refresh the page.'
-        return render_template("sign_up.html",
+        return render_template('sign_up.html',
                                SETResources = SETResources,
                                SessionResources = SessionResources,
                                LanguageResources = LanguageResources,
@@ -136,7 +137,7 @@ def sign_up():
         
     except:
         error = 'Error has been occurred while searching departments. Please refresh the page.'
-        return render_template("sign_up.html",
+        return render_template('sign_up.html',
                                SETResources = SETResources,
                                SessionResources = SessionResources,
                                LanguageResources = LanguageResources,
@@ -154,7 +155,7 @@ def sign_up():
            not has_form('password') or\
            not has_form('member_name'):
             error = 'Fill the necessary form'
-            return render_template("sign_up.html",
+            return render_template('sign_up.html',
                                    SETResources = SETResources,
                                    SessionResources = SessionResources,
                                    LanguageResources = LanguageResources,
@@ -184,7 +185,7 @@ def sign_up():
 
                     if not insert_into_Members(memberId, password, name, 'USER', datetime.now(), comment):
                         error = 'Error has been occurred while adding new user to DB'
-                        return render_template("sign_up.html",
+                        return render_template('sign_up.html',
                                                SETResources = SETResources,
                                                SessionResources = SessionResources,
                                                LanguageResources = LanguageResources,
@@ -197,7 +198,7 @@ def sign_up():
 
                     if college and department:
                         if not insert_into_departmentDetailsOfMembers(memberId, college, department):
-                            error = "Error has been occurred while adding user's department information to DB"
+                            error = 'Error has been occurred while adding user's department information to DB'
                             return render_template("sign_up.html",
                                                    SETResources = SETResources,
                                                    SessionResources = SessionResources,
@@ -210,8 +211,8 @@ def sign_up():
                     return redirect(url_for(RouteResources().const.SIGN_IN, rdr=''))
                 
                 else:
-                    error = "Your ID is already exist"
-                    return render_template("sign_up.html",
+                    error = 'Your ID is already exist'
+                    return render_template('sign_up.html',
                                            SETResources = SETResources,
                                            SessionResources = SessionResources,
                                            LanguageResources = LanguageResources,
