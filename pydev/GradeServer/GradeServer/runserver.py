@@ -22,7 +22,7 @@ reload(sys).setdefaultencoding('utf-8')
 application = create_app()
 
 if __name__ == '__main__':
-    
+    '''jenkins test'''
     print 'running...'
     http_server = HTTPServer (WSGIContainer (application))
     http_server.bind(80)
