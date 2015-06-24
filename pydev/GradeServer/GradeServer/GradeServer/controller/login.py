@@ -46,7 +46,7 @@ def sign_in():
     if '?' in request.url:
         flash('Signed up successfully')
         
-    """ main page before sign in"""
+    ''' main page before sign in'''
     from GradeServer.utils.utilMessages import get_message
     
     from GradeServer.utils.memberCourseProblemParameter import MemberCourseProblemParameter
